@@ -16,25 +16,25 @@
 |:-----------------------|
 | printf                 |
 
-| Memory Management      |
-|:-----------------------|
-| malloc                 |
-| free                   |
+| Memory Management             |
+|:------------------------------|
+| malloc                        |
+| free                          |
 
 | File and Directory Operations |
-|:-----------------------------|
-| access                       |
-| open                         |
-| read                         |
-| write                        |
-| close                        |
-| stat                         |
-| lstat                        |
-| fstat                        |
-| unlink                       |
-| opendir                      |
-| readdir                      |
-| closedir                     |
+|:------------------------------|
+| access                        |
+| open                          |
+| read                          |
+| write                         |
+| close                         |
+| stat                          |
+| lstat                         |
+| fstat                         |
+| unlink                        |
+| opendir                       |
+| readdir                       |
+| closedir                      |
 
 | Process Control        |
 |:-----------------------|
