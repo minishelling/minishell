@@ -22,7 +22,7 @@ run_test()
 
 # == TESTS ==
 
-run_test
+run_test "echo it works"
 
 
 
