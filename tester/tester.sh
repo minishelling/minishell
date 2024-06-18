@@ -9,7 +9,7 @@ MINISHELL_OUTPUT=""
 MINISHELL_ERROR=""
 MINISHELL_RVALUE=0
 
-TESTER_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TESTER_DIR="$(dirname "$0")"
 INFILE_DIR="$TESTER_DIR/infiles"
 LOGS_DIR="$TESTER_DIR/logs"
 
@@ -18,14 +18,15 @@ LOGS_DIR="$TESTER_DIR/logs"
 run_test()
 {
     local TEST_NUM=$1
-    local OUTPUT_FILE="$LOGS_DIR/test_${TEST_NUM}.txt"
+    local OUTPUT_FILE="$LOGS_DIR/output_${TEST_NUM}.txt"
+    local ERROR_FILE="$LOGS_DIR/error_${TEST_NUM}.txt"
     shift
 
     # Create a logs directory in the script's location
     mkdir -p "$LOGS_DIR"
 
     # Execute the command and capture the output
-    BASH_OUTPUT=$(bash -c "$@")
+    BASH_OUTPUT=$(bash -c "$@" 2>$ERROR_FILE)
     echo -e -n $BASH_OUTPUT > $OUTPUT_FILE
     BASH_RVALUE=$?
     printf "%i\n" "$BASH_RVALUE"
