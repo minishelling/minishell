@@ -47,7 +47,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 $(BONUS_NAME): $(LIBS) $(BONUS_OBJ_DIR) $(BONUS_OBJECTS)
 	@$(CC) $(CFLAGS) $(BONUS_OBJECTS) -o $(BONUS_NAME)
 #	@$(CC) $(CFLAGS) $(BONUS_OBJECTS) $(LIBS) -o $(BONUS_NAME)
-	@echo "$(GREEN_LIGHT)Project successfully compiled. Target 'so_long_bonus' created.$(RESET)"
+	@echo "$(GREEN_LIGHT)Project successfully compiled. Target 'minishell_bonus' created.$(RESET)"
 
 #$(BONUS_OBJ_DIR)/%.o: $(BONUS_SRC_DIR)/%.c | $(BONUS_OBJ_DIR)
 	@$(CC) -c $(CFLAGS) $(HDRS) -o $@ $^
