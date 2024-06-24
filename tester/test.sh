@@ -39,11 +39,11 @@ run_test()
 	# Create a logs directory in the script's location
 	mkdir -p "$LOGS_DIR"
 
-    local ERROR_LOG="$LOGS_DIR/output_${TEST_NUM}.txt"
+    local ERROR_LOG="$LOGS_DIR/error_${TEST_NUM}.txt"
 
 	# Define temporary files for outputs
-	local BASH_OUTPUT_FILE=$(mktemp)
-    local MINISHELL_OUTPUT_FILE=$(mktemp)
+	local BASH_OUTPUT_FILE="$LOGS_DIR/bash_output_${TEST_NUM}.txt"
+    local MINISHELL_OUTPUT_FILE="$LOGS_DIR/mini_output_${TEST_NUM}.txt"
 
     # Execute BASH command and capture the output
     BASH_OUTPUT=$(bash -c "$@")
@@ -66,15 +66,3 @@ run_test()
 # Example test
 run_test "cat $RELATIVE_INFILE_DIR/infile1 $RELATIVE_INFILE_DIR/infile2 $RELATIVE_INFILE_DIR/infile3"
 
-# == COLOURS ==
-
-BOLD="\033[1m"
-RESET="\033[0m"
-BLACK="\033[30m"
-RED="\033[31m"
-GREEN="\033[32m"
-YELLOW="\033[33m"
-BLUE="\033[34m"
-MAGENTA="\033[35m"
-CYAN="\033[36m"
-WHITE="\033[37m"
