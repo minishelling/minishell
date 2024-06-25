@@ -13,6 +13,10 @@ MAGENTA="\033[35m"
 CYAN="\033[36m"
 WHITE="\033[37m"
 
+# == VARIABLES ==
+
+DELIMITER="------------------------------------------------------------------------------------------------------------------------"
+
 # == FUNCTIONS ==
 
 print_header() {
@@ -22,6 +26,3 @@ print_header() {
 tester_setup() {
 	printf "\n\n${BOLD}${CYAN}%-90s%-8s%-8s%-8s%-8s\n${RESET}" "TESTNAME" "OUT" "EXIT" "TIME" "LEAKS"
 }
-
-# -- TESTING THE FUNCTIONS --
-tester_setup

@@ -2,42 +2,36 @@
 
 # == VARIABLES ==
 
+MINISHELL_DIR=""
+
 TEST_NUM=0
+ERROR_FLAG=0
 
-BASH_OUTPUT=""
-BASH_ERROR=""
-BASH_EXIT_CODE=0
 
-MINISHELL_OUTPUT=""
-MINISHELL_ERROR=""
-MINISHELL_EXIT_CODE=0
+OUTPUTFILE_BASH=""
+OUTPUTFILE_MINISHELL=""
 
-# Get the script directory
-TESTER_DIR="$(dirname "$0")"
-MINISHELL_DIR="$TESTER_DIR/.."
+TESTER_DIR=$(dirname "$0")
+MINISHELL_DIR="$TESTER_DIR/../"
 
-# Define the relative path for input files
-RELATIVE_INFILE_DIR="infiles"
+# Define relative paths
+REL_INFILE_DIR="infiles"
+REL_LOGS_DIR="logs"
 
-# Define the absolute path for input files
-INFILE_DIR="$TESTER_DIR/$RELATIVE_INFILE_DIR"
+# Define absolute paths
+INFILE_DIR="$TESTER_DIR/$REL_INFILE_DIR"
+LOGS_DIR="$TESTER_DIR/$REL_LOGS_DIR"
 
 # Define the logs directory
 TESTER_DIR="$(dirname "$0")"
 INFILE_DIR="$TESTER_DIR/infiles"
 LOGS_DIR="$TESTER_DIR/logs"
 
-# Define the expected outputs directory
-EXPECTED_OUTPUTS_DIR="$TESTER_DIR/expected_outputs"
-
-
 # == FUNCTIONS ==
 
-run_test()
+test()
 {
 	TEST_NUM=$(( TEST_NUM + 1 ))
-	# Create a logs directory in the script's location
-	mkdir -p "$LOGS_DIR"
 
     local ERROR_LOG="$LOGS_DIR/error_${TEST_NUM}.txt"
 
