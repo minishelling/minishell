@@ -1,5 +1,5 @@
 ========== Test 1 ==========
-Command: cat infiles/infile1 infiles/infile2 infiles/infile3
+Command: cat infile1 infile2 infile3
 ======================================
 Output: abcdefghi
 ======================================
