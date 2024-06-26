@@ -1,47 +1,25 @@
 #!/bin/bash
 
-# == VARIABLES ==
-
-MINISHELL_DIR=""
-
-TEST_NUM=0
-ERROR_FLAG=0
-
-
-OUTPUTFILE_BASH=""
-OUTPUTFILE_MINISHELL=""
-
-TESTER_DIR=$(dirname "$0")
-MINISHELL_DIR="$TESTER_DIR/../"
-
-# Define relative paths
-REL_INFILE_DIR="infiles"
-REL_LOGS_DIR="logs"
-
-# Define absolute paths
-INFILE_DIR="$TESTER_DIR/$REL_INFILE_DIR"
-LOGS_DIR="$TESTER_DIR/$REL_LOGS_DIR"
-
-# Define the logs directory
-TESTER_DIR="$(dirname "$0")"
-INFILE_DIR="$TESTER_DIR/infiles"
-LOGS_DIR="$TESTER_DIR/logs"
-
 # == FUNCTIONS ==
 
 test()
 {
 	TEST_NUM=$(( TEST_NUM + 1 ))
+	ARG_ARRAY="$@"
 
+	ERROR_FLAG=0
     local ERROR_LOG="$LOGS_DIR/error_${TEST_NUM}.txt"
 
 	# Define temporary files for outputs
 	local BASH_OUTPUT_FILE="$LOGS_DIR/bash_output_${TEST_NUM}.txt"
     local MINISHELL_OUTPUT_FILE="$LOGS_DIR/mini_output_${TEST_NUM}.txt"
 
+	printf "#%2i: %-85.83s" "${TEST_NUM}" "$(print_arg_array)"
+
     # Execute BASH command and capture the output
-    BASH_OUTPUT=$(bash -c "$@")
+    BASH_OUTPUT=$(bash -c "$ARG_ARRAY")
 	BASH_EXIT_CODE=$?
+	if 
 	echo "$BASH_OUTPUT" > $BASH_OUTPUT_FILE
 	BASH_ERROR=$(bash -c "$@" 2>&1 >/dev/null)
 

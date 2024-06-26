@@ -19,10 +19,20 @@ DELIMITER="---------------------------------------------------------------------
 
 # == FUNCTIONS ==
 
+tester_setup() {
+	printf "\n\n${BOLD}${CYAN}%-90s%-8s%-8s%-8s%-8s\n${RESET}" "TESTNAME" "OUT" "EXIT" "TIME" "LEAKS"
+}
+
+# -- PRINTING FUNCTIONS --
+
 print_header() {
 	printf "${YELLOW}\n%s\n${RESET}" "$1"
 }
 
-tester_setup() {
-	printf "\n\n${BOLD}${CYAN}%-90s%-8s%-8s%-8s%-8s\n${RESET}" "TESTNAME" "OUT" "EXIT" "TIME" "LEAKS"
+print_arg_array() {
+	local size=${#ARG_ARRAY[@]}
+
+	for ((i=0; i<$size; i++)); do
+		printf "\"%s\" " "${ARG_ARRAY[i]}"
+	done
 }
