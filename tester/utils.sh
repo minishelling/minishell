@@ -19,13 +19,14 @@ DELIMITER="---------------------------------------------------------------------
 
 # == FUNCTIONS ==
 
-tester_setup() {
-	printf "\n\n${BOLD}${CYAN}%-90s%-8s%-8s%-8s%-8s\n${RESET}" "TESTNAME" "OUT" "EXIT" "TIME" "LEAKS"
+tester_setup()
+{
+	printf "\n\n${BOLD}${MAGENTA}%-90s%-8s%-8s%-8s%-8s\n${RESET}" "TESTNAME" "OUT" "EXIT" "TIME" "LEAKS"
 }
 
 # -- PRINTING FUNCTIONS --
 
-print_header() {
+print_tester_header() {
 	printf "${YELLOW}\n%s\n${RESET}" "$1"
 }
 
@@ -35,4 +36,19 @@ print_arg_array() {
 	for ((i=0; i<$size; i++)); do
 		printf "\"%s\" " "${ARG_ARRAY[i]}"
 	done
+}
+
+print_outfile_header()
+{
+	echo "========== Test $TEST_NUM ==========" > "$OUTPUT_FILE"
+	echo "Command: $@" >> "$OUTPUT_FILE"
+	echo "======================================" >> "$OUTPUT_FILE"
+	echo -n "Output: " >> "$OUTPUT_FILE"
+}
+
+print_outfile_footer()
+{
+	echo "======================================" >> "$OUTPUT_FILE"
+	echo "Return Value: $BASH_RVALUE" >> "$OUTPUT_FILE"
+	echo "========== End of Test ${TEST_NUM} ==========" >> "$OUTPUT_FILE"
 }

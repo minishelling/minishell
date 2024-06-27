@@ -5,36 +5,46 @@
 test()
 {
 	TEST_NUM=$(( TEST_NUM + 1 ))
+	OUTPUT_FILE="$LOGS_DIR/test_${TEST_NUM}.txt"
+	EXPECTED_FILE="$EXPECTED_OUTPUTS_DIR/test_${TEST_NUM}.txt"
+	EXPECTED_EXIT_VALUE="${EXPECTED_EXIT_VALUES[$TEST_NUM]}"  # Get expected exit value
+	DIFF_FILE="$LOGS_DIR/diff_${TEST_NUM}.txt"
 	ARG_ARRAY="$@"
 
 	ERROR_FLAG=0
-    local ERROR_LOG="$LOGS_DIR/error_${TEST_NUM}.txt"
 
-	# Define temporary files for outputs
-	local BASH_OUTPUT_FILE="$LOGS_DIR/bash_output_${TEST_NUM}.txt"
-    local MINISHELL_OUTPUT_FILE="$LOGS_DIR/mini_output_${TEST_NUM}.txt"
-
-	printf "#%2i: %-85.83s" "${TEST_NUM}" "$(print_arg_array)"
+	print_outfile_header
 
     # Execute BASH command and capture the output
-    BASH_OUTPUT=$(bash -c "$ARG_ARRAY")
-	BASH_EXIT_CODE=$?
-	if 
-	echo "$BASH_OUTPUT" > $BASH_OUTPUT_FILE
-	BASH_ERROR=$(bash -c "$@" 2>&1 >/dev/null)
+    BASH_OUTPUT=$(bash -c "$ARG_ARRAY" 2>&1)
+	BASH_EXIT_STATUS=$?
+	echo "$BASH_OUTPUT" >> $OUTPUT_FILE
 
-	# Execute MINISHELL command and capture the output
+	print_outfile_footer
 
-	MINISHELL_OUTPUT=$(echo "$@" | $MINISHELL_DIR/minishell)
-	MINISHELL_EXIT_CODE=$?
-	echo "$MINISHELL_OUTPUT" > $MINISHELL_OUTPUT_FILE
-	#MINISHELL_ERROR=$($MINISHELL_DIR/minishell "$@" 2>&1 >/dev/null)
+	if [ -f "$EXPECTED_FILE" ]; then
+		diff "$OUTPUT_FILE" "$EXPECTED_FILE" > "$DIFF_FILE"
+		COMPARE_EXIT_STATUS=$?
+	else
+		COMPARE_EXIT_STATUS=1
+		echo "No expected outfile found: $EXPECTED_FILE" >> "$OUTPUT_FILE"
+	fi
 
-	diff $BASH_OUTPUT_FILE $MINISHELL_OUTPUT_FILE
+	# Determine status for OUT column
+	if [ -f "$EXPECTED_FILE" ]; then
+		if [ $COMPARE_EXIT_STATUS -eq 0 ]; then
+			printf "%s${GREEN}%-8s${RESET}" "[OK]"
+		else
+			printf "${RED}%-8s${RESET}" "[KO]"
+		fi
+	else
+		printf "${RED}%-8s${RESET}" "[KO]"
+	fi
+
+	# Determine status for EXIT column
+	if [ $BASH_EXIT_STATUS -eq $EXPECTED_EXIT_VALUE ]; then
+		printf "${GREEN}%-8s${RESET}\n" "[OK]"
+	else
+		printf "${RED}%-8s${RESET}\n" "[KO]"
+	fi
 }
-
-# == TESTS ==
-
-# Example test
-run_test "cat $RELATIVE_INFILE_DIR/infile1 $RELATIVE_INFILE_DIR/infile2 $RELATIVE_INFILE_DIR/infile3"
-
