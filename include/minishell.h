@@ -6,18 +6,44 @@
 /*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/06/24 13:58:20 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/06/25 14:35:44 by lprieri       ########   odam.nl         */
+/*   Updated: 2024/06/27 12:00:15 by lprieri       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-typedef struct s_token
+# include <unistd.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <stdbool.h>
+# include <signal.h>
+# include <stddef.h>
+# include <sys/wait.h>
+# include <sys/time.h>
+# include <errno.h>
+# include <limits.h>
+# include <readline/readline.h>
+# include <readline/history.h>
+# include <string.h>
+
+typedef struct s_shell
 {
-	t_token_type	type;
+	t_env	*env_list;
+	char	*pwd;
+	int		pipefd[2];
+	int		read_fd;
+	int		write_fd;
 	
-}	t_token;
+}	t_shell;
+
+typedef struct s_env
+{
+	char			*name;
+	char			**values;
+	struct s_env	*next;
+}	t_env;
+
 
 typedef enum e_metacharacter
 {

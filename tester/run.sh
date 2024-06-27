@@ -32,8 +32,6 @@ declare -A EXPECTED_EXIT_VALUES=(
 # Clear the screen
 clear
 
-tester_setup
-
 mkdir -p "$LOGS_DIR"
 
 # == TESTS ==

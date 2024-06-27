@@ -1,0 +1,10 @@
+========== Test 1 ==========
+Command: 
+======================================
+Output: cat: infile1: No such file or directory
+cat: infile2: No such file or directory
+cat: infile3: No such file or directory
+======================================
+Return Value: 
+========== End of Test 1 ==========
+No expected outfile found: ./expected_outputs/test_1.txt
