@@ -1,26 +1,41 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   main.c                                             :+:    :+:            */
+/*   ft_putuns_printf.c                                 :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2024/06/27 10:34:34 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/07/03 15:54:23 by lprieri       ########   odam.nl         */
+/*   Created: 2023/12/06 16:45:03 by lprieri       #+#    #+#                 */
+/*   Updated: 2024/01/27 12:38:58 by lisandro      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/minishell.h"
+#include "../../ft_printf.h"
 
-int	main (int argc, char **argv, char **envp)
+int	ft_putuns_printf(unsigned int nbr)
 {
-	t_env	*env_list;
+	int		len;
+	char	digit;
 
-	(void)argc;
-	(void)argv;
-	env_list = malloc(sizeof(env_list));
-	// printf("%i\n", count_envp_vars(envp));
-	// copy_envp(&env_list, envp);
-	ft_print_2d_arr(envp);
-	return (0);
+	len = 0;
+	digit = 0;
+	if (nbr == 0)
+	{
+		write (1, "0", 1);
+		len++;
+	}
+	if (nbr > 0 && nbr < 10)
+	{
+		digit = nbr + '0';
+		write (1, &digit, 1);
+		len++;
+	}
+	if (nbr >= 10)
+	{
+		len += ft_putuns_printf(nbr / 10);
+		digit = (nbr % 10) + '0';
+		write (1, &digit, 1);
+		len++;
+	}
+	return (len);
 }

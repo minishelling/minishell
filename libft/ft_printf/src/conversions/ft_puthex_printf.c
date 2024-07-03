@@ -1,26 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   main.c                                             :+:    :+:            */
+/*   ft_puthex_printf.c                                 :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2024/06/27 10:34:34 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/07/03 15:54:23 by lprieri       ########   odam.nl         */
+/*   Created: 2023/12/06 16:45:18 by lprieri       #+#    #+#                 */
+/*   Updated: 2024/01/27 12:39:43 by lisandro      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/minishell.h"
+#include "../../ft_printf.h"
 
-int	main (int argc, char **argv, char **envp)
+int	ft_puthex_printf(unsigned int nbr, char *base)
 {
-	t_env	*env_list;
+	unsigned long long	n;
+	int					len;
 
-	(void)argc;
-	(void)argv;
-	env_list = malloc(sizeof(env_list));
-	// printf("%i\n", count_envp_vars(envp));
-	// copy_envp(&env_list, envp);
-	ft_print_2d_arr(envp);
-	return (0);
+	n = nbr;
+	len = 0;
+	if (n < 16)
+		len += ft_putchar_printf(base[n]);
+	else
+	{
+		len += ft_puthex_printf(n / 16, base);
+		len += ft_putchar_printf(base[n % 16]);
+	}
+	return (len);
 }

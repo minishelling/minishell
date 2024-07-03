@@ -1,26 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   main.c                                             :+:    :+:            */
+/*   ft_putstr.c                                        :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2024/06/27 10:34:34 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/07/03 15:54:23 by lprieri       ########   odam.nl         */
+/*   Created: 2023/12/06 16:43:32 by lprieri       #+#    #+#                 */
+/*   Updated: 2024/01/27 12:32:34 by lisandro      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/minishell.h"
+#include "../../ft_printf.h"
 
-int	main (int argc, char **argv, char **envp)
+int	ft_putstr_printf(const char *str)
 {
-	t_env	*env_list;
+	int	len;
 
-	(void)argc;
-	(void)argv;
-	env_list = malloc(sizeof(env_list));
-	// printf("%i\n", count_envp_vars(envp));
-	// copy_envp(&env_list, envp);
-	ft_print_2d_arr(envp);
-	return (0);
+	len = 0;
+	if (str == NULL)
+	{
+		write (1, "(null)", 6);
+		return (6);
+	}
+	while (str[len])
+	{
+		write (1, &str[len], 1);
+		len++;
+	}
+	return (len);
 }

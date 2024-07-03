@@ -1,26 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   main.c                                             :+:    :+:            */
+/*   ft_putnbr_printf.c                                 :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2024/06/27 10:34:34 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/07/03 15:54:23 by lprieri       ########   odam.nl         */
+/*   Created: 2023/12/06 16:44:48 by lprieri       #+#    #+#                 */
+/*   Updated: 2024/01/27 12:40:43 by lisandro      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/minishell.h"
+#include "../../ft_printf.h"
 
-int	main (int argc, char **argv, char **envp)
+int	ft_putnbr_printf(int nbr)
 {
-	t_env	*env_list;
+	long	n;
+	int		len;
 
-	(void)argc;
-	(void)argv;
-	env_list = malloc(sizeof(env_list));
-	// printf("%i\n", count_envp_vars(envp));
-	// copy_envp(&env_list, envp);
-	ft_print_2d_arr(envp);
-	return (0);
+	n = nbr;
+	len = 0;
+	if (n < 0)
+	{
+		n = -n;
+		len += ft_putchar_printf('-');
+	}
+	if (n == 0)
+		len += ft_putchar_printf('0');
+	if (n > 0 && n < 10)
+		len += ft_putchar_printf(n + '0');
+	if (n >= 10)
+	{
+		len += ft_putnbr_printf(n / 10);
+		len += ft_putchar_printf((n % 10) + '0');
+	}
+	return (len);
 }

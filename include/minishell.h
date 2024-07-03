@@ -6,7 +6,7 @@
 /*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/06/24 13:58:20 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/06/27 12:00:15 by lprieri       ########   odam.nl         */
+/*   Updated: 2024/07/03 15:53:40 by lprieri       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,21 +26,24 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <string.h>
+# include "../libft/libft.h"
+# include "errors.h"
 
-typedef struct s_shell
-{
-	t_env	*env_list;
-	char	*pwd;
-	int		pipefd[2];
-	int		read_fd;
-	int		write_fd;
+// typedef struct s_shell
+// {
+// 	t_env	*env_list;
+// 	char	*pwd;
+// 	int		pipefd[2];
+// 	int		read_fd;
+// 	int		write_fd;
 	
-}	t_shell;
+// }	t_shell;
 
 typedef struct s_env
 {
-	char			*name;
-	char			**values;
+	char			*keyvalue;
+	char			*key;
+	char			*value;
 	struct s_env	*next;
 }	t_env;
 
@@ -75,6 +78,13 @@ typedef enum e_control_operator
 	CO_SUBSHELL,
 	CO_COUNT
 }	t_control_operator;
+
+// FUNCTIONS
+
+void	copy_envp(t_env **env_list, char **envp);
+int	count_envp_vars(char **envp);
+void	ft_print_3d_arr(char ***arr);
+void	ft_print_2d_arr(char **arr);
 
 
 #endif

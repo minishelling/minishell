@@ -1,26 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   main.c                                             :+:    :+:            */
+/*   errors.h                                            :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2024/06/27 10:34:34 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/07/03 15:54:23 by lprieri       ########   odam.nl         */
+/*   Created: 2024/07/03 15:46:03 by lprieri       #+#    #+#                 */
+/*   Updated: 2024/07/03 15:46:04 by lprieri       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/minishell.h"
+#ifndef ERRORS_H
+# define ERRORS_H
 
-int	main (int argc, char **argv, char **envp)
+typedef enum e_codes
 {
-	t_env	*env_list;
+	ERR_SUCCESS = 0,
+	ERR_NULL,
+	ERR_COUNT
+}	t_ecode;
 
-	(void)argc;
-	(void)argv;
-	env_list = malloc(sizeof(env_list));
-	// printf("%i\n", count_envp_vars(envp));
-	// copy_envp(&env_list, envp);
-	ft_print_2d_arr(envp);
-	return (0);
-}
+const char	*get_error_msg(int e_nbr);
+
+#endif
