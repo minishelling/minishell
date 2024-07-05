@@ -1,0 +1,66 @@
+NAME = so_long
+CC = cc
+FLAGS = -Wall -Wextra -Werror -g# -fsanitize=address
+RM = rm -f
+SRC = src/main.c \
+		src/error.c \
+		src/free.c \
+		src/hooks.c \
+		src/init.c \
+		src/load_assets.c \
+		src/parsing.c \
+		src/print_utils.c \
+		src/rendering.c \
+		src/utils.c
+		
+B_SRC = 
+
+OBJ = $(SRC:src/%.c=obj/%.o)
+B_OBJ = $(B_SRC:bonus/%.c=obj/%.o)
+
+HEADERS_DIR = ./include
+HEADERS = $(HEADERS_DIR)/so_long.h
+
+LIBFT_DIR = ./src/libft
+LIBFT = $(LIBFT_DIR)/libft.a
+MLX42_DIR = ./MLX42
+MLX42 = $(MLX42_DIR)/build/libmlx42.a
+
+all: $(NAME)
+
+clean:
+	@$(RM) -r obj
+	@$(MAKE) -C $(LIBFT_DIR) clean
+	@printf "Cleaned object files\n"
+
+fclean: clean
+	@$(RM) $(NAME)
+	@$(MAKE) -C $(LIBFT_DIR) fclean
+	@printf "Cleaned executables\n"
+
+re: fclean all
+
+bonus: $(LIBFT) $(B_OBJ)
+	@printf "Compiling\n"
+	@$(CC) $(FLAGS) $(B_OBJ) -I $(HEADERS) -L $(LIBFT_DIR) -lft -o $(NAME)
+	@printf "Done\n"
+
+$(OBJ): $(SRC) $(HEADERS) Makefile
+	@mkdir -p $(dir $@)
+	@printf "Building $@\n"
+	@$(CC) $(FLAGS) -c $(@:obj/%.o=src/%.c) -o $@
+
+$(B_OBJ): $(B_SRC) $(HEADERS) Makefile
+	@mkdir -p $(dir $@)
+	@printf "Building $@\n"
+	@$(CC) $(FLAGS) -c $(@:obj/%bonus.o=bonus/%bonus.c) -o $@
+
+$(NAME): $(LIBFT) $(OBJ)
+	@printf "Compiling\n"
+	@$(CC) $(FLAGS) $(OBJ) $(MLX42) -ldl -lglfw -L $(LIBFT_DIR) -lft -lm -o $(NAME)
+	@printf "Done\n"
+
+$(LIBFT):
+	@$(MAKE) -C $(LIBFT_DIR)
+
+.PHONY: libft all re clean fclean

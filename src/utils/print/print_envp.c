@@ -1,27 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   main.c                                             :+:    :+:            */
+/*   print_envp.c                                       :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2024/06/27 10:34:34 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/07/04 13:20:31 by lprieri       ########   odam.nl         */
+/*   Created: 2024/07/03 21:34:44 by lprieri       #+#    #+#                 */
+/*   Updated: 2024/07/03 21:34:44 by lprieri       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/minishell.h"
+#include "../../../include/minishell.h"
 
-int	main (int argc, char **argv, char **envp)
+void	print_env_list(t_env *head, int node_nbr)
 {
-	t_env	*env_list;
-
-	(void)argc;
-	(void)argv;
-	env_list = malloc(sizeof(env_list));
-	// printf("%i\n", count_envp_vars(envp));
-	copy_envp(&env_list, envp);
-	print_env_list(env_list, 0);
-	// ft_print_2d_arr(envp);
-	return (0);
+	if (!head || !head->keyvalue || !head->key || !head->value)
+		return ;
+	printf("Node number: %i\n", node_nbr);
+	printf("Key-value: %s\n", head->keyvalue);
+	printf("Key: %s\n", head->key);
+	printf("Value: %s\n", head->value);
+	head = head->next;
+	print_env_list(head, node_nbr++);
 }

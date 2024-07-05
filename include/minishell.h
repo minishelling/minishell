@@ -6,7 +6,7 @@
 /*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/06/24 13:58:20 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/07/03 15:53:40 by lprieri       ########   odam.nl         */
+/*   Updated: 2024/07/04 12:19:58 by lprieri       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,12 +79,21 @@ typedef enum e_control_operator
 	CO_COUNT
 }	t_control_operator;
 
-// FUNCTIONS
+/* ===== FUNCTIONS ===== */
+
+/*	ENV	 */
 
 void	copy_envp(t_env **env_list, char **envp);
-int	count_envp_vars(char **envp);
+int		count_envp_vars(char **envp);
+
+
+/*	UTILS  */
+
+// PRINT
+
 void	ft_print_3d_arr(char ***arr);
 void	ft_print_2d_arr(char **arr);
+void	print_env_list(t_env *head, int node_nbr);
 
 
 #endif

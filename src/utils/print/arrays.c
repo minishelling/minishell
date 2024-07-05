@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   print.c                                            :+:    :+:            */
+/*   arrays.c                                           :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/07/03 15:41:01 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/07/03 15:44:16 by lprieri       ########   odam.nl         */
+/*   Updated: 2024/07/03 21:34:22 by lprieri       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/minishell.h"
+#include "../../../include/minishell.h"
 
 void	ft_print_2d_arr(char **arr)
 {
