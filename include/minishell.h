@@ -6,7 +6,7 @@
 /*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/06/24 13:58:20 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/07/04 12:19:58 by lprieri       ########   odam.nl         */
+/*   Updated: 2024/07/09 20:17:31 by lprieri       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,45 +47,30 @@ typedef struct s_env
 	struct s_env	*next;
 }	t_env;
 
-
-typedef enum e_metacharacter
+typedef enum
 {
-	METACHAR_SPACE,
-	METACHAR_TAB,
-	METACHAR_NEWLINE,
-	METACHAR_PIPE,
-	METACHAR_AND,
-	METACHAR_SEMICOLON,
-	METACHAR_OPEN_PAREN,
-	METACHAR_CLOSE_PAREN,
-	METACHAR_GREATER,
-	METACHAR_LESSER,
-	METACHAR_COUNT
-}	t_metacharacter;
+	ENV_SUCCESS = 0,
+	ENV_NULL,
+	ENV_NEW_NODE_ERROR,
+	ENV_GETKEYVALUE_ERROR,
+	ENV_GETKEY_ERROR,
+	ENV_GETVALUE_ERROR,
+	ENV_COUNT
+}	t_env_ecode;
 
-typedef enum e_control_operator
-{
-	CO_NEWLINE,
-	CO_LOGICAL_OR,
-	CO_LOGICAL_AND,
-	CO_BACKGROUND_EXECUTION,
-	CO_COMMAND_SEPARATOR,
-	CO_CASE_TERMINATOR,
-	CO_FALLTHROUGH_CASE_TERMINATOR,
-	CO_CASE_TERMINATOR_WITH_FALLTHROUGH,
-	CO_PIPE,
-	CO_PIPE_WITH_STANDARD_ERROR,
-	CO_SUBSHELL,
-	CO_COUNT
-}	t_control_operator;
 
 /* ===== FUNCTIONS ===== */
 
 /*	ENV	 */
 
-void	copy_envp(t_env **env_list, char **envp);
-int		count_envp_vars(char **envp);
-
+void	env_free_list(t_env	**head);
+t_env_ecode	env_init_list(t_env **head, char **envp);
+void	env_print_list(t_env *head);
+ssize_t	env_count_keys(char **envp);
+t_env	*env_new_node(void);
+char	*env_get_key(char *keyvalue);
+char	*env_get_value(char *keyvalue);
+t_env_ecode	env_copy_keyval(t_env **new_node, char *keyvalue);
 
 /*	UTILS  */
 
@@ -93,7 +78,5 @@ int		count_envp_vars(char **envp);
 
 void	ft_print_3d_arr(char ***arr);
 void	ft_print_2d_arr(char **arr);
-void	print_env_list(t_env *head, int node_nbr);
-
 
 #endif

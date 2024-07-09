@@ -10,16 +10,17 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../../include/minishell.h"
+#include "../../include/minishell.h"
 
-void	print_env_list(t_env *head, int node_nbr)
+void	env_print_list(t_env *head)
 {
-	if (!head || !head->keyvalue || !head->key || !head->value)
+	if (!head)
 		return ;
-	printf("Node number: %i\n", node_nbr);
-	printf("Key-value: %s\n", head->keyvalue);
-	printf("Key: %s\n", head->key);
-	printf("Value: %s\n", head->value);
-	head = head->next;
-	print_env_list(head, node_nbr++);
+	while(head != NULL)
+	{
+		ft_printf("Key-value: %s\n", head->keyvalue);
+		ft_printf("Key: %s\n", head->key);
+		ft_printf("Value: %s\n\n\n", head->value);
+		head = head->next;
+	}
 }
