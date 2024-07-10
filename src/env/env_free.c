@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
+#include "../../include/env.h"
 
 void	env_free_list(t_env	**head)
 {

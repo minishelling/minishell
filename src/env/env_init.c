@@ -6,11 +6,12 @@
 /*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/06/27 10:52:00 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/07/09 20:23:11 by lprieri       ########   odam.nl         */
+/*   Updated: 2024/07/10 09:07:21 by lprieri       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
+#include "../../include/env.h"
 
 /*	STATIC FUNCTION DECLARATIONS	*/
 

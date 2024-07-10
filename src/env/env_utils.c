@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
+#include "../../include/env.h"
 
 ssize_t	env_count_keys(char **envp)
 {
@@ -31,6 +32,9 @@ t_env	*env_new_node(void)
 	new_node = ft_calloc(1, sizeof(t_env));
 	if (!new_node)
 		return (NULL);
+	new_node->keyvalue = NULL;
+	new_node->key = NULL;
+	new_node->value = NULL;
 	return (new_node);
 }
 

@@ -6,7 +6,7 @@
 /*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/06/27 10:34:34 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/07/09 20:08:02 by lprieri       ########   odam.nl         */
+/*   Updated: 2024/07/09 20:42:16 by lprieri       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,6 @@ int	main (int argc, char **argv, char **envp)
 
 	(void)argc;
 	(void)argv;
-	// ft_print_2d_arr(envp);
-	// printf("%i\n", count_envp_vars(envp));
 	env_list = NULL;
 	env_init_list(&env_list, envp);
 	env_print_list(env_list);
