@@ -6,11 +6,11 @@
 /*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/07/03 15:41:01 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/07/03 21:34:22 by lprieri       ########   odam.nl         */
+/*   Updated: 2024/07/13 12:35:48 by lprieri       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../../include/minishell.h"
+#include "../../include/minishell.h"
 
 void	ft_print_2d_arr(char **arr)
 {

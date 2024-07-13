@@ -27,11 +27,14 @@ HEADER_FILES = $(INCLUDE_DIR)/env.h errors.h minishell.h
 
 OBJECTS = $(SRC_FILES:.c=.o)
 
-$(NAME): $(OBJECTS)
+$(NAME): $(OBJECTS) $(LIBFT)
 	cc -o $(NAME) $(OBJECTS) $(LIBFT)
 
 $(OBJECTS): %.o:%.c
 	cc $(FLAGS) -c $< -o $@
+
+$(LIBFT):
+	@make -C $(LIBFT_DIR)
 
 clean:
 	rm -f $(OBJECTS)
