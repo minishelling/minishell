@@ -71,19 +71,21 @@ char	*env_get_value(char *keyvalue)
 	
 	if (!keyvalue || !keyvalue[0])
 		return (NULL);
-	while (*keyvalue && *keyvalue != '=')
-		*keyvalue++;
+	i = 0;
+	while (keyvalue[i] && keyvalue[i] != '=')
+		keyvalue[i]++;
 	value_len = ft_strlen(keyvalue);
-	value = ft_calloc(value_len, sizeof(char));
+	value = ft_calloc(value_len + 1, sizeof(char));
 	if (!value)
 		return (NULL);
-	i = 0;
-	*keyvalue++;
-	while (keyvalue[i])
+	j = 0;
+	keyvalue[i]++;
+	while (j < i)
 	{
-		value[i] = keyvalue[i];
-		i++;
+		value[j] = keyvalue[i + j];
+		j++;
 	}
+	value[j] = '\0';
 	return (value);
 }
 
