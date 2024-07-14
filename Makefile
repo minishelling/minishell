@@ -1,6 +1,6 @@
 NAME = minishell
 
-FLAGS = -g
+FLAGS = -g -Wall -Werror -Wextra
 
 LIBFT_DIR = libft
 LIBFT = $(LIBFT_DIR)/libft.a
@@ -23,12 +23,16 @@ UTILS_FILES = $(UTILS_DIR)/errors.c \
 			$(UTILS_DIR)/free.c \
 
 INCLUDE_DIR = include
-HEADER_FILES = $(INCLUDE_DIR)/env.h errors.h minishell.h
+HEADER_FILES = env.h \
+			errors.h \
+			minishell.h
 
 OBJECTS = $(SRC_FILES:.c=.o)
 
+all: $(NAME)
+
 $(NAME): $(OBJECTS)
-	cc -o $(NAME) $(OBJECTS) $(LIBFT)
+	cc -o $(NAME) $(FLAGS) $(OBJECTS) $(LIBFT)
 
 $(OBJECTS): %.o:%.c
 	cc $(FLAGS) -c $< -o $@
@@ -39,4 +43,8 @@ clean:
 fclean: clean
 	rm -f $(NAME)
 
-.PHONY: clean
+re: clean all
+
+
+
+.PHONY: clean fclean re
