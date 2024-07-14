@@ -31,11 +31,14 @@ OBJECTS = $(SRC_FILES:.c=.o)
 
 all: $(NAME)
 
-$(NAME): $(OBJECTS)
+$(NAME): $(OBJECTS) $(LIBFT)
 	cc -o $(NAME) $(FLAGS) $(OBJECTS) $(LIBFT)
 
 $(OBJECTS): %.o:%.c
 	cc $(FLAGS) -c $< -o $@
+
+$(LIBFT):
+	@make -C $(LIBFT_DIR)
 
 clean:
 	rm -f $(OBJECTS)
