@@ -6,7 +6,7 @@
 /*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/06/27 10:52:00 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/07/10 09:07:21 by lprieri       ########   odam.nl         */
+/*   Updated: 2024/07/14 20:47:16 by lprieri       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ t_env_ecode	env_init_list(t_env **head, char **envp)
 		}
 		i++;
 	}
+	return (ENV_SUCCESS);
 }
 
 static t_env	*env_new_copied_node(char *keyvalue, t_env_ecode *status)
