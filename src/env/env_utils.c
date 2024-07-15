@@ -75,7 +75,7 @@ char	*env_get_value(char *keyvalue)
 	while (keyvalue[i] && keyvalue[i] != '=')
 		keyvalue[i]++;
 	value_len = ft_strlen(keyvalue);
-	value = ft_calloc(value_len, sizeof(char));
+	value = ft_calloc(value_len + 1, sizeof(char));
 	if (!value)
 		return (NULL);
 	j = 0;

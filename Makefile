@@ -31,11 +31,18 @@ OBJECTS = $(SRC_FILES:.c=.o)
 
 all: $(NAME)
 
+<<<<<<< HEAD
 $(NAME): $(OBJECTS)
+=======
+$(NAME): $(OBJECTS) $(LIBFT)
+>>>>>>> 54960a345359b2734c792fab35776f7d6234e030
 	cc -o $(NAME) $(FLAGS) $(OBJECTS) $(LIBFT)
 
 $(OBJECTS): %.o:%.c
 	cc $(FLAGS) -c $< -o $@
+
+$(LIBFT):
+	@make -C $(LIBFT_DIR)
 
 clean:
 	rm -f $(OBJECTS)
@@ -45,6 +52,9 @@ fclean: clean
 
 re: clean all
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 54960a345359b2734c792fab35776f7d6234e030
 .PHONY: clean fclean re
