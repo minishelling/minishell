@@ -12,6 +12,38 @@
 
 #include "../../include/builtins.h"
 
+typedef struct s_curpath
+{
+	char				*dir;
+	struct s_curpath	*previous;
+	struct s_curpath	*next;
+}	t_curpath;
+
+t_curpath	*curpath_new_node(char *dir, t_curpath *previous, t_curpath *next)
+{
+	t_curpath	*new_node;
+
+	new_node = malloc(sizeof(t_curpath) + 1);
+	if (!new_node)
+		return (NULL);
+	new_node->dir = ft_strdup(dir);
+	new_node->previous = previous;
+	new_node->next = next;
+	return (new_node);
+}
+
+void	curpath_free_node(t_curpath **node)
+{
+	if (!*node)
+		return ;
+	if ((*node)->dir)
+		free((*node)->dir);
+	free(*node);
+	*node = NULL;
+	return ;
+}
+
+
 t_ecode	execute_cd(t_env *env, char *directory)
 {
 	char	*curpath;
@@ -84,7 +116,24 @@ t_ecode	execute_cd(t_env *env, char *directory)
 
 static char	*cd_trim_curpath(t_shell **shell, char **curpath)
 {
-	
+	t_curpath	*curr_dirs;
+	t_curpath	*final_dirs;
+
+
+}
+
+t_curpath	*cd_split_curpath(char *curpath)
+{
+	char	**directories;
+
+	if (curpath == NULL || *curpath == '\0')
+		return (NULL);
+	directories = ft_split(curpath, '/');
+	if (!directories || *directories)
+		return (NULL);
+	if ((*directories[0]) == '\0')
+		free()
+	return (directories);
 }
 
 // void	execute_cd(t_shell **data, char *directory)
