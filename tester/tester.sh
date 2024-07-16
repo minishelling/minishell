@@ -29,6 +29,7 @@ declare -A EXPECTED_EXIT_VALUES=(
 	[1]=0
 	[2]=0
 	[3]=0
+	[4]=0
 	# Add more tests as needed
 )
 
@@ -98,9 +99,17 @@ run_test() {
 }
 
 # == TESTS ==
+#Input redirection
 echo
 run_test 1 "cat infile1 infile2 infile3"
 echo
 run_test 2 "cat <infile1 <infile2 <infile3"
 echo
 run_test 3 "cat <infile1 <infile2 <infile3 infile1 infile2 infile3"
+echo
+
+#Output redirection
+# run_test 4 "<infile1 cat >outfile1 >outfile2 | cat"
+
+
+# run_test  "echo $(ls)"

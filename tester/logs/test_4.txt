@@ -1,0 +1,8 @@
+========== Test 4 ==========
+Command: <infile1 cat >outfile1 >outfile2 | cat
+======================================
+Output: 
+======================================
+Return Value: 0
+========== End of Test 4 ==========
+No expected output file found: ./expected_outputs/test_4.txt
