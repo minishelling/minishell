@@ -66,26 +66,25 @@ char	*env_get_value(char *keyvalue)
 {
 	char	*value;
 	int		i;
-	int		j;
 	int		value_len;
 	
 	if (!keyvalue || !keyvalue[0])
 		return (NULL);
 	i = 0;
-	while (keyvalue[i] && keyvalue[i] != '=')
-		i++;
-	i++;
-	value_len = ft_strlen(&keyvalue[i]);
+	while (*keyvalue && *keyvalue != '=')
+		keyvalue++;
+	keyvalue++;
+	value_len = ft_strlen(keyvalue);
 	value = ft_calloc(value_len + 1, sizeof(char));
 	if (!value)
 		return (NULL);
-	j = 0;
-	while (j < value_len)
+	i = 0;
+	while (i < value_len)
 	{
-		value[j] = keyvalue[i + j];
-		j++;
+		value[i] = keyvalue[i];
+		i++;
 	}
-	value[j] = '\0';
+	value[i] = '\0';
 	return (value);
 }
 
