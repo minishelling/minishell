@@ -95,7 +95,7 @@ typedef struct s_shell
 
 
 int		init_shell(char **envp, t_shell *shell);
-void tokenize_input(t_shell *shell);
+void 	tokenize_input(t_shell *shell);
 //void add_token(t_shell *shell, e_token_type type, e_token_id id, char *str);
 
 t_token	*lexer(const char *input);
@@ -147,8 +147,8 @@ char	*env_var_get_env(char *name, t_env_list *env_var_list);
 int		init_shell_update_SHLVL(t_env_list **env_var_list);
 t_env_list	*env_var_get_env_node(char *name, t_env_list *env_var_list);
 
-
+t_env_ecode	env_copy_keyval(t_env **new_node, char *keyvalue);
 // t_env_ecode	env_init_list(t_env **head, char **envp);
-// t_env	*env_new_node(void);
+
 
 #endif

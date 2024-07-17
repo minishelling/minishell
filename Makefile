@@ -18,12 +18,12 @@ SRC_FILES = $(SRC_DIR)/main.c \
 			$(ENV_VAR_INIT_SHELL_FILES) \
 			$(PRINT_FILES) \
 			$(UTILS_FILES) \
-			# $(ENV_FILES) 
+			$(ENV_FILES) 
 
-# ENV_FILES = $(ENV_DIR)/env_init.c \
-# 			$(ENV_DIR)/env_utils.c \
-# 			$(ENV_DIR)/env_free.c \
-# 			$(ENV_DIR)/env_print.c 
+ENV_FILES = $(ENV_DIR)/env_init.c \
+			$(ENV_DIR)/env_utils.c \
+			$(ENV_DIR)/env_free.c \
+			$(ENV_DIR)/env_print.c 
 
 ENV_VAR_INIT_SHELL_FILES =  $(ENV_VAR_INIT_SHELL_DIR)/init_shell.c \
 							$(ENV_VAR_INIT_SHELL_DIR)/env_var_list.c \

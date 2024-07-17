@@ -6,7 +6,7 @@
 /*   By: tfeuer <tfeuer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/27 10:52:00 by lprieri           #+#    #+#             */
-/*   Updated: 2024/07/16 19:34:05 by tfeuer           ###   ########.fr       */
+/*   Updated: 2024/07/16 21:43:06 by tfeuer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ t_env_ecode	env_init_list(t_env **head, char **envp)
 		}
 		i++;
 	}
+	return (ENV_SUCCESS);
 }
 
 static t_env	*env_new_copied_node(char *keyvalue, t_env_ecode *status)

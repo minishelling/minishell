@@ -19,8 +19,8 @@ int main(int argc, char **argv, char **envp)
         write(2, "Mini_shared: Error: too many arguments\n", 39);
         exit(EXIT_FAILURE);
     }
-    if (init_shell(envp, &shell)) 
-    //if (env_init_list(&env_list, envp)) 
+    //if (init_shell(envp, &shell)) 
+    if (env_init_list(&env_list, envp)) 
 	{
         write(2, "Mini_shared: Error: Failed to initialize\n", 42);
         exit(EXIT_FAILURE);
