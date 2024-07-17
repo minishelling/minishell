@@ -6,7 +6,7 @@
 /*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/06/24 13:58:20 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/07/10 09:32:22 by lprieri       ########   odam.nl         */
+/*   Updated: 2024/07/17 15:46:26 by lprieri       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@
 # include "../libft/libft.h"
 # include "env.h"
 # include "errors.h"
+# include "free.h"
 
 // typedef struct s_shell
 // {

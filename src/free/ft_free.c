@@ -1,26 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   main.c                                             :+:    :+:            */
+/*   ft_free.c                                          :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2024/06/27 10:34:34 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/07/17 15:25:23 by lprieri       ########   odam.nl         */
+/*   Created: 2024/07/17 15:44:50 by lprieri       #+#    #+#                 */
+/*   Updated: 2024/07/17 15:45:51 by lprieri       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/minishell.h"
+#include "../../include/free.h"
 
-int	main (int argc, char **argv, char **envp)
+void	ft_free(void **var)
 {
-	t_env	*env_list;
-
-	(void)argc;
-	(void)argv;
-	env_list = NULL;
-	env_init_list(&env_list, envp);
-	env_print_list(env_list);
-	env_free_list(&env_list);
-	return (0);
+	if (!var || !*var)
+		return ;
+	free(*var);
+	*var = NULL;
+	return ;
 }

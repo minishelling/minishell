@@ -20,7 +20,6 @@ PRINT_FILES = $(PRINT_DIR)/arrays.c \
 
 UTILS_DIR = $(SRC_DIR)/utils
 UTILS_FILES = $(UTILS_DIR)/errors.c \
-			$(UTILS_DIR)/free.c \
 
 INCLUDE_DIR = include
 HEADER_FILES = env.h \
@@ -28,6 +27,7 @@ HEADER_FILES = env.h \
 			minishell.h
 
 OBJECTS = $(SRC_FILES:.c=.o)
+OBJECTS_DIR = obj
 
 all: $(NAME)
 
@@ -37,11 +37,15 @@ $(NAME): $(OBJECTS) $(LIBFT)
 $(OBJECTS): %.o:%.c
 	cc $(FLAGS) -c $< -o $@
 
+$(OBJECTS_DIR):
+	@mkdir -p obj
+
 $(LIBFT):
 	@make -C $(LIBFT_DIR)
 
 clean:
 	rm -f $(OBJECTS)
+	rm -fr $(OBJECTS_DIR)
 
 fclean: clean
 	rm -f $(NAME)

@@ -124,15 +124,17 @@ static char	*cd_trim_curpath(t_shell **shell, char **curpath)
 
 t_curpath	*cd_split_curpath(char *curpath)
 {
+	t_curpath	*split_curpath;
 	char	**directories;
 
 	if (curpath == NULL || *curpath == '\0')
 		return (NULL);
 	directories = ft_split(curpath, '/');
-	if (!directories || *directories)
+	if (!directories || !*directories)
 		return (NULL);
 	if ((*directories[0]) == '\0')
-		free()
+		ft_free_2d((void ***) &directories);
+	
 	return (directories);
 }
 

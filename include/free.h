@@ -1,26 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   main.c                                             :+:    :+:            */
+/*   free.h                                             :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2024/06/27 10:34:34 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/07/17 15:25:23 by lprieri       ########   odam.nl         */
+/*   Created: 2024/07/17 15:44:17 by lprieri       #+#    #+#                 */
+/*   Updated: 2024/07/17 15:46:07 by lprieri       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/minishell.h"
+#ifndef FREE_H
+# define FREE_H
 
-int	main (int argc, char **argv, char **envp)
-{
-	t_env	*env_list;
+void	ft_free(void **var);
+void	ft_free_2d(void ***arr);
+void	ft_free_3d(void ****arr);
 
-	(void)argc;
-	(void)argv;
-	env_list = NULL;
-	env_init_list(&env_list, envp);
-	env_print_list(env_list);
-	env_free_list(&env_list);
-	return (0);
-}
+#endif
