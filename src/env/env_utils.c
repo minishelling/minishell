@@ -76,8 +76,6 @@ char	*env_get_value(char *keyvalue)
 		i++;
 	i++;
 	value_len = ft_strlen(&keyvalue[i]);
-	if (value_len == 0)
-		return (NULL);
 	value = ft_calloc(value_len + 1, sizeof(char));
 	if (!value)
 		return (NULL);
