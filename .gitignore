@@ -58,4 +58,9 @@ minishell
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/settings.json
-tester/logs/test_1.txt
+src/.vscode/c_cpp_properties.json
+src/.vscode/launch.json
+src/.vscode/settings.json
+tester/run.sh
+tester/test.sh
+tester/utils.sh
