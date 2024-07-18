@@ -11,6 +11,9 @@
 /* ************************************************************************** */
 
 #include "../../include/builtins.h"
+#include "../../include/minishell.h"
+
+#define SUCCESS 1
 
 typedef struct s_curpath
 {
@@ -43,6 +46,25 @@ void	curpath_free_node(t_curpath **node)
 	return ;
 }
 
+void	curpath_free_list(t_curpath **head)
+{
+	t_curpath	*iterator;
+	t_curpath	*current;
+
+	if (!*head && !(*head)->next)
+		return ;
+	iterator = *head;
+	current = *head;
+	while (iterator)
+	{
+		current = iterator;
+		if (current != NULL)
+			free(current->dir);
+		iterator = current->next;
+		free(current);
+	}
+}
+
 
 t_ecode	execute_cd(t_env *env, char *directory)
 {
@@ -63,12 +85,12 @@ t_ecode	execute_cd(t_env *env, char *directory)
 				return (ERR_CD_CHDIR_ERROR); //Errno is set.
 		}	
 	}
-	else if (dir[0] == '/' || dir[0] == '.'
-		|| (dir[0] == '.' && dir[1] == '.'))
+	else if (directory[0] == '/' || directory[0] == '.'
+		|| (directory[0] == '.' && directory[1] == '.'))
 		curpath = directory;
 	else
 	{
-		temp = env_find_node("CDPATH");
+		temp = (t_env *) env_find_node("CDPATH");
 		i = 0;
 		while (i < env_count_values(env, "CDPATH")) //A value can be an empty string
 		{
@@ -111,31 +133,112 @@ t_ecode	execute_cd(t_env *env, char *directory)
 		if (shell->pwd[len -1] != '/')
 			shell->pwd = ft_strjoin_fs1(shell->pwd, "/"); //Protect mallocs
 		curpath = cd_trim_curpath(shell, &curpath);
+		// Check if (ft_strlen(curpath) + 1 > PATH_MAX)
+		status = chdir(curpath);
+		free(curpath);
+		free(cwd);
+		if (status == -1)
+			return (ERR_CD_CHDIR_ERROR);
+		return (SUCCESS);
 	}
 }
 
 static char	*cd_trim_curpath(t_shell **shell, char **curpath)
 {
-	t_curpath	*curr_dirs;
-	t_curpath	*final_dirs;
+	t_curpath	*curr_dirs_head;
+	t_curpath	*curr_dirs_iterator;
+	t_curpath	*final_dirs_head;
+	t_curpath	*final_dirs_iterator;
+	char		*dir;
 
-
+	curr_dirs_head = cd_split_curpath(*curpath);
+	if (!curr_dirs_head)
+		return (NULL);
+	curr_dirs_iterator = curr_dirs_head;
+	final_dirs_head = NULL;
+	while (curr_dirs_iterator)
+	{
+		dir = curr_dirs_iterator->dir;
+		if (!dir)
+		{
+			curpath_free_list(&curr_dirs_head);
+			return (NULL);
+		}
+		if (dir[0] == '.' && dir[1] == '\0')
+		{
+			curr_dirs_iterator = curr_dirs_iterator->next;
+			continue ;
+		}
+		if (dir[0] == '.' && dir[1] == '.' && dir[2] == '\0')
+		{
+			final_dirs_iterator = final_dirs_head;
+			while (final_dirs_iterator->next != NULL)
+				final_dirs_iterator = final_dirs_iterator->next;
+			if (final_dirs_iterator->previous)
+			{
+				dir = final_dirs_iterator->previous->dir;
+				if (!dir)
+				{
+					curpath_free_list(&curr_dirs_head);
+					return (NULL);
+				}
+				else
+				{
+					final_dirs_iterator = final_dirs_iterator->previous;
+					final_dirs_iterator = final_dirs_iterator->previous; // This can be either true or NULL
+					final_dirs_iterator = final_dirs_iterator->previous; // This can either be true or segfault
+					final_dirs_iterator->next = NULL; // Umm check if this modifies final_dirs_head.
+				}
+			}
+			else
+			{
+				curpath_free_list(&curr_dirs_head);
+				return (ft_strdup("/"));
+			}
+		}
+		dir = ft_strdup(final_dirs_head->dir);
+		final_dirs_head = final_dirs_head->next;
+		while (final_dirs_head)
+		{
+			dir = ft_strjoin_fs1(dir, final_dirs_head->dir);
+			final_dirs_head = final_dirs_head->next;
+		}
+		return (dir);
+	}
 }
 
 t_curpath	*cd_split_curpath(char *curpath)
 {
-	t_curpath	*split_curpath;
-	char	**directories;
+	t_curpath	*head;
+	t_curpath	*current;
+	char		**directories;
+	int			i;
 
 	if (curpath == NULL || *curpath == '\0')
 		return (NULL);
 	directories = ft_split(curpath, '/');
 	if (!directories || !*directories)
 		return (NULL);
-	if ((*directories[0]) == '\0')
+	if ((*directories[0]) == '\0') //Is this neccessary?
 		ft_free_2d((void ***) &directories);
-	
-	return (directories);
+	head = curpath_new_node(directories[0], NULL, NULL);
+	if (!head)
+		ft_free_2d((void ***) &directories);
+	current = head;
+	i = 1;
+	while (directories[i])
+	{
+		current->next = curpath_new_node(directories[i], current, NULL);
+		if (!current->next)
+		{
+			ft_free_2d((void ***) &directories);
+			curpath_free_list(&head);
+		}
+		current = current->next;
+		i++;
+	}
+	ft_free_2d((void ***) &directories);
+	return (head);
 }
 
 // void	execute_cd(t_shell **data, char *directory)
