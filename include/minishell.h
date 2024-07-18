@@ -102,7 +102,7 @@ t_token	*lexer(const char *input);
 //void print_tokens(t_token *token);
 void	list_token_print(t_token *top);
 t_token	*syntax(t_token *top, t_env *env_list);
-t_token	*expander(t_token *t_input, t_env *env_var_list);
+t_token	*expander(t_token *t_input, t_env *env_list);
 void	token_id_misc(const char *inp, size_t *pos, const t_token_id val);
 void	token_id_pipe(const char *inp, size_t *pos, const t_token_id val);
 void	token_id_ampersand(const char *inp, size_t *pos, const t_token_id val);
@@ -110,7 +110,7 @@ void	token_id_semicol(const char *inp, size_t *pos, const t_token_id val);
 void	token_id_parentheses(const char *inp, size_t *pos, const t_token_id val);
 void	token_id_redir(const char *inp, size_t *pos, const t_token_id val);
 void	token_id_quote(const char *inp, size_t *pos, const t_token_id val);
-void	token_id_shvar(const char *inp, size_t *pos, const t_token_id val);
+void	token_id_shell_var(const char *inp, size_t *pos, const t_token_id val);
 bool	syntax_id_pipe(t_token *t_prev, t_token *t_cur, \
 		t_env *env_list);
 bool	syntax_id_ampersand(t_token *t_prev, t_token *t_cur, \
@@ -132,19 +132,19 @@ void	list_token_add_back(t_token **t_list, t_token *new);
 t_token_id	get_char_id(const char c);
 t_token	*list_token_skip_space(t_token *t_current);
 char	*expander_get_shell_var(const char *str, const int pos, \
-		size_t *len_sh_var, t_env *env_var_list);
+		size_t *len_shell_var, t_env *env_list);
 t_token	*list_token_free_node(t_token *t_node);
 void	list_token_free_last(t_token *t_list, t_token *(*f) (t_token *));
 t_token	*list_token_cpy_node(t_token *t_node);
 void	list_token_free_list(t_token *t_list, t_token *(*f) (t_token *));
 t_env	*env_var_create_new_node(char *env_var_str);
 void	env_var_add_to_end_list(t_env **env_var, t_env *new_env_var);
-void	env_var_print_linked_list(t_env *env_var_list);
-void	env_var_free_list(t_env *env_var_list);
-char	*env_var_get_env(char *key, t_env *env_var_list);
+void	env_var_print_linked_list(t_env *env_list);
+void	env_var_free_list(t_env *env_list);
+char	*env_var_get_env(char *key, t_env *env_list);
 
-int		init_shell_update_SHLVL(t_env **env_var_list);
-t_env	*env_var_get_env_node(char *name, t_env *env_var_list);
+int		init_shell_update_SHLVL(t_env **env_list);
+t_env	*env_var_get_env_node(char *name, t_env *env_list);
 
 t_env_ecode	env_copy_keyval(t_env **new_node, char *keyvalue);
 // t_env_ecode	env_init_list(t_env **head, char **envp);

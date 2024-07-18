@@ -50,18 +50,18 @@ t_env	*env_var_create_new_node(char *env_var_str)
 ** function that adds a new node containing a new environment variable in format of NAME=value
 ** to the end of the linked list of environment variables.
 */
-void	env_var_add_to_end_list(t_env **env_var_list, t_env *new_env_var)
+void	env_var_add_to_end_list(t_env **env_list, t_env *new_env_var)
 {
 	t_env	*current;
 
-	if (env_var_list == NULL || new_env_var == NULL)
+	if (env_list == NULL || new_env_var == NULL)
 		return ;
-	if (*env_var_list == NULL)
+	if (*env_list == NULL)
 	{
-		*env_var_list = new_env_var;
+		*env_list = new_env_var;
 		return ;
 	}
-	current = *env_var_list;
+	current = *env_list;
 	while (current->next != NULL)
 		current = current->next;
 	current->next = new_env_var;
@@ -123,22 +123,22 @@ char	**env_var_to_cpp(t_env *env_list)
 /*
 ** print linked list of environment variables FOR TESTING!
 */
-void	env_var_print_linked_list(t_env *env_var_list)
+void	env_var_print_linked_list(t_env *env_list)
 {
 	printf("LINKED LISTOF ENV VARS:\n\n");
-	while (env_var_list != NULL)
+	while (env_list != NULL)
 	{
-		printf("%s", env_var_list->key);
+		printf("%s", env_list->key);
 		printf("=");
-		printf("%s\n", env_var_list->value);
-		// printf("%s\n", env_var_list->has_value ? "true" : "false");
-		env_var_list = env_var_list->next;
+		printf("%s\n", env_list->value);
+		// printf("%s\n", env_list->has_value ? "true" : "false");
+		env_list = env_list->next;
 	}
 	// printf("\n\n");
 }
 
 /*
-** function to free content and node in env_var_list
+** function to free content and node in env_list
 */
 void	env_var_free_node(t_env *env_var_node)
 {
@@ -149,31 +149,31 @@ void	env_var_free_node(t_env *env_var_node)
 }
 
 /*
-** function to free whole of env_var_list
+** function to free whole of env_list
 */
-void	env_var_free_list(t_env *env_var_list)
+void	env_var_free_list(t_env *env_list)
 {
 	t_env	*tmp_env;
 
-	if (env_var_list == NULL)
+	if (env_list == NULL)
 		return ;
-	while (env_var_list)
+	while (env_list)
 	{
-		tmp_env = env_var_list->next;
-		env_var_free_node(env_var_list);
-		env_var_list = tmp_env;
+		tmp_env = env_list->next;
+		env_var_free_node(env_list);
+		env_list = tmp_env;
 	}
 }
 
-t_env	*env_var_get_env_node(char *key, t_env *env_var_list)
+t_env	*env_var_get_env_node(char *key, t_env *env_list)
 {
 	t_env	*current_node;
 	int				len_key;
 
-	if (!key || !env_var_list)
+	if (!key || !env_list)
 		return (NULL);
 	len_key = ft_strlen(key) + 1;
-	current_node = env_var_list;
+	current_node = env_list;
 	while (current_node != NULL)
 	{
 		if (ft_strncmp(current_node->key, key, len_key) == 0)

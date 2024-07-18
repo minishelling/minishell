@@ -4,6 +4,7 @@
 
 void	env_print_list(t_env *head)
 {
+	printf ("Lisandro's\n");
 	if (!head)
 		return ;
 	while(head != NULL)

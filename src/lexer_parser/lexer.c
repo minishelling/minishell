@@ -44,7 +44,7 @@ void	get_token_info(const char *input, size_t *pos, t_token *node)
 	[9] = &token_id_redir,
 	[10] = &token_id_quote,
 	[11] = &token_id_quote,
-	[12] = &token_id_shvar,
+	[12] = &token_id_shell_var,
 	[13] = &token_id_misc,
 	};
 

@@ -29,7 +29,7 @@ void	token_id_redir(const char *inp, size_t *pos, const t_token_id val)
 
 	(void) val;
 	i = 0;
-	while (i < 3 && inp[*pos] && inp[*pos] == c)
+	while (i < 2 && inp[*pos] && inp[*pos] == c)
 	{
 		(*pos)++;
 		i++;
@@ -42,7 +42,7 @@ void	token_id_redir(const char *inp, size_t *pos, const t_token_id val)
 ** rest of characters of "name" should be alphabetic
 ** or numeric (isalnum) or "_" underscore
 */
-void	token_id_shvar(const char *inp, size_t *pos, const t_token_id val)
+void	token_id_shell_var(const char *inp, size_t *pos, const t_token_id val)
 {
 	(void) val;
 	(*pos)++;

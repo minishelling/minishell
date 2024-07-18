@@ -21,12 +21,12 @@ bool	syntax_id_pipe(t_token *t_prev, t_token *t_cur, \
 bool	syntax_id_redir_shvar(t_token *t_next, t_env *env_list)
 {
 	size_t	len;
-	char	*sh_var;
+	char	*shell_var;
 
-	sh_var = expander_get_shell_var(t_next->str, 0, &len, env_list);
-	if (!sh_var)
+	shell_var = expander_get_shell_var(t_next->str, 0, &len, env_list);
+	if (!shell_var)
 		return (1);
-	if (ft_strchr(sh_var, ' '))
+	if (ft_strchr(shell_var, ' '))
 		return (1);
 	return (0);
 }

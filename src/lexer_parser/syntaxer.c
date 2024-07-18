@@ -61,7 +61,8 @@ t_token	*syntax(t_token *top, t_env *env_list)
    -------------------------------------------------------
    The Grammar
    ------------------------------------------------------- 
-
+   
+https://stackoverflow.com/questions/76167393/context-free-grammar-clarification
 
 %start  pipe_sequence
 %%

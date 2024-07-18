@@ -53,20 +53,20 @@ t_token	*expander_shell_var_spacer(char *str)
 	return (t_return);
 }
 
-t_token	*expander_shell_var(t_token *t_current, t_env *env_var_list)
+t_token	*expander_shell_var(t_token *t_current, t_env *env_list)
 {
 	t_token	*t_return;
 	t_token	*t_node;
 	char	**split;
 	size_t	i;
 
-	//env_var_print_linked_list (env_var_list);
-	// env_print_list (env_var_list);  // lisandro
+	//env_var_print_linked_list (env_list);
+	// env_print_list (env_list);  // lisandro
 
 	t_return = NULL;
 	i = 0;
 
-	split = ft_split(env_var_get_env((t_current->str + 1), env_var_list), ' ');
+	split = ft_split(env_var_get_env((t_current->str + 1), env_list), ' ');
 	if (!split)
 		return (NULL);
 	
@@ -102,51 +102,51 @@ bool	expander_remove_n_is_open(t_token *t_node)
 }
 
 char	*expander_get_shell_var(const char *str, const int pos, \
-		size_t *len_sh_var, t_env *env_var_list)
+		size_t *len_shell_var, t_env *env_list)
 {
 	char	*str_ret;
-	char	*sh_var;
+	char	*shell_var;
 
-	*len_sh_var = 0;
-	token_id_shvar(str + pos, len_sh_var, 0);
-	sh_var = ft_substr(str, pos + 1, *len_sh_var - 1);
-	if (!sh_var)
+	*len_shell_var = 0;
+	token_id_shell_var(str + pos, len_shell_var, 0);
+	shell_var = ft_substr(str, pos + 1, *len_shell_var - 1);
+	if (!shell_var)
 		return (NULL);
-	str_ret = env_var_get_env(sh_var, env_var_list);
-	free(sh_var);
+	str_ret = env_var_get_env(shell_var, env_list);
+	free(shell_var);
 	return (str_ret);
 }
 
 int	expander_inject_var(t_token *t_current, const int pos, \
-		t_env *env_var_list)
+		t_env *env_list)
 {
-	size_t	len_sh_expand;
-	size_t	len_sh_var;
-	char	*sh_expand;
+	size_t	len_shell_expand;
+	size_t	len_shell_var;
+	char	*shell_expand;
 	char	*new_token_str;
 
 	if (!t_current || !t_current->str)
 		return (ERROR);
-	sh_expand = expander_get_shell_var(t_current->str, pos, &len_sh_var, \
-			env_var_list);
-	if (!sh_expand)
-		len_sh_expand = 0;
+	shell_expand = expander_get_shell_var(t_current->str, pos, &len_shell_var, \
+			env_list);
+	if (!shell_expand)
+		len_shell_expand = 0;
 	else
-		len_sh_expand = ft_strlen(sh_expand);
+		len_shell_expand = ft_strlen(shell_expand);
 	new_token_str = ft_calloc(sizeof(char), \
-			((ft_strlen(t_current->str) - len_sh_var + len_sh_expand) + 1));
+			((ft_strlen(t_current->str) - len_shell_var + len_shell_expand) + 1));
 	if (!new_token_str)
 		return (ERROR);
 	ft_strlcpy(new_token_str, t_current->str, pos + 1);
-	ft_strlcat(new_token_str, sh_expand, pos + len_sh_expand + 1);
-	ft_strlcat(new_token_str, &(t_current->str)[pos + len_sh_var], \
-			(ft_strlen(t_current->str) - len_sh_var + len_sh_expand + 1));
+	ft_strlcat(new_token_str, shell_expand, pos + len_shell_expand + 1);
+	ft_strlcat(new_token_str, &(t_current->str)[pos + len_shell_var], \
+			(ft_strlen(t_current->str) - len_shell_var + len_shell_expand + 1));
 	free(t_current->str);
 	t_current->str = new_token_str;
-	return (len_sh_expand);
+	return (len_shell_expand);
 }
 
-t_token	*expander_quote(t_token *t_current, t_env *env_var_list)
+t_token	*expander_quote(t_token *t_current, t_env *env_list)
 {
 	size_t	i;
 	int		tmp;
@@ -163,7 +163,7 @@ t_token	*expander_quote(t_token *t_current, t_env *env_var_list)
 	{
 		if ((t_current->str)[i] == '$')
 		{
-			tmp = expander_inject_var(t_current, i, env_var_list);
+			tmp = expander_inject_var(t_current, i, env_list);
 			if (tmp < 0)
 				return (NULL);
 			i += (size_t) tmp;
@@ -175,7 +175,7 @@ t_token	*expander_quote(t_token *t_current, t_env *env_var_list)
 	return (list_token_cpy_node(t_current));
 }
 
-t_token	*expander(t_token *t_input, t_env *env_var_list)
+t_token	*expander(t_token *t_input, t_env *env_list)
 {
 	t_token	*t_return;
 	t_token	*t_current;
@@ -187,12 +187,12 @@ t_token	*expander(t_token *t_input, t_env *env_var_list)
 	{
 		if (t_current->id == SHELL_VAR)
 		{
-			//env_var_print_linked_list (env_var_list);
-			// env_print_list (env_var_list);  // lisandro
-			t_node = expander_shell_var(t_current, env_var_list);
+			//env_var_print_linked_list (env_list);
+			env_print_list (env_list);  // lisandro
+			t_node = expander_shell_var(t_current, env_list);
 		}
 		else if (t_current->id == DQUOTE || t_current->id == SQUOTE)
-			t_node = expander_quote(t_current, env_var_list);
+			t_node = expander_quote(t_current, env_list);
 		else
 			t_node = list_token_cpy_node(t_current);
 		if (!t_node)
@@ -206,8 +206,8 @@ t_token	*expander(t_token *t_input, t_env *env_var_list)
 	return (t_return);
 }
 
-//	SH_VAR appends to previous word token
-//	SH_VAR adds in front of DQUOTE
+//	SHELL_VAR appends to previous word token
+//	SHELL_VAR adds in front of DQUOTE
 /*
  *
  * EXPANSION:

@@ -1,6 +1,6 @@
 #include "../../include/minishell.h"
 
-int	unset_env_var(char *key, t_env **env_var_list)  //builtin
+int	unset_env_var(char *key, t_env **env_list)  //builtin
 {
 	int		len_key;
 	t_env	*current;
@@ -8,7 +8,7 @@ int	unset_env_var(char *key, t_env **env_var_list)  //builtin
 
 	if (!key)
 		return (-2); //malloc error
-	current = *env_var_list;
+	current = *env_list;
 	temp_var = NULL;
 	len_key = ft_strlen(key);
 	while (current != NULL && current->next != NULL)
@@ -25,12 +25,12 @@ int	unset_env_var(char *key, t_env **env_var_list)  //builtin
 	return (0); // variable name not found thus not unset! // SUCCESS
 }
 
-int	init_shell_update_SHLVL(t_env **env_var_list)
+int	init_shell_update_SHLVL(t_env **env_list)
 {
 	t_env	*shlvl_node;
 	unsigned int	value;
 
-	shlvl_node = env_var_get_env_node("SHLVL", *env_var_list);
+	shlvl_node = env_var_get_env_node("SHLVL", *env_list);
 	if (shlvl_node)
 	{
 		value = ft_atoi(shlvl_node->value) + 1;
@@ -44,30 +44,30 @@ int	init_shell_update_SHLVL(t_env **env_var_list)
 	shlvl_node = env_var_create_new_node("SHLVL=1");
 	if (!shlvl_node)
 		return (1);
-	env_var_add_to_end_list(env_var_list, shlvl_node);
+	env_var_add_to_end_list(env_list, shlvl_node);
 	return (0);
 }
 
 int	init_shell(char **envp, t_shell *shell)
 {
-	t_env	*env_var_list;
+	t_env	*env_list;
 	t_env	*new_env_var;
 	int				i;
 
-	env_var_list = NULL;
+	env_list = NULL;
 	i = 0;
 	while (envp[i] != NULL)
 	{
 		new_env_var = env_var_create_new_node(envp[i]);
 		if (!new_env_var)
-			return (env_var_free_list(env_var_list), 1);
-		env_var_add_to_end_list(&env_var_list, new_env_var);
+			return (env_var_free_list(env_list), 1);
+		env_var_add_to_end_list(&env_list, new_env_var);
 		i++;
 	}
-	if (init_shell_update_SHLVL(&env_var_list))
-		return (env_var_free_list(env_var_list), 1);
-	unset_env_var("OLDPWD", &env_var_list);
-	shell->env_list = env_var_list;
+	if (init_shell_update_SHLVL(&env_list))
+		return (env_var_free_list(env_list), 1);
+	unset_env_var("OLDPWD", &env_list);
+	shell->env_list = env_list;
 	return (0);
 }
 

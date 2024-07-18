@@ -9,7 +9,6 @@ void	complexer(t_shell *shell)
 	// if (mini->token == NULL)
 	// 	...
 	list_token_print(shell->token);
-	env_var_print_linked_list (shell->env_list);
 	shell->syntax = syntax(shell->token, shell->env_list);
 	if (shell->syntax)
 	{
