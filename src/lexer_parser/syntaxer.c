@@ -1,7 +1,7 @@
 #include "../../include/minishell.h"
 
 typedef bool	(*t_syntax_func) (t_token *t_prev, t_token *t_cur, \
-		t_env_list *env_list);
+		t_env *env_list);
 
 t_token	*list_token_start_nonspace(t_token *list)
 {
@@ -12,7 +12,7 @@ t_token	*list_token_start_nonspace(t_token *list)
 	return (list);
 }
 
-t_token	*syntax(t_token *top, t_env_list *env_list)
+t_token	*syntax(t_token *top, t_env *env_list)
 {
 	t_token				*t_prev;
 	t_token				*t_cur;

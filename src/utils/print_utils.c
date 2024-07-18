@@ -15,10 +15,11 @@ size_t	list_token_size(t_token *t_list)
 	return (ret);
 }
 
-void	list_token_print(t_token *top)
+void	list_token_print(t_token *head)
 {
 	int			size;
-	const int	con = list_token_size(top);
+	t_token		*ptr;
+	const int	con = list_token_size(head);
 	const char	*token_name[14] = {
 	[0] = "SPACE_CHAR",
 	[1] = "TAB_CHAR",
@@ -35,14 +36,15 @@ void	list_token_print(t_token *top)
 	[12] = "SHELL_VAR",
 	[13] = "WORD"
 	};
+	ptr = head;
 
-	size = list_token_size(top);
+	size = list_token_size(ptr);
 	printf("\nLIST OF TOKENS [%d] \n", con);
 	printf("-------------------\n");
 	while (size--)
 	{
-		printf("TOKEN [%02d]\tid: %s [%d]\n\t\tstr: |%s|\n", (con - size), token_name[top->id], top->id, top->str);
-		top = top->next;
+		printf("TOKEN [%02d]\tid: %s [%d]\n\t\tstr: |%s|\n", (con - size), token_name[ptr->id], ptr->id, ptr->str);
+		ptr = ptr->next;
 	}
 	return ;
 }

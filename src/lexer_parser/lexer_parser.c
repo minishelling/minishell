@@ -2,10 +2,14 @@
 
 void	complexer(t_shell *shell)
 {
+	
+	// mini_error_test(syntax_error, 258, mini->syntax->str);
+	// list_token_free_list(mini->token, list_token_free_node_str);
 	shell->token = lexer(shell->input);
 	// if (mini->token == NULL)
 	// 	...
 	list_token_print(shell->token);
+	env_var_print_linked_list (shell->env_list);
 	shell->syntax = syntax(shell->token, shell->env_list);
 	if (shell->syntax)
 	{
@@ -13,6 +17,9 @@ void	complexer(t_shell *shell)
 		// list_token_free_list(mini->token, list_token_free_node_str);
 		return ;
 	}
+
+	//env_var_print_linked_list (shell->env_list);
+	//env_print_list (shell->env_list);  // lisandro
 	shell->token = expander(shell->token, shell->env_list);
 	list_token_print(shell->token);
 	// if (appender(shell) == false)

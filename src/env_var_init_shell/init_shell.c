@@ -1,19 +1,19 @@
 #include "../../include/minishell.h"
 
-int	unset_env_var(char *name, t_env_list **env_var_list)  //builtin
+int	unset_env_var(char *key, t_env **env_var_list)  //builtin
 {
-	int				len_name;
-	t_env_list	*current;
-	t_env_list	*temp_var;
+	int		len_key;
+	t_env	*current;
+	t_env	*temp_var;
 
-	if (!name)
+	if (!key)
 		return (-2); //malloc error
 	current = *env_var_list;
 	temp_var = NULL;
-	len_name = ft_strlen(name);
+	len_key = ft_strlen(key);
 	while (current != NULL && current->next != NULL)
 	{
-		if (ft_strncmp(current->next->name, name, len_name) == 0)
+		if (ft_strncmp(current->next->key, key, len_key) == 0)
 		{
 			temp_var = current->next;
 			current->next = temp_var->next;
@@ -25,9 +25,9 @@ int	unset_env_var(char *name, t_env_list **env_var_list)  //builtin
 	return (0); // variable name not found thus not unset! // SUCCESS
 }
 
-int	init_shell_update_SHLVL(t_env_list **env_var_list)
+int	init_shell_update_SHLVL(t_env **env_var_list)
 {
-	t_env_list	*shlvl_node;
+	t_env	*shlvl_node;
 	unsigned int	value;
 
 	shlvl_node = env_var_get_env_node("SHLVL", *env_var_list);
@@ -50,8 +50,8 @@ int	init_shell_update_SHLVL(t_env_list **env_var_list)
 
 int	init_shell(char **envp, t_shell *shell)
 {
-	t_env_list	*env_var_list;
-	t_env_list	*new_env_var;
+	t_env	*env_var_list;
+	t_env	*new_env_var;
 	int				i;
 
 	env_var_list = NULL;

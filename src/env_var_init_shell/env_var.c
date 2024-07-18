@@ -35,20 +35,20 @@ bool	env_var_exists(char *name, t_env_list *env_var_list)
 ** the NAME of the environment variable is search in env_var_list
 ** if env_var exists, it's VALUE is returned
 */
-char	*env_var_get_env(char *name, t_env_list *env_var_list)
+char	*env_var_get_env(char *key, t_env *env_var_list)
 {
-	int		len_name;
+	int		len_key;
 
-	if (!name || !env_var_list)
+	if (!key || !env_var_list)
 		return (NULL);
 	// if (ft_strncmp(name, "?", 2) == 0)
 	// 	return (g_status.exit_str);
-	len_name = ft_strlen(name) + 1;
-	env_var_print_linked_list(env_var_list); //!
+	len_key = ft_strlen(key) + 1;
+	//env_var_print_linked_list(env_var_list); //!
 
 	while (env_var_list)
 	{
-		if (ft_strncmp(env_var_list->name, name, len_name) == 0)
+		if (ft_strncmp(env_var_list->key, key, len_key) == 0)
 			return (env_var_list->value);
 		env_var_list = env_var_list->next;
 	}
@@ -58,24 +58,24 @@ char	*env_var_get_env(char *name, t_env_list *env_var_list)
 /*
 ** our own setenv() function: it sets a (new) environment variable
 */
-void	env_var_set_env(char *envar, t_env_list **env_var_list)
+void	env_var_set_env(char *envar, t_env **env_var_list)
 {
-	int				len_name;
-	t_env_list	*new_var;
-	t_env_list	*current;
-	t_env_list	*prev;
+	int		len_key;
+	t_env	*new_var;
+	t_env	*current;
+	t_env	*prev;
 
 	if (!envar)
 		return ;
 	current = *env_var_list;
 	prev = NULL;
 	new_var = env_var_create_new_node(envar);
-	if (!new_var || !new_var->name)
+	if (!new_var || !new_var->key)
 		return ;
-	len_name = ft_strlen(new_var->name) + 1;
+	len_key = ft_strlen(new_var->key) + 1;
 	while (current != NULL)
 	{
-		if (ft_strncmp(current->name, new_var->name, len_name) == 0)
+		if (ft_strncmp(current->key, new_var->key, len_key) == 0)
 		{
 			new_var->next = current->next;
 			if (prev == NULL)

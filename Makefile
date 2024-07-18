@@ -1,6 +1,7 @@
+
 NAME = minishell
 
-FLAGS = -g -Wall -Werror -Wextra
+FLAGS = -g
 
 LIBFT_DIR = libft
 LIBFT = $(LIBFT_DIR)/libft.a
@@ -20,22 +21,22 @@ OBJECTS		:= $(SRCS_FILES:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 all: $(NAME)
 
 $(LIBFT):
-    @$(MAKE) -C $(LIBFT_DIR)
+	@$(MAKE) -C $(LIBFT_DIR)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(HEADER_FILES)
-    @mkdir -p $(@D)
-    $(CC) $(FLAGS) -I$(INCLUDE_DIR) -c $< -o $@
+	@mkdir -p $(@D)
+	$(CC) $(FLAGS) -I$(INCLUDE_DIR) -c $< -o $@
 
 $(NAME): $(OBJECTS) $(LIBFT)
-    cc -o $(NAME) $(OBJECTS) $(LIBFT) -lreadline
+	cc -o $(NAME) $(OBJECTS) $(LIBFT) -lreadline
 
 clean:
-    rm -f $(OBJECTS)
-    rm -rf $(OBJ_DIR)
+	rm -f $(OBJECTS)
+	rm -rf $(OBJ_DIR)
 
 fclean: clean
-    rm -f $(NAME)
-    @$(MAKE) -C $(LIBFT_DIR) clean
+	rm -f $(NAME)
+	@$(MAKE) -C $(LIBFT_DIR) clean
 
 re: fclean all
 

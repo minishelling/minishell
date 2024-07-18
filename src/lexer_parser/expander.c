@@ -53,12 +53,15 @@ t_token	*expander_shell_var_spacer(char *str)
 	return (t_return);
 }
 
-t_token	*expander_shell_var(t_token *t_current, t_env_list *env_var_list)
+t_token	*expander_shell_var(t_token *t_current, t_env *env_var_list)
 {
 	t_token	*t_return;
 	t_token	*t_node;
 	char	**split;
 	size_t	i;
+
+	//env_var_print_linked_list (env_var_list);
+	// env_print_list (env_var_list);  // lisandro
 
 	t_return = NULL;
 	i = 0;
@@ -99,7 +102,7 @@ bool	expander_remove_n_is_open(t_token *t_node)
 }
 
 char	*expander_get_shell_var(const char *str, const int pos, \
-		size_t *len_sh_var, t_env_list *env_var_list)
+		size_t *len_sh_var, t_env *env_var_list)
 {
 	char	*str_ret;
 	char	*sh_var;
@@ -115,7 +118,7 @@ char	*expander_get_shell_var(const char *str, const int pos, \
 }
 
 int	expander_inject_var(t_token *t_current, const int pos, \
-		t_env_list *env_var_list)
+		t_env *env_var_list)
 {
 	size_t	len_sh_expand;
 	size_t	len_sh_var;
@@ -143,7 +146,7 @@ int	expander_inject_var(t_token *t_current, const int pos, \
 	return (len_sh_expand);
 }
 
-t_token	*expander_quote(t_token *t_current, t_env_list *env_var_list)
+t_token	*expander_quote(t_token *t_current, t_env *env_var_list)
 {
 	size_t	i;
 	int		tmp;
@@ -172,7 +175,7 @@ t_token	*expander_quote(t_token *t_current, t_env_list *env_var_list)
 	return (list_token_cpy_node(t_current));
 }
 
-t_token	*expander(t_token *t_input, t_env_list *env_var_list)
+t_token	*expander(t_token *t_input, t_env *env_var_list)
 {
 	t_token	*t_return;
 	t_token	*t_current;
@@ -183,8 +186,11 @@ t_token	*expander(t_token *t_input, t_env_list *env_var_list)
 	while (t_current != NULL)
 	{
 		if (t_current->id == SHELL_VAR)
-
+		{
+			//env_var_print_linked_list (env_var_list);
+			// env_print_list (env_var_list);  // lisandro
 			t_node = expander_shell_var(t_current, env_var_list);
+		}
 		else if (t_current->id == DQUOTE || t_current->id == SQUOTE)
 			t_node = expander_quote(t_current, env_var_list);
 		else

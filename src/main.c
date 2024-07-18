@@ -1,5 +1,3 @@
-
-
 #include "../include/minishell.h"
 
 
@@ -7,7 +5,7 @@ int main(int argc, char **argv, char **envp)
 {
     t_shell shell;
     t_token *temp;
-    t_env	*env_list;
+    //t_env	*env_list;
 
 
     (void)argv;
@@ -22,17 +20,20 @@ int main(int argc, char **argv, char **envp)
         exit(EXIT_FAILURE);
     }
     //if (init_shell(envp, &shell)) 
-    if (env_init_list(&env_list, envp)) 
+    shell.env_list = NULL;
+    if (env_init_list(&shell.env_list, envp)) 
 	{
         write(2, "Mini_shared: Error: Failed to initialize\n", 42);
         exit(EXIT_FAILURE);
     }
+
     while (1) 
 	{
+        
         shell.input = readline(MINISHARED_PROMPT);
         if (!shell.input)
             break;
-        if (strncmp(shell.input, "", 1)) //libft
+        if (ft_strncmp(shell.input, "", 1))
 		{
            complexer(&shell);
            list_token_print(shell.token);
