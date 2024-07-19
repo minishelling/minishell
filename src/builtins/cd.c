@@ -65,7 +65,6 @@ void	curpath_free_list(t_curpath **head)
 	}
 }
 
-
 t_ecode	execute_cd(t_env *env, char *directory)
 {
 	char	*curpath;
@@ -74,31 +73,31 @@ t_ecode	execute_cd(t_env *env, char *directory)
 	int		i;
 	int		no_cdpath_flag;
 
-	if (!directory)
+	if (!directory) //First step
 	{
 		temp = env_find_node("HOME");
 		if (!temp || !temp.key)
 			return (ERR_CD_NO_HOME);
-		else
+		else //Second step
 		{
 			if (chdir(temp.key) == -1)
 				return (ERR_CD_CHDIR_ERROR); //Errno is set.
 		}	
 	}
 	else if (directory[0] == '/' || directory[0] == '.'
-		|| (directory[0] == '.' && directory[1] == '.'))
+		|| (directory[0] == '.' && directory[1] == '.')) //Steps 3 and 4
 		curpath = directory;
-	else
+	else //Step 5 - Which is wrong, because it has to set and then proceed to step 6 outside of the else statement.
 	{
-		temp = (t_env *) env_find_node("CDPATH");
+		temp = (t_env *) env_find_node("CDPATH"); //Look for CDPATH in env. Retrieve the node. - Testing the use of (void *).
 		i = 0;
-		while (i < env_count_values(env, "CDPATH")) //A value can be an empty string
+		while (i < env_count_values(env, "CDPATH")) //A value can be an empty string. 
 		{
-			curpath = ft_strdup(temp.values[i]);
-			if (curpath == NULL && no_cdpath_flag == 0)
-			{
-				curpath = ft_strjoin("./", directory);
-				if (access(curpath, F_OK) == -1)
+			curpath = ft_strdup(temp.values[i]); //Dups so I can use ft_strjoin_fs1 or simply ft_free on curpath. - Protect malloc.
+			if (curpath == NULL && no_cdpath_flag == 0) //If the string is empty or is NULL (strdup takes care of handling empty strings, converting them to NULL),
+			{//Then execute step 4
+				curpath = ft_strjoin("./", directory); //Append current directory and the directory provided.
+				if (access(curpath, F_OK) == -1) //Why would I replace access with a dir function?
 				{
 					ft_free(&curpath);
 					i++;
@@ -106,41 +105,51 @@ t_ecode	execute_cd(t_env *env, char *directory)
 				}
 				if (chdir(curpath) == -1)
 				{
-					ft_free(&curpath);
+					ft_free(&curpath); //Repeated functionality... How can I optimize this?
 					i++;
 					continue ;
 				}
-				no_cdpath_flag = 1;
+				no_cdpath_flag = 1; //Flags this occurrence so it doesn't do it again.
 			}
-			if (curpath[len -1] != '/')
-				curpath = ft_strjoin_fs1(curpath, "/");
-			curpath = ft_strjoin_fs1(curpath, directory);
-			if (access(curpath, F_OK) == -1)
+			else if (curpath == NULL && no_cdpath_flag == 1) //New addition that I forgot in the initial implementation.
+			{
+				i++;
+				continue ;
+			}
+			if (curpath[len -1] != '/') //Continues execution when the node found in CDPATH is true.
+				curpath = ft_strjoin_fs1(curpath, "/"); //Appends a slash if the path in CDPATH didn't end with one. - Protect the malloc.
+			curpath = ft_strjoin_fs1(curpath, directory); //Appends the path in CDPATH with the directory.
+			if (access(curpath, F_OK) == -1) //Checks if it is a valid dir.
 			{
 				ft_free(&curpath);
 				i++;
 				continue ;
 			}
-			if (chdir(curpath) == -1)
+			if (chdir(curpath) == -1) //Checks if changing to that dir fails.
 			{
 				ft_free(&curpath);
 				i++;
 				continue ;
+			} //Forgot to add the action for when it succeeds.
+			else
+			{
+				ft_free(&curpath);
+				//Update pwd and oldpwd.
+				return (SUCCESS);
 			}
 			i++;
 		}
-		curpath = directory;
-		if (shell->pwd[len -1] != '/')
-			shell->pwd = ft_strjoin_fs1(shell->pwd, "/"); //Protect mallocs
-		curpath = cd_trim_curpath(shell, &curpath);
-		// Check if (ft_strlen(curpath) + 1 > PATH_MAX)
-		status = chdir(curpath);
-		free(curpath);
-		free(cwd);
-		if (status == -1)
-			return (ERR_CD_CHDIR_ERROR);
-		return (SUCCESS);
 	}
+	curpath = directory; //Step 6
+	if (shell->pwd[len -1] != '/')
+		shell->pwd = ft_strjoin_fs1(shell->pwd, "/"); //Protect mallocs
+	curpath = cd_trim_curpath(shell, &curpath); //Return a trimmed path that is ready to be used.
+	// Check if (ft_strlen(curpath) + 1 > PATH_MAX)
+	status = chdir(curpath);
+	free(curpath); //The end of the journey.
+	if (status == -1)
+		return (ERR_CD_CHDIR_ERROR);
+	return (SUCCESS);
 }
 
 static char	*cd_trim_curpath(t_shell **shell, char **curpath)
@@ -151,7 +160,7 @@ static char	*cd_trim_curpath(t_shell **shell, char **curpath)
 	t_curpath	*final_dirs_iterator;
 	char		*dir;
 
-	curr_dirs_head = cd_split_curpath(*curpath);
+	curr_dirs_head = cd_split_curpath(*curpath); // Create array to store each directory separately, without including slashes. - Ensure we are not passing the root directory.
 	if (!curr_dirs_head)
 		return (NULL);
 	curr_dirs_iterator = curr_dirs_head;
@@ -187,7 +196,7 @@ static char	*cd_trim_curpath(t_shell **shell, char **curpath)
 					final_dirs_iterator = final_dirs_iterator->previous;
 					final_dirs_iterator = final_dirs_iterator->previous; // This can be either true or NULL
 					final_dirs_iterator = final_dirs_iterator->previous; // This can either be true or segfault
-					final_dirs_iterator->next = NULL; // Umm check if this modifies final_dirs_head.
+					final_dirs_iterator->next = NULL; // Umm, check if this actually modifies final_dirs_head.
 				}
 			}
 			else
