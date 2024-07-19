@@ -87,9 +87,9 @@ t_ecode	execute_cd(t_env *env, char *directory)
 	else if (directory[0] == '/' || directory[0] == '.'
 		|| (directory[0] == '.' && directory[1] == '.')) //Steps 3 and 4
 		curpath = directory;
-	else //Step 5 - Which is wrong, because it has to set and then proceed to step 6 outside of the else statement.
+	else //Step 5 - Which was wrong, because it has to set and then proceed to step 6 outside of the else statement.
 	{
-		temp = (t_env *) env_find_node("CDPATH"); //Look for CDPATH in env. Retrieve the node. - Testing the use of (void *).
+		temp = (t_env *)env_find_node("CDPATH"); //Look for CDPATH in env. Retrieve the node. - Testing the use of (void *).
 		i = 0;
 		while (i < env_count_values(env, "CDPATH")) //A value can be an empty string. 
 		{
@@ -130,8 +130,8 @@ t_ecode	execute_cd(t_env *env, char *directory)
 				ft_free(&curpath);
 				i++;
 				continue ;
-			} //Forgot to add the action for when it succeeds.
-			else
+			}
+			else //Forgot to add the action for when it succeeds. So adding it now:
 			{
 				ft_free(&curpath);
 				//Update pwd and oldpwd.
@@ -141,13 +141,16 @@ t_ecode	execute_cd(t_env *env, char *directory)
 		}
 	}
 	curpath = directory; //Step 6
-	if (shell->pwd[len -1] != '/')
-		shell->pwd = ft_strjoin_fs1(shell->pwd, "/"); //Protect mallocs
+	if (shell->pwd[len - 1] != '/') //Here I can use either PWD from the shell struct (not from the env), or the getcwd command.
+		shell->pwd = ft_strjoin_fs1(shell->pwd, "/"); //Protect mallocs.
+
+	//Shouldn't I be concatenating PWD with curpath here?
+
 	curpath = cd_trim_curpath(shell, &curpath); //Return a trimmed path that is ready to be used.
 	// Check if (ft_strlen(curpath) + 1 > PATH_MAX)
 	status = chdir(curpath);
 	free(curpath); //The end of the journey.
-	if (status == -1)
+	if (status == -1) //Status could be called ret, becasue after all it has to return a value.
 		return (ERR_CD_CHDIR_ERROR);
 	return (SUCCESS);
 }
@@ -160,30 +163,30 @@ static char	*cd_trim_curpath(t_shell **shell, char **curpath)
 	t_curpath	*final_dirs_iterator;
 	char		*dir;
 
-	curr_dirs_head = cd_split_curpath(*curpath); // Create array to store each directory separately, without including slashes. - Ensure we are not passing the root directory.
+	curr_dirs_head = cd_split_curpath(*curpath);// Create array to store each directory separately, without including slashes. - Ensure we are not passing the root directory.
 	if (!curr_dirs_head)
 		return (NULL);
 	curr_dirs_iterator = curr_dirs_head;
-	final_dirs_head = NULL;
-	while (curr_dirs_iterator)
+	final_dirs_head = NULL; //Initialize to null. When appropriate it will add the valid nodes inside the loop.
+	while (curr_dirs_iterator) //Iterate through the list of directories using a helping iterating variable (keeping the head var to free when neccessary).
 	{
-		dir = curr_dirs_iterator->dir;
-		if (!dir)
+		dir = curr_dirs_iterator->dir; //Assign the dir in curr_dirs to a shorter named var. -- Keep in mind that the first node is okay, but for the rest it needs to keep concatenating them. Maybe add a helper funct.
+		if (!dir) //If one of the dirs is NULL then the whole path is invalid.
 		{
 			curpath_free_list(&curr_dirs_head);
 			return (NULL);
 		}
-		if (dir[0] == '.' && dir[1] == '\0')
+		if (dir[0] == '.' && dir[1] == '\0') //If the dir is a single dot, then we just skip this directory. It is not added to final_dirs.
 		{
 			curr_dirs_iterator = curr_dirs_iterator->next;
 			continue ;
 		}
-		if (dir[0] == '.' && dir[1] == '.' && dir[2] == '\0')
+		else if (dir[0] == '.' && dir[1] == '.' && dir[2] == '\0') //If the dir is a double dot...
 		{
 			final_dirs_iterator = final_dirs_head;
-			while (final_dirs_iterator->next != NULL)
+			while (final_dirs_iterator != NULL && final_dirs_iterator->next != NULL)
 				final_dirs_iterator = final_dirs_iterator->next;
-			if (final_dirs_iterator->previous)
+			if (final_dirs_iterator != NULL && final_dirs_iterator->previous)
 			{
 				dir = final_dirs_iterator->previous->dir;
 				if (!dir)
@@ -204,6 +207,10 @@ static char	*cd_trim_curpath(t_shell **shell, char **curpath)
 				curpath_free_list(&curr_dirs_head);
 				return (ft_strdup("/"));
 			}
+		}
+		else
+		{
+			//Ummm, what did I do here? It needs to keep iterating, right?
 		}
 		dir = ft_strdup(final_dirs_head->dir);
 		final_dirs_head = final_dirs_head->next;
@@ -249,70 +256,3 @@ t_curpath	*cd_split_curpath(char *curpath)
 	ft_free_2d((void ***) &directories);
 	return (head);
 }
-
-// void	execute_cd(t_shell **data, char *directory)
-// {
-// 	char	*curpath;
-// 	t_env	*node;
-// 	int		cdpath_keys;
-// 	int		i;
-
-// 	if (!directory)
-// 	{
-// 		node = env_find_node("HOME");
-// 		if (!node || !node.key)
-// 		{
-// 			print_error(ERR_CODE);
-// 			return ;
-// 		}
-// 		else
-// 		{
-// 			chdir(node.key);
-// 			return ;
-// 		}
-// 	}
-// 	else if (directory[0] == '/')
-// 		curpath = directory;
-// 	else if (directory[0] == '.' || (directory[0] == '.' && directory[1] == '.'))
-// 		curpath = directory;
-// 	else
-// 	{
-// 		node = env_find_node("CDPATH");
-// 		if (!node || !node.keys)
-// 		{
-// 			curpath = ft_strjoin_fs1(ft_strdup("./"), directory);
-// 			if (!access(curpath, F_OK))
-// 				curpath = NULL;
-// 			else
-// 			{
-// 				chdir(curpath);
-// 				return ;
-// 			}
-// 		}
-// 		cdpath_keys = node.keycount;
-// 		i = 0;
-// 		while (cdpath_keys > i)
-// 		{
-// 			if (!node.keys[i])
-// 			{
-// 				i++;
-// 				continue ;
-// 			}
-// 			curpath = node.keys[i];
-// 			if (curpath[ft_strlen(node.keys[i]) - 1] != '/')
-// 				curpath = ft_strjoin_fs1(curpath, "/");
-// 			curpath = ft_strjoin_fs1(curpath, directory);
-// 			if (access(curpath, F_OK))
-// 			{
-// 				chdir(curpath);
-// 				return ;
-// 			}
-// 			curpath = NULL;
-// 			i++;			
-// 		}
-// 		curpath = directory;
-// 		//Step 7 onwards...
-// 	}
-	
-
-// }
