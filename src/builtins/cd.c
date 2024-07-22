@@ -155,104 +155,155 @@ t_ecode	execute_cd(t_env *env, char *directory)
 	return (SUCCESS);
 }
 
-static char	*cd_trim_curpath(t_shell **shell, char **curpath)
+char	*cd_trim_curpath(char **curpath)
 {
-	t_curpath	*curr_dirs_head;
-	t_curpath	*curr_dirs_iterator;
-	t_curpath	*final_dirs_head;
-	t_curpath	*final_dirs_iterator;
-	char		*dir;
+	char		**dirs;
+	t_curpath	*final_dirs;
+	int			i;
+	int			status;
 
-	curr_dirs_head = cd_split_curpath(*curpath);// Create array to store each directory separately, without including slashes. - Ensure we are not passing the root directory.
-	if (!curr_dirs_head)
+	dirs = ft_split(*curpath, "/");
+	if (!dirs)
 		return (NULL);
-	curr_dirs_iterator = curr_dirs_head;
-	final_dirs_head = NULL; //Initialize to null. When appropriate it will add the valid nodes inside the loop.
-	while (curr_dirs_iterator) //Iterate through the list of directories using a helping iterating variable (keeping the head var to free when neccessary).
+	ft_free((void **) curpath);
+	i = 0;
+	final_dirs == NULL;
+	while (dirs[i])
 	{
-		dir = curr_dirs_iterator->dir; //Assign the dir in curr_dirs to a shorter named var. -- Keep in mind that the first node is okay, but for the rest it needs to keep concatenating them. Maybe add a helper funct.
-		if (!dir) //If one of the dirs is NULL then the whole path is invalid.
+		if (dirs[i][0] == '.' && dirs[i][1] == '\0')
 		{
-			curpath_free_list(&curr_dirs_head);
-			return (NULL);
-		}
-		if (dir[0] == '.' && dir[1] == '\0') //If the dir is a single dot, then we just skip this directory. It is not added to final_dirs.
-		{
-			curr_dirs_iterator = curr_dirs_iterator->next;
+			i++;
 			continue ;
 		}
-		else if (dir[0] == '.' && dir[1] == '.' && dir[2] == '\0') //If the dir is a double dot...
+		else if (dirs[i][0] == '.' && dirs[i][1] == '.' && dirs[i][2] == '\0')
 		{
-			final_dirs_iterator = final_dirs_head;
-			while (final_dirs_iterator != NULL && final_dirs_iterator->next != NULL)
-				final_dirs_iterator = final_dirs_iterator->next;
-			if (final_dirs_iterator != NULL && final_dirs_iterator->previous)
+			i++;
+			*curpath = cd_concat_dirs(final_dirs, i - 1); //Implement function - Problem!!! If it uses an index, and the list, then there might be values in the list that were removed... so the index might mess things up
+			status = cd_check_access(*curpath); //Implement function
+			if (status != 0)
 			{
-				dir = final_dirs_iterator->previous->dir;
-				if (!dir)
-				{
-					curpath_free_list(&curr_dirs_head);
-					return (NULL);
-				}
-				else
-				{
-					final_dirs_iterator = final_dirs_iterator->previous;
-					final_dirs_iterator = final_dirs_iterator->previous; // This can be either true or NULL
-					final_dirs_iterator = final_dirs_iterator->previous; // This can either be true or segfault
-					final_dirs_iterator->next = NULL; // Umm, check if this actually modifies final_dirs_head.
-				}
+				ft_free((void **) curpath);
+				ft_free_2d((void ***) &dirs);
+				return (NULL); //PRINT APPROPRIATE ERROR MESSAGE
 			}
-			else
-			{
-				curpath_free_list(&curr_dirs_head);
-				return (ft_strdup("/"));
-			}
+			//REMOVE LAST DIR IN THE LINKED LIST.
+			i++;
+			continue ;
 		}
-		else
-		{
-			//Ummm, what did I do here? It needs to keep iterating, right?
-		}
-		dir = ft_strdup(final_dirs_head->dir);
-		final_dirs_head = final_dirs_head->next;
-		while (final_dirs_head)
-		{
-			dir = ft_strjoin_fs1(dir, final_dirs_head->dir);
-			final_dirs_head = final_dirs_head->next;
-		}
-		return (dir);
-	}
-}
-
-t_curpath	*cd_split_curpath(char *curpath)
-{
-	t_curpath	*head;
-	t_curpath	*current;
-	char		**directories;
-	int			i;
-
-	if (curpath == NULL || *curpath == '\0')
-		return (NULL);
-	directories = ft_split(curpath, '/');
-	if (!directories || !*directories)
-		return (NULL);
-	if ((*directories[0]) == '\0') //Is this neccessary?
-		ft_free_2d((void ***) &directories);
-	head = curpath_new_node(directories[0], NULL, NULL);
-	if (!head)
-		ft_free_2d((void ***) &directories);
-	current = head;
-	i = 1;
-	while (directories[i])
-	{
-		current->next = curpath_new_node(directories[i], current, NULL);
-		if (!current->next)
-		{
-			ft_free_2d((void ***) &directories);
-			curpath_free_list(&head);
-		}
-		current = current->next;
+		//CONCATENATE CURPATH
+		//CHECK ACCESS
+		//IF THERE'S ACCESS, THEN ADD THE DIR TO THE LIST OF FINAL DIRS
+		//IF THERE'S NOT THEN FREE AND RETURN NULL, PRINTING THE APPROPRIATE ERROR MESSAGE.
 		i++;
 	}
-	ft_free_2d((void ***) &directories);
-	return (head);
+	ft_free_2d((void ***) &dirs);
+	//FREE THE LIST;
+	return (*curpath);
 }
+
+
+
+//Old function that I'm looking forward to replace.
+// static char	*cd_trim_curpath(t_shell **shell, char **curpath)
+// {
+// 	t_curpath	*curr_dirs_head;
+// 	t_curpath	*curr_dirs_iterator;
+// 	t_curpath	*final_dirs_head;
+// 	t_curpath	*final_dirs_iterator;
+// 	char		*dir;
+
+// 	curr_dirs_head = cd_split_curpath(*curpath);// Create array to store each directory separately, without including slashes. - Ensure we are not passing the root directory.
+// 	if (!curr_dirs_head)
+// 		return (NULL);
+// 	curr_dirs_iterator = curr_dirs_head;
+// 	final_dirs_head = NULL; //Initialize to null. When appropriate it will add the valid nodes inside the loop.
+// 	while (curr_dirs_iterator) //Iterate through the list of directories using a helping iterating variable (keeping the head var to free when neccessary).
+// 	{
+// 		dir = curr_dirs_iterator->dir; //Assign the dir in curr_dirs to a shorter named var. -- Keep in mind that the first node is okay, but for the rest it needs to keep concatenating them. Maybe add a helper funct.
+// 		if (!dir) //If one of the dirs is NULL then the whole path is invalid.
+// 		{
+// 			curpath_free_list(&curr_dirs_head);
+// 			return (NULL);
+// 		}
+// 		if (dir[0] == '.' && dir[1] == '\0') //If the dir is a single dot, then we just skip this directory. It is not added to final_dirs.
+// 		{
+// 			curr_dirs_iterator = curr_dirs_iterator->next;
+// 			continue ;
+// 		}
+// 		else if (dir[0] == '.' && dir[1] == '.' && dir[2] == '\0') //If the dir is a double dot...
+// 		{
+// 			final_dirs_iterator = final_dirs_head;
+// 			while (final_dirs_iterator != NULL && final_dirs_iterator->next != NULL)
+// 				final_dirs_iterator = final_dirs_iterator->next;
+// 			if (final_dirs_iterator != NULL && final_dirs_iterator->previous)
+// 			{
+// 				dir = final_dirs_iterator->previous->dir;
+// 				if (!dir)
+// 				{
+// 					curpath_free_list(&curr_dirs_head);
+// 					return (NULL);
+// 				}
+// 				else
+// 				{
+// 					final_dirs_iterator = final_dirs_iterator->previous;
+// 					final_dirs_iterator = final_dirs_iterator->previous; // This can be either true or NULL
+// 					final_dirs_iterator = final_dirs_iterator->previous; // This can either be true or segfault
+// 					final_dirs_iterator->next = NULL; // Umm, check if this actually modifies final_dirs_head.
+// 				}
+// 			}
+// 			else
+// 			{
+// 				curpath_free_list(&curr_dirs_head);
+// 				return (ft_strdup("/"));
+// 			}
+// 		}
+// 		else
+// 		{
+// 			//Ummm, what did I do here? It needs to keep iterating, right?
+// 		}
+// 		dir = ft_strdup(final_dirs_head->dir);
+// 		final_dirs_head = final_dirs_head->next;
+// 		while (final_dirs_head)
+// 		{
+// 			dir = ft_strjoin_fs1(dir, final_dirs_head->dir);
+// 			final_dirs_head = final_dirs_head->next;
+// 		}
+// 		return (dir);
+// 	}
+// }
+
+
+//It's not going to be needed since I'll use ft_split to create an array.
+// t_curpath	*cd_split_curpath(char *curpath)
+// {
+// 	t_curpath	*head;
+// 	t_curpath	*current;
+// 	char		**directories;
+// 	int			i;
+
+// 	if (curpath == NULL || *curpath == '\0')
+// 		return (NULL);
+// 	directories = ft_split(curpath, '/');
+// 	if (!directories || !*directories)
+// 		return (NULL);
+// 	if ((*directories[0]) == '\0') //Is this neccessary?
+// 		ft_free_2d((void ***) &directories);
+// 	head = curpath_new_node(directories[0], NULL, NULL);
+// 	if (!head)
+// 		ft_free_2d((void ***) &directories);
+// 	current = head;
+// 	i = 1;
+// 	while (directories[i])
+// 	{
+// 		current->next = curpath_new_node(directories[i], current, NULL);
+// 		if (!current->next)
+// 		{
+// 			ft_free_2d((void ***) &directories);
+// 			curpath_free_list(&head);
+// 		}
+// 		current = current->next;
+// 		i++;
+// 	}
+// 	ft_free_2d((void ***) &directories);
+// 	return (head);
+// }
