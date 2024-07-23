@@ -10,60 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/builtins.h"
-#include "../../include/minishell.h"
+#include "../../../include/builtins.h"
+#include "../../../include/minishell.h"
 
 #define SUCCESS 1
-
-typedef struct s_curpath
-{
-	char				*dir;
-	struct s_curpath	*previous;
-	struct s_curpath	*next;
-}	t_curpath;
-
-t_curpath	*curpath_new_node(char *dir, t_curpath *previous, t_curpath *next)
-{
-	t_curpath	*new_node;
-
-	new_node = malloc(sizeof(t_curpath) + 1);
-	if (!new_node)
-		return (NULL);
-	new_node->dir = ft_strdup(dir);
-	new_node->previous = previous;
-	new_node->next = next;
-	return (new_node);
-}
-
-void	curpath_free_node(t_curpath **node)
-{
-	if (!*node)
-		return ;
-	if ((*node)->dir)
-		free((*node)->dir);
-	free(*node);
-	*node = NULL;
-	return ;
-}
-
-void	curpath_free_list(t_curpath **head)
-{
-	t_curpath	*iterator;
-	t_curpath	*current;
-
-	if (!*head && !(*head)->next)
-		return ;
-	iterator = *head;
-	current = *head;
-	while (iterator)
-	{
-		current = iterator;
-		if (current != NULL)
-			free(current->dir);
-		iterator = current->next;
-		free(current);
-	}
-}
 
 t_ecode	execute_cd(t_env *env, char *directory)
 {
@@ -159,6 +109,7 @@ char	*cd_trim_curpath(char **curpath)
 {
 	char		**dirs;
 	t_curpath	*final_dirs;
+	t_curpath	*new;
 	int			i;
 	int			status;
 
@@ -178,26 +129,43 @@ char	*cd_trim_curpath(char **curpath)
 		else if (dirs[i][0] == '.' && dirs[i][1] == '.' && dirs[i][2] == '\0')
 		{
 			i++;
-			*curpath = cd_concat_dirs(final_dirs, i - 1); //Implement function - Problem!!! If it uses an index, and the list, then there might be values in the list that were removed... so the index might mess things up
-			status = cd_check_access(*curpath); //Implement function
-			if (status != 0)
+			*curpath = curpath_concat(final_dirs);
+			status = curpath_check_access(*curpath);
+			ft_free((void **) curpath);
+			if (!status)
 			{
-				ft_free((void **) curpath);
 				ft_free_2d((void ***) &dirs);
+				curpath_del_list(&final_dirs);
 				return (NULL); //PRINT APPROPRIATE ERROR MESSAGE
 			}
-			//REMOVE LAST DIR IN THE LINKED LIST.
+			curpath_del_last(&final_dirs);
 			i++;
 			continue ;
 		}
-		//CONCATENATE CURPATH
-		//CHECK ACCESS
-		//IF THERE'S ACCESS, THEN ADD THE DIR TO THE LIST OF FINAL DIRS
-		//IF THERE'S NOT THEN FREE AND RETURN NULL, PRINTING THE APPROPRIATE ERROR MESSAGE.
+		*curpath = curpath_concat(final_dirs);
+		status = curpath_check_access(*curpath);
+		ft_free((void **) curpath);
+		if (!status)
+		{
+			ft_free_2d((void ***) &dirs);
+			curpath_del_list(&final_dirs);
+			return (NULL); //PRINT APPROPRIATE ERROR MESSAGE
+		}
+		else
+		{
+			new = curpath_new_node(dirs[i], NULL, NULL);
+			if (!new)
+			{
+				ft_free_2d((void ***) &dirs);
+				curpath_del_list(&final_dirs);
+				return (NULL);
+			}
+			curpath_add_back(&final_dirs, new);
+		}
 		i++;
 	}
 	ft_free_2d((void ***) &dirs);
-	//FREE THE LIST;
+	curpath_del_list(&final_dirs);
 	return (*curpath);
 }
 
