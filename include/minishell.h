@@ -6,7 +6,7 @@
 /*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/06/24 13:58:20 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/07/17 15:46:26 by lprieri       ########   odam.nl         */
+/*   Updated: 2024/07/25 20:16:39 by lprieri       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,15 +26,18 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <string.h>
+# include <stddef.h>
 # include "../libft/libft.h"
+# include "builtins.h"
 # include "env.h"
 # include "errors.h"
 # include "free.h"
+# include "utils.h"
 
 // typedef struct s_shell
 // {
 // 	t_env	*env_list;
-// 	char	*pwd;
+// 	char	*cwd;
 // 	int		pipefd[2];
 // 	int		read_fd;
 // 	int		write_fd;

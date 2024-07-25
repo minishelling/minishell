@@ -6,7 +6,7 @@
 /*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/07/23 12:54:11 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/07/23 13:52:55 by lprieri       ########   odam.nl         */
+/*   Updated: 2024/07/25 17:56:51 by lprieri       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,7 @@ char	*curpath_concat(t_curpath *head)
 	{
 		if (head->dir)
 		{
-			curpath = ft_strjoin_fs1(curpath, head->dir);
+			curpath = ft_strjoin_fs1(&curpath, head->dir);
 			if (!curpath)
 				return (NULL);
 		}
@@ -124,16 +124,28 @@ char	*curpath_concat(t_curpath *head)
 
 int	curpath_check_access(char *curpath)
 {
-	int	status;
+	int	e_status;
 
 	if (!curpath)
-		return (0);
-	status = access(curpath, F_OK);
-	if (status != 0)
-		return (0);
-	status = access(curpath, X_OK);
-	if (status != 0)
-		return (0);
-	return (1);
+		return (1);
+	e_status = access(curpath, F_OK);
+	if (e_status)
+		return (e_status);
+	e_status = access(curpath, X_OK);
+	if (e_status)
+		return (e_status);
+	return (0);
 }
 
+int	curpath_check_access_and_chdir(char *curpath)
+{
+	int	e_status;
+
+	e_status = curpath_check_access(curpath);
+	if (e_status)
+		return (CD_NO_ACCESS);
+	e_status = chdir(curpath);
+	if (e_status)
+		return (CD_CHDIR_ERROR);
+	return (CD_CHDIR_SUCCESS);
+}

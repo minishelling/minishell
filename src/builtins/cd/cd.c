@@ -13,96 +13,150 @@
 #include "../../../include/builtins.h"
 #include "../../../include/minishell.h"
 
-#define SUCCESS 1
-
-t_ecode	execute_cd(t_env *env, char *directory)
+typedef enum
 {
-	char	*curpath;
-	char	*cwd;
-	void	*temp;
-	int		i;
-	int		no_cdpath_flag;
+	CURPATH,
+	CURWD,
+	OLDWD,
+	TEMP
+}	t_cdvar; //For storing strings. I don't have enough space to declare many, but I can like this.
 
-	if (!directory) //First step
+t_cd_ecode	cd_chdir_home(t_env *env)
+{
+	t_env	*home_node;
+	int		e_status;
+
+	home_node = env_find_node(env, "HOME");
+	if (!home_node || !home_node->value)
+		return (CD_NO_HOME);
+	else
 	{
-		temp = env_find_node("HOME");
-		if (!temp || !temp.key)
-			return (ERR_CD_NO_HOME);
-		else //Second step
-		{
-			if (chdir(temp.key) == -1)
-				return (ERR_CD_CHDIR_ERROR); //Errno is set.
-		}	
+		e_status = chdir(home_node->value);
+		if (e_status)
+			return (CD_CHDIR_ERROR); //Errno is also set.
+		return (CD_CHDIR_SUCCESS);
 	}
-	else if (directory[0] == '/' || directory[0] == '.'
-		|| (directory[0] == '.' && directory[1] == '.')) //Steps 3 and 4
-		curpath = directory;
-	else //Step 5 - Which was wrong, because it has to set and then proceed to step 6 outside of the else statement.
+}
+
+t_cd_ecode cd_chdir_cdpath(t_env *env, char *directory)
+{
+	t_env		*cdpath_node;
+	size_t		i;
+	size_t		values_count; //Not enough space for this var.
+	char		*curpath;
+	char		**values;
+	int			null_flag;
+	t_cd_ecode	e_status;
+
+	cdpath_node = env_find_node(env, "CDPATH");
+	i = 0;
+	values_count = env_count_values(env, "CDPATH");
+	values = ft_split(cdpath_node->value, ':');
+	if (!values)
+		return (CD_MALLOC_ERROR);
+	while (i < values_count)
 	{
-		temp = (t_env *)env_find_node("CDPATH"); //Look for CDPATH in env. Retrieve the node. - Testing the use of (void *).
-		i = 0;
-		while (i < env_count_values(env, "CDPATH")) //A value can be an empty string. 
+		curpath = ft_strdup(values[i]);
+		if (!curpath && !null_flag)
 		{
-			curpath = ft_strdup(temp.values[i]); //Dups so I can use ft_strjoin_fs1 or simply ft_free on curpath. - Protect malloc.
-			if (curpath == NULL && no_cdpath_flag == 0) //If the string is empty or is NULL (strdup takes care of handling empty strings, converting them to NULL),
-			{//Then execute step 4
-				curpath = ft_strjoin("./", directory); //Append current directory and the directory provided.
-				if (access(curpath, F_OK) == -1) //Why would I replace access with a dir function?
-				{
-					ft_free(&curpath);
-					i++;
-					continue ;
-				}
-				if (chdir(curpath) == -1)
-				{
-					ft_free(&curpath); //Repeated functionality... How can I optimize this?
-					i++;
-					continue ;
-				}
-				no_cdpath_flag = 1; //Flags this occurrence so it doesn't do it again.
+			null_flag = 1;
+			curpath = ft_strjoin("./", directory);
+			e_status = curpath_check_access(curpath);
+			if (e_status)
+			{
+				(ft_free((void **) &curpath), ft_free_2d((void ***) &values));
+				i++;
+				continue ;
 			}
-			else if (curpath == NULL && no_cdpath_flag == 1) //New addition that I forgot in the initial implementation.
+			e_status = chdir(curpath);
+			(ft_free((void **) &curpath), ft_free_2d((void ***) &values));
+			if (e_status)
 			{
 				i++;
 				continue ;
 			}
-			if (curpath[len -1] != '/') //Continues execution when the node found in CDPATH is true.
-				curpath = ft_strjoin_fs1(curpath, "/"); //Appends a slash if the path in CDPATH didn't end with one. - Protect the malloc.
-			curpath = ft_strjoin_fs1(curpath, directory); //Appends the path in CDPATH with the directory.
-			if (access(curpath, F_OK) == -1) //Checks if it is a valid dir.
-			{
-				ft_free(&curpath);
-				i++;
-				continue ;
-			}
-			if (chdir(curpath) == -1) //Checks if changing to that dir fails.
-			{
-				ft_free(&curpath);
-				i++;
-				continue ;
-			}
-			else //Forgot to add the action for when it succeeds. So adding it now:
-			{
-				ft_free(&curpath);
-				//Update pwd and oldpwd.
-				return (SUCCESS);
-			}
-			i++;
+			else
+				return (CD_CHDIR_SUCCESS);
 		}
+		else if (!curpath && null_flag)
+		{
+			i++;
+			continue ;
+		}
+		if (curpath[ft_strlen(curpath) - 1] != '/')
+		{
+			curpath = ft_strjoin_fs1(&curpath, "/");
+			if (!curpath)
+				return (CD_MALLOC_ERROR);
+		}
+		curpath = ft_strjoin_fs1(&curpath, directory);
+		if (!curpath)
+			return (CD_MALLOC_ERROR);
+		e_status = curpath_check_access(curpath);
+		if (e_status)
+		{
+			(ft_free((void **) &curpath), ft_free_2d((void ***) &values));
+			i++;
+			continue ;
+		}
+		e_status = chdir(curpath);
+		(ft_free((void **) &curpath), ft_free_2d((void ***) &values));
+		if (e_status)
+		{
+			i++;
+			continue ;
+		}
+		else
+			return (CD_SUCCESS);
 	}
-	curpath = directory; //Step 6
-	if (shell->pwd[len - 1] != '/') //Here I can use either PWD from the shell struct (not from the env), or the getcwd command.
-		shell->pwd = ft_strjoin_fs1(shell->pwd, "/"); //Protect mallocs.
+	return (CD_PROCEED);
+}
 
-	//Shouldn't I be concatenating PWD with curpath here?
+t_cd_ecode	execute_cd(t_env *env, char *directory)
+{
+	t_cd_ecode	e_status;
+	char		*curpath;
+	char		*cwd;
+	// char		*oldwd;
 
-	curpath = cd_trim_curpath(shell, &curpath); //Return a trimmed path that is ready to be used.
-	// Check if (ft_strlen(curpath) + 1 > PATH_MAX)
-	status = chdir(curpath);
-	free(curpath); //The end of the journey.
-	if (status == -1) //Status could be called ret, becasue after all it has to return a value.
-		return (ERR_CD_CHDIR_ERROR);
-	return (SUCCESS);
+	if (!directory)
+	{
+		e_status = cd_chdir_home(env);
+		if (e_status != CD_CHDIR_SUCCESS)
+			return (CD_NO_HOME);
+		else
+			return (CD_CHDIR_SUCCESS);
+	}
+	else if (directory[0] != '/' && directory[0] != '.'
+			&& (directory[0] != '.' && directory[1] != '.'))
+	{
+		e_status = cd_chdir_cdpath(env, directory);
+		if (e_status != CD_SUCCESS || e_status != CD_PROCEED)
+			return (CD_CDPATH_ERROR);
+	}
+	curpath = directory;
+	cwd = getcwd(NULL, PATH_MAX);
+	if (!cwd)
+		return (CD_NO_CWD); //ERRNO IS SET
+	if (curpath[0] != '/')
+	{
+		cwd = ft_strjoin_fs1(&cwd, "/");
+		if (!cwd)
+			return (CD_MALLOC_ERROR);
+		curpath = ft_strjoin_fs2(cwd, &curpath);
+		if (!curpath)
+			return (CD_MALLOC_ERROR);
+	}
+	curpath = cd_trim_curpath(&curpath);
+	if (!curpath)
+		return (CD_MALLOC_ERROR);
+	e_status = curpath_check_access(curpath);
+	if (e_status)
+		return (CD_NO_ACCESS);
+	e_status = chdir(curpath);
+	if (e_status)
+		return (CD_CHDIR_ERROR); //Errno is set
+	return (CD_CHDIR_SUCCESS);
 }
 
 char	*cd_trim_curpath(char **curpath)
@@ -113,12 +167,12 @@ char	*cd_trim_curpath(char **curpath)
 	int			i;
 	int			status;
 
-	dirs = ft_split(*curpath, "/");
+	dirs = ft_split(*curpath, '/');
 	if (!dirs)
 		return (NULL);
 	ft_free((void **) curpath);
 	i = 0;
-	final_dirs == NULL;
+	final_dirs = NULL;
 	while (dirs[i])
 	{
 		if (dirs[i][0] == '.' && dirs[i][1] == '\0')
@@ -168,6 +222,97 @@ char	*cd_trim_curpath(char **curpath)
 	curpath_del_list(&final_dirs);
 	return (*curpath);
 }
+
+//Old EXECUTE_CD Function that served as prototype
+// t_ecode	execute_cd(t_env *env, char *directory)
+// {
+// 	char	*curpath;
+// 	char	*cwd;
+// 	void	*temp;
+// 	int		i;
+// 	int		no_cdpath_flag;
+
+// 	if (!directory) //First step
+// 	{
+// 		temp = env_find_node("HOME");
+// 		if (!temp || !temp.key)
+// 			return (ERR_CD_NO_HOME);
+// 		else //Second step
+// 		{
+// 			if (chdir(temp.key) == -1)
+// 				return (ERR_CD_CHDIR_ERROR); //Errno is set.
+// 		}	
+// 	}
+// 	else if (directory[0] == '/' || directory[0] == '.'
+// 		|| (directory[0] == '.' && directory[1] == '.')) //Steps 3 and 4
+// 		curpath = directory;
+// 	else //Step 5 - Which was wrong, because it has to set and then proceed to step 6 outside of the else statement.
+// 	{
+// 		temp = (t_env *)env_find_node("CDPATH"); //Look for CDPATH in env. Retrieve the node. - Testing the use of (void *).
+// 		i = 0;
+// 		while (i < env_count_values(env, "CDPATH")) //A value can be an empty string. 
+// 		{
+// 			curpath = ft_strdup(temp.values[i]); //Dups so I can use ft_strjoin_fs1 or simply ft_free on curpath. - Protect malloc.
+// 			if (curpath == NULL && no_cdpath_flag == 0) //If the string is empty or is NULL (strdup takes care of handling empty strings, converting them to NULL),
+// 			{//Then execute step 4
+// 				curpath = ft_strjoin("./", directory); //Append current directory and the directory provided.
+// 				if (access(curpath, F_OK) == -1) //Why would I replace access with a dir function?
+// 				{
+// 					ft_free(&curpath);
+// 					i++;
+// 					continue ;
+// 				}
+// 				if (chdir(curpath) == -1)
+// 				{
+// 					ft_free(&curpath); //Repeated functionality... How can I optimize this?
+// 					i++;
+// 					continue ;
+// 				}
+// 				no_cdpath_flag = 1; //Flags this occurrence so it doesn't do it again.
+// 			}
+// 			else if (curpath == NULL && no_cdpath_flag == 1) //New addition that I forgot in the initial implementation.
+// 			{
+// 				i++;
+// 				continue ;
+// 			}
+// 			if (curpath[len -1] != '/') //Continues execution when the node found in CDPATH is true.
+// 				curpath = ft_strjoin_fs1(curpath, "/"); //Appends a slash if the path in CDPATH didn't end with one. - Protect the malloc.
+// 			curpath = ft_strjoin_fs1(curpath, directory); //Appends the path in CDPATH with the directory.
+// 			if (access(curpath, F_OK) == -1) //Checks if it is a valid dir.
+// 			{
+// 				ft_free(&curpath);
+// 				i++;
+// 				continue ;
+// 			}
+// 			if (chdir(curpath) == -1) //Checks if changing to that dir fails.
+// 			{
+// 				ft_free(&curpath);
+// 				i++;
+// 				continue ;
+// 			}
+// 			else //Forgot to add the action for when it succeeds. So adding it now:
+// 			{
+// 				ft_free(&curpath);
+// 				//Update pwd and oldpwd.
+// 				return (SUCCESS);
+// 			}
+// 			i++;
+// 		}
+// 	}
+// 	curpath = directory; //Step 6
+// 	if (shell->pwd[len - 1] != '/') //Here I can use either PWD from the shell struct (not from the env), or the getcwd command.
+// 		shell->pwd = ft_strjoin_fs1(shell->pwd, "/"); //Protect mallocs.
+
+// 	//Shouldn't I be concatenating PWD with curpath here?
+
+// 	curpath = cd_trim_curpath(shell, &curpath); //Return a trimmed path that is ready to be used.
+// 	// Check if (ft_strlen(curpath) + 1 > PATH_MAX)
+// 	status = chdir(curpath);
+// 	free(curpath); //The end of the journey.
+// 	if (status == -1) //Status could be called ret, becasue after all it has to return a value.
+// 		return (ERR_CD_CHDIR_ERROR);
+// 	return (SUCCESS);
+// }
 
 
 

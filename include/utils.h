@@ -13,6 +13,9 @@
 #ifndef UTILS_H
 # define UTILS_H
 
-char	*ft_strjoin_fs1(char *s1, const char *s2);
+# include "minishell.h"
+
+char	*ft_strjoin_fs1(char **s1, const char *s2);
+char	*ft_strjoin_fs2(const char *s1, char **s2);
 
 #endif

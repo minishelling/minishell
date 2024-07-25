@@ -102,3 +102,42 @@ t_env_ecode	env_copy_keyval(t_env **new_node, char *keyvalue)
 	(*new_node)->next = NULL;
 	return (ENV_SUCCESS);
 }
+
+t_env	*env_find_node(t_env *env, char *key)
+{
+	t_env	*node;
+	size_t	key_len;
+	int		isnt_key;
+
+	node = env;
+	key_len = ft_strlen(key);
+	while (node)
+	{
+		isnt_key = ft_strncmp(node->key, key, key_len);
+		if (isnt_key)
+		{
+			node = node->next;
+			continue ;
+		}
+		return (node);
+	}
+	return (NULL);
+}
+
+size_t	env_count_values(t_env *env, char *key)
+{
+	t_env	*node;
+	size_t	i;
+	char	**values;
+
+	node = env_find_node(env, key);
+	if (!node)
+		return (CD_NO_ENV_NODE);
+	values = ft_split(node->value, ':');
+	if (!values)
+		return (-1); //The CD_MALLOC enum should be negative
+	i = 0;
+	while (values[i])
+		i++;
+	return (i);
+}

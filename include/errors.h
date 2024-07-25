@@ -13,6 +13,8 @@
 #ifndef ERRORS_H
 # define ERRORS_H
 
+# include "minishell.h"
+
 typedef enum e_codes
 {
 	ERR_SUCCESS = 0,
