@@ -57,6 +57,7 @@ t_curpath	*curpath_get_last(t_curpath *head);
 void		curpath_add_back(t_curpath **head, t_curpath *new);
 void		curpath_del_last(t_curpath **head);
 char		*curpath_concat(t_curpath *head);
+void		curpath_print(t_curpath *head);
 int			curpath_check_access(char *curpath);
 int			curpath_check_access_and_chdir(char *curpath);
 

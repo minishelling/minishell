@@ -6,7 +6,7 @@
 /*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/07/23 12:54:11 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/07/25 17:56:51 by lprieri       ########   odam.nl         */
+/*   Updated: 2024/07/29 16:15:03 by lprieri       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,10 +105,11 @@ char	*curpath_concat(t_curpath *head)
 	
 	if (!head)
 		return (NULL);
-	curpath = ft_strdup(head->dir);
+	curpath = ft_strdup("/"); // WHAT DID I DO??
+	printf("Cur: %s\n", curpath);
 	if (!curpath)
 		return (NULL);
-	head = head->next;
+	curpath_print(head);
 	while (head)
 	{
 		if (head->dir)
@@ -116,10 +117,31 @@ char	*curpath_concat(t_curpath *head)
 			curpath = ft_strjoin_fs1(&curpath, head->dir);
 			if (!curpath)
 				return (NULL);
+			curpath = ft_strjoin_fs1(&curpath, "/");
+			if (!curpath)
+				return (NULL);
 		}
 		head = head->next;	
 	}
 	return (curpath);
+}
+
+void	curpath_print(t_curpath *head)
+{
+	int	i;
+
+	if (!head)
+	{
+		printf("Head is null in curpath_print\n");
+		return ;
+	}
+	i = 0;
+	while (head)
+	{
+		printf("Curpath dir[%i]: %s\n", i, head->dir);
+		i++;
+		head = head->next;
+	}
 }
 
 int	curpath_check_access(char *curpath)

@@ -131,14 +131,14 @@ t_cd_ecode	execute_cd(t_env *env, char *directory)
 			&& (directory[0] != '.' && directory[1] != '.'))
 	{
 		e_status = cd_chdir_cdpath(env, directory);
-		if (e_status != CD_SUCCESS || e_status != CD_PROCEED)
+		if (e_status != CD_SUCCESS && e_status != CD_PROCEED)
 			return (CD_CDPATH_ERROR);
 	}
-	curpath = directory;
+	curpath = ft_strdup(directory);
 	cwd = getcwd(NULL, PATH_MAX);
 	if (!cwd)
 		return (CD_NO_CWD); //ERRNO IS SET
-	if (curpath[0] != '/')
+	if (curpath[ft_strlen(curpath) - 1] != '/')
 	{
 		cwd = ft_strjoin_fs1(&cwd, "/");
 		if (!cwd)
@@ -148,6 +148,7 @@ t_cd_ecode	execute_cd(t_env *env, char *directory)
 			return (CD_MALLOC_ERROR);
 	}
 	curpath = cd_trim_curpath(&curpath);
+	printf("Curpath: %s\n", curpath);
 	if (!curpath)
 		return (CD_MALLOC_ERROR);
 	e_status = curpath_check_access(curpath);
@@ -167,6 +168,7 @@ char	*cd_trim_curpath(char **curpath)
 	int			i;
 	int			status;
 
+	dirs = NULL;
 	dirs = ft_split(*curpath, '/');
 	if (!dirs)
 		return (NULL);
@@ -182,8 +184,9 @@ char	*cd_trim_curpath(char **curpath)
 		}
 		else if (dirs[i][0] == '.' && dirs[i][1] == '.' && dirs[i][2] == '\0')
 		{
-			i++;
-			*curpath = curpath_concat(final_dirs);
+			curpath_print(final_dirs);
+			*curpath = curpath_concat(final_dirs); //FIX THIS...
+			printf("CURPATH CONCAT: %s\n", *curpath);
 			status = curpath_check_access(*curpath);
 			ft_free((void **) curpath);
 			if (!status)
