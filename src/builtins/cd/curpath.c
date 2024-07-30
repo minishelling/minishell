@@ -6,7 +6,7 @@
 /*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/07/23 12:54:11 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/07/30 15:49:40 by lprieri       ########   odam.nl         */
+/*   Updated: 2024/07/30 16:43:54 by lprieri       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,8 @@ void	curpath_del_last(t_curpath **head)
 	if (!*head)
 		return ;
 	iterator = curpath_get_last(*head)->previous;
+	if (!iterator)
+		return ;
 	curpath_del_node(&iterator->next);
 	iterator->next = NULL;
 	return ;	

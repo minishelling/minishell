@@ -136,6 +136,7 @@ t_cd_ecode	execute_cd(t_env *env, char *directory)
 			return (CD_MALLOC_ERROR);
 	}
 	curpath = cd_trim_curpath(&curpath);
+	printf("CURPATH: %s\n", curpath);
 	if (!curpath)
 		return (CD_MALLOC_ERROR);
 	e_status = curpath_check_access(curpath);
@@ -160,10 +161,10 @@ char	*cd_trim_curpath(char **curpath)
 		return (NULL);
 	ft_free((void **) curpath);
 	final_dirs = NULL;
-	status = curpath_create_and_add_back(&final_dirs, &dirs, dirs[0]);
+	status = curpath_create_and_add_back(&final_dirs, &dirs, "/");
 	if (status)
 		return (NULL); //PRINT APPROPRIATE ERROR MESSAGE
-	i = 1;
+	i = 0;
 	while (dirs[i])
 	{
 		if (dirs[i][0] == '.' && dirs[i][1] == '\0')
@@ -187,6 +188,7 @@ char	*cd_trim_curpath(char **curpath)
 			continue ;
 		}
 		*curpath = curpath_concat(final_dirs);
+		printf("CURPATH in trim: %s\n", *curpath); //????
 		status = curpath_check_access(*curpath);
 		ft_free((void **) curpath);
 		if (status)
