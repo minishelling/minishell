@@ -184,9 +184,9 @@ char	*cd_trim_curpath(char **curpath)
 		}
 		else if (dirs[i][0] == '.' && dirs[i][1] == '.' && dirs[i][2] == '\0')
 		{
-			curpath_print(final_dirs);
+			curpath_print(final_dirs); //
 			*curpath = curpath_concat(final_dirs); //FIX THIS...
-			printf("CURPATH CONCAT: %s\n", *curpath);
+			printf("CURPATH CONCAT: %s\n", *curpath); //
 			status = curpath_check_access(*curpath);
 			ft_free((void **) curpath);
 			if (!status)

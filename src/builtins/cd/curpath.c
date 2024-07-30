@@ -6,7 +6,7 @@
 /*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/07/23 12:54:11 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/07/29 16:15:03 by lprieri       ########   odam.nl         */
+/*   Updated: 2024/07/29 22:34:08 by lprieri       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,8 @@ void	curpath_print(t_curpath *head)
 	i = 0;
 	while (head)
 	{
-		printf("Curpath dir[%i]: %s\n", i, head->dir);
+		if (head->dir)
+			printf("Curpath dir[%i]: %s\n", i, head->dir);
 		i++;
 		head = head->next;
 	}
