@@ -6,7 +6,7 @@
 /*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/07/23 12:54:11 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/07/29 22:34:08 by lprieri       ########   odam.nl         */
+/*   Updated: 2024/07/30 15:49:40 by lprieri       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,21 @@ void	curpath_add_back(t_curpath **head, t_curpath *new)
 	}
 }
 
+t_cd_ecode	curpath_create_and_add_back(t_curpath **head, char ***dirs, char *dir)
+{
+	t_curpath	*new;
+
+	new = curpath_new_node(dir, NULL, NULL);
+	if (!new)
+	{
+		ft_free_2d((void ***) dirs);
+		curpath_del_list(head);
+		return (CD_NO_ENV_NODE);
+	}
+	curpath_add_back(head, new);
+	return (CD_SUCCESS);
+}
+
 void	curpath_del_last(t_curpath **head)
 {
 	t_curpath	*iterator;
@@ -105,11 +120,9 @@ char	*curpath_concat(t_curpath *head)
 	
 	if (!head)
 		return (NULL);
-	curpath = ft_strdup("/"); // WHAT DID I DO??
-	printf("Cur: %s\n", curpath);
+	curpath = ft_strdup("/");
 	if (!curpath)
 		return (NULL);
-	curpath_print(head);
 	while (head)
 	{
 		if (head->dir)

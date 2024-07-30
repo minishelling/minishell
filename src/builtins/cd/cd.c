@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        ::::::::            */
-/*   cd.c                                               :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/07/11 18:28:31 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/07/11 18:28:31 by lprieri       ########   odam.nl         */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../../../include/builtins.h"
 #include "../../../include/minishell.h"
 
@@ -148,7 +136,6 @@ t_cd_ecode	execute_cd(t_env *env, char *directory)
 			return (CD_MALLOC_ERROR);
 	}
 	curpath = cd_trim_curpath(&curpath);
-	printf("Curpath: %s\n", curpath);
 	if (!curpath)
 		return (CD_MALLOC_ERROR);
 	e_status = curpath_check_access(curpath);
@@ -164,7 +151,6 @@ char	*cd_trim_curpath(char **curpath)
 {
 	char		**dirs;
 	t_curpath	*final_dirs;
-	t_curpath	*new;
 	int			i;
 	int			status;
 
@@ -173,8 +159,11 @@ char	*cd_trim_curpath(char **curpath)
 	if (!dirs)
 		return (NULL);
 	ft_free((void **) curpath);
-	i = 0;
 	final_dirs = NULL;
+	status = curpath_create_and_add_back(&final_dirs, &dirs, dirs[0]);
+	if (status)
+		return (NULL); //PRINT APPROPRIATE ERROR MESSAGE
+	i = 1;
 	while (dirs[i])
 	{
 		if (dirs[i][0] == '.' && dirs[i][1] == '\0')
@@ -184,12 +173,10 @@ char	*cd_trim_curpath(char **curpath)
 		}
 		else if (dirs[i][0] == '.' && dirs[i][1] == '.' && dirs[i][2] == '\0')
 		{
-			curpath_print(final_dirs); //
-			*curpath = curpath_concat(final_dirs); //FIX THIS...
-			printf("CURPATH CONCAT: %s\n", *curpath); //
+			*curpath = curpath_concat(final_dirs);
 			status = curpath_check_access(*curpath);
 			ft_free((void **) curpath);
-			if (!status)
+			if (status)
 			{
 				ft_free_2d((void ***) &dirs);
 				curpath_del_list(&final_dirs);
@@ -202,7 +189,7 @@ char	*cd_trim_curpath(char **curpath)
 		*curpath = curpath_concat(final_dirs);
 		status = curpath_check_access(*curpath);
 		ft_free((void **) curpath);
-		if (!status)
+		if (status)
 		{
 			ft_free_2d((void ***) &dirs);
 			curpath_del_list(&final_dirs);
@@ -210,17 +197,14 @@ char	*cd_trim_curpath(char **curpath)
 		}
 		else
 		{
-			new = curpath_new_node(dirs[i], NULL, NULL);
-			if (!new)
-			{
-				ft_free_2d((void ***) &dirs);
-				curpath_del_list(&final_dirs);
-				return (NULL);
-			}
-			curpath_add_back(&final_dirs, new);
+			status = curpath_create_and_add_back(&final_dirs, &dirs, dirs[i]);
+			if (status)
+				return (NULL); //PRINT APPROPRIATE ERROR MESSAGE
+				
 		}
 		i++;
 	}
+	*curpath = curpath_concat(final_dirs);
 	ft_free_2d((void ***) &dirs);
 	curpath_del_list(&final_dirs);
 	return (*curpath);

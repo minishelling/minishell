@@ -77,4 +77,8 @@ fclean: clean
 
 re: clean all
 
+run: all clean
+	@clear
+	@./minishell ..
+
 .PHONY: clean fclean re

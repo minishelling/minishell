@@ -55,6 +55,7 @@ void		curpath_del_node(t_curpath **node);
 void		curpath_del_list(t_curpath **head);
 t_curpath	*curpath_get_last(t_curpath *head);
 void		curpath_add_back(t_curpath **head, t_curpath *new);
+t_cd_ecode	curpath_create_and_add_back(t_curpath **head, char ***dirs, char *dir);
 void		curpath_del_last(t_curpath **head);
 char		*curpath_concat(t_curpath *head);
 void		curpath_print(t_curpath *head);
