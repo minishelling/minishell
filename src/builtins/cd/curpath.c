@@ -6,7 +6,7 @@
 /*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/07/23 12:54:11 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/07/30 16:43:54 by lprieri       ########   odam.nl         */
+/*   Updated: 2024/07/31 13:18:41 by lprieri       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,9 +122,14 @@ char	*curpath_concat(t_curpath *head)
 	
 	if (!head)
 		return (NULL);
-	curpath = ft_strdup("/");
-	if (!curpath)
-		return (NULL);
+	if (head->dir && head->dir[0] != '/')
+	{
+		curpath = ft_strdup("/");
+		if (!curpath)
+			return (NULL);
+	}
+	else
+		curpath = ft_strdup("");
 	while (head)
 	{
 		if (head->dir)
@@ -132,9 +137,12 @@ char	*curpath_concat(t_curpath *head)
 			curpath = ft_strjoin_fs1(&curpath, head->dir);
 			if (!curpath)
 				return (NULL);
-			curpath = ft_strjoin_fs1(&curpath, "/");
-			if (!curpath)
-				return (NULL);
+			if (curpath[ft_strlen(curpath) - 1] != '/')
+			{
+				curpath = ft_strjoin_fs1(&curpath, "/");
+				if (!curpath)
+					return (NULL);
+			}
 		}
 		head = head->next;	
 	}

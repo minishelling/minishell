@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   cd.c                                               :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/07/31 12:47:36 by lprieri       #+#    #+#                 */
+/*   Updated: 2024/07/31 12:47:36 by lprieri       ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../../include/builtins.h"
 #include "../../../include/minishell.h"
 
@@ -37,11 +49,13 @@ t_cd_ecode cd_chdir_cdpath(t_env *env, char *directory)
 	t_cd_ecode	e_status;
 
 	cdpath_node = env_find_node(env, "CDPATH");
-	i = 0;
+	if (cdpath_node == NULL || cdpath_node->value == NULL)
+		return (CD_PROCEED);
 	values_count = env_count_values(env, "CDPATH");
 	values = ft_split(cdpath_node->value, ':');
 	if (!values)
 		return (CD_MALLOC_ERROR);
+	i = 0;
 	while (i < values_count)
 	{
 		curpath = ft_strdup(values[i]);
@@ -119,7 +133,9 @@ t_cd_ecode	execute_cd(t_env *env, char *directory)
 			&& (directory[0] != '.' && directory[1] != '.'))
 	{
 		e_status = cd_chdir_cdpath(env, directory);
-		if (e_status != CD_SUCCESS && e_status != CD_PROCEED)
+		if (e_status == CD_SUCCESS)
+			return (CD_SUCCESS); //Print the CWD here!
+		if (e_status != CD_PROCEED)
 			return (CD_CDPATH_ERROR);
 	}
 	curpath = ft_strdup(directory);
@@ -136,7 +152,6 @@ t_cd_ecode	execute_cd(t_env *env, char *directory)
 			return (CD_MALLOC_ERROR);
 	}
 	curpath = cd_trim_curpath(&curpath);
-	printf("CURPATH: %s\n", curpath);
 	if (!curpath)
 		return (CD_MALLOC_ERROR);
 	e_status = curpath_check_access(curpath);
@@ -188,7 +203,6 @@ char	*cd_trim_curpath(char **curpath)
 			continue ;
 		}
 		*curpath = curpath_concat(final_dirs);
-		printf("CURPATH in trim: %s\n", *curpath); //????
 		status = curpath_check_access(*curpath);
 		ft_free((void **) curpath);
 		if (status)
