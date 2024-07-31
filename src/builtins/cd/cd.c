@@ -121,6 +121,12 @@ t_cd_ecode	execute_cd(t_env *env, char *directory)
 	char		*cwd;
 	// char		*oldwd;
 
+	cwd = getcwd(NULL, PATH_MAX);
+	if (!cwd)
+		return (CD_NO_CWD); //ERRNO IS SET
+	cwd = ft_strjoin_fs1(&cwd, "/");
+	if (!cwd)
+		return (CD_MALLOC_ERROR);
 	if (!directory)
 	{
 		e_status = cd_chdir_home(env);
@@ -139,14 +145,9 @@ t_cd_ecode	execute_cd(t_env *env, char *directory)
 			return (CD_CDPATH_ERROR);
 	}
 	curpath = ft_strdup(directory);
-	cwd = getcwd(NULL, PATH_MAX);
-	if (!cwd)
-		return (CD_NO_CWD); //ERRNO IS SET
-	if (curpath[ft_strlen(curpath) - 1] != '/')
+	if (curpath[ft_strlen(curpath) - 1] != '/'
+		&& curpath[0] != '/')
 	{
-		cwd = ft_strjoin_fs1(&cwd, "/");
-		if (!cwd)
-			return (CD_MALLOC_ERROR);
 		curpath = ft_strjoin_fs2(cwd, &curpath);
 		if (!curpath)
 			return (CD_MALLOC_ERROR);
@@ -171,14 +172,17 @@ char	*cd_trim_curpath(char **curpath)
 	int			status;
 
 	dirs = NULL;
+	final_dirs = NULL;
 	dirs = ft_split(*curpath, '/');
 	if (!dirs)
 		return (NULL);
+	if (*curpath[0] == '/')
+	{
+		status = curpath_create_and_add_back(&final_dirs, &dirs, "/");
+		if (status)
+			return (NULL); //PRINT APPROPRIATE ERROR MESSAGE
+	}
 	ft_free((void **) curpath);
-	final_dirs = NULL;
-	status = curpath_create_and_add_back(&final_dirs, &dirs, "/");
-	if (status)
-		return (NULL); //PRINT APPROPRIATE ERROR MESSAGE
 	i = 0;
 	while (dirs[i])
 	{
@@ -208,11 +212,18 @@ char	*cd_trim_curpath(char **curpath)
 		if (status)
 		{
 			ft_free_2d((void ***) &dirs);
-			curpath_del_list(&final_dirs);
+			if (final_dirs)
+				curpath_del_list(&final_dirs);
 			return (NULL); //PRINT APPROPRIATE ERROR MESSAGE
 		}
 		else
 		{
+			if (final_dirs == NULL)
+			{
+				status = curpath_create_and_add_back(&final_dirs, &dirs, "/");
+				if (status)
+					return (NULL); //PRINT APPROPRIATE ERROR MESSAGE
+			}
 			status = curpath_create_and_add_back(&final_dirs, &dirs, dirs[i]);
 			if (status)
 				return (NULL); //PRINT APPROPRIATE ERROR MESSAGE
@@ -222,7 +233,8 @@ char	*cd_trim_curpath(char **curpath)
 	}
 	*curpath = curpath_concat(final_dirs);
 	ft_free_2d((void ***) &dirs);
-	curpath_del_list(&final_dirs);
+	if (final_dirs)
+		curpath_del_list(&final_dirs);
 	return (*curpath);
 }
 
