@@ -31,7 +31,6 @@ t_cd_ecode	cd_chdir_home(t_env *env)
 		return (CD_NO_HOME);
 	else
 	{
-		printf("%s\n", home_node->keyvalue);
 		e_status = chdir(home_node->value);
 		if (e_status)
 			return (CD_CHDIR_ERROR); //Errno is also set.
@@ -56,10 +55,13 @@ t_cd_ecode cd_chdir_cdpath(t_env *env, char *directory)
 	values = ft_split(cdpath_node->value, ':');
 	if (!values)
 		return (CD_MALLOC_ERROR);
+	ft_print_2d_arr(values);
 	i = 0;
 	while (i < values_count)
 	{
+		printf("[%li]/[%li]\n", i, values_count);//
 		curpath = ft_strdup(values[i]);
+		printf("%s\n", curpath);
 		if (!curpath && !null_flag)
 		{
 			null_flag = 1;
@@ -72,14 +74,17 @@ t_cd_ecode cd_chdir_cdpath(t_env *env, char *directory)
 				continue ;
 			}
 			e_status = chdir(curpath);
-			(ft_free((void **) &curpath), ft_free_2d((void ***) &values));
+			ft_free((void **) &curpath);
 			if (e_status)
 			{
 				i++;
 				continue ;
 			}
 			else
+			{
+				ft_free_2d((void ***) &values);
 				return (CD_CHDIR_SUCCESS);
+			}
 		}
 		else if (!curpath && null_flag)
 		{
@@ -98,19 +103,22 @@ t_cd_ecode cd_chdir_cdpath(t_env *env, char *directory)
 		e_status = curpath_check_access(curpath);
 		if (e_status)
 		{
-			(ft_free((void **) &curpath), ft_free_2d((void ***) &values));
+			ft_free((void **) &curpath);
 			i++;
 			continue ;
 		}
 		e_status = chdir(curpath);
-		(ft_free((void **) &curpath), ft_free_2d((void ***) &values));
+		ft_free((void **) &curpath);
 		if (e_status)
 		{
 			i++;
 			continue ;
 		}
 		else
+		{
+			ft_free_2d((void ***) &values);
 			return (CD_SUCCESS);
+		}
 	}
 	return (CD_PROCEED);
 }

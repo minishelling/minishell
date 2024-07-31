@@ -113,7 +113,7 @@ t_env	*env_find_node(t_env *env, char *key)
 	key_len = ft_strlen(key);
 	while (node)
 	{
-		isnt_key = ft_strncmp(node->key, key, key_len);
+		isnt_key = ft_strncmp(node->key, key, key_len + 1);
 		if (isnt_key)
 		{
 			node = node->next;
