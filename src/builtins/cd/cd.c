@@ -145,8 +145,7 @@ t_cd_ecode	execute_cd(t_env *env, char *directory)
 			return (CD_CDPATH_ERROR);
 	}
 	curpath = ft_strdup(directory);
-	if (curpath[ft_strlen(curpath) - 1] != '/'
-		&& curpath[0] != '/')
+	if (curpath[0] != '/')
 	{
 		curpath = ft_strjoin_fs2(cwd, &curpath);
 		if (!curpath)
@@ -199,7 +198,8 @@ char	*cd_trim_curpath(char **curpath)
 			if (status)
 			{
 				ft_free_2d((void ***) &dirs);
-				curpath_del_list(&final_dirs);
+				if (final_dirs)
+					curpath_del_list(&final_dirs);
 				return (NULL); //PRINT APPROPRIATE ERROR MESSAGE
 			}
 			curpath_del_last(&final_dirs);
