@@ -31,6 +31,7 @@ t_cd_ecode	cd_chdir_home(t_env *env)
 		return (CD_NO_HOME);
 	else
 	{
+		printf("%s\n", home_node->keyvalue);
 		e_status = chdir(home_node->value);
 		if (e_status)
 			return (CD_CHDIR_ERROR); //Errno is also set.
