@@ -35,25 +35,25 @@ bool	env_var_exists(char *name, t_env_list *env_list)
 ** the NAME of the environment variable is search in env_list
 ** if env_var exists, it's VALUE is returned
 */
-char	*env_var_get_env(char *key, t_env *env_list)
-{
-	int		len_key;
+// char	*env_var_get_env(char *key, t_env *env_list)
+// {
+// 	int		len_key;
 
-	if (!key || !env_list)
-		return (NULL);
-	// if (ft_strncmp(name, "?", 2) == 0)
-	// 	return (g_status.exit_str);
-	len_key = ft_strlen(key) + 1;
-	//env_var_print_linked_list(env_list); //!
+// 	if (!key || !env_list)
+// 		return (NULL);
+// 	// if (ft_strncmp(name, "?", 2) == 0)
+// 	// 	return (g_status.exit_str);
+// 	len_key = ft_strlen(key) + 1;
+// 	//env_var_print_linked_list(env_list); //!
 
-	while (env_list)
-	{
-		if (ft_strncmp(env_list->key, key, len_key) == 0)
-			return (env_list->value);
-		env_list = env_list->next;
-	}
-	return (NULL);
-}
+// 	while (env_list)
+// 	{
+// 		if (ft_strncmp(env_list->key, key, len_key) == 0)
+// 			return (env_list->value);
+// 		env_list = env_list->next;
+// 	}
+// 	return (NULL);
+// }
 
 /*
 ** our own setenv() function: it sets a (new) environment variable

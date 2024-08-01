@@ -1,6 +1,6 @@
 #include "../../include/minishell.h"
 
-t_token	*list_token_new(void)
+t_token	*new_token(void)
 {
 	t_token	*new;
 
@@ -13,62 +13,63 @@ t_token	*list_token_new(void)
 	return (new);
 }
 
-t_token	*list_token_last(t_token *t_list)
+t_token	*last_token(t_token *token_list_head)
 {
-	if (t_list == NULL)
+	t_token *token;
+
+	if (token_list_head == NULL)
 		return (NULL);
-	while (t_list->next != NULL)
-		t_list = t_list->next;
-	return (t_list);
+
+	token = token_list_head;
+	while (token->next != NULL)
+		token = token->next;
+	return (token);
 }
 
-t_token	*list_token_cpy_node(t_token *t_node)
+t_token	*copy_token(t_token *token)
 {
-	t_token	*t_return;
+	t_token	*return_token;
 
-	if (!t_node)
+	if (!token)
 		return (NULL);
-	t_return = list_token_new();
-	if (!t_return)
+	return_token = new_token();
+	if (!return_token)
 		return (NULL);
-	t_return->id = t_node->id;
-	t_return->str = ft_strdup(t_node->str);
-	if (t_return->str == NULL)
-		return (free(t_return), NULL);
-	t_return->next = NULL;
-	return (t_return);
+	return_token->id = token->id;
+	return_token->str = ft_strdup(token->str);
+	if (return_token->str == NULL)
+		return (free(return_token), NULL);
+	return_token->next = NULL;
+	return (return_token);
 }
 
-void	list_token_add_back(t_token **t_list, t_token *new)
+void	add_token_in_back(t_token **token_list_head, t_token *new_token)
 {
-	t_token	*tmp;
-
-	if (!new)
+	if (!new_token)
 		return ;
-	else if (!(*t_list))
+	if (!(*token_list_head))
 	{
-		*t_list = new;
+		*token_list_head = new_token;
 		return ;
 	}
-	tmp = list_token_last(*t_list);
-	tmp->next = new;
+	last_token(*token_list_head)->next = new_token;
 	return ;
 }
 
 //	NAVIGATION FUNCTIONS
 
-t_token	*list_token_skip_space(t_token *t_current)
+t_token	*skip_space_token(t_token *token)
 {
-	t_token	*t_return;
+	t_token	*return_token;
 
-	if (t_current == NULL)
+	if (token == NULL)
 		return (NULL);
-	t_return = t_current->next;
-	if (t_return == NULL)
+	return_token = token->next;
+	if (return_token == NULL)
 		return (NULL);
-	if (t_return->id == SPACE_CHAR || t_return->id == TAB_CHAR || t_return->id == NL)
-		t_return = t_return->next;
-	return (t_return);
+	if (return_token->id == SPACE_CHAR || return_token->id == TAB_CHAR || return_token->id == NL)
+		return_token = return_token->next;
+	return (return_token);
 }
 
 t_token	*list_token_skip_pipe(t_token *t_current)
@@ -87,36 +88,7 @@ t_token	*list_token_skip_pipe(t_token *t_current)
 	return (t_current);
 }
 
-//	FREE FUNCTIONS
-
-t_token	*list_token_free_node_str(t_token *t_node)
-{
-	t_token	*t_tmp;
-
-	t_tmp = t_node->next;
-	if (t_node == NULL)
-		return (NULL);
-	if (t_node->str != NULL)
-		free(t_node->str);
-	t_node->str = NULL;
-	free(t_node);
-	return (t_tmp);
-}
-
-t_token	*list_token_free_node_non_word(t_token *t_node)
-{
-	t_token	*t_tmp;
-
-	t_tmp = t_node->next;
-	if (t_node == NULL)
-		return (NULL);
-	if (t_node->id != WORD)
-		free(t_node->str);
-	free(t_node);
-	return (t_tmp);
-}
-
-t_token	*list_token_free_node(t_token *t_node)
+t_token	*free_token_node(t_token *t_node)
 {
 	t_token	*t_tmp;
 
@@ -127,21 +99,21 @@ t_token	*list_token_free_node(t_token *t_node)
 	return (t_tmp);
 }
 
-void	list_token_free_last(t_token *t_list, t_token *(*f) (t_token *))
+void	free_last_token(t_token *token, t_token *(*f) (t_token *))
 {
-	t_token	*t_previous;
+	t_token	*previous_token;
 
-	if (t_list == NULL)
+	if (token == NULL)
 		return ;
-	while (t_list->next != NULL)
+	while (token->next != NULL)
 	{
-		t_previous = t_list;
-		t_list = t_list->next;
+		previous_token = token;
+		token = token->next;
 	}
-	t_previous->next = f(t_list);
+	previous_token->next = f(token);
 }
 
-void	list_token_free_list(t_token *t_list, t_token *(*f) (t_token *))
+void	free_token_list(t_token *t_list, t_token *(*f) (t_token *))
 {
 	if (t_list == NULL)
 		return ;

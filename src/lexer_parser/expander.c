@@ -4,9 +4,9 @@ t_token	*free_node(t_token *t_node)
 {
 	t_token	*t_tmp;
 
-	t_tmp = t_node->next;
 	if (t_node == NULL)
 		return (NULL);
+	t_tmp = t_node->next;
 	if (t_node->str != NULL)
 		free(t_node->str);
 	t_node->str = NULL;
@@ -29,75 +29,81 @@ void ft_free_split(char **s)
 }
 
 
-t_token	*expander_shell_var_spacer(char *str)
+t_token	*expand_shell_var_spacer(char *str)
 {
-	t_token	*t_return;
-	t_token	*t_node;
+	t_token	*return_token;
+	t_token	*token;
 
-	t_return = NULL;
-	t_node = list_token_new();
-	if (!t_node)
+	return_token = NULL;
+	token = new_token();
+	if (!token)
 		return (NULL);
-	t_node->id = WORD;
-	t_node->str = str;
-	t_return = t_node;
-	t_node = list_token_new();
-	if (!t_node)
-		return (list_token_free_node(t_return), NULL);
-	t_node->id = SPACE_CHAR;
-	t_node->str = ft_strdup(" ");
-	if (!(t_node->str))
-		return (list_token_free_node(t_return), \
-				list_token_free_node(t_node), NULL);
-	t_return->next = t_node;
-	return (t_return);
+	token->id = WORD;
+	token->str = str;
+	return_token = token;
+	token = new_token();
+	if (!token)
+		return (free_token_node(return_token), NULL);
+	token->id = SPACE_CHAR;
+	token->str = ft_strdup(" ");
+	if (!(token->str))
+		return (free_token_node(return_token), \
+				free_token_node(token), NULL);
+	return_token->next = token;
+	return (return_token);
 }
 
-t_token	*expander_shell_var(t_token *t_current, t_env *env_list)
+t_token	*expand_shell_var(t_token *token, t_env *env_list)
 {
-	t_token	*t_return;
-	t_token	*t_node;
+	t_token	*return_token;
+	t_token	*space_token;
 	char	**split;
 	size_t	i;
 
 	//env_var_print_linked_list (env_list);
 	// env_print_list (env_list);  // lisandro
 
-	t_return = NULL;
+	return_token = NULL;
 	i = 0;
 
-	split = ft_split(env_var_get_env((t_current->str + 1), env_list), ' ');
+	char *str = env_get_value_from_key(env_list, (token->str + 1));
+	printf ("in expand_shell_var str is %s\n", str);
+	
+	split = ft_split (str, ' ');
 	if (!split)
 		return (NULL);
-	
 	while (split[i] != NULL)
 	{
-		t_node = expander_shell_var_spacer(split[i]);
+		
+		space_token = expand_shell_var_spacer(split[i]);
 		// if (!t_node)
 		// 	...
-		list_token_add_back(&t_return, t_node);
+		add_token_in_back(&return_token, space_token);
 		i++;
 	}
+	
 	free(split);
 	if (i == 0)
-		return (list_token_new());
-	list_token_free_last(t_return, free_node);
-	return (t_return);
+		return (new_token());
+	free_last_token(return_token, free_node);
+	return (return_token);
 }
 
-bool	expander_remove_n_is_open(t_token *t_node)
+bool	remove_quotes_is_unclosed(t_token *token)
 {
-	char			*str;
-	const size_t	len = ft_strlen(t_node->str);
-
-	str = t_node->str;
-	if (len < 2 || str[0] != str[len - 1])
+	char	*str;
+	size_t	len;
+	
+	len = ft_strlen(token->str);
+	str = token->str;
+	if (len == 1 || str[0] != str[len - 1])
 	{
+		printf ("len is %zu and str[0] is %c\n", len, str[0]);
 		//error_msg 258, "unclosed quotes";
 		return (true);
 	}
-	ft_memmove(str, str + 1, len);
-	ft_memmove(&str[len - 2], &str[len - 1], 1);
+	// ft_memmove(str, str + 1, len);
+	// ft_memmove(&str[len - 2], &str[len - 1], 1);
 	return (false);
 }
 
@@ -112,7 +118,8 @@ char	*expander_get_shell_var(const char *str, const int pos, \
 	shell_var = ft_substr(str, pos + 1, *len_shell_var - 1);
 	if (!shell_var)
 		return (NULL);
-	str_ret = env_var_get_env(shell_var, env_list);
+	//str_ret = env_var_get_env(shell_var, env_list);
+	str_ret = env_get_value_from_key(env_list, shell_var);
 	free(shell_var);
 	return (str_ret);
 }
@@ -120,50 +127,59 @@ char	*expander_get_shell_var(const char *str, const int pos, \
 int	expander_inject_var(t_token *t_current, const int pos, \
 		t_env *env_list)
 {
-	size_t	len_shell_expand;
+	size_t	len_expanded_str;
 	size_t	len_shell_var;
-	char	*shell_expand;
+	char	*expanded_str;
 	char	*new_token_str;
 
 	if (!t_current || !t_current->str)
 		return (ERROR);
-	shell_expand = expander_get_shell_var(t_current->str, pos, &len_shell_var, \
+	printf ("pos is %d\n", pos);
+	expanded_str = expander_get_shell_var(t_current->str, pos, &len_shell_var, \
 			env_list);
-	if (!shell_expand)
-		len_shell_expand = 0;
+	printf ("shell expand is %s\n", expanded_str);
+	if (!expanded_str)
+		len_expanded_str = 0;
 	else
-		len_shell_expand = ft_strlen(shell_expand);
+		len_expanded_str = ft_strlen(expanded_str);
+	printf ("len_shell_expand is %zu\n", len_expanded_str);
 	new_token_str = ft_calloc(sizeof(char), \
-			((ft_strlen(t_current->str) - len_shell_var + len_shell_expand) + 1));
+			((ft_strlen(t_current->str) - len_shell_var + len_expanded_str) + 1));
 	if (!new_token_str)
 		return (ERROR);
 	ft_strlcpy(new_token_str, t_current->str, pos + 1);
-	ft_strlcat(new_token_str, shell_expand, pos + len_shell_expand + 1);
-	ft_strlcat(new_token_str, &(t_current->str)[pos + len_shell_var], \
-			(ft_strlen(t_current->str) - len_shell_var + len_shell_expand + 1));
+	printf ("1st new_token_str is |%s|\n", new_token_str);
+	ft_strlcat(new_token_str, expanded_str, pos + len_expanded_str + 1);
+	printf ("2nd new_token_str is |%s|\n", new_token_str);
+	// echo "$PATH $TERM"
+	printf ("3rd new_token_str is |%s|\n", new_token_str);
 	free(t_current->str);
 	t_current->str = new_token_str;
-	return (len_shell_expand);
+	return (len_expanded_str);
 }
 
-t_token	*expander_quote(t_token *t_current, t_env *env_list)
+t_token	*expand_quote(t_token *token, t_env *env_list)
 {
 	size_t	i;
 	int		tmp;
 
-	if (t_current->str == NULL || expander_remove_n_is_open(t_current))
+	if (token->str == NULL || remove_quotes_is_unclosed(token))
 		return (NULL);
-	if (t_current->id == SQUOTE)
+	ft_memmove(token->str, token->str + 1, len);
+	ft_memmove(&token->str[len - 2], &token->str[len - 1], 1);
+	if (token->id == SQUOTE)
 	{
-		t_current->id = WORD;
-		return (list_token_cpy_node(t_current));
+		token->id = WORD;
+		return (copy_token(token));
 	}
 	i = 0;
-	while ((t_current->str)[i])
+	while ((token->str)[i])
 	{
-		if ((t_current->str)[i] == '$')
+		printf ("reached here\n");
+		if ((token->str)[i] == '$')
 		{
-			tmp = expander_inject_var(t_current, i, env_list);
+			printf ("Going to expander_inject_var\n");
+			tmp = expander_inject_var(token, i, env_list);
 			if (tmp < 0)
 				return (NULL);
 			i += (size_t) tmp;
@@ -171,69 +187,39 @@ t_token	*expander_quote(t_token *t_current, t_env *env_list)
 		else
 			i++;
 	}
-	t_current->id = WORD;
-	return (list_token_cpy_node(t_current));
+	token->id = WORD;
+	return (copy_token(token));
 }
 
-t_token	*expander(t_token *t_input, t_env *env_list)
+t_token	*expander(t_token *token_list_head, t_env *env_list)
 {
-	t_token	*t_return;
-	t_token	*t_current;
-	t_token	*t_node;
+	t_token	*new_token_list_head;
+	t_token	*current_token;
+	t_token	*expanded_token;
 
-	t_return = NULL;
-	t_current = t_input;
-	while (t_current != NULL)
+	new_token_list_head = NULL;
+	current_token = token_list_head;
+	while (current_token != NULL)
 	{
-		if (t_current->id == SHELL_VAR)
+		if (current_token->id == SHELL_VAR)
 		{
 			//env_var_print_linked_list (env_list);
-			env_print_list (env_list);  // lisandro
-			t_node = expander_shell_var(t_current, env_list);
+			//env_print_list (env_list);  // lisandro
+			expanded_token = expand_shell_var(current_token, env_list);
+		
 		}
-		else if (t_current->id == DQUOTE || t_current->id == SQUOTE)
-			t_node = expander_quote(t_current, env_list);
+		else if (current_token->id == DQUOTE || current_token->id == SQUOTE)
+			expanded_token = expand_quote(current_token, env_list);
 		else
-			t_node = list_token_cpy_node(t_current);
-		if (!t_node)
-			return (list_token_free_list(t_input, free_node), \
-					list_token_free_list(t_return, free_node), \
-					NULL); //error_print, 1, "expander: unable to expand"),
-		list_token_add_back(&t_return, t_node);
-		t_current = t_current->next;
+			expanded_token = copy_token(current_token);
+		if (!expanded_token)
+			return (free_token_list(token_list_head, free_node), \
+					free_token_list(new_token_list_head, free_node), \
+					NULL); //error_print, 1, "expander: unable to expand")
+		printf ("current_token is %s, expanded_token is %s\n", current_token->str, expanded_token->str);
+		add_token_in_back(&new_token_list_head, expanded_token);
+		current_token = current_token->next;
 	}
-	list_token_free_list(t_input, free_node);
-	return (t_return);
+	free_token_list(token_list_head, free_node);
+	return (new_token_list_head);
 }
-
-//	SHELL_VAR appends to previous word token
-//	SHELL_VAR adds in front of DQUOTE
-/*
- *
- * EXPANSION:
- *
- * --==-- CASE [1] --==--
- *  VAR="b c d"
- *  ./print_arg a$VAR'ef'
- *
- *  1  ab
- *  2  c
- *  3  def
- *
- * --==-- CASE [2] --==--
- *  VAR=""
- *  ./print_arg a$VAR'ef'
- *  
- *  1  aef
- *
- * --==-- CASE [3] --==--
- *  A="b c d"
- *  B="e f g"
- *  ./print_arg a$A$B"h"
- *
- *  1  ab
- *  2  c
- *  3  de
- *  4  f
- *  5  gh
- */

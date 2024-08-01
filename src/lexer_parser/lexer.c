@@ -19,7 +19,7 @@ t_token_id	get_char_id(const char c)
 	{
 		if (delimiters_set[value] == c)
 		{
-			printf ("value is %d\n", value);
+			// printf ("value is %d\n", value);
 			break ;
 		}
 		value++;
@@ -28,7 +28,7 @@ t_token_id	get_char_id(const char c)
 	return (value);
 }
 
-void	get_token_info(const char *input, size_t *pos, t_token *node)
+void	initialize_token(const char *input, size_t *pos, t_token *node)
 {
 	const int				start_pos = *pos;
 	const t_delimiter_func	func[14] = {
@@ -56,41 +56,31 @@ void	get_token_info(const char *input, size_t *pos, t_token *node)
 	node->str = ft_substr(input, start_pos, (*pos - start_pos));
 }
 
-void	check_env_token(t_token *t_node)
-{
-	if (!t_node || !t_node->str)
-		return ;
-	if (t_node->id != SHELL_VAR)
-		return ;
-	if (ft_strlen(t_node->str) > 1)
-		return ;
-	t_node->id = WORD;
-	return ;
-}
-
 t_token	*lexer(const char *input)
 {
 	size_t	current_pos;
-	t_token	*top;
-	t_token	*node;
+	t_token	*token_list_head;
+	t_token	*token;
 
-	top = NULL;
+	token_list_head = NULL;
 	current_pos = 0;
 	while (input[current_pos])
 	{
-		node = list_token_new();
+		token = new_token();
 		// if (!node)
 		// 	mini_error_test(error_print, ERROR, "parser/lexer.c: lexer @ malloc");
-		get_token_info(input, &current_pos, node);
-		//printf ("in lexer, node->str is %s\n", node->str);
-		// if (!node->str)
-		// 	return (list_token_free_list(top, list_token_free_node_str), \
+		initialize_token(input, &current_pos, token);
+		//printf ("in lexer, token->str is %s\n", token->str);
+		// if (!token->str)
+		// 	return (free_token_list(top, list_token_free_node_str), \
 		// 			mini_error_test(error_print, 1, "lexer: token error"), \
 		// 			NULL);
-		check_env_token(node);
-		list_token_add_back(&top, node);
+		
+		if (token->id ==SHELL_VAR && ft_strlen(token->str) == 1)
+			token->id = WORD;
+		add_token_in_back(&token_list_head, token);
 	}
-	return (top);
+	return (token_list_head);
 }
 
 /* considering variable expansion:

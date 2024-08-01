@@ -58,6 +58,7 @@ char	*env_get_value(char *keyvalue)
 	int		j;
 	int		value_len;
 	
+
 	if (!keyvalue || !keyvalue[0])
 		return (NULL);
 	i = 0;

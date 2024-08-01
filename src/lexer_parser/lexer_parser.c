@@ -4,7 +4,7 @@ void	complexer(t_shell *shell)
 {
 	
 	// mini_error_test(syntax_error, 258, mini->syntax->str);
-	// list_token_free_list(mini->token, list_token_free_node_str);
+	// free_token_list(mini->token, list_token_free_node_str);
 	shell->token = lexer(shell->input);
 	// if (mini->token == NULL)
 	// 	...
@@ -22,7 +22,7 @@ void	complexer(t_shell *shell)
 	shell->token = expander(shell->token, shell->env_list);
 	list_token_print(shell->token);
 	// if (appender(shell) == false)
-	// 	return (list_token_free_list(shell->token, list_token_free_node_str), \
+	// 	return (free_token_list(shell->token, list_token_free_node_str), \
 	// 			mini_error_test(error_print, 1, "expander: unable to expand"));
 	// mini->cmd_list = parser(mini);
 	// list_cmd_print(mini->cmd_list);

@@ -3,7 +3,7 @@
 typedef bool	(*t_syntax_func) (t_token *t_prev, t_token *t_cur, \
 		t_env *env_list);
 
-t_token	*list_token_start_nonspace(t_token *list)
+t_token	*skip_whitespace(t_token *list)
 {
 	if (list == NULL)
 		return (NULL);
@@ -12,10 +12,10 @@ t_token	*list_token_start_nonspace(t_token *list)
 	return (list);
 }
 
-t_token	*syntax(t_token *top, t_env *env_list)
+t_token	*syntax(t_token *token_list_head, t_env *env_list)
 {
-	t_token				*t_prev;
-	t_token				*t_cur;
+	t_token				*previous_token;
+	t_token				*current_token;
 	const t_syntax_func	func[14] = {
 	[0] = NULL,
 	[1] = NULL,
@@ -33,68 +33,17 @@ t_token	*syntax(t_token *top, t_env *env_list)
 	[13] = syntax_id_misc,
 	};
 
-	t_prev = NULL;
-	t_cur = list_token_start_nonspace(top);
-	while (t_cur != NULL)
+	previous_token = NULL;
+	current_token = skip_whitespace(token_list_head);
+	while (current_token != NULL)
 	{
-		printf ("in syntax, t_cur->id is %d\n", t_cur->id);
-		if (func[t_cur->id](t_prev, t_cur, env_list))
-			return (t_cur);
-		t_prev = t_cur;
-		t_cur = list_token_skip_space(t_cur);
+		printf ("in syntax, t_current->id is %d\n", current_token->id);
+		if (func[current_token->id](previous_token, current_token, env_list))
+			return (current_token);
+		previous_token = current_token;
+		current_token = skip_space_token(current_token);
 	}
 	
 	return (NULL);
 }
 
-// if only space tokens are given wat to do?
-
-/* -------------------------------------------------------
-   The grammar symbols
-   ------------------------------------------------------- 
-
-%token  WORD
-
-%token   DLESS    DGREAT
-         '<<'     '>>'    
-
-   -------------------------------------------------------
-   The Grammar
-   ------------------------------------------------------- 
-   
-https://stackoverflow.com/questions/76167393/context-free-grammar-clarification
-
-%start  pipe_sequence
-%%
-pipe_sequence    :                   command
-                 | pipe_sequence '|' command
-                 ;
-command          : cmd_prefix cmd_name cmd_suffix
-                 | cmd_prefix cmd_name
-                 | cmd_prefix
-                 | cmd_name cmd_suffix
-                 | cmd_name
-                 ;
-cmd_name         : WORD                     Apply rule 1
-                 ;
-cmd_prefix       :            io_redirect
-                 | cmd_prefix io_redirect
-                 ;
-cmd_suffix       :            io_redirect
-                 | cmd_suffix io_redirect
-                 |            WORD
-                 | cmd_suffix WORD
-                 ;
-io_redirect      : '<'       filename
-                 | '>'       filename
-                 | DGREAT    filename
-                 |           io_here
-                 ;
-filename         : WORD                     Apply rule 2
-                 ;
-io_here          : DLESS     here_end
-                 ;
-here_end         : WORD                     Apply rule 3
-                 ;
-
-   --------------------------------------------------------- */

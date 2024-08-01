@@ -14,6 +14,7 @@ int main(int argc, char **argv, char **envp)
 	// env_init_list(&env_list, envp);
 	// env_print_list(env_list);
 	// env_free_list(&env_list);
+    
     if (argc > 1) 
 	{
         write(2, "Mini_shared: Error: too many arguments\n", 39);
@@ -26,7 +27,10 @@ int main(int argc, char **argv, char **envp)
         write(2, "Mini_shared: Error: Failed to initialize\n", 42);
         exit(EXIT_FAILURE);
     }
-
+    //char *result = env_get_value("TERM=xterm-256color");
+    char *result2 = env_get_value_from_key(shell.env_list, "TERM");
+	// printf ("value is |%s|\n", result);
+    printf ("value is |%s|\n", result2);
     while (1) 
 	{
         
