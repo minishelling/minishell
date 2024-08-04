@@ -1,20 +1,21 @@
 #include "../../include/minishell.h"
 
 //char	*env_get_value(char *keyvalue)
-char	*env_get_value_from_key(t_env *env_head, char *key)
+char *env_get_value_from_key(t_env *env_head, char *token_key) 
 {
-	t_env *cur;
-	
-	if ( !env_head || !key || !key[0])
-		return (NULL);
+    t_env *cur;
+    size_t token_key_len;
 
-	printf ("key is now %s\n", key);
-	cur = env_head;
-	while (cur)
-	{
-		if (ft_strncmp (key, cur->key, ft_strlen(cur->key)) == 0)
-			return (cur->value);
-		cur = cur ->next;
-	}
-	return (NULL);
+    if (!env_head || !token_key || !token_key[0])
+        return NULL;
+    token_key_len = ft_strlen(token_key);
+    cur = env_head;
+    while (cur) {
+        if (token_key_len == ft_strlen(cur->key) &&
+            ft_strncmp(token_key, cur->key, token_key_len) == 0) 
+            	return cur->value;
+        cur = cur->next;
+    }
+    return NULL;
 }
+

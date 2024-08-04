@@ -124,7 +124,7 @@ char	*get_expanded_value(char *token_str, size_t pos, size_t *env_key_len, t_env
 	*env_key_len = 0;
 	printf ("str[pos] is %s[%zu]\n", token_str, pos);
 	set_pos_end_env_var(&token_str[pos], env_key_len, 0);
-	printf ("env_key_len is now %zu\n", *env_key_len);
+	printf ("     env_key_len is now %zu\n", *env_key_len);
 	env_key = ft_substr(token_str, pos + 1, *env_key_len - 1);
 	if (!env_key)
 		return (NULL);
