@@ -21,12 +21,12 @@ bool	syntax_id_pipe(t_token *t_prev, t_token *t_cur, \
 bool	syntax_id_redir_shvar(t_token *t_next, t_env *env_list)
 {
 	size_t	len;
-	char	*shell_var;
+	char	*env_var;
 
-	shell_var = expander_get_shell_var(t_next->str, 0, &len, env_list);
-	if (!shell_var)
+	env_var = get_expanded_value(t_next->str, 0, &len, env_list);
+	if (!env_var)
 		return (1);
-	if (ft_strchr(shell_var, ' '))
+	if (ft_strchr(env_var, ' '))
 		return (1);
 	return (0);
 }
@@ -45,9 +45,9 @@ bool	syntax_id_redir(t_token *t_prev, t_token *t_cur, \
 	if (!(t_next->id == WORD || \
 		t_next->id == SQUOTE || \
 		t_next->id == DQUOTE || \
-		t_next->id == SHELL_VAR))
+		t_next->id == ENV_VAR))
 		return (1);
-	if (t_next->id == SHELL_VAR)
+	if (t_next->id == ENV_VAR)
 		if (syntax_id_redir_shvar(t_next, env_list))
 			return (1);
 	return (0);

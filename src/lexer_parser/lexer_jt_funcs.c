@@ -1,35 +1,35 @@
 #include "../../include/minishell.h"
 
-void	token_id_quote(const char *inp, size_t *pos, const t_token_id val)
+void	set_pos_end_quote(char *str, size_t *pos, t_token_id token_id)
 {
 	(*pos)++;
-	while (inp[*pos] && val != get_char_id(inp[*pos]))
+	while (str[*pos] && token_id != get_token_id(str[*pos]))
 		(*pos)++;
-	if (inp[*pos])
+	if (str[*pos])
 		(*pos)++;
 }
 
-void	token_id_pipe(const char *inp, size_t *pos, const t_token_id val)
+void	set_pos_end_pipe(char *str, size_t *pos, t_token_id token_id)
 {
 	int	i;
 
-	(void) val;
+	(void) token_id;
 	i = 0;
-	while (i < 2 && inp[*pos] && inp[*pos] == '|')
+	while (i < 2 && str[*pos] && str[*pos] == '|')
 	{
 		(*pos)++;
 		i++;
 	}
 }
 
-void	token_id_redir(const char *inp, size_t *pos, const t_token_id val)
+void	set_pos_end_redir(char *str, size_t *pos, t_token_id token_id)
 {
-	const char	c = inp[*pos];
+	const char	c = str[*pos];
 	int			i;
 
-	(void) val;
+	(void) token_id;
 	i = 0;
-	while (i < 2 && inp[*pos] && inp[*pos] == c)
+	while (i < 2 && str[*pos] && str[*pos] == c)
 	{
 		(*pos)++;
 		i++;
@@ -37,62 +37,64 @@ void	token_id_redir(const char *inp, size_t *pos, const t_token_id val)
 }
 
 /*
-** token_id_shvar
+** token_id_env_var
 ** first character of "name" should be alphabetic (isalpha) or underscore "_"
 ** rest of characters of "name" should be alphabetic
 ** or numeric (isalnum) or "_" underscore
 */
-void	token_id_shell_var(const char *inp, size_t *pos, const t_token_id val)
+void	set_pos_end_env_var(char *str, size_t *pos, t_token_id token_id)
 {
-	(void) val;
+	(void) token_id;
 	(*pos)++;
-	// TODO: update validation according to rules in note above ^
-	if (inp[*pos] == '?')
+
+	printf ("str is %s\n", str);
+	if (str[*pos] == '?')
 	{
 		(*pos)++;
 		return ;
 	}
-	if (inp[*pos] && !ft_isalpha(inp[*pos]))
+	if (str[*pos] && !ft_isalpha(str[*pos]) && str[*pos] != '_')
 		return ;
 	(*pos)++;
-	while (inp[*pos] && (ft_isalnum(inp[*pos]) || inp[*pos] == '_'))
+	while (str[*pos] && (ft_isalnum(str[*pos]) || str[*pos] == '_'))
 		(*pos)++;
+	printf ("pos is now %zu\n", *pos);
 }
 
 
-void	token_id_misc(const char *inp, size_t *pos, const t_token_id val)
+void	set_pos_end_space_or_word(char *str, size_t *pos, t_token_id token_id)
 {
-	while (inp[*pos] && val == get_char_id(inp[*pos]))
+	while (str[*pos] && token_id == get_token_id(str[*pos]))
 		(*pos)++;
 }
 
-void	token_id_ampersand(const char *inp, size_t *pos, const t_token_id val)
+void	set_pos_end_ampersand(char *str, size_t *pos, t_token_id token_id)
 {
 	int			i;
 
-	(void) val;
+	(void) token_id;
 	i = 0;
-	while (i < 2 && inp[*pos] && inp[*pos] == '&')
+	while (i < 2 && str[*pos] && str[*pos] == '&')
 	{
 		(*pos)++;
 		i++;
 	}
 }
 
-void	token_id_semicol(const char *inp, size_t *pos, const t_token_id val)
+void	set_pos_end_semicol(char *str, size_t *pos, t_token_id token_id)
 {
-	(void) val;
+	(void) token_id;
 
-	while (inp[*pos] && inp[*pos] == ';')
+	while (str[*pos] && str[*pos] == ';')
 	{
 		(*pos)++;
 	}
 }
 
-void	token_id_parentheses(const char *inp, size_t *pos, const t_token_id val)
+void	set_pos_end_parentheses(char *str, size_t *pos, t_token_id token_id)
 {
-	const char	c = inp[*pos];
-	(void) val;
-	while (inp[*pos] && inp[*pos] == c)
+	const char	c = str[*pos];
+	(void) token_id;
+	while (str[*pos] && str[*pos] == c)
 		(*pos)++;
 }

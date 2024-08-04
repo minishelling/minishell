@@ -168,15 +168,15 @@ void	env_var_free_list(t_env *env_list)
 t_env	*env_var_get_env_node(char *key, t_env *env_list)
 {
 	t_env	*current_node;
-	int				len_key;
+	int		key_len;
 
 	if (!key || !env_list)
 		return (NULL);
-	len_key = ft_strlen(key) + 1;
+	key_len = ft_strlen(key) + 1;
 	current_node = env_list;
 	while (current_node != NULL)
 	{
-		if (ft_strncmp(current_node->key, key, len_key) == 0)
+		if (ft_strncmp(current_node->key, key, key_len) == 0)
 			return (current_node);
 		current_node = current_node->next;
 	}

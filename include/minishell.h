@@ -46,7 +46,7 @@ typedef enum e_token_id {
 	GT,
 	SQUOTE,
 	DQUOTE,
-	SHELL_VAR,
+	ENV_VAR,
 	WORD
 }	t_token_id;
 
@@ -90,7 +90,7 @@ typedef struct s_shell
     char 		*input;
     t_token 	*token;
 	t_token		*syntax;
-	t_env	*env_list;
+	t_env		*env_list;
 } t_shell;
 
 
@@ -98,41 +98,36 @@ int		init_shell(char **envp, t_shell *shell);
 void 	tokenize_input(t_shell *shell);
 //void add_token(t_shell *shell, e_token_type type, e_token_id id, char *str);
 
-t_token	*lexer(const char *input);
+t_token	*lexer(char *input);
 //void print_tokens(t_token *token);
-void	list_token_print(t_token *top);
-t_token	*syntax(t_token *top, t_env *env_list);
-t_token	*expander(t_token *t_input, t_env *env_list);
-void	token_id_misc(const char *inp, size_t *pos, const t_token_id val);
-void	token_id_pipe(const char *inp, size_t *pos, const t_token_id val);
-void	token_id_ampersand(const char *inp, size_t *pos, const t_token_id val);
-void	token_id_semicol(const char *inp, size_t *pos, const t_token_id val);
-void	token_id_parentheses(const char *inp, size_t *pos, const t_token_id val);
-void	token_id_redir(const char *inp, size_t *pos, const t_token_id val);
-void	token_id_quote(const char *inp, size_t *pos, const t_token_id val);
-void	token_id_shell_var(const char *inp, size_t *pos, const t_token_id val);
-bool	syntax_id_pipe(t_token *t_prev, t_token *t_cur, \
-		t_env *env_list);
-bool	syntax_id_ampersand(t_token *t_prev, t_token *t_cur, \
-		t_env *env_list);
-bool	syntax_id_semicol(t_token *t_prev, t_token *t_cur, \
-		t_env *env_list);
-bool	syntax_id_parentheses_open(t_token *t_prev, t_token *t_cur, \
-		t_env *env_list);
-bool	syntax_id_parentheses_close(t_token *t_prev, t_token *t_cur, \
-		t_env *env_list);
-bool	syntax_id_redir(t_token *t_prev, t_token *t_cur, \
-		t_env *env_list);
-bool	syntax_id_misc(t_token *t_prev, t_token *t_cur, \
-		t_env *env_list);
+void	list_token_print(t_token *head);
+t_token	*syntax(t_token *head, t_env *env_list);
+t_token	*expander(t_token *token_list_head, t_env *env_list);
+void	set_pos_end_space_or_word(char *str, size_t *pos, t_token_id token_id);
+void	set_pos_end_quote(char *str, size_t *pos, t_token_id token_id);
+void	set_pos_end_ampersand(char *str, size_t *pos, t_token_id token_id);
+void	set_pos_end_semicol(char *str, size_t *pos, t_token_id token_id);
+void	set_pos_end_parentheses(char *str, size_t *pos, t_token_id token_id);
+void	set_pos_end_redir(char *str, size_t *pos, t_token_id token_id);
+void	set_pos_end_env_var(char *str, size_t *pos, t_token_id token_id);
+void	set_pos_end_pipe(char *str, size_t *pos, t_token_id token_id);
+
+bool	syntax_id_pipe(t_token *t_prev, t_token *t_cur, t_env *env_list);
+bool	syntax_id_ampersand(t_token *t_prev, t_token *t_cur, t_env *env_list);
+bool	syntax_id_semicol(t_token *t_prev, t_token *t_cur, t_env *env_list);
+bool	syntax_id_parentheses_open(t_token *t_prev, t_token *t_cur, t_env *env_list);
+bool	syntax_id_parentheses_close(t_token *t_prev, t_token *t_cur, t_env *env_list);
+bool	syntax_id_redir(t_token *t_prev, t_token *t_cur, t_env *env_list);
+bool	syntax_id_misc(t_token *t_prev, t_token *t_cur, t_env *env_list);
+
 void	complexer(t_shell *shell);
 void	env_var_free_node(t_env *env_var_node);
 t_token	*new_token(void);
 void	add_token_in_back(t_token **t_list, t_token *new);
-t_token_id	get_char_id(const char c);
+t_token_id	get_token_id(char c);
 t_token	*skip_space_token(t_token *t_current);
-char	*expander_get_shell_var(const char *str, const int pos, \
-		size_t *len_shell_var, t_env *env_list);
+char	*get_expanded_value(char *str, size_t pos, \
+		size_t *len_env_var, t_env *env_list);
 t_token	*free_token_node(t_token *t_node);
 void	free_last_token(t_token *t_list, t_token *(*f) (t_token *));
 t_token	*copy_token(t_token *t_node);

@@ -2,7 +2,7 @@
 
 int	unset_env_var(char *key, t_env **env_list)  //builtin
 {
-	int		len_key;
+	int		key_len;
 	t_env	*current;
 	t_env	*temp_var;
 
@@ -10,10 +10,10 @@ int	unset_env_var(char *key, t_env **env_list)  //builtin
 		return (-2); //malloc error
 	current = *env_list;
 	temp_var = NULL;
-	len_key = ft_strlen(key);
+	key_len = ft_strlen(key);
 	while (current != NULL && current->next != NULL)
 	{
-		if (ft_strncmp(current->next->key, key, len_key) == 0)
+		if (ft_strncmp(current->next->key, key, key_len) == 0)
 		{
 			temp_var = current->next;
 			current->next = temp_var->next;

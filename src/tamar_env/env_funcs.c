@@ -8,6 +8,7 @@ char	*env_get_value_from_key(t_env *env_head, char *key)
 	if ( !env_head || !key || !key[0])
 		return (NULL);
 
+	printf ("key is now %s\n", key);
 	cur = env_head;
 	while (cur)
 	{

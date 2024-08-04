@@ -14,16 +14,16 @@
 ** bool function to check if environment variable already exists
 ** this version is NOT making use of getenv()
 */
-bool	env_var_exists(char *name, t_env_list *env_list)
+bool	env_var_exists(char *key, t_env *env_list)
 {
-	int	len_name;
+	int	key_len;
 
-	if (!name)
+	if (!key)
 		return (false);
-	len_name = ft_strlen(name) + 1;
+	key_len = ft_strlen(key) + 1;
 	while (env_list != NULL)
 	{
-		if (ft_strncmp(env_list->name, name, len_name) == 0)
+		if (ft_strncmp(env_list->key, key, key_len) == 0)
 			return (true);
 		env_list = env_list->next;
 	}
@@ -37,18 +37,18 @@ bool	env_var_exists(char *name, t_env_list *env_list)
 */
 // char	*env_var_get_env(char *key, t_env *env_list)
 // {
-// 	int		len_key;
+// 	int		key_len;
 
 // 	if (!key || !env_list)
 // 		return (NULL);
 // 	// if (ft_strncmp(name, "?", 2) == 0)
 // 	// 	return (g_status.exit_str);
-// 	len_key = ft_strlen(key) + 1;
+// 	key_len = ft_strlen(key) + 1;
 // 	//env_var_print_linked_list(env_list); //!
 
 // 	while (env_list)
 // 	{
-// 		if (ft_strncmp(env_list->key, key, len_key) == 0)
+// 		if (ft_strncmp(env_list->key, key, key_len) == 0)
 // 			return (env_list->value);
 // 		env_list = env_list->next;
 // 	}
@@ -60,7 +60,7 @@ bool	env_var_exists(char *name, t_env_list *env_list)
 */
 void	env_var_set_env(char *envar, t_env **env_list)
 {
-	int		len_key;
+	int		key_len;
 	t_env	*new_var;
 	t_env	*current;
 	t_env	*prev;
@@ -72,10 +72,10 @@ void	env_var_set_env(char *envar, t_env **env_list)
 	new_var = env_var_create_new_node(envar);
 	if (!new_var || !new_var->key)
 		return ;
-	len_key = ft_strlen(new_var->key) + 1;
+	key_len = ft_strlen(new_var->key) + 1;
 	while (current != NULL)
 	{
-		if (ft_strncmp(current->key, new_var->key, len_key) == 0)
+		if (ft_strncmp(current->key, new_var->key, key_len) == 0)
 		{
 			new_var->next = current->next;
 			if (prev == NULL)

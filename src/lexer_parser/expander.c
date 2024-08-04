@@ -52,7 +52,7 @@ t_token	*create_expanded_tokens(char *str)
 	return (expanded_token_list);
 }
 
-t_token	*expand_shell_var(t_token *token, t_env *env_list)
+t_token	*expand_env_var(t_token *token, t_env *env_list)
 {
 	t_token	*return_tokens;
 	t_token	*expanded_token;
@@ -66,7 +66,7 @@ t_token	*expand_shell_var(t_token *token, t_env *env_list)
 	i = 0;
 
 	char *env_value = env_get_value_from_key(env_list, (token->str + 1));
-	printf ("in expand_shell_var str is %s\n", env_value);
+	printf ("in expand_env_var str is %s\n", env_value);
 	
 	split = ft_split (env_value, ' ');
 	if (!split)
@@ -116,55 +116,55 @@ bool	is_quote_unclosed(t_token *token)
 	return (false);
 }
 
-char	*expander_get_shell_var(const char *str, const int pos, \
-		size_t *len_shell_var, t_env *env_list)
+char	*get_expanded_value(char *token_str, size_t pos, size_t *env_key_len, t_env *env_list)
 {
-	char	*str_ret;
-	char	*shell_var;
+	char	*env_value;
+	char	*env_key;
 
-	*len_shell_var = 0;
-	token_id_shell_var(str + pos, len_shell_var, 0);
-	shell_var = ft_substr(str, pos + 1, *len_shell_var - 1);
-	if (!shell_var)
+	*env_key_len = 0;
+	printf ("str[pos] is %s[%zu]\n", token_str, pos);
+	set_pos_end_env_var(&token_str[pos], env_key_len, 0);
+	printf ("env_key_len is now %zu\n", *env_key_len);
+	env_key = ft_substr(token_str, pos + 1, *env_key_len - 1);
+	if (!env_key)
 		return (NULL);
-	//str_ret = env_var_get_env(shell_var, env_list);
-	str_ret = env_get_value_from_key(env_list, shell_var);
-	free(shell_var);
-	return (str_ret);
+	//str_ret = env_var_get_env(env_var, env_list);
+	env_value = env_get_value_from_key(env_list, env_key);
+	free(env_key);
+	return (env_value);
 }
 
-int	interpolate_env_var(t_token *t_current, const int pos, \
-		t_env *env_list)
+int	interpolate_env_var(t_token *token, int pos, t_env *env_list)
 {
-	size_t	len_expanded_str;
-	size_t	len_shell_var;
-	char	*expanded_str;
+	char	*expanded_value;
+	size_t	expanded_value_len;
+	size_t	env_key_len;
 	char	*new_token_str;
 
-	if (!t_current || !t_current->str)
+	if (!token || !token->str)
 		return (ERROR);
 	printf ("pos is %d\n", pos);
-	expanded_str = expander_get_shell_var(t_current->str, pos, &len_shell_var, \
-			env_list);
-	printf ("shell expand is %s\n", expanded_str);
-	if (!expanded_str)
-		len_expanded_str = 0;
+	expanded_value = get_expanded_value(token->str, pos, &env_key_len, env_list);
+	printf ("shell expand is %s\n", expanded_value);
+	if (!expanded_value)
+		expanded_value_len = 0;
 	else
-		len_expanded_str = ft_strlen(expanded_str);
+		expanded_value_len = ft_strlen(expanded_value);
 	new_token_str = ft_calloc(sizeof(char), \
-			((ft_strlen(t_current->str) - len_shell_var + len_expanded_str) + 1));
-	printf ("		ft_strlen(t_current->str) is %zu, len_shell_var is %zu, len expanded_str is %zu\n", ft_strlen(t_current->str), len_shell_var, len_expanded_str);
+			((ft_strlen(token->str) - env_key_len + expanded_value_len) + 1));
+	printf ("ft_strlen(t_current->str) is %zu, env_key_len is %zu, expanded_value_len is %zu\n", ft_strlen(token->str), env_key_len, expanded_value_len);
 	if (!new_token_str)
 		return (ERROR);
-	ft_strlcpy(new_token_str, t_current->str, pos + 1);
+	ft_strlcpy(new_token_str, token->str, pos + 1);
 	printf ("1st new_token_str is |%s|\n", new_token_str);
-	ft_strlcat(new_token_str, expanded_str, pos + len_expanded_str + 1);
+	ft_strlcat(new_token_str, expanded_value, pos + expanded_value_len + 1);
 	printf ("2nd new_token_str is |%s|\n", new_token_str);
-	// echo "$PATH $TERM"
-	printf ("3rd new_token_str is |%s|\n", new_token_str);
-	free(t_current->str);
-	t_current->str = new_token_str;
-	return (len_expanded_str);
+	// echo "$PATH$TERM"
+	ft_strlcat(new_token_str, &(token->str)[pos + env_key_len], \
+			(ft_strlen(token->str) - env_key_len + expanded_value_len + 1));
+	free(token->str);
+	token->str = new_token_str;
+	return (expanded_value_len);
 }
 
 t_token	*expand_quote(t_token *token, t_env *env_list)
@@ -183,10 +183,9 @@ t_token	*expand_quote(t_token *token, t_env *env_list)
 	i = 0;
 	while ((token->str)[i])
 	{
-		printf ("reached here\n");
 		if ((token->str)[i] == '$')
 		{
-			printf ("Going to expander_inject_var\n");
+			printf ("Going to interpolate_e\n");
 			tmp = interpolate_env_var(token, i, env_list);
 			if (tmp < 0)
 				return (NULL);
@@ -209,11 +208,11 @@ t_token	*expander(t_token *token_list_head, t_env *env_list)
 	current_token = token_list_head;
 	while (current_token != NULL)
 	{
-		if (current_token->id == SHELL_VAR)
+		if (current_token->id == ENV_VAR)
 		{
 			//env_var_print_linked_list (env_list);
 			//env_print_list (env_list);  // lisandro
-			expanded_tokens = expand_shell_var(current_token, env_list);
+			expanded_tokens = expand_env_var(current_token, env_list);
 		
 		}
 		else if (current_token->id == DQUOTE || current_token->id == SQUOTE)

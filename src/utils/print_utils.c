@@ -33,7 +33,7 @@ void	list_token_print(t_token *head)
 	[9] = "LT",
 	[10] = "SQUOTE",
 	[11] = "DQUOTE",
-	[12] = "SHELL_VAR",
+	[12] = "env_var",
 	[13] = "WORD"
 	};
 	ptr = head;
