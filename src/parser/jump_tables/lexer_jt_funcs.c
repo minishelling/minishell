@@ -1,4 +1,4 @@
-#include "../../include/minishell.h"
+#include "../../../include/minishell.h"
 
 void	set_pos_end_quote(char *str, size_t *pos, t_token_id token_id)
 {

@@ -41,7 +41,7 @@ t_token	*syntax(t_token *token_list_head, t_env *env_list)
 		if (func[current_token->id](previous_token, current_token, env_list))
 			return (current_token);
 		previous_token = current_token;
-		current_token = skip_space_token(current_token);
+		current_token = get_after_space_token(current_token);
 	}
 	
 	return (NULL);

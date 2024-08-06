@@ -23,17 +23,14 @@
 # define SPECIAL_CHARS "\'\"$"
 # define ERROR -1
 
+#define RESET_COLOR "\033[0m"
+#define MAGENTA_TEXT "\033[0;35m"
+#define WHITE_TEXT "\033[0;37m"
+#define MAGENTA_BACKGROUND "\033[45m"
+#define WHITE_BACKGROUND "\033[47m"
 
-// typedef enum e_token_type {
-//     META_CHAR,
-//     CONTROL_OP,
-//     REDIR_OP,
-//     WORD,
-//     OTHER
-// } e_token_type;
-
-
-typedef enum e_token_id {
+typedef enum e_token_id 
+{
 	SPACE_CHAR,
 	TAB_CHAR,
 	NL,
@@ -50,7 +47,8 @@ typedef enum e_token_id {
 	WORD
 }	t_token_id;
 
-typedef enum e_redir_id {
+typedef enum e_redir_id 
+{
 	REDIR = 0,
 	IN,
 	HERE,
@@ -65,6 +63,9 @@ typedef struct s_token
 	struct s_token	*next;
 }	t_token;
 
+
+
+
 typedef struct s_redir
 {
 	t_redir_id		redir;
@@ -72,6 +73,14 @@ typedef struct s_redir
 	char			*file;
 	struct s_redir	*next;
 }					t_redir;
+
+typedef struct s_cmd
+{
+	char			**args;
+	t_redir			*redir;
+	struct s_cmd	*next;
+}					t_cmd;
+
 
 typedef struct s_env_list
 {
@@ -91,6 +100,7 @@ typedef struct s_shell
     t_token 	*token;
 	t_token		*syntax;
 	t_env		*env_list;
+	t_cmd		*cmd_list;
 } t_shell;
 
 
@@ -98,11 +108,10 @@ int		init_shell(char **envp, t_shell *shell);
 void 	tokenize_input(t_shell *shell);
 //void add_token(t_shell *shell, e_token_type type, e_token_id id, char *str);
 
-t_token	*lexer(char *input);
-//void print_tokens(t_token *token);
-void	list_token_print(t_token *head);
+t_token	*lex(char *input);
+
 t_token	*syntax(t_token *head, t_env *env_list);
-t_token	*expander(t_token *token_list_head, t_env *env_list);
+t_token	*expand(t_token *token_list_head, t_env *env_list);
 void	set_pos_end_space_or_word(char *str, size_t *pos, t_token_id token_id);
 void	set_pos_end_quote(char *str, size_t *pos, t_token_id token_id);
 void	set_pos_end_ampersand(char *str, size_t *pos, t_token_id token_id);
@@ -120,12 +129,13 @@ bool	syntax_id_parentheses_close(t_token *t_prev, t_token *t_cur, t_env *env_lis
 bool	syntax_id_redir(t_token *t_prev, t_token *t_cur, t_env *env_list);
 bool	syntax_id_misc(t_token *t_prev, t_token *t_cur, t_env *env_list);
 
-void	complexer(t_shell *shell);
+void	parse(t_shell *shell);
 void	env_var_free_node(t_env *env_var_node);
 t_token	*new_token(void);
 void	add_token_in_back(t_token **t_list, t_token *new);
 t_token_id	get_token_id(char c);
-t_token	*skip_space_token(t_token *t_current);
+t_token	*get_after_space_token(t_token *token);
+t_token	*get_after_pipe_token(t_token *token);
 char	*get_expanded_value(char *str, size_t pos, \
 		size_t *len_env_var, t_env *env_list);
 t_token	*free_token_node(t_token *t_node);
@@ -145,9 +155,29 @@ t_env_ecode	env_copy_keyval(t_env **new_node, char *keyvalue);
 // t_env_ecode	env_init_list(t_env **head, char **envp);
 
 char	*env_get_value_from_key(t_env *env_head, char *key);
+t_token	*last_token(t_token *token_list_head);
 
-//list functions
+char	*ft_strjoin_fs1(char *s1, const char *s2);
+t_token	*free_token_str(t_token *token);
+bool	concatenate_word_tokens(t_shell *shell);
+t_token	*parser_id_space(t_cmd *cmd, t_token *token);
+t_token	*parser_id_word(t_cmd *cmd, t_token *token);
+t_token	*parser_id_redir(t_cmd *cmd, t_token *token);
+t_redir_id	redir_identification(char *str);
+t_token	*parser_id_pipe(t_cmd *cmd_node, t_token *token);
+t_cmd	*new_cmd(void);
+t_cmd	*cmd_last(t_cmd *cmd);
+void	add_cmd_in_back(t_cmd **cmd_list_head, t_cmd *new_cmd);
+t_cmd	*free_cmd(t_cmd *cmd);
+void	free_cmd_list(t_cmd *cmd_list_head);
+t_redir	*new_redir(void);
+void	add_redir_in_back(t_redir **redir_list_head, t_redir *new_redir);
+void	free_redir_list(t_redir *redir_list_head);
+t_redir	*last_redir(t_redir *redir_list_head);
 
+void	print_redir(t_redir *redir_list_head);
+void	print_token(t_token *head);
+void	print_cmd(t_cmd *cmd_list_head);
 
 
 #endif

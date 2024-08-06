@@ -1,4 +1,4 @@
-#include "../../include/minishell.h"
+#include "../../../include/minishell.h"
 
 bool	syntax_id_pipe(t_token *t_prev, t_token *t_cur, \
 		t_env *env_list)
@@ -8,7 +8,7 @@ bool	syntax_id_pipe(t_token *t_prev, t_token *t_cur, \
 	(void) env_list;
 	if (!t_cur || !t_cur->str)
 		return (1);
-	t_next = skip_space_token((t_token *) t_cur);
+	t_next = get_after_space_token((t_token *) t_cur);
 	if (t_prev == NULL || t_next == NULL)
 		return (1);
 	if (ft_strlen(t_cur->str) > 2)
@@ -36,7 +36,7 @@ bool	syntax_id_redir(t_token *t_prev, t_token *t_cur, \
 {
 	t_token	*t_next;
 
-	t_next = skip_space_token((t_token *) t_cur);
+	t_next = get_after_space_token((t_token *) t_cur);
 	if (!t_cur || !t_cur->str)
 		return (1);
 	(void) t_prev;
@@ -71,7 +71,7 @@ bool	syntax_id_parentheses_open(t_token *t_prev, t_token *t_cur, \
 	(void) env_list;
 	if (!t_cur || !t_cur->str)
 		return (1);
-	t_next = skip_space_token((t_token *) t_cur);
+	t_next = get_after_space_token((t_token *) t_cur);
 	if (t_next == NULL)
 		return (1);
 	return (0);	

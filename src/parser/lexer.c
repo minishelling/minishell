@@ -1,7 +1,7 @@
 #include "../../include/minishell.h"
 
 typedef void	(*t_delimiter_func) \
-			(char *input, size_t *pos, t_token_id value);
+			(char *str, size_t *pos, t_token_id token_id);
 
 t_token_id	get_token_id(char c)
 {
@@ -54,7 +54,7 @@ void	set_token_id_n_str(char *str, size_t *pos, t_token *token)
 	token->str = ft_substr(str, start_pos, (*pos - start_pos));
 }
 
-t_token	*lexer(char *input)
+t_token	*lex(char *input)
 {
 	size_t	current_pos;
 	t_token	*token_list_head;
@@ -66,14 +66,12 @@ t_token	*lexer(char *input)
 	{
 		token = new_token();
 		// if (!node)
-		// 	mini_error_test(error_print, ERROR, "parser/lexer.c: lexer @ malloc");
+		// error(lexer);
 		set_token_id_n_str(input, &current_pos, token);
 		//printf ("in lexer, token->str is %s\n", token->str);
 		// if (!token->str)
-		// 	return (free_token_list(top, list_token_free_node_str), \
-		// 			mini_error_test(error_print, 1, "lexer: token error"), \
-		// 			NULL);
-		
+		// 	return (free_token_list(token_list_head, free_token_str),
+		// 			error(lexer),NULL);
 		if (token->id ==ENV_VAR && ft_strlen(token->str) == 1)
 			token->id = WORD;
 		add_token_in_back(&token_list_head, token);

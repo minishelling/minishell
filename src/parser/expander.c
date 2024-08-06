@@ -75,8 +75,8 @@ t_token	*expand_env_var(t_token *token, t_env *env_list)
 	{
 		expanded_token = create_expanded_tokens(split[i]);
 		printf ("LIST OF EXPANDED TOKENS ");
-		list_token_print(expanded_token);
-		// if (!t_node)
+		print_token(expanded_token);
+		// if (expanded_token)
 		// 	...
 		add_token_in_back(&return_tokens, expanded_token);
 		i++;
@@ -91,11 +91,9 @@ t_token	*expand_env_var(t_token *token, t_env *env_list)
 
 void remove_quotes(t_token *token)
 {
-	char	*str;
 	size_t	len;
 	
 	len = ft_strlen(token->str);
-	str = token->str;
 	ft_memmove(token->str, token->str + 1, len);
 	ft_memmove(&token->str[len - 2], &token->str[len - 1], 1);
 }
@@ -198,7 +196,7 @@ t_token	*expand_quote(t_token *token, t_env *env_list)
 	return (copy_token(token));
 }
 
-t_token	*expander(t_token *token_list_head, t_env *env_list)
+t_token	*expand(t_token *token_list_head, t_env *env_list)
 {
 	t_token	*new_token_list_head;
 	t_token	*current_token;

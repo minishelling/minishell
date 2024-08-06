@@ -39,9 +39,7 @@ int main(int argc, char **argv, char **envp)
             break;
         if (ft_strncmp(shell.input, "", 1))
 		{
-           complexer(&shell);
-           list_token_print(shell.token);
-
+           parse(&shell);
             while (shell.token) 
 			{
                 temp = shell.token;

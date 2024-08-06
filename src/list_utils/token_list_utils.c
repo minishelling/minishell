@@ -28,37 +28,25 @@ t_token	*last_token(t_token *token_list_head)
 
 t_token	*copy_token(t_token *token)
 {
-	t_token	*return_token;
+	t_token	*dup_token;
 
 	if (!token)
 		return (NULL);
-	return_token = new_token();
-	if (!return_token)
+	dup_token = new_token();
+	if (!dup_token)
 		return (NULL);
-	return_token->id = token->id;
-	return_token->str = ft_strdup(token->str);
-	if (return_token->str == NULL)
-		return (free(return_token), NULL);
-	return_token->next = NULL;
-	return (return_token);
+	dup_token->id = token->id;
+	dup_token->str = ft_strdup(token->str);
+	if (dup_token->str == NULL)
+		return (free(dup_token), NULL);
+	dup_token->next = NULL;
+	return (dup_token);
 }
 
-void	add_token_in_back(t_token **token_list_head, t_token *new_token)
-{
-	if (!new_token)
-		return ;
-	if (!(*token_list_head))
-	{
-		*token_list_head = new_token;
-		return ;
-	}
-	last_token(*token_list_head)->next = new_token;
-	return ;
-}
 
 //	NAVIGATION FUNCTIONS
 
-t_token	*skip_space_token(t_token *token)
+t_token	*get_after_space_token(t_token *token)
 {
 	t_token	*return_token;
 
@@ -72,20 +60,20 @@ t_token	*skip_space_token(t_token *token)
 	return (return_token);
 }
 
-t_token	*list_token_skip_pipe(t_token *t_current)
+t_token	*get_after_pipe_token(t_token *token)
 {
 	t_token	*t_previous;
 
-	if (t_current == NULL)
+	if (token == NULL)
 		return (NULL);
-	while (t_current != NULL)
+	while (token != NULL)
 	{
-		t_previous = t_current;
-		t_current = t_current->next;
+		t_previous = token;
+		token = token->next;
 		if (t_previous->id == PIPE)
 			break ;
 	}
-	return (t_current);
+	return (token);
 }
 
 t_token	*free_token_node(t_token *t_node)
@@ -120,4 +108,29 @@ void	free_token_list(t_token *t_list, t_token *(*f) (t_token *))
 	while (t_list != NULL)
 		t_list = f(t_list);
 	return ;
+}
+t_token	*free_token_str(t_token *token)
+{
+	t_token	*next_token;
+
+	next_token = token->next;
+	if (token == NULL)
+		return (NULL);
+	if (token->str != NULL)
+		free(token->str);
+	token->str = NULL;
+	free(token);
+	return (next_token);
+}
+t_token	*free_token_non_word(t_token *token)
+{
+	t_token	*current_token;
+
+	current_token = token->next;
+	if (token == NULL)
+		return (NULL);
+	if (token->id != WORD)
+		free(token->str);
+	free(token);
+	return (current_token);
 }

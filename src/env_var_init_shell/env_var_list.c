@@ -97,29 +97,6 @@ char	*env_var_make_cp(const t_env *env_node)
 	return (ret);
 }
 
-char	**env_var_to_cpp(t_env *env_list)
-{
-	t_env	*env_current;
-	char			**env_ret;
-	size_t			i;
-
-	env_current = env_list;
-	env_ret = ft_calloc(sizeof(char *), (env_var_size_has_value(env_list) + 1));
-	if (!env_ret)
-		return (NULL);
-	i = 0;
-	while (env_current != NULL)
-	{
-		// if (env_current->has_value)
-		// {
-		// 	env_ret[i] = env_var_make_cp(env_current);  //// !!!!!
-		// 	i++;
-		// }
-		env_current = env_current->next;
-	}
-	return (env_ret);
-}
-
 /*
 ** print linked list of environment variables FOR TESTING!
 */
