@@ -18,7 +18,7 @@
 # include "env.h"
 # include "errors.h"
 
-# define MINISHARED_PROMPT "\001\033[1;32m\002<🤜 🤛> \001\033[0m\002"
+# define MINISHARED_PROMPT "\001\033[1;32m\002Minishared<🤜 🤛> \001\033[0m\002"
 # define META_CHARS_SET " \t\n|&;()><"
 # define SPECIAL_CHARS "\'\"$"
 # define ERROR -1

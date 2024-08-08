@@ -12,11 +12,26 @@ t_token	*skip_whitespace(t_token *list)
 	return (list);
 }
 
+// bool	is_par_closed (t_token *token_list_head)
+// {
+// 	t_token	*current_token;
+
+// 	if (!token_list_head)
+// 		return (NULL);
+// 	current_token = token_list_head;
+
+
+
+// }
+
+
 t_token	*syntax(t_token *token_list_head, t_env *env_list)
 {
 	t_token				*previous_token;
 	t_token				*current_token;
-	const t_syntax_func	func[14] = {
+	
+	// bool par_closed = is_par_closed(token_list_head);
+	t_syntax_func	func[14] = {
 	[0] = NULL,
 	[1] = NULL,
 	[2] = NULL,
@@ -43,7 +58,6 @@ t_token	*syntax(t_token *token_list_head, t_env *env_list)
 		previous_token = current_token;
 		current_token = get_after_space_token(current_token);
 	}
-	
 	return (NULL);
 }
 

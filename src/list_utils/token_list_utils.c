@@ -43,8 +43,6 @@ t_token	*copy_token(t_token *token)
 	return (dup_token);
 }
 
-
-
 t_token	*get_after_space_token(t_token *token)
 {
 	t_token	*return_token;
