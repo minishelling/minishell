@@ -42,10 +42,8 @@ bool	syntax_id_redir(t_token *t_prev, t_token *t_cur, \
 	(void) t_prev;
 	if (t_next == NULL)
 		return (1);
-	if (!(t_next->id == WORD || \
-		t_next->id == SQUOTE || \
-		t_next->id == DQUOTE || \
-		t_next->id == ENV_VAR))
+	if (!(t_next->id == WORD || t_next->id == SQUOTE || \
+		t_next->id == DQUOTE || t_next->id == ENV_VAR))
 		return (1);
 	if (t_next->id == ENV_VAR)
 		if (syntax_id_redir_shvar(t_next, env_list))
@@ -76,15 +74,15 @@ bool	syntax_id_parentheses_open(t_token *t_prev, t_token *t_cur, \
 		return (1);
 	return (0);	
 }
-bool	syntax_id_parentheses_close(t_token *t_prev, t_token *t_cur, \
-		t_env *env_list)
-{
-	(void) env_list;
-	(void) t_cur;
-	if (t_prev == NULL)
-		return (1);
-	return(0);	
-}
+// bool	syntax_id_parentheses_close(t_token *t_prev, t_token *t_cur, 
+// 		t_env *env_list)
+// {
+// 	(void) env_list;
+// 	(void) t_cur;
+// 	if (t_prev == NULL)
+// 		return (1);
+// 	return(0);	
+// }
 
 bool	syntax_id_ampersand(t_token *t_prev, t_token *t_cur, \
 		t_env *env_list)

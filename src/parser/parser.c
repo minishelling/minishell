@@ -2,17 +2,17 @@
 
 typedef t_token*	(*t_parser_func)(t_cmd *cmd, t_token *token);
 
-size_t	parser_get_arg(t_token *token)
+size_t	get_arg_num(t_token *token)
 {
-	size_t	arg_ret;
+	size_t	arg_num;
 
-	arg_ret = 0;
+	arg_num = 0;
 	if (token == NULL)
 		return (0);
 	while (token != NULL && token->id != PIPE)
 	{
 		if (token->id == WORD)
-			arg_ret++;
+			arg_num++;
 		if (token->id == GT || token->id == LT)
 		{
 			printf ("In getting args, token->id is %d\n", token->id);
@@ -21,12 +21,13 @@ size_t	parser_get_arg(t_token *token)
 		}
 		token = get_after_space_token(token);
 	}
-	return (arg_ret);
+	printf ("arg_num is %ld\n", arg_num);
+	return (arg_num);
 }
 
 bool	is_init_cmd(t_cmd *cmd, t_token *token)
 {
-	size_t		arg_num = parser_get_arg(token);
+	size_t		arg_num = get_arg_num(token);
 	t_parser_func	func[14] = {
 	[0] = parser_id_space,
 	[1] = parser_id_space,
@@ -53,6 +54,7 @@ bool	is_init_cmd(t_cmd *cmd, t_token *token)
 		// if (cmd->next != NULL)
 		// 	return (free_cmd(cmd), false);
 	}
+	printf ("manages to init cmd\n");
 	return (true);
 }
 
@@ -67,11 +69,13 @@ t_cmd	*parser(t_shell *shell)
 	while (token != NULL)
 	{
 		current_cmd = new_cmd();
+		printf ("made a new cmd \n");
 		if (!current_cmd)
 			return (free_token_list(shell->token,free_token_str), NULL);
 		if (is_init_cmd(current_cmd, token) == false)
 			return (free_token_list(shell->token, free_token_str), \
 					free_cmd_list(cmd_list_head), NULL);
+
 		add_cmd_in_back(&cmd_list_head, current_cmd);
 		token = get_after_pipe_token(token);
 	}
@@ -96,10 +100,11 @@ void	parse(t_shell *shell)
 	//env_print_list (shell->env_list);  // lisandro
 	shell->token = expand(shell->token, shell->env_list);
 	print_token(shell->token);
-	concatenate_word_tokens(shell);
+	concat_word_tokens(shell);
 	// if (concatenate_word_tokens(shell) == false)
 	// 	return (free_token_list(shell->token, list_token_free_node_str),
 	// 			error(append));
+	
 	shell->cmd_list = parser(shell);
 	print_cmd(shell->cmd_list);
 	// if (shell->cmd_list == NULL)

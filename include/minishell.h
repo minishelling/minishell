@@ -56,16 +56,6 @@ typedef enum e_redir_id
 	APP
 }	t_redir_id;
 
-typedef struct s_token
-{
-	t_token_id		id;
-	char			*str;
-	struct s_token	*next;
-}	t_token;
-
-
-
-
 typedef struct s_redir
 {
 	t_redir_id		redir;
@@ -74,13 +64,19 @@ typedef struct s_redir
 	struct s_redir	*next;
 }					t_redir;
 
+typedef struct s_token
+{
+	t_token_id		id;
+	char			*str;
+	struct s_token	*next;
+}	t_token;
+
 typedef struct s_cmd
 {
 	char			**args;
 	t_redir			*redir;
 	struct s_cmd	*next;
 }					t_cmd;
-
 
 typedef struct s_env_list
 {
@@ -159,7 +155,7 @@ t_token	*last_token(t_token *token_list_head);
 
 char	*ft_strjoin_fs1(char *s1, const char *s2);
 t_token	*free_token_str(t_token *token);
-bool	concatenate_word_tokens(t_shell *shell);
+bool	concat_word_tokens(t_shell *shell);
 t_token	*parser_id_space(t_cmd *cmd, t_token *token);
 t_token	*parser_id_word(t_cmd *cmd, t_token *token);
 t_token	*parser_id_redir(t_cmd *cmd, t_token *token);

@@ -108,7 +108,7 @@ bool	is_quote_unclosed(t_token *token)
 	if (len == 1 || str[0] != str[len - 1])
 	{
 		printf ("str[0] is %c and quote is unclosed\n", str[0]);
-		//error_msg 258, "unclosed quotes";
+		//error 258, "unclosed quotes";
 		return (true);
 	}
 	return (false);

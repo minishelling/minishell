@@ -35,7 +35,7 @@ t_token	*remove_empty_token(t_token *token)
 	return (token);
 }
 
-bool	concatenate_word_tokens(t_shell *shell)
+bool	concat_word_tokens(t_shell *shell)
 {
 	t_token	*current_token;
 	t_token	*previous_token;

@@ -24,7 +24,7 @@ t_token	*syntax(t_token *token_list_head, t_env *env_list)
 	[4] = syntax_id_ampersand,
 	[5] = syntax_id_semicol,
 	[6] = syntax_id_parentheses_open,
-	[7] = syntax_id_parentheses_close,
+	[7] = syntax_id_parentheses_open,
 	[8] = syntax_id_redir,
 	[9] = syntax_id_redir,
 	[10] = syntax_id_misc,

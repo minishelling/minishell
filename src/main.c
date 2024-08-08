@@ -33,7 +33,6 @@ int main(int argc, char **argv, char **envp)
     printf ("value is |%s|\n", result2);
     while (1) 
 	{
-        
         shell.input = readline(MINISHARED_PROMPT);
         if (!shell.input)
             break;
