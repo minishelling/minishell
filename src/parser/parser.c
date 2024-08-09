@@ -83,18 +83,22 @@ t_cmd	*parser(t_shell *shell)
 	return (cmd_list_head);
 }
 
-void	parse(t_shell *shell)
+int	parse(t_shell *shell)
 {
 	shell->token = lex(shell->input);
-	// if (shell->token == NULL)
-	// 	...
+	if (shell->token == NULL)
+	{
+
+		
+	}
 	print_token(shell->token);
 	shell->syntax = syntax(shell->token, shell->env_list);
 	if (shell->syntax)
 	{
+		printf ("syntax error\n");
 		// error(syntax_error, 258, shell->syntax->str);
-		// free_token_list(mini->token, free_token_node_str);
-		return ;
+		free_token_list(shell->token, free_token_str);
+		return (ERR_SYNTAX);
 	}
 	//env_var_print_linked_list (shell->env_list);
 	//env_print_list (shell->env_list);  // lisandro
@@ -110,7 +114,7 @@ void	parse(t_shell *shell)
 	// if (shell->cmd_list == NULL)
 	// 	error(parser);
 	// shell->token = NULL;
-
+	return (PARSING_OK);
 
 }
 

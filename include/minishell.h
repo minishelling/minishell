@@ -29,6 +29,15 @@
 #define MAGENTA_BACKGROUND "\033[45m"
 #define WHITE_BACKGROUND "\033[47m"
 
+
+enum e_error
+{
+	PARSING_OK,
+	ERR_SYNTAX,
+};
+
+
+
 typedef enum e_token_id 
 {
 	SPACE_CHAR,
@@ -125,7 +134,7 @@ bool	syntax_id_parentheses_close(t_token *t_prev, t_token *t_cur, t_env *env_lis
 bool	syntax_id_redir(t_token *t_prev, t_token *t_cur, t_env *env_list);
 bool	syntax_id_misc(t_token *t_prev, t_token *t_cur, t_env *env_list);
 
-void	parse(t_shell *shell);
+int	parse(t_shell *shell);
 void	env_var_free_node(t_env *env_var_node);
 t_token	*new_token(void);
 void	add_token_in_back(t_token **t_list, t_token *new);

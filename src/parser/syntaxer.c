@@ -12,25 +12,47 @@ t_token	*skip_whitespace(t_token *list)
 	return (list);
 }
 
-// bool	is_par_closed (t_token *token_list_head)
-// {
-// 	t_token	*current_token;
 
-// 	if (!token_list_head)
-// 		return (NULL);
-// 	current_token = token_list_head;
+bool is_par_closed(t_token *token_list_head) {
+	
+	t_token *current_token;
+	int paren_count;
 
-
-
-// }
-
+	if (!token_list_head) {
+		return 1;
+	}
+	paren_count = 0;
+	current_token = token_list_head;
+	while (current_token) 
+	{
+		printf("current token is %s\n", current_token->str);
+		if (current_token->id == PAR_OPEN) 
+		{
+			paren_count++;
+		} 
+		else if (current_token->id == PAR_CLOSE) 
+		{
+			if (paren_count == 0) 
+				return 0;
+			paren_count--;
+		}
+		current_token = current_token->next;
+	}
+	return (paren_count == 0);
+}
 
 t_token	*syntax(t_token *token_list_head, t_env *env_list)
 {
 	t_token				*previous_token;
 	t_token				*current_token;
-	
-	// bool par_closed = is_par_closed(token_list_head);
+
+	bool par_closed = is_par_closed(token_list_head);
+	printf ("par_closed is %d\n", par_closed);
+	if (!par_closed)
+		{
+			printf ("Returning 1\n");
+			return (token_list_head);
+		}
 	t_syntax_func	func[14] = {
 	[0] = NULL,
 	[1] = NULL,

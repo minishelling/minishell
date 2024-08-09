@@ -95,6 +95,6 @@ void	set_pos_end_parentheses(char *str, size_t *pos, t_token_id token_id)
 {
 	const char	c = str[*pos];
 	(void) token_id;
-	while (str[*pos] && str[*pos] == c)
+	if (str[*pos] == c)
 		(*pos)++;
 }

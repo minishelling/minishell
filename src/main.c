@@ -6,10 +6,12 @@ int main(int argc, char **argv, char **envp)
     t_shell shell;
     t_token *temp;
     //t_env	*env_list;
+    int status;
 
 
     (void)argv;
     (void)envp;
+    
     // env_list = NULL;
 	// env_init_list(&env_list, envp);
 	// env_print_list(env_list);
@@ -38,15 +40,25 @@ int main(int argc, char **argv, char **envp)
             break;
         if (ft_strncmp(shell.input, "", 1))
 		{
-           parse(&shell);
-            while (shell.token) 
-			{
-                temp = shell.token;
-                shell.token = shell.token->next;
-                free(temp->str);
-                free(temp);
+            status = parse(&shell);
+            printf ("status is %d\n", status);
+            if (status== 1)
+                printf ("syntax error\n");
+            else
+            {
+                while (shell.token) 
+			    {
+                
+                    temp = shell.token;
+                    shell.token = shell.token->next;
+                    if(temp->str)
+                        free(temp->str);
+
+                    if (temp)
+                        free(temp);
+                }
+                free(shell.input);
             }
-            free(shell.input);
             shell.input = NULL;
         }
     }
