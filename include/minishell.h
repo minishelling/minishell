@@ -18,7 +18,19 @@
 # include "env.h"
 # include "errors.h"
 
-# define MINISHARED_PROMPT "\001\033[1;32m\002Minishared<🤜 🤛> \001\033[0m\002"
+//# define MINISHARED_PROMPT "\001\033[1;32m\002Mini_shared<🤜 🤛> \001\033[0m\002"
+#define MINISHARED_PROMPT "\001\033[38;5;196m\002M\001\033[38;5;202m\002i\001\033[38;5;208m\002n\001\033[38;5;214m\002i\001\033[38;5;220m\002_\001\033[38;5;226m\002s\001\033[38;5;190m\002h\001\033[38;5;154m\002a\001\033[38;5;118m\002r\001\033[38;5;82m\002e\001\033[38;5;120m\002d\001\033[0m\002<🤜 🤛> \001\033[0m\002"
+
+
+
+
+
+
+
+
+
+
+
 # define META_CHARS_SET " \t\n|&;()><"
 # define SPECIAL_CHARS "\'\"$"
 # define ERROR -1
@@ -30,13 +42,12 @@
 #define WHITE_BACKGROUND "\033[47m"
 
 
-enum e_error
+enum e_parsing_error
 {
 	PARSING_OK,
-	ERR_SYNTAX,
+	ERR_SYNTAX_QUOTES,
+	ERR_SYNTAX_PAREN,
 };
-
-
 
 typedef enum e_token_id 
 {
@@ -53,7 +64,8 @@ typedef enum e_token_id
 	SQUOTE,
 	DQUOTE,
 	ENV_VAR,
-	WORD
+	WORD,
+	OR_OPR
 }	t_token_id;
 
 typedef enum e_redir_id 
@@ -103,23 +115,22 @@ typedef struct s_shell
 	int			write_fd;
     char 		*input;
     t_token 	*token;
-	t_token		*syntax;
+	t_token		*syntax; //?
 	t_env		*env_list;
 	t_cmd		*cmd_list;
 } t_shell;
 
 
 int		init_shell(char **envp, t_shell *shell);
-void 	tokenize_input(t_shell *shell);
-//void add_token(t_shell *shell, e_token_type type, e_token_id id, char *str);
-
-t_token	*lex(char *input);
-
-t_token	*syntax(t_token *head, t_env *env_list);
+t_token	*tokenize(char *input);
+int		syntax(t_shell *shell);
 t_token	*expand(t_token *token_list_head, t_env *env_list);
+bool	concat_word_tokens(t_shell *shell);
+int		parse(t_shell *shell);
+
 void	set_pos_end_space_or_word(char *str, size_t *pos, t_token_id token_id);
 void	set_pos_end_quote(char *str, size_t *pos, t_token_id token_id);
-void	set_pos_end_ampersand(char *str, size_t *pos, t_token_id token_id);
+void	set_pos_end_and_opr(char *str, size_t *pos, t_token_id token_id);
 void	set_pos_end_semicol(char *str, size_t *pos, t_token_id token_id);
 void	set_pos_end_parentheses(char *str, size_t *pos, t_token_id token_id);
 void	set_pos_end_redir(char *str, size_t *pos, t_token_id token_id);
@@ -127,62 +138,59 @@ void	set_pos_end_env_var(char *str, size_t *pos, t_token_id token_id);
 void	set_pos_end_pipe(char *str, size_t *pos, t_token_id token_id);
 
 bool	syntax_id_pipe(t_token *t_prev, t_token *t_cur, t_env *env_list);
-bool	syntax_id_ampersand(t_token *t_prev, t_token *t_cur, t_env *env_list);
+bool	syntax_id_and_opr(t_token *t_prev, t_token *t_cur, t_env *env_list);
 bool	syntax_id_semicol(t_token *t_prev, t_token *t_cur, t_env *env_list);
 bool	syntax_id_parentheses_open(t_token *t_prev, t_token *t_cur, t_env *env_list);
 bool	syntax_id_parentheses_close(t_token *t_prev, t_token *t_cur, t_env *env_list);
 bool	syntax_id_redir(t_token *t_prev, t_token *t_cur, t_env *env_list);
 bool	syntax_id_misc(t_token *t_prev, t_token *t_cur, t_env *env_list);
 
-int	parse(t_shell *shell);
-void	env_var_free_node(t_env *env_var_node);
+t_token	*parser_space(t_cmd *cmd, t_token *token);
+t_token	*parser_pipe(t_cmd *cmd_node, t_token *token);
+t_token	*parser_and_opr(t_cmd *cmd, t_token *token);
+t_token	*parser_semicol(t_cmd *cmd, t_token *token);
+t_token	*parser_par_open(t_cmd *cmd, t_token *token);
+t_token	*parser_par_close(t_cmd *cmd, t_token *token);
+t_token	*parser_redir(t_cmd *cmd, t_token *token);
+t_token	*parser_word(t_cmd *cmd, t_token *token);
+t_token	*parser_or_opr(t_cmd *cmd, t_token *token);
+
 t_token	*new_token(void);
 void	add_token_in_back(t_token **t_list, t_token *new);
 t_token_id	get_token_id(char c);
 t_token	*get_after_space_token(t_token *token);
 t_token	*get_after_pipe_token(t_token *token);
-char	*get_expanded_value(char *str, size_t pos, \
-		size_t *len_env_var, t_env *env_list);
+char	*get_expanded_value(char *str, size_t pos,size_t *len_env_var, t_env *env_list);
 t_token	*free_token_node(t_token *t_node);
 void	free_last_token(t_token *t_list, t_token *(*f) (t_token *));
 t_token	*copy_token(t_token *t_node);
-void	free_token_list(t_token *t_list, t_token *(*f) (t_token *));
-t_env	*env_var_create_new_node(char *env_var_str);
-void	env_var_add_to_end_list(t_env **env_var, t_env *new_env_var);
-void	env_var_print_linked_list(t_env *env_list);
-void	env_var_free_list(t_env *env_list);
-//char	*env_var_get_env(char *key, t_env *env_list);
-
-int		init_shell_update_SHLVL(t_env **env_list);
-t_env	*env_var_get_env_node(char *name, t_env *env_list);
-
-t_env_ecode	env_copy_keyval(t_env **new_node, char *keyvalue);
-// t_env_ecode	env_init_list(t_env **head, char **envp);
-
-char	*env_get_value_from_key(t_env *env_head, char *key);
 t_token	*last_token(t_token *token_list_head);
-
-char	*ft_strjoin_fs1(char *s1, const char *s2);
+void	free_token_list(t_token *t_list, t_token *(*f) (t_token *));
 t_token	*free_token_str(t_token *token);
-bool	concat_word_tokens(t_shell *shell);
-t_token	*parser_id_space(t_cmd *cmd, t_token *token);
-t_token	*parser_id_word(t_cmd *cmd, t_token *token);
-t_token	*parser_id_redir(t_cmd *cmd, t_token *token);
-t_redir_id	redir_identification(char *str);
-t_token	*parser_id_pipe(t_cmd *cmd_node, t_token *token);
+
+t_env	*new_env_var(char *env_var_str);
+void	add_env_var_in_back(t_env **env_var, t_env *new_env_var);
+char	*get_env_value_from_key(t_env *env_head, char *key);
+void	free_env_node(t_env *env_var_node);
+void	free_env_list(t_env *env_list);
+
 t_cmd	*new_cmd(void);
 t_cmd	*cmd_last(t_cmd *cmd);
 void	add_cmd_in_back(t_cmd **cmd_list_head, t_cmd *new_cmd);
 t_cmd	*free_cmd(t_cmd *cmd);
 void	free_cmd_list(t_cmd *cmd_list_head);
+
 t_redir	*new_redir(void);
 void	add_redir_in_back(t_redir **redir_list_head, t_redir *new_redir);
 void	free_redir_list(t_redir *redir_list_head);
 t_redir	*last_redir(t_redir *redir_list_head);
+t_redir_id	redir_ident(char *str);
 
+void	print_env(t_env *env_list);
 void	print_redir(t_redir *redir_list_head);
 void	print_token(t_token *head);
 void	print_cmd(t_cmd *cmd_list_head);
+void	handle_error(t_shell *shell, int err_no, void *param);
 
-
+char	*ft_strjoin_fs1(char *s1, const char *s2);
 #endif

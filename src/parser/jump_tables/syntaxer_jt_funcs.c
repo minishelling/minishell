@@ -1,7 +1,6 @@
 #include "../../../include/minishell.h"
 
-bool	syntax_id_pipe(t_token *t_prev, t_token *t_cur, \
-		t_env *env_list)
+bool	syntax_id_pipe(t_token *t_prev, t_token *t_cur, t_env *env_list)
 {
 	t_token	*t_next;
 
@@ -31,8 +30,7 @@ bool	syntax_id_redir_shvar(t_token *t_next, t_env *env_list)
 	return (0);
 }
 
-bool	syntax_id_redir(t_token *t_prev, t_token *t_cur, \
-		t_env *env_list)
+bool	syntax_id_redir(t_token *t_prev, t_token *t_cur, t_env *env_list)
 {
 	t_token	*t_next;
 
@@ -51,8 +49,7 @@ bool	syntax_id_redir(t_token *t_prev, t_token *t_cur, \
 	return (0);
 }
 
-bool	syntax_id_misc(t_token *t_prev, t_token *t_cur, \
-		t_env *env_list)
+bool	syntax_id_misc(t_token *t_prev, t_token *t_cur, t_env *env_list)
 {
 	(void) t_prev;
 	(void) t_cur;
@@ -60,8 +57,7 @@ bool	syntax_id_misc(t_token *t_prev, t_token *t_cur, \
 	return (0);
 }
 
-bool	syntax_id_parentheses_open(t_token *t_prev, t_token *t_cur, \
-		t_env *env_list)
+bool	syntax_id_parentheses_open(t_token *t_prev, t_token *t_cur, t_env *env_list)
 {
 	t_token	*t_next;
 
@@ -74,28 +70,18 @@ bool	syntax_id_parentheses_open(t_token *t_prev, t_token *t_cur, \
 		return (1);
 	return (0);	
 }
-// bool	syntax_id_parentheses_close(t_token *t_prev, t_token *t_cur, 
-// 		t_env *env_list)
-// {
-// 	(void) env_list;
-// 	(void) t_cur;
-// 	if (t_prev == NULL)
-// 		return (1);
-// 	return(0);	
-// }
 
-bool	syntax_id_ampersand(t_token *t_prev, t_token *t_cur, \
-		t_env *env_list)
+bool	syntax_id_and_opr(t_token *t_prev, t_token *t_cur, t_env *env_list)
 {
 	(void) env_list;
 	(void) t_cur;
 	if (t_prev == NULL)
+	printf ("REach here\n");
 		return (1);
 	return(0);
 }
 
-bool	syntax_id_semicol(t_token *t_prev, t_token *t_cur, \
-		t_env *env_list)
+bool	syntax_id_semicol(t_token *t_prev, t_token *t_cur, t_env *env_list)
 {
 	(void) env_list;
 	(void) t_cur;

@@ -1,8 +1,5 @@
 #include "../../include/minishell.h"
 
-
-
-
 size_t	cmd_size(t_cmd *t_list)
 {
 	size_t	ret;
@@ -33,12 +30,24 @@ size_t	token_size(t_token *t_list)
 	return (ret);
 }
 
+void	print_env(t_env *env_list)
+{
+	printf("LINKED LISTOF ENV VARS:\n\n");
+	while (env_list != NULL)
+	{
+		printf("%s", env_list->key);
+		printf("=");
+		printf("%s\n", env_list->value);
+		env_list = env_list->next;
+	}
+}
+
 void	print_token(t_token *head)
 {
 	int			size;
 	t_token		*ptr;
 	int	con = token_size(head);
-	char	*token_name[14] = {
+	char	*token_name[15] = {
 	[0] = "SPACE_CHAR",
 	[1] = "TAB_CHAR",
 	[2] = "NL",
@@ -51,8 +60,9 @@ void	print_token(t_token *head)
 	[9] = "LT",
 	[10] = "SQUOTE",
 	[11] = "DQUOTE",
-	[12] = "env_var",
-	[13] = "WORD"
+	[12] = "ENV_VAR",
+	[13] = "WORD",
+	[14] = "OR_OPR"
 	};
 	ptr = head;
 

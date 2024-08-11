@@ -54,7 +54,7 @@ t_token	*get_after_space_token(t_token *token)
 		return (NULL);
 	if (return_token->id == SPACE_CHAR || return_token->id == TAB_CHAR || return_token->id == NL)
 		return_token = return_token->next;
-	printf ("returning %s\n", return_token->str);
+	//printf ("returning %s\n", return_token->str);
 	return (return_token);
 }
 
@@ -68,7 +68,8 @@ t_token	*get_after_pipe_token(t_token *token)
 	{
 		t_previous = token;
 		token = token->next;
-		if (t_previous->id == PIPE)
+		// if (t_previous->id == PIPE || t_previous->id == AND_OPR || t_previous->id == OR_OPR)
+		if (t_previous->id == PIPE)	
 			break ;
 	}
 	return (token);

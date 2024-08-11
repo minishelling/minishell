@@ -65,7 +65,7 @@ t_token	*expand_env_var(t_token *token, t_env *env_list)
 	return_tokens = NULL;
 	i = 0;
 
-	char *env_value = env_get_value_from_key(env_list, (token->str + 1));
+	char *env_value = get_env_value_from_key(env_list, (token->str + 1));
 	printf ("in expand_env_var str is %s\n", env_value);
 	
 	split = ft_split (env_value, ' ');
@@ -98,21 +98,6 @@ void remove_quotes(t_token *token)
 	ft_memmove(&token->str[len - 2], &token->str[len - 1], 1);
 }
 
-bool	is_quote_unclosed(t_token *token)
-{
-	char	*str;
-	size_t	len;
-	
-	len = ft_strlen(token->str);
-	str = token->str;
-	if (len == 1 || str[0] != str[len - 1])
-	{
-		printf ("str[0] is %c and quote is unclosed\n", str[0]);
-		//error 258, "unclosed quotes";
-		return (true);
-	}
-	return (false);
-}
 
 char	*get_expanded_value(char *token_str, size_t pos, size_t *env_key_len, t_env *env_list)
 {
@@ -126,8 +111,7 @@ char	*get_expanded_value(char *token_str, size_t pos, size_t *env_key_len, t_env
 	env_key = ft_substr(token_str, pos + 1, *env_key_len - 1);
 	if (!env_key)
 		return (NULL);
-	//str_ret = env_var_get_env(env_var, env_list);
-	env_value = env_get_value_from_key(env_list, env_key);
+	env_value = get_env_value_from_key(env_list, env_key);
 	free(env_key);
 	return (env_value);
 }
@@ -170,7 +154,7 @@ t_token	*expand_quote(t_token *token, t_env *env_list)
 	size_t	i;
 	int		tmp;
 
-	if (token->str == NULL || is_quote_unclosed(token))
+	if (token->str == NULL)
 		return (NULL);
 	remove_quotes(token);
 	if (token->id == SQUOTE)
@@ -221,7 +205,7 @@ t_token	*expand(t_token *token_list_head, t_env *env_list)
 			return (free_token_list(token_list_head, free_node), \
 					free_token_list(new_token_list_head, free_node), \
 					NULL); //error_print, 1, "expander: unable to expand")
-		printf ("current_token is %s, expanded_token is %s\n", current_token->str, expanded_tokens->str);
+		//printf ("current_token is %s, expanded_token is %s\n", current_token->str, expanded_tokens->str);
 		add_token_in_back(&new_token_list_head, expanded_tokens);
 		current_token = current_token->next;
 	}

@@ -21,28 +21,29 @@ size_t	get_arg_num(t_token *token)
 		}
 		token = get_after_space_token(token);
 	}
-	printf ("arg_num is %ld\n", arg_num);
+	//printf ("arg_num is %ld\n", arg_num);
 	return (arg_num);
 }
 
 bool	is_init_cmd(t_cmd *cmd, t_token *token)
 {
 	size_t		arg_num = get_arg_num(token);
-	t_parser_func	func[14] = {
-	[0] = parser_id_space,
-	[1] = parser_id_space,
-	[2] = parser_id_space,
-	[3] = parser_id_pipe,
-	[4] = NULL, //and opr
-	[5] = NULL, //semicol
-	[6] = NULL, //par open
-	[7] = NULL, //par close
-	[8] = parser_id_redir,
-	[9] = parser_id_redir,
+	t_parser_func	func[15] = {
+	[0] = parser_space,
+	[1] = parser_space,
+	[2] = parser_space,
+	[3] = parser_pipe,
+	[4] = parser_and_opr,
+	[5] = parser_semicol,
+	[6] = parser_par_open,
+	[7] = parser_par_close,
+	[8] = parser_redir,
+	[9] = parser_redir,
 	[10] = NULL, //quotes after handling 
 	[11] = NULL, //quotes after handling
 	[12] = NULL, //env var after handling
-	[13] = parser_id_word
+	[13] = parser_word,
+	[14] = parser_or_opr
 	};
 
 	cmd->args = ft_calloc(sizeof(char *), (arg_num + 1));
@@ -54,11 +55,11 @@ bool	is_init_cmd(t_cmd *cmd, t_token *token)
 		// if (cmd->next != NULL)
 		// 	return (free_cmd(cmd), false);
 	}
-	printf ("manages to init cmd\n");
+	//printf ("manages to init cmd\n");
 	return (true);
 }
 
-t_cmd	*parser(t_shell *shell)
+t_cmd	*make_cmd(t_shell *shell)
 {
 	t_token	*token;
 	t_cmd	*current_cmd;
@@ -69,7 +70,7 @@ t_cmd	*parser(t_shell *shell)
 	while (token != NULL)
 	{
 		current_cmd = new_cmd();
-		printf ("made a new cmd \n");
+		//printf ("made a new cmd \n");
 		if (!current_cmd)
 			return (free_token_list(shell->token,free_token_str), NULL);
 		if (is_init_cmd(current_cmd, token) == false)
@@ -85,20 +86,20 @@ t_cmd	*parser(t_shell *shell)
 
 int	parse(t_shell *shell)
 {
-	shell->token = lex(shell->input);
+	shell->token = tokenize(shell->input);
 	if (shell->token == NULL)
 	{
-
+		//error
 		
 	}
 	print_token(shell->token);
-	shell->syntax = syntax(shell->token, shell->env_list);
-	if (shell->syntax)
+	int status = syntax(shell);
+	if (status)
 	{
-		printf ("syntax error\n");
+		//printf ("syntax error\n");
 		// error(syntax_error, 258, shell->syntax->str);
 		free_token_list(shell->token, free_token_str);
-		return (ERR_SYNTAX);
+		return (status);
 	}
 	//env_var_print_linked_list (shell->env_list);
 	//env_print_list (shell->env_list);  // lisandro
@@ -109,7 +110,7 @@ int	parse(t_shell *shell)
 	// 	return (free_token_list(shell->token, list_token_free_node_str),
 	// 			error(append));
 	
-	shell->cmd_list = parser(shell);
+	shell->cmd_list = make_cmd(shell);
 	print_cmd(shell->cmd_list);
 	// if (shell->cmd_list == NULL)
 	// 	error(parser);

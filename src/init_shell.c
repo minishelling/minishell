@@ -1,75 +1,75 @@
-#include "../../include/minishell.h"
+#include "../include/minishell.h"
 
-int	unset_env_var(char *key, t_env **env_list)  //builtin
-{
-	int		key_len;
-	t_env	*current;
-	t_env	*temp_var;
+// int	unset_env_var(char *key, t_env **env_list)  //builtin
+// {
+// 	int		key_len;
+// 	t_env	*current;
+// 	t_env	*temp_var;
 
-	if (!key)
-		return (-2); //malloc error
-	current = *env_list;
-	temp_var = NULL;
-	key_len = ft_strlen(key);
-	while (current != NULL && current->next != NULL)
-	{
-		if (ft_strncmp(current->next->key, key, key_len) == 0)
-		{
-			temp_var = current->next;
-			current->next = temp_var->next;
-			env_var_free_node(temp_var);
-			return (0); //SUCCESS
-		}
-		current = current->next;
-	}
-	return (0); // variable name not found thus not unset! // SUCCESS
-}
+// 	if (!key)
+// 		return (-2); //malloc error
+// 	current = *env_list;
+// 	temp_var = NULL;
+// 	key_len = ft_strlen(key);
+// 	while (current != NULL && current->next != NULL)
+// 	{
+// 		if (ft_strncmp(current->next->key, key, key_len) == 0)
+// 		{
+// 			temp_var = current->next;
+// 			current->next = temp_var->next;
+// 			free_env_node(temp_var);
+// 			return (0); //SUCCESS
+// 		}
+// 		current = current->next;
+// 	}
+// 	return (0); // variable name not found thus not unset! // SUCCESS
+// }
 
-int	init_shell_update_SHLVL(t_env **env_list)
-{
-	t_env	*shlvl_node;
-	unsigned int	value;
+// int	init_shell_update_SHLVL(t_env **env_list)
+// {
+// 	t_env	*shlvl_node;
+// 	unsigned int	value;
 
-	shlvl_node = env_var_get_env_node("SHLVL", *env_list);
-	if (shlvl_node)
-	{
-		value = ft_atoi(shlvl_node->value) + 1;
-		if (shlvl_node->value)
-			free(shlvl_node->value);
-		shlvl_node->value = ft_itoa(value);
-		if (!shlvl_node->value)
-			return (1);
-		return (0);
-	}
-	shlvl_node = env_var_create_new_node("SHLVL=1");
-	if (!shlvl_node)
-		return (1);
-	env_var_add_to_end_list(env_list, shlvl_node);
-	return (0);
-}
+// 	shlvl_node = get_env_node("SHLVL", *env_list);
+// 	if (shlvl_node)
+// 	{
+// 		value = ft_atoi(shlvl_node->value) + 1;
+// 		if (shlvl_node->value)
+// 			free(shlvl_node->value);
+// 		shlvl_node->value = ft_itoa(value);
+// 		if (!shlvl_node->value)
+// 			return (1);
+// 		return (0);
+// 	}
+// 	shlvl_node = new_env_var("SHLVL=1");
+// 	if (!shlvl_node)
+// 		return (1);
+// 	add_env_var_in_back(env_list, shlvl_node);
+// 	return (0);
+// }
 
-int	init_shell(char **envp, t_shell *shell)
-{
-	t_env	*env_list;
-	t_env	*new_env_var;
-	int				i;
+// int	init_shell(char **envp, t_shell *shell)
+// {
+// 	t_env	*env_list;
+// 	t_env	*env_var;
+// 	int		i;
 
-	env_list = NULL;
-	i = 0;
-	while (envp[i] != NULL)
-	{
-		new_env_var = env_var_create_new_node(envp[i]);
-		if (!new_env_var)
-			return (env_var_free_list(env_list), 1);
-		env_var_add_to_end_list(&env_list, new_env_var);
-		i++;
-	}
-	if (init_shell_update_SHLVL(&env_list))
-		return (env_var_free_list(env_list), 1);
-	unset_env_var("OLDPWD", &env_list);
-	shell->env_list = env_list;
-	return (0);
-}
+// 	env_list = NULL;
+// 	i = 0;
+// 	while (envp[i] != NULL)
+// 	{
+// 		env_var = new_env_var(envp[i]);
+// 		if (!env_var)
+// 			return (free_env_list(env_list), 1);
+// 		add_env_var_in_back(&env_list, env_var);
+// 		i++;
+// 	}
+// 	if (init_shell_update_SHLVL(&env_list))
+// 		return (free_env_list(env_list), 1);
+// 	unset_env_var("OLDPWD", &env_list);
+// 	shell->env_list = env_list;
+// 	return (0);
+// }
 
 
 //--------------------------

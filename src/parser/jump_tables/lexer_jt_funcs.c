@@ -24,7 +24,7 @@ void	set_pos_end_pipe(char *str, size_t *pos, t_token_id token_id)
 
 void	set_pos_end_redir(char *str, size_t *pos, t_token_id token_id)
 {
-	const char	c = str[*pos];
+	char	c = str[*pos];
 	int			i;
 
 	(void) token_id;
@@ -68,18 +68,15 @@ void	set_pos_end_space_or_word(char *str, size_t *pos, t_token_id token_id)
 		(*pos)++;
 }
 
-void	set_pos_end_ampersand(char *str, size_t *pos, t_token_id token_id)
+void	set_pos_end_and_opr(char *str, size_t *pos, t_token_id token_id)
 {
-	int			i;
-
 	(void) token_id;
-	i = 0;
-	while (i < 2 && str[*pos] && str[*pos] == '&')
-	{
-		(*pos)++;
-		i++;
-	}
+
+	if (str[*pos] == '&' && str[*pos + 1] && str[*pos +1] == '&')
+		(*pos) += 2;
+	else (*pos)++;	
 }
+
 
 void	set_pos_end_semicol(char *str, size_t *pos, t_token_id token_id)
 {

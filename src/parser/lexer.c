@@ -16,7 +16,7 @@ t_token_id	get_token_id(char c)
 	token_id = SPACE_CHAR;
 	while (token_id != WORD)
 	{
-		if (delimiters_set[token_id] == c)
+		if (c == delimiters_set[token_id])
 			break ;
 		token_id++;
 	}
@@ -34,7 +34,7 @@ void	set_token_id_n_str(char *str, size_t *pos, t_token *token)
 	[1] = &set_pos_end_space_or_word,
 	[2] = &set_pos_end_space_or_word,
 	[3] = &set_pos_end_pipe,
-	[4] = &set_pos_end_ampersand,
+	[4] = &set_pos_end_and_opr,
 	[5] = &set_pos_end_semicol,
 	[6] = &set_pos_end_parentheses,
 	[7] = &set_pos_end_parentheses,
@@ -54,7 +54,7 @@ void	set_token_id_n_str(char *str, size_t *pos, t_token *token)
 	token->str = ft_substr(str, start_pos, (*pos - start_pos));
 }
 
-t_token	*lex(char *input)
+t_token	*tokenize(char *input)
 {
 	size_t	current_pos;
 	t_token	*token_list_head;
