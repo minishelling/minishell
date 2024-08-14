@@ -20,16 +20,7 @@
 
 //# define MINISHARED_PROMPT "\001\033[1;32m\002Mini_shared<🤜 🤛> \001\033[0m\002"
 #define MINISHARED_PROMPT "\001\033[38;5;196m\002M\001\033[38;5;202m\002i\001\033[38;5;208m\002n\001\033[38;5;214m\002i\001\033[38;5;220m\002_\001\033[38;5;226m\002s\001\033[38;5;190m\002h\001\033[38;5;154m\002a\001\033[38;5;118m\002r\001\033[38;5;82m\002e\001\033[38;5;120m\002d\001\033[0m\002<🤜 🤛> \001\033[0m\002"
-
-
-
-
-
-
-
-
-
-
+#define ERR_PROMPT "\001\033[38;5;196m\002M\001\033[38;5;202m\002i\001\033[38;5;208m\002n\001\033[38;5;214m\002i\001\033[38;5;220m\002_\001\033[38;5;226m\002s\001\033[38;5;190m\002h\001\033[38;5;154m\002a\001\033[38;5;118m\002r\001\033[38;5;82m\002e\001\033[38;5;120m\002d\001\033[0m\002: \001\033[0m\002"
 
 # define META_CHARS_SET " \t\n|&;()><"
 # define SPECIAL_CHARS "\'\"$"
@@ -45,8 +36,12 @@
 enum e_parsing_error
 {
 	PARSING_OK,
-	ERR_SYNTAX_QUOTES,
-	ERR_SYNTAX_PAREN,
+	ERR_UNCLOSED_QUOTES,
+	ERR_UNCLOSED_PAREN,
+	ERR_SYNTAX_PIPE,
+	ERR_SYNTAX_AND,
+	ERR_SYNTAX_REDIR,
+	ERR_SYNTAX_ERROR
 };
 
 typedef enum e_token_id 
@@ -137,13 +132,12 @@ void	set_pos_end_redir(char *str, size_t *pos, t_token_id token_id);
 void	set_pos_end_env_var(char *str, size_t *pos, t_token_id token_id);
 void	set_pos_end_pipe(char *str, size_t *pos, t_token_id token_id);
 
-bool	syntax_id_pipe(t_token *t_prev, t_token *t_cur, t_env *env_list);
-bool	syntax_id_and_opr(t_token *t_prev, t_token *t_cur, t_env *env_list);
-bool	syntax_id_semicol(t_token *t_prev, t_token *t_cur, t_env *env_list);
-bool	syntax_id_parentheses_open(t_token *t_prev, t_token *t_cur, t_env *env_list);
-bool	syntax_id_parentheses_close(t_token *t_prev, t_token *t_cur, t_env *env_list);
-bool	syntax_id_redir(t_token *t_prev, t_token *t_cur, t_env *env_list);
-bool	syntax_id_misc(t_token *t_prev, t_token *t_cur, t_env *env_list);
+int	syntax_id_pipe(t_token *t_prev, t_token *t_cur, t_env *env_list);
+int	syntax_id_and_opr(t_token *t_prev, t_token *t_cur, t_env *env_list);
+int	syntax_id_semicol(t_token *t_prev, t_token *t_cur, t_env *env_list);
+int	syntax_id_parentheses(t_token *t_prev, t_token *t_cur, t_env *env_list);
+int	syntax_id_redir(t_token *t_prev, t_token *t_cur, t_env *env_list);
+int	syntax_id_misc(t_token *t_prev, t_token *t_cur, t_env *env_list);
 
 t_token	*parser_space(t_cmd *cmd, t_token *token);
 t_token	*parser_pipe(t_cmd *cmd_node, t_token *token);
@@ -152,8 +146,8 @@ t_token	*parser_semicol(t_cmd *cmd, t_token *token);
 t_token	*parser_par_open(t_cmd *cmd, t_token *token);
 t_token	*parser_par_close(t_cmd *cmd, t_token *token);
 t_token	*parser_redir(t_cmd *cmd, t_token *token);
-t_token	*parser_word(t_cmd *cmd, t_token *token);
 t_token	*parser_or_opr(t_cmd *cmd, t_token *token);
+t_token	*parser_word(t_cmd *cmd, t_token *token);
 
 t_token	*new_token(void);
 void	add_token_in_back(t_token **t_list, t_token *new);

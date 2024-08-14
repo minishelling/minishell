@@ -85,7 +85,7 @@ void	print_cmd_args(char **arg)
 	printf(MAGENTA_TEXT WHITE_BACKGROUND"ARGUMENTS" RESET_COLOR"\n");
 	while (arg[i] != NULL)
 	{
-		printf("arg [%02zu]:\t%s\n", i, arg[i]);
+		printf("arg [%02zu]:\t|%s|\n", i, arg[i]);
 		i++;
 	}
 }

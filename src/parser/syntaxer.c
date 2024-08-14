@@ -1,6 +1,6 @@
 #include "../../include/minishell.h"
 
-typedef bool	(*t_syntax_func) (t_token *t_prev, t_token *t_cur, \
+typedef int	(*t_syntax_func) (t_token *t_prev, t_token *t_cur, \
 		t_env *env_list);
 
 t_token	*skip_whitespace(t_token *list)
@@ -53,7 +53,7 @@ bool	is_quote_closed(t_token *token_list_head)
 			str = current_token->str;
 			if (len == 1 || str[0] != str[len - 1])
 			{
-				//printf("str[0] is %c and quote is unclosed\n", str[0]);
+				printf("str[0] is %c and quote is unclosed\n", str[0]);
 				//error 258, "unclosed quotes";
 				return (false);
 			}
@@ -70,7 +70,10 @@ void	tokenize_and_n_or_opr(t_token *token_list_head)
 	current_token = token_list_head;
 	while (current_token)
 	{
-		if (!ft_strncmp(current_token->str, "&", 1))
+		if (!current_token->str || current_token->str[0] == '\0')
+			return ;
+		if (current_token->str[0] == '&' && current_token->str[1] != '&')
+		// if (!ft_strncmp(current_token->str, "&", 1))
 			current_token->id = WORD;
 		else if (!ft_strncmp(current_token->str,"||", 2))
 			current_token->id = OR_OPR;
@@ -81,51 +84,57 @@ void	tokenize_and_n_or_opr(t_token *token_list_head)
 
 int	syntax(t_shell *shell)
 {
-	// t_token				*previous_token;
-	// t_token				*current_token;
-	bool 				quote_closed;
-	bool 				par_closed;
+	t_token		*previous_token;
+	t_token		*current_token;
+	bool 		quote_closed;
+	bool 		par_closed;
+	int 		status;
 	
 	if (!shell->token) 
 		return (0);
 	
 	quote_closed = is_quote_closed(shell->token);
 	if (!quote_closed)
-		return (ERR_SYNTAX_QUOTES);
+		return (ERR_UNCLOSED_QUOTES);
 	par_closed = is_par_closed(shell->token);
 	if (!par_closed)
-		return ( ERR_SYNTAX_PAREN);
+	{
+		printf ("not closed\n");
+		return (ERR_UNCLOSED_PAREN);
+	}
 	tokenize_and_n_or_opr(shell->token);
-	print_token(shell->token);
 	
-	// t_syntax_func	func[15] = {
-	// [0] = NULL,
-	// [1] = NULL,
-	// [2] = NULL,
-	// [3] = syntax_id_pipe,
-	// [4] = syntax_id_and_opr,
-	// [5] = syntax_id_semicol,
-	// [6] = syntax_id_parentheses_open,
-	// [7] = syntax_id_parentheses_open,
-	// [8] = syntax_id_redir,
-	// [9] = syntax_id_redir,
-	// [10] = syntax_id_misc,
-	// [11] = syntax_id_misc,
-	// [12] = syntax_id_misc,
-	// [13] = syntax_id_misc,
-	// [14] = syntax_id_misc // or_opr
-	// };
+	
+	t_syntax_func	func[15] = {
+	[0] = NULL,
+	[1] = NULL,
+	[2] = NULL,
+	[3] = syntax_id_pipe,
+	[4] = syntax_id_and_opr,
+	[5] = syntax_id_semicol,
+	[6] = syntax_id_misc, //parentheses
+	[7] = syntax_id_misc, //parentheses
+	[8] = syntax_id_redir,
+	[9] = syntax_id_redir,
+	[10] = syntax_id_misc,
+	[11] = syntax_id_misc,
+	[12] = syntax_id_misc,
+	[13] = syntax_id_misc,
+	[14] = syntax_id_pipe // or_opr
+	};
 
-	// previous_token = NULL;
-	// current_token = skip_whitespace(shell->token);
-	// while (current_token != NULL)
-	// {
-	// 	printf ("in syntax, current_token->id is %d\n", current_token->id);
-	// 	if (func[current_token->id](previous_token, current_token, shell->env_list))
-	// 		return (0);
-	// 	previous_token = current_token;
-	// 	current_token = get_after_space_token(current_token);
-	// }
+	previous_token = NULL;
+	current_token = skip_whitespace(shell->token);
+	while (current_token != NULL)
+	{
+		printf ("in syntax, current_token->id is %d\n", current_token->id);
+		status = (func[current_token->id](previous_token, current_token, shell->env_list));
+		printf ("status is %d\n", status);
+		if (status)	
+			return (status);
+		previous_token = current_token;
+		current_token = get_after_space_token(current_token);
+	}
 	return (0);
 }
 

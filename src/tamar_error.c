@@ -6,6 +6,9 @@ char	*get_error_messages(int e)
 		"OK",
 		"Syntax error: unclosed quotes\n",
 		"Syntax error: unclosed parenthesis\n",
+		"Syntax error near unexpected token `|` or  `||`\n",
+		"Syntax error near unexpected token `&` or `&&`\n",
+		"Syntax error near unexpected token `<` or `>`\n",
 		"Syntax error\n"
 	};
 
@@ -21,15 +24,15 @@ char	*get_error_messages(int e)
 void	handle_error(t_shell *shell, int err_no, void *param)
 {
 	char	*err_msg;
-	char 	*prompt;
+	char 	*err_prompt;
 	char 	*whole_msg;
 
 	(void)shell;
 	(void)param;
 
-	prompt = MINISHARED_PROMPT;
+	err_prompt = ERR_PROMPT;
 	err_msg = get_error_messages(err_no);
-	whole_msg = ft_strjoin(prompt, err_msg);
+	whole_msg = ft_strjoin(err_prompt, err_msg);
 	// if (!whole_msg)
 		// I'm not sure
 	ft_printf("%s", whole_msg);
