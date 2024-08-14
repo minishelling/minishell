@@ -24,7 +24,7 @@ t_ecode	builtin_cd(t_shell **shell, char *directory)
 		return (CWD_ERROR);
 	if (!directory)
 		return (chdir_home((*shell)->env, &cwd));
-	else if (is_cdpath_set(directory))
+	else if (is_dir_prefix_valid(directory))
 	{
 		status = chdir_cdpath(shell, directory);
 		if (!status)
@@ -51,25 +51,56 @@ t_ecode	chdir_home(t_env *env_head, char **cwd)
 		exit_status = chdir(home_node->value);
 		if (exit_status)
 			return (CHDIR_ERROR);
-		update_wd(env_head, *cwd);
+		env_update_node();
+		ft_free((void **) cwd);
 		return (SUCCESS);
 	}
 }
 
-t_ecode	update_wd(t_env	*env_head, char *cwd)
-{
-	t_env	*pwd_node;
-	t_env	*oldpwd_node;
 
-	pwd_node = env_find_node(env_head, "PWD");
+
+t_ecode	update_pwd(t_env *pwd_node)
+{
 	if (!pwd_node)
-		pwd_node = env_new_populated_node("PWD", cwd);
-	oldpwd_node = env_find_node(env_head, "OLDPWD");
-	if (!oldpwd_node)
-		oldpwd_node = env_new_populated_node("OLDPWD", getcwd(NULL, PATH_MAX));
+	{
+		pwd_node = env_new_populated_node("PWD", getcwd(NULL, PATH_MAX));
+		if (!pwd_node)
+			return (MALLOC_ERROR);
+	}
+	else
+	{
+		if (env_update_value(pwd_node, getcwd(NULL, PATH_MAX)))
+			return (MALLOC_ERROR);
+	}
+	return (SUCCESS);
 }
 
-bool	is_cdpath_set(directory)
+t_ecode	update_oldpwd(t_env	*oldpwd_node, char *cwd)
 {
-	
+	if (!pwd_node)
+	{
+		pwd_node = env_new_populated_node("PWD", getcwd(NULL, PATH_MAX));
+		if (!pwd_node)
+			return (MALLOC_ERROR);
+	}
+	else
+	{
+		if (env_update_value(pwd_node, getcwd(NULL, PATH_MAX)))
+			return (MALLOC_ERROR);
+	}
+	return (SUCCESS);
+}
+
+/**
+* @brief Checks if the directory is valid for running the function chdir_cdpath.
+*
+* @param directory
+* @return False if the directory begins with dot, double dot, or slash. True otherwise.
+*/
+bool	is_dir_prefix_valid(char *directory)
+{
+	if (!directory || directory[0] == '/' || directory[0] == '.'
+		|| (directory[0] == '.' && directory[1] == '.'))
+		return (false);
+	return (true);
 }

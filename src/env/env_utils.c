@@ -38,6 +38,28 @@ t_env	*env_new_node(void)
 	return (new_node);
 }
 
+t_env	*env_new_populated_node(char *key, char *value)
+{
+	t_env	*new_node;
+	
+	new_node = env_new_node();
+	if (!new_node)
+		return (NULL);
+	if (env_update_key(new_node, key))
+	{
+		ft_free((void **) &new_node);
+		return (NULL);
+	}
+	if (env_update_value(new_node, value))
+	{
+		ft_free((void **) &new_node->key);
+		ft_free((void **) &new_node->keyvalue);
+		ft_free((void **) &new_node);
+		return (NULL);
+	}
+	return (new_node);
+}
+
 char	*env_get_key(char *keyvalue)
 {
 	char	*key;
@@ -142,4 +164,86 @@ size_t	env_count_values(t_env *env, char *key)
 	return (i);
 }
 
+t_ecode	env_update_keyvalue(t_env *node)
+{
+	char	*temp;
 
+	if (!node)
+		return (NULL_NODE);
+	temp = ft_strdup(node->key);
+	if (!temp)
+		return (MALLOC_ERROR);
+	temp = ft_strjoin_fs1(&temp, "=");
+	if (!temp)
+		return (MALLOC_ERROR);
+	temp = ft_strjoin_fs1(&temp, node->value);
+	if (!temp)
+		return (MALLOC_ERROR);
+	if (node->keyvalue)
+		ft_free((void **)node->keyvalue);
+	node->keyvalue = ft_strdup(temp);
+	ft_free((void **) temp);
+	if (!node->keyvalue)
+		return (MALLOC_ERROR);
+	return (SUCCESS);
+}
+
+t_ecode env_update_key(t_env *node, char *key)
+{
+	if (!node)
+		return (NULL_NODE);
+	if (node->key)
+		ft_free((void **) node->key);
+	if (!key)
+		node->key = NULL;
+	else
+	{
+		node->key = ft_strdup(key);
+		if (!node->key)
+			return (MALLOC_ERROR);
+	}
+	if (env_update_keyvalue(node))
+		return (MALLOC_ERROR);
+	return (SUCCESS);
+}
+
+t_ecode	env_update_value(t_env *node, char *value)
+{
+	if (!node)
+		return (NULL_NODE);
+	if (node->value)
+		ft_free((void **) node->value);
+	if (!value)
+		node->value = NULL;
+	else
+	{
+		node->value = ft_strdup(value);
+		if (!node->value)
+			return (MALLOC_ERROR);
+	}
+	if (env_update_keyvalue(node))
+		return (MALLOC_ERROR);
+	return (SUCCESS);
+}
+
+t_ecode	env_update_node(t_env *head, char *key, char *value, bool create_node)
+{
+	t_env	*node;
+
+	node = env_find_node(head, key);
+	if (!node && create_node == false)
+		return (NULL_NODE);
+	else if (!node && create_node == true) // I would also have to add it to the list.
+	{
+		node = env_new_populated_node(key, value);
+		if (!node)
+			return (MALLOC_ERROR);
+		//ADD NODE TO THE LIST
+	}
+	else
+	{
+		if (env_update_value(node, value))
+			return (MALLOC_ERROR);
+	}
+	return (SUCCESS);
+}

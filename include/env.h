@@ -114,9 +114,16 @@ t_env_ecode	env_copy_keyval(t_env **new_node, char *keyvalue);
 t_env	*env_find_node(t_env *env, char *key);
 
 /**
+* @brief
 *
 */
 size_t	env_count_values(t_env *env, char *key);
+
+/**
+* @brief
+*
+*/
+t_ecode	env_update_keyvalue(t_env *node);
 
 
 #endif
