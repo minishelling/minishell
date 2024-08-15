@@ -143,6 +143,39 @@ t_env	*env_find_node(t_env *env, char *key)
 		}
 		return (node);
 	}
+
+
+t_ecode	update_pwd(t_env *pwd_node)
+{
+	if (!pwd_node)
+	{
+		pwd_node = env_new_populated_node("PWD", getcwd(NULL, PATH_MAX));
+		if (!pwd_node)
+			return (MALLOC_ERROR);
+	}
+	else
+	{
+		if (env_update_value(pwd_node, getcwd(NULL, PATH_MAX)))
+			return (MALLOC_ERROR);
+	}
+	return (SUCCESS);
+}
+
+t_ecode	update_oldpwd(t_env	*oldpwd_node, char *cwd)
+{
+	if (!pwd_node)
+	{
+		pwd_node = env_new_populated_node("PWD", getcwd(NULL, PATH_MAX));
+		if (!pwd_node)
+			return (MALLOC_ERROR);
+	}
+	else
+	{
+		if (env_update_value(pwd_node, getcwd(NULL, PATH_MAX)))
+			return (MALLOC_ERROR);
+	}
+	return (SUCCESS);
+}
 	return (NULL);
 }
 

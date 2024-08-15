@@ -125,5 +125,24 @@ size_t	env_count_values(t_env *env, char *key);
 */
 t_ecode	env_update_keyvalue(t_env *node);
 
+/**
+* @brief
+*
+*/
+t_ecode env_update_key(t_env *node, char *key);
+
+/**
+* @brief
+*
+*/
+t_ecode	env_update_value(t_env *node, char *value);
+
+/**
+* @brief
+*
+*/
+t_ecode	env_update_node(t_env *head, char *key, char *value, bool create_node);
+
+
 
 #endif

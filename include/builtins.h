@@ -62,4 +62,12 @@ void		curpath_print(t_curpath *head);
 int			curpath_check_access(char *curpath);
 int			curpath_check_access_and_chdir(char *curpath);
 
+/**
+* @brief Checks if the directory is valid for running the function chdir_cdpath.
+*
+* @param directory
+* @return False if the directory begins with dot, double dot, or slash. True otherwise.
+*/
+bool		is_dir_prefix_valid(char *directory);
+
 #endif
