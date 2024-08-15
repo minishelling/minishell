@@ -55,7 +55,7 @@ bool	init_cmd(t_cmd **current_cmd, t_token *token)
 		if ((*current_cmd)->next != NULL)
 			return (free_cmd(*current_cmd), false);
 	}
-	//printf ("manages to init cmd\n");
+	// printf ("manages to init cmd\n");
 	
 	return (true);
 }
@@ -65,12 +65,12 @@ int	make_cmd(t_shell *shell)
 	t_token	*token;
 	t_cmd	*current_cmd;
 
-
+	shell->cmd_list = NULL;
 	token = shell->token;
 	while (token != NULL)
 	{
 		current_cmd = new_cmd();
-		//printf ("made a new cmd \n");
+		// printf ("made a new cmd \n");
 		// if (!current_cmd)
 		// 	return (free_token_list(shell->token,free_token_str), NULL);
 		
@@ -80,11 +80,15 @@ int	make_cmd(t_shell *shell)
 			// return (free_token_list(shell->token, free_token_str), \
 			// 		free_cmd_list(cmd_list_head), NULL);
 		}
-		if (strncmp(current_cmd->redir->file, "HERE", 4) && current_cmd->redir->file[0] =='|')
-			return(ERR_SYNTAX_ERROR);
+
+		// if (strncmp(current_cmd->redir->file, "HERE", 4) && current_cmd->redir->file[0] =='|')
+		// 	return(ERR_SYNTAX_ERROR);
+		
 		add_cmd_in_back(&shell->cmd_list, current_cmd);
-		token = get_after_pipe_token(token);
+		token = get_after_pipe_token(token);	
 	}
+	printf ("current_cmd->args[0] is %s\n", shell->cmd_list->args[0]);
+	//print_cmd(shell->cmd_list);
 	//free_token_list(shell->token, free_token_non_word);
 	return (0);
 }
@@ -115,7 +119,7 @@ int	parse(t_shell *shell)
 	//env_var_print_linked_list (shell->env_list);
 	//env_print_list (shell->env_list);  // lisandro
 	shell->token = expand(shell->token, shell->env_list);
-	printf ("After expantion;\n");
+	printf ("After expantion:\n");
 	print_token(shell->token);
 	concat_word_tokens(shell);
 	// if (concatenate_word_tokens(shell) == false)
@@ -123,6 +127,7 @@ int	parse(t_shell *shell)
 	// 			error(append));
 	
 	status = make_cmd(shell);
+	//printf ("sadasdasd\n");
 	print_cmd(shell->cmd_list);
 	// if (shell->cmd_list == NULL)
 	// 	error(parser);

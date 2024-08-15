@@ -69,7 +69,7 @@ t_token	*get_after_pipe_token(t_token *token)
 		t_previous = token;
 		token = token->next;
 		// if (t_previous->id == PIPE || t_previous->id == AND_OPR || t_previous->id == OR_OPR)
-		if (t_previous->id == PIPE)	
+		if (t_previous->id == PIPE)
 			break ;
 	}
 	return (token);

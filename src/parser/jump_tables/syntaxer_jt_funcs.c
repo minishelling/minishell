@@ -15,7 +15,7 @@ int	syntax_id_pipe(t_token *t_prev, t_token *t_cur, t_env *env_list)
 	if (t_next)
 		printf ("t_next is %s\n", t_next->str);
 
-	if ((t_cur->id == PIPE || t_cur->id == OR_OPR) && (t_prev->id != WORD || t_next->id != WORD))
+	if ((t_cur->id == PIPE || t_cur->id == OR_OPR) && ((t_prev->id != WORD && t_prev->id !=PAR_CLOSE) || (t_next->id != WORD && t_next->id !=PAR_OPEN)))
 		{
 			printf ("dsfsdfs\n");
 			return (ERR_SYNTAX_PIPE);
@@ -69,13 +69,14 @@ int	syntax_id_misc(t_token *t_prev, t_token *t_cur, t_env *env_list)
 
 int	syntax_id_parentheses(t_token *t_prev, t_token *t_cur, t_env *env_list)
 {
-	t_token	*t_next;
+	//t_token	*t_next;
 
 	(void) t_prev;
 	(void) env_list;
-	t_next = get_after_space_token((t_token *) t_cur);
-	if (t_next == NULL)
-		return (1);
+	(void) t_cur;
+	// t_next = get_after_space_token((t_token *) t_cur);
+	// if (t_next == NULL)
+	// 	return (1);
 	return (0);	
 }
 
