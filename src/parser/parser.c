@@ -1,6 +1,6 @@
 #include "../../include/minishell.h"
 
-typedef t_token	*(*t_parser_func)(t_cmd *cmd, t_token *token);
+typedef int	(*t_parser_func)(t_cmd *cmd, t_token *token);
 
 size_t	get_arg_num(t_token *token)
 {
@@ -25,9 +25,10 @@ size_t	get_arg_num(t_token *token)
 	return (arg_num);
 }
 
-bool	init_cmd(t_cmd **current_cmd, t_token *token)
+bool	init_cmd(t_shell *shell, t_cmd **current_cmd, t_token *token)
 {
 	size_t		arg_num = get_arg_num(token);
+	int			status;
 	t_parser_func	func[15] = {
 	[0] = parser_space,
 	[1] = parser_space,
@@ -48,14 +49,22 @@ bool	init_cmd(t_cmd **current_cmd, t_token *token)
 	(*current_cmd)->args = ft_calloc(sizeof(char *), (arg_num + 1));
 	if (!(*current_cmd)->args)
 		return (false);
-	while (token != NULL)
+	while (token != NULL && token->id !=PIPE)
 	{
-		printf ("token is %s\n", token->str);
-		token = func[token->id](*current_cmd, token);
+		status = func[token->id](*current_cmd, token);
+		printf ("status now is %d\n", status);
+		if (status)
+			handle_error(shell, status, NULL);
+		if (token->id == LT || token->id == GT)
+			token = get_after_word_token(token);
+		else
+			token = get_after_space_token(token);
+		if (token)
+			printf ("token is %s\n", token->str);
 		if ((*current_cmd)->next != NULL)
 			return (free_cmd(*current_cmd), false);
 	}
-	// printf ("manages to init cmd\n");
+	printf ("manages to init cmd\n");
 	
 	return (true);
 }
@@ -74,7 +83,7 @@ int	make_cmd(t_shell *shell)
 		// if (!current_cmd)
 		// 	return (free_token_list(shell->token,free_token_str), NULL);
 		
-		if (init_cmd(&current_cmd, token) == false)
+		if (init_cmd(shell, &current_cmd, token) == false)
 		{
 			
 			// return (free_token_list(shell->token, free_token_str), \
@@ -83,11 +92,13 @@ int	make_cmd(t_shell *shell)
 
 		// if (strncmp(current_cmd->redir->file, "HERE", 4) && current_cmd->redir->file[0] =='|')
 		// 	return(ERR_SYNTAX_ERROR);
-		
+		printf ("Returned to make_cmd\n");
 		add_cmd_in_back(&shell->cmd_list, current_cmd);
-		token = get_after_pipe_token(token);	
+		printf ("managed to add in back\n");
+		token = get_after_pipe_token(token);
+		if (token)
+			printf ("after getting after pipe token now is %s\n", token->str);	
 	}
-	printf ("current_cmd->args[0] is %s\n", shell->cmd_list->args[0]);
 	//print_cmd(shell->cmd_list);
 	//free_token_list(shell->token, free_token_non_word);
 	return (0);

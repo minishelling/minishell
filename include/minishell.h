@@ -41,6 +41,7 @@ enum e_parsing_error
 	ERR_SYNTAX_PIPE,
 	ERR_SYNTAX_AND,
 	ERR_SYNTAX_REDIR,
+	ERR_SYNTAX_SEMICOL,
 	ERR_SYNTAX_ERROR
 };
 
@@ -51,7 +52,7 @@ typedef enum e_token_id
 	NL,
 	PIPE,
 	AND_OPR,
-	SEMI_COL,
+	SEMICOL,
 	PAR_OPEN,
 	PAR_CLOSE,
 	LT,
@@ -139,15 +140,15 @@ int	syntax_id_parentheses(t_token *t_prev, t_token *t_cur, t_env *env_list);
 int	syntax_id_redir(t_token *t_prev, t_token *t_cur, t_env *env_list);
 int	syntax_id_misc(t_token *t_prev, t_token *t_cur, t_env *env_list);
 
-t_token	*parser_space(t_cmd *cmd, t_token *token);
-t_token	*parser_pipe(t_cmd *cmd_node, t_token *token);
-t_token	*parser_and_opr(t_cmd *cmd, t_token *token);
-t_token	*parser_semicol(t_cmd *cmd, t_token *token);
-t_token	*parser_par_open(t_cmd *cmd, t_token *token);
-t_token	*parser_par_close(t_cmd *cmd, t_token *token);
-t_token	*parser_redir(t_cmd *cmd, t_token *token);
-t_token	*parser_or_opr(t_cmd *cmd, t_token *token);
-t_token	*parser_word(t_cmd *cmd, t_token *token);
+int	parser_space(t_cmd *cmd, t_token *token);
+int	parser_pipe(t_cmd *cmd_node, t_token *token);
+int	parser_and_opr(t_cmd *cmd, t_token *token);
+int	parser_semicol(t_cmd *cmd, t_token *token);
+int	parser_par_open(t_cmd *cmd, t_token *token);
+int	parser_par_close(t_cmd *cmd, t_token *token);
+int	parser_redir(t_cmd *cmd, t_token *token);
+int	parser_or_opr(t_cmd *cmd, t_token *token);
+int	parser_word(t_cmd *cmd, t_token *token);
 
 t_token	*new_token(void);
 void	add_token_in_back(t_token **t_list, t_token *new);
@@ -187,4 +188,5 @@ void	print_cmd(t_cmd *cmd_list_head);
 void	handle_error(t_shell *shell, int err_no, void *param);
 
 char	*ft_strjoin_fs1(char *s1, const char *s2);
+t_token	*get_after_word_token(t_token *token);
 #endif

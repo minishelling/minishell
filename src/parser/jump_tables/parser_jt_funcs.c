@@ -1,6 +1,6 @@
 #include "../../../include/minishell.h"
 
-t_token *parser_pipe(t_cmd *cmd_node, t_token *token)
+int parser_pipe(t_cmd *cmd_node, t_token *token)
 {
 	(void) cmd_node;
 	(void) token;
@@ -26,26 +26,28 @@ t_redir_id	redir_ident(char *str)
 	return (0);
 }
 
-t_token *parser_redir(t_cmd *cmd, t_token *token)
+int parser_redir(t_cmd *cmd, t_token *token)
 {
-	t_token	*t_file;
+	t_token	*file_token;
 	t_redir	*redir_list;
 
-	t_file = get_after_space_token(token);
+	file_token = get_after_space_token(token);
 	redir_list = new_redir();
 	if (!redir_list)
 	{
 		cmd->next = (t_cmd *) 0XFF; // ?
-		return (NULL);
+		return (0);
 	}
 	redir_list->redir = redir_ident(token->str);
-
-	redir_list->file = t_file->str;
+	redir_list->file = file_token->str;
+	if (redir_list->file[0] == '|' || redir_list->file[0] == '&' || redir_list->file[0] == ';'
+		|| redir_list->file[0] == '(' || redir_list->file[0] == ')')
+			return (ERR_SYNTAX_ERROR);
 	add_redir_in_back(&(cmd->redir), redir_list);
-	return (get_after_space_token(t_file));
+	return (0);
 }
 
-t_token *parser_word(t_cmd *cmd, t_token *token)
+int parser_word(t_cmd *cmd, t_token *token)
 {
 	size_t	i;
 	char	**arr;
@@ -56,48 +58,48 @@ t_token *parser_word(t_cmd *cmd, t_token *token)
 		i++;
 	arr[i] = token->str;
 	
-	return (get_after_space_token(token));
+	return (0);
 	
 }
 
-t_token	*parser_space(t_cmd *cmd, t_token *token)
+int	parser_space(t_cmd *cmd, t_token *token)
 {
 	(void) cmd;
 	(void)token;
-	return (token->next);
+	return (0);
 }
 
-t_token	*parser_semicol(t_cmd *cmd_node, t_token *token)
+int	parser_semicol(t_cmd *cmd_node, t_token *token)
 {
 	(void) cmd_node;
 	(void) token;
-	return (NULL);
+	return (0);
 }
 
-t_token	*parser_and_opr(t_cmd *cmd_node, t_token *token)
+int	parser_and_opr(t_cmd *cmd_node, t_token *token)
 {
 	(void) cmd_node;
 	(void) token;
-	return (NULL);
+	return (0);
 }
 
-t_token *parser_par_close(t_cmd *cmd_node, t_token *token)
+int parser_par_close(t_cmd *cmd_node, t_token *token)
 {
 	(void) cmd_node;
 	(void) token;
-	return (NULL);
+	return (0);
 }
 
-t_token *parser_par_open(t_cmd *cmd_node, t_token *token)
+int parser_par_open(t_cmd *cmd_node, t_token *token)
 {
 	(void) cmd_node;
 	(void) token;
-	return (NULL);
+	return (0L);
 }
 
-t_token *parser_or_opr(t_cmd *cmd_node, t_token *token)
+int parser_or_opr(t_cmd *cmd_node, t_token *token)
 {
 	(void) cmd_node;
 	(void) token;
-	return (NULL);
+	return (0);
 }

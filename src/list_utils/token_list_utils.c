@@ -75,6 +75,22 @@ t_token	*get_after_pipe_token(t_token *token)
 	return (token);
 }
 
+t_token	*get_after_word_token(t_token *token)
+{
+	t_token	*t_previous;
+
+	if (token == NULL)
+		return (NULL);
+	while (token != NULL)
+	{
+		t_previous = token;
+		token = token->next;
+		if (t_previous->id == WORD)
+			break ;
+	}
+	return (token);
+}
+
 t_token	*free_token_node(t_token *t_node)
 {
 	t_token	*t_tmp;
