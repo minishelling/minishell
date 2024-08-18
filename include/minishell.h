@@ -6,7 +6,7 @@
 /*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/06/24 13:58:20 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/07/25 20:16:39 by lprieri       ########   odam.nl         */
+/*   Updated: 2024/08/18 20:53:20 by lprieri       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 # include <sys/wait.h>
 # include <sys/time.h>
 # include <errno.h>
-# include <limits.h>
+# include <linux/limits.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <string.h>

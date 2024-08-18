@@ -17,9 +17,19 @@
 
 typedef enum e_codes
 {
-	ERR_SUCCESS = 0,
+	SUCCESS = 0,
+	FAILURE,
+	PROCEED,
 	ERR_NULL,
-	ERR_COUNT
+	ERR_COUNT,
+	CWD_ERROR,
+	MALLOC_ERROR,
+	HOME_ERROR,
+	CHDIR_ERROR,
+	CDPATH_NULL,
+	NULL_STRING,
+	ACCESS_ERROR,
+
 }	t_ecode;
 
 const char	*get_error_msg(int e_nbr);

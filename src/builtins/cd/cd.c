@@ -63,10 +63,8 @@ t_ecode	chdir_home(t_env *env_head, char **cwd)
 t_ecode	chdir_cdpath(t_shell **shell, char *directory)
 {
 	t_env	*cdpath_node;
-	char	*curpath;
 	char	**values;
-	int		i;
-	int		null_flag;
+	t_ecode	status;
 
 	cdpath_node = env_find_node((*shell)->env, "CDPATH");
 	if (!cdpath_node || !cdpath_node->value)
@@ -74,65 +72,8 @@ t_ecode	chdir_cdpath(t_shell **shell, char *directory)
 	values = ft_split(cdpath_node->value, ':');
 	if (!values)
 		return (MALLOC_ERROR);
-	i = 0;
-	null_flag = 0;
-	while (values[i])
-	{
-		curpath = ft_strdup(values[i]);
-		if (!curpath && !null_flag)
-		{
-			null_flag = 1;
-			curpath = ft_strjoin("./", directory);
-			if (curpath_check_access(curpath))
-			{
-				ft_free((void **) &curpath);
-				ft_free_2d((void ***) &values);
-				i++;
-				continue ;
-			}
-			if (chdir(curpath))
-			{
-				ft_free((void **) &curpath);
-				i++;
-				continue ;
-			}
-			else
-			{
-				ft_free((void **) &curpath);
-				ft_free_2d((void ***) &values);
-				return (SUCCESS);
-			}
-		}
-		else if (!curpath && null_flag)
-		{
-			i++;
-			continue ;
-		}
-		if (append_suffix(&curpath, "/", false) == MALLOC_ERROR)
-			return (MALLOC_ERROR);
-		curpath = ft_strjoin_fs1(&curpath, directory);
-		if (!curpath)
-			return (MALLOC_ERROR);
-		if (curpath_check_access(curpath))
-		{
-			ft_free((void **) &curpath);
-			i++;
-			continue ;
-		}
-		if (chdir(curpath))
-		{
-			ft_free((void **) &curpath);
-			i++;
-			continue ;
-		}
-		else
-		{
-			ft_free((void **) &curpath);
-			ft_free((void ***) &values);
-			return (SUCCESS);
-		}
-	}
-	return (PROCEED);
+	status = loop_cdpath_values(&values, directory);
+	return (status);
 }
 
 // TEST This function. Idea: make test directory equipped with libft.
@@ -143,15 +84,10 @@ t_ecode	append_suffix(char **str, char *suffix, bool duplicate)
 	if (!*str || !suffix)
 		return (NULL_STRING);
 	suffix_len = ft_strlen(suffix);
-	if (ft_strncmp(str[suffix_len], suffix, suffix_len) && !duplicate);
+	if (ft_strncmp(str[suffix_len], suffix, suffix_len) && !duplicate)
 		return (SUCCESS);
-	else
-	{
-		*str = ft_strjoin_fs1(str, suffix);
-		if (!*str)
-			return (MALLOC_ERROR);
-		else return (SUCCESS);
-	}
+	*str = ft_strjoin_fs1(str, suffix);
+	if (!*str)
+		return (MALLOC_ERROR);
+	else return (SUCCESS);
 }
-
-
