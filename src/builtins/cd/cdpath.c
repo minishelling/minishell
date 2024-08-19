@@ -45,7 +45,7 @@ t_ecode chdir_cdpath_value(char **curpath, char *directory)
 
 t_ecode	loop_cdpath_values(char ***values, char *directory)
 {
-	char	*curpath; //Have I forgotten to free it?
+	char	*curpath;
 	int		i;
 	int		flag[2];
 

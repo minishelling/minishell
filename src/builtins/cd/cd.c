@@ -17,7 +17,7 @@ t_ecode	builtin_cd(t_shell **shell, char *directory)
 {
 	char		*curpath;
 	char		*cwd;
-	t_cd_ecode	status;
+	t_ecode		status;
 
 	cwd = getcwd(NULL, PATH_MAX);
 	if (!cwd)
@@ -33,7 +33,7 @@ t_ecode	builtin_cd(t_shell **shell, char *directory)
 			return (FAILURE); //And free everything... Rather 'exit' than return.
 	}
 	curpath = cd_trim_curpath(directory);
-	return (chdir_curpath(shell, curpath));
+	return (chdir_curpath(shell, &curpath, &cwd));
 }
 
 t_ecode	chdir_home(t_env *env_head, char **cwd)

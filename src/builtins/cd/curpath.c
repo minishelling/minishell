@@ -6,7 +6,7 @@
 /*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/07/23 12:54:11 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/07/31 13:18:41 by lprieri       ########   odam.nl         */
+/*   Updated: 2024/08/19 19:58:38 by lprieri       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,3 +195,129 @@ int	curpath_check_access_and_chdir(char *curpath)
 		return (CD_CHDIR_ERROR);
 	return (CD_CHDIR_SUCCESS);
 }
+
+t_ecode	curpath_prepare(char **curpath, char *directory, char *cwd)
+{
+	int		status;
+	
+	status = append_suffix(&cwd, "/", false); //This affects the local cwd variable, right?
+	if (status == MALLOC_ERROR)
+		return (MALLOC_ERROR);
+	if (directory[0] != '/')
+		*curpath = ft_strjoin(cwd, directory);
+	else
+		*curpath = ft_strdup(directory);
+	if (!curpath)
+		return (MALLOC_ERROR);
+	else
+		return (SUCCESS);
+}
+
+t_ecode	curpath_trim(char **curpath)
+{
+	t_curpath	*final_dirs;
+	char 		**dirs;
+	int			i;
+	int			status;
+
+	status = init_curpath_dirs(curpath, &dirs, &final_dirs);
+	if (status != SUCCESS)
+		return (status);
+	i = 0;
+	while (dirs[i])
+	{
+		if (dirs[i][0] == '.' && dirs[i][1] == '/0')
+		{
+			i++;
+			continue ;
+		}
+		else if (dirs[i][0] == '.' && dirs[i][1] == '.' && dirs[i][2] == '/0')
+		{
+			*curpath = curpath_concat(final_dirs);
+			status = curpath_check_access(*curpath);
+			ft_free((void **) curpath);
+			if (status)
+			{
+				ft_free_2d((void ***) &dirs);
+				if (final_dirs)
+					curpath_del_list(&final_dirs);
+				return (status);
+			}
+			curpath_del_last(&final_dirs);
+			i++;
+			continue ;
+		}
+		*curpath = curpath_concat(final_dirs);
+		status = curpath_check_access(*curpath);
+		ft_free((void **) curpath);
+		if (status)
+		{
+			ft_free_2d((void ***) &dirs);
+			if (final_dirs)
+				curpath_del_list(&final_dirs);
+			return (status);
+		}
+		else
+		{
+			if (!final_dirs)
+			{
+				status = curpath_create_and_add_back(&final_dirs, &dirs, "/");
+				if (status)
+					return (status);
+			}
+			status = curpath_create_and_add_back(&final_dirs, &dirs, dirs[i]);
+			if (status)
+				return (status);
+		}
+		i++;
+	}
+	*curpath = curpath_concat(final_dirs);
+	ft_free_2d((void ***) &dirs);
+	if (final_dirs)
+		curpath_del_list(&final_dirs);
+	return (*curpath);
+}
+
+t_ecode	init_curpath_dirs(char **curpath, char ***dirs, t_curpath **final_dirs)
+{
+	t_ecode	status;
+	
+	*dirs = ft_split(*curpath, "/");
+	if (!dirs)
+		return (NULL_ARRAY);
+	if (*curpath[0] == "/")
+	{
+		status = curpath_create_and_add_back(final_dirs, dirs, "/");
+		if (status)
+			return (status);
+	}
+	ft_free((void **) curpath); //Note that there are 2 returns before this, that don't free curpath. Check if it is handled.
+	return (SUCCESS);
+}
+
+t_ecode	parse_curpath_dirs(t_curpath **final_dirs, char ***dirs)
+{
+	int		i;
+	t_ecode	status;
+
+	i = 0;
+	while ((*dirs)[i])
+	{
+		if ((*dirs)[i][0] == '.' && (*dirs)[i][1] == '/0')
+		{
+			i++;
+			continue ;
+		}
+		else if ((*dirs)[i][0] == '.' && (*dirs)[i][1] == '.' && (*dirs)[i][2] == '/0')
+		{
+			status = remove_previous_dir(final_dirs, dirs);
+		}
+	}
+}
+
+/** NOTE TO SELF
+ * I need to take a look at all the functions and distinguish or discriminate between
+ * those that take arguments for freeing everything (basically error handling within the function)
+ * and those that don't.
+ * In the end I have to decide for one way of writing functions or the other.
+*/
