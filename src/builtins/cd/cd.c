@@ -32,7 +32,9 @@ t_ecode	builtin_cd(t_shell **shell, char *directory)
 		else if (status == MALLOC_ERROR)
 			return (FAILURE); //And free everything... Rather 'exit' than return.
 	}
-	curpath = cd_trim_curpath(directory);
+	status = curpath_trim(directory, &curpath);
+	if (status)
+		return (status); //Free everything.
 	return (chdir_curpath(shell, &curpath, &cwd));
 }
 
