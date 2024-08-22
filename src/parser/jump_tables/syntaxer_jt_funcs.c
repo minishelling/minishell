@@ -30,7 +30,7 @@ int	syntax_id_pipe(t_token *t_prev, t_token *t_cur, t_env *env_list)
 	return (0);
 }
 
-// bool	syntax_id_redir_envvar(t_token *t_next, t_env *env_list)
+// bool	syntax_id_redir_envvar(t_token *t_next, t_env *_list)
 // {
 // 	size_t	len;
 // 	char	*env_value;
