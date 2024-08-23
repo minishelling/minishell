@@ -86,7 +86,7 @@ int	make_cmd(t_shell *shell)
 		if (init_cmd(shell, &current_cmd, token) == false)
 		{
 			
-			// return (free_token_list(shell->token, free_token_str), \
+			// return (free_token_list(shell->token, free_token_str), 
 			// 		free_cmd_list(cmd_list_head), NULL);
 		}
 
