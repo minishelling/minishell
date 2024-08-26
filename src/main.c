@@ -38,17 +38,17 @@ int main(int argc, char **argv, char **envp)
 		{
 			status = parse(&shell);
 			//printf ("status is %d\n", status);
-			if (status !=PARSING_OK)
+			if (status != PARSING_OK)
 				handle_error(&shell, status, NULL);
 			else
 			{
+				executor(&shell);
 				while (shell.token) 
 				{
 					temp = shell.token;
 					shell.token = shell.token->next;
 					if(temp->str)
 						free(temp->str);
-
 					if (temp)
 						free(temp);
 				}

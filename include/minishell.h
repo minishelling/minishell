@@ -32,6 +32,9 @@
 #define MAGENTA_BACKGROUND "\033[45m"
 #define WHITE_BACKGROUND "\033[47m"
 
+# define READ_END 0
+# define WRITE_END 1
+
 
 enum e_parsing_error
 {
@@ -105,10 +108,12 @@ typedef struct s_env_list
 
 typedef struct s_shell 
 {
-	char		*pwd;
+	// char		*pwd;
 	int			pipefd[2];
+	pid_t		parent;
 	int			read_fd;
 	int			write_fd;
+	int			status;
     char 		*input;
     t_token 	*token;
 	t_token		*syntax; //?
@@ -181,6 +186,7 @@ void	free_redir_list(t_redir *redir_list_head);
 t_redir	*last_redir(t_redir *redir_list_head);
 t_redir_id	redir_ident(char *str);
 
+size_t	cmd_size(t_cmd *t_list);
 void	print_env(t_env *env_list);
 void	print_redir(t_redir *redir_list_head);
 void	print_token(t_token *head);
@@ -189,4 +195,18 @@ void	handle_error(t_shell *shell, int err_no, void *param);
 
 char	*ft_strjoin_fs1(char *s1, const char *s2);
 t_token	*get_after_word_token(t_token *token);
+
+//PRINT
+
+void	ft_print_2d_arr(char **arr);
+void	ft_print_3d_arr(char ***arr);
+
+/* EXECUTOR */
+
+void executor(t_shell *shell);
+
+//EXECUTOR UTILS
+
+void	redirect_io(t_shell *shell, int io_fd, int io_target);
+
 #endif
