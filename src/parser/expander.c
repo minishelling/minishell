@@ -154,6 +154,7 @@ t_token	*expand_quote(t_token *token, t_env *env_list)
 	size_t	i;
 	int		tmp;
 
+	printf ("			Reached here\n");
 	if (token->str == NULL)
 		return (NULL);
 	remove_quotes(token);
@@ -192,20 +193,31 @@ t_token	*expand(t_token *token_list_head, t_env *env_list)
 	{
 		if (current_token->id == ENV_VAR)
 		{
+			printf ("expanding env_var\n");
 			//env_var_print_linked_list (env_list);
 			//env_print_list (env_list);  // lisandro
 			expanded_tokens = expand_env_var(current_token, env_list);
 		
 		}
 		else if (current_token->id == DQUOTE || current_token->id == SQUOTE)
+		{
+			printf ("handeling quotes\n");
 			expanded_tokens = expand_quote(current_token, env_list);
+		}
 		else
+		{
+			printf ("copying token\n");
 			expanded_tokens = copy_token(current_token);
+		}
 		if (!expanded_tokens)
-			return (free_token_list(token_list_head, free_node), \
-					free_token_list(new_token_list_head, free_node), \
-					NULL); //error_print, 1, "expander: unable to expand")
+		{
+			printf ("no expanded_tokens\n");
+			current_token->str = ft_strdup("");
+			// return (free_token_list(token_list_head, free_node), \
+			// 		free_token_list(new_token_list_head, free_node), \
+			// 		NULL); //error_print, 1, "expander: unable to expand")
 		//printf ("current_token is %s, expanded_token is %s\n", current_token->str, expanded_tokens->str);
+		}
 		add_token_in_back(&new_token_list_head, expanded_tokens);
 		current_token = current_token->next;
 	}

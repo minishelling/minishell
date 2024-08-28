@@ -36,6 +36,7 @@ int main(int argc, char **argv, char **envp)
 			break;
 		if (ft_strncmp(shell.input, "", 1))
 		{
+			add_history(shell.input);
 			status = parse(&shell);
 			//printf ("status is %d\n", status);
 			if (status !=PARSING_OK)
