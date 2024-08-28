@@ -106,9 +106,9 @@ int	syntax(t_shell *shell)
 	
 	
 	t_syntax_func	func[15] = {
-	[0] = NULL,
-	[1] = NULL,
-	[2] = NULL,
+	[0] = syntax_id_misc,
+	[1] = syntax_id_misc,
+	[2] = syntax_id_misc,
 	[3] = syntax_id_pipe,
 	[4] = syntax_id_and_opr,
 	[5] = syntax_id_semicol,
