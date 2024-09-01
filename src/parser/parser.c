@@ -69,13 +69,48 @@ bool	init_cmd(t_shell *shell, t_cmd **current_cmd, t_token *token)
 	return (true);
 }
 
-int	make_cmd(t_shell *shell)
+// int	make_cmd(t_shell *shell)
+// {
+// 	t_token	*token;
+// 	t_cmd	*current_cmd;
+
+// 	shell->cmd_list = NULL;
+// 	token = shell->token;
+// 	while (token != NULL)
+// 	{
+// 		current_cmd = new_cmd();
+// 		// printf ("made a new cmd \n");
+// 		// if (!current_cmd)
+// 		// 	return (free_token_list(shell->token,free_token_str), NULL);
+		
+// 		if (init_cmd(shell, &current_cmd, token) == false)
+// 		{
+			
+// 			// return (free_token_list(shell->token, free_token_str), \
+// 			// 		free_cmd_list(cmd_list_head), NULL);
+// 		}
+
+// 		// if (strncmp(current_cmd->redir->file, "HERE", 4) && current_cmd->redir->file[0] =='|')
+// 		// 	return(ERR_SYNTAX_ERROR);
+// 		printf ("Returned to make_cmd\n");
+// 		add_cmd_in_back(&shell->cmd_list, current_cmd);
+// 		printf ("managed to add in back\n");
+// 		token = get_after_pipe_token(token);
+// 		if (token)
+// 			printf ("after getting after pipe token now is %s\n", token->str);	
+// 	}
+// 	//print_cmd(shell->cmd_list);
+// 	//free_token_list(shell->token, free_token_non_word);
+// 	return (0);
+// }
+
+int	make_cmd(t_shell *shell, t_token *start_token)
 {
 	t_token	*token;
 	t_cmd	*current_cmd;
 
 	shell->cmd_list = NULL;
-	token = shell->token;
+	token = start_token;
 	while (token != NULL)
 	{
 		current_cmd = new_cmd();
@@ -137,9 +172,14 @@ int	parse(t_shell *shell)
 	// 	return (free_token_list(shell->token, list_token_free_node_str),
 	// 			error(append));
 	
-	status = make_cmd(shell);
-	//printf ("sadasdasd\n");
-	print_cmd(shell->cmd_list);
+	shell->tree = make_tree(shell->token);
+	printf("\n"WHITE_TEXT MAGENTA_BACKGROUND"THE TREE"RESET_COLOR);
+	printf("\n--------------------\n");
+	print_tree(shell->tree, 0);
+
+	// status = make_cmd(shell);
+	// //printf ("sadasdasd\n");
+	// print_cmd(shell->cmd_list);
 	// if (shell->cmd_list == NULL)
 	// 	error(parser);
 	// shell->token = NULL;

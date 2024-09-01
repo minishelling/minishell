@@ -103,6 +103,23 @@ typedef struct s_env_list
 	struct s_env_list	*next;
 }				t_env_list;
 
+typedef enum e_tree_type
+{
+	T_AND_OPR,
+	T_OR_OPR,
+	CMD
+} t_tree_type;
+
+typedef struct s_tree
+{
+	struct s_tree 	*left;
+	struct s_tree	*right;
+	char			*type;
+	t_token 		*start_token;
+    t_token 		*end_token;
+	t_cmd			cmd_list;
+} t_tree;
+
 typedef struct s_shell 
 {
 	char		*pwd;
@@ -111,6 +128,7 @@ typedef struct s_shell
 	int			write_fd;
     char 		*input;
     t_token 	*token;
+	t_tree		*tree;
 	t_token		*syntax; //?
 	t_env		*env_list;
 	t_cmd		*cmd_list;
@@ -189,4 +207,9 @@ void	handle_error(t_shell *shell, int err_no, void *param);
 
 char	*ft_strjoin_fs1(char *s1, const char *s2);
 t_token	*get_after_word_token(t_token *token);
+
+
+t_token *find_last_log_op_token_nip(t_token *token_head);
+t_tree *make_tree(t_token *token_list);
+void print_tree(t_tree *node, int level);
 #endif
