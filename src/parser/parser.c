@@ -86,7 +86,7 @@ bool	init_cmd(t_shell *shell, t_cmd **current_cmd, t_token *token)
 // 		if (init_cmd(shell, &current_cmd, token) == false)
 // 		{
 			
-// 			// return (free_token_list(shell->token, free_token_str), \
+// 			// return (free_token_list(shell->token, free_token_str),
 // 			// 		free_cmd_list(cmd_list_head), NULL);
 // 		}
 
@@ -121,7 +121,7 @@ int	make_cmd(t_shell *shell, t_token *start_token)
 		if (init_cmd(shell, &current_cmd, token) == false)
 		{
 			
-			// return (free_token_list(shell->token, free_token_str), \
+			// return (free_token_list(shell->token, free_token_str),
 			// 		free_cmd_list(cmd_list_head), NULL);
 		}
 
@@ -177,7 +177,7 @@ int	parse(t_shell *shell)
 	printf("\n--------------------\n");
 	print_tree(shell->tree, 0);
 
-	// status = make_cmd(shell);
+	//status = make_cmd(shell);
 	// //printf ("sadasdasd\n");
 	// print_cmd(shell->cmd_list);
 	// if (shell->cmd_list == NULL)

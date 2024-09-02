@@ -213,8 +213,8 @@ t_token	*expand(t_token *token_list_head, t_env *env_list)
 		{
 			printf ("no expanded_tokens\n");
 			current_token->str = ft_strdup("");
-			// return (free_token_list(token_list_head, free_node), \
-			// 		free_token_list(new_token_list_head, free_node), \
+			// return (free_token_list(token_list_head, free_node), 
+			// 		free_token_list(new_token_list_head, free_node), 
 			// 		NULL); //error_print, 1, "expander: unable to expand")
 		//printf ("current_token is %s, expanded_token is %s\n", current_token->str, expanded_tokens->str);
 		}

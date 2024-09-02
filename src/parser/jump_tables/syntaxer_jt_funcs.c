@@ -52,7 +52,7 @@ int	syntax_id_redir(t_token *t_prev, t_token *t_cur, t_env *env_list)
 	(void) t_prev;
 	if (t_next == NULL)
 		return (ERR_SYNTAX_REDIR);
-	// if (!(t_next->id == WORD || t_next->id == SQUOTE || \
+	// if (!(t_next->id == WORD || t_next->id == SQUOTE ||
 	// 	t_next->id == DQUOTE || t_next->id == ENV_VAR))
 	// 	return (ERR_SYNTAX_REDIR);
 	// if (t_next->id == ENV_VAR)

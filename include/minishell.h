@@ -114,7 +114,7 @@ typedef struct s_tree
 {
 	struct s_tree 	*left;
 	struct s_tree	*right;
-	char			*type;
+	t_tree_type		type;
 	t_token 		*start_token;
     t_token 		*end_token;
 	t_cmd			cmd_list;
