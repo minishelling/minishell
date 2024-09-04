@@ -171,11 +171,11 @@ int	parse(t_shell *shell)
 	// if (concatenate_word_tokens(shell) == false)
 	// 	return (free_token_list(shell->token, list_token_free_node_str),
 	// 			error(append));
-	
-	shell->tree = make_tree(shell->token);
+	shell->tree = make_tree(shell->token, last_token(shell->token));
 	printf("\n"WHITE_TEXT MAGENTA_BACKGROUND"THE TREE"RESET_COLOR);
 	printf("\n--------------------\n");
-	print_tree(shell->tree, 0);
+	if (shell->tree)
+		print_tree(shell->tree, 0);
 
 	//status = make_cmd(shell);
 	// //printf ("sadasdasd\n");

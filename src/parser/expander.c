@@ -206,7 +206,7 @@ t_token	*expand(t_token *token_list_head, t_env *env_list)
 		}
 		else
 		{
-			printf ("copying token\n");
+			//printf ("copying token\n");
 			expanded_tokens = copy_token(current_token);
 		}
 		if (!expanded_tokens)
