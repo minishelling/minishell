@@ -9,7 +9,7 @@ t_token *token_before(t_token *start_token, t_token *before_what)
 	while (return_token->next && return_token->next != before_what)
 	{
 		return_token = return_token->next;
-		printf ("return_token is |%s|\n", return_token->str);
+		//printf ("return_token is |%s|\n", return_token->str);
 	}
 	
 	// if (return_token->id == SPACE_CHAR
@@ -180,6 +180,8 @@ t_tree *init_leaf_node(t_token *start_token, t_token *end_token)
 	}
 	leaf_node->type = CMD;
 	leaf_node->start_token = start_token;
+	while (end_token->id == SPACE_CHAR)
+		end_token = token_before (start_token, end_token);
 	leaf_node->end_token = end_token;
 	leaf_node->left = NULL;
 	leaf_node->right = NULL;
