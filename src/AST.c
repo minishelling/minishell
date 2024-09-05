@@ -98,7 +98,7 @@ t_token *get_rid_of_first_parenthesis(t_token *start_token, t_token **end_token)
 			printf ("found open par\n");
 			parentheses++;
 		}
-			else if (iterator->next->id == PAR_CLOSE)
+		else if (iterator->next->id == PAR_CLOSE)
 		{
 			parentheses--;
 			if (parentheses == 0)
@@ -256,7 +256,11 @@ t_tree *make_tree(t_token *start_token, t_token *end_token)
 	
 	if (!start_token)
 		return NULL;
-	 printf ("reached make_tree\n");
+	if (start_token->id == SPACE_CHAR)
+		start_token = get_after_space_token(start_token);
+	if (end_token->id == SPACE_CHAR)
+		end_token = token_before(start_token, end_token);
+	printf ("reached make_tree\n");
 	// Find the last logical operator (root of the current subtree)
 	//if (start_token->id == PAR_OPEN)
 	if (start_token->id == PAR_OPEN && end_token->id == PAR_CLOSE)
