@@ -54,7 +54,6 @@ t_token	*get_after_space_token(t_token *token)
 		return (NULL);
 	if (return_token->id == SPACE_CHAR || return_token->id == TAB_CHAR || return_token->id == NL)
 		return_token = return_token->next;
-	//printf ("returning %s\n", return_token->str);
 	return (return_token);
 }
 

@@ -47,8 +47,8 @@ int main(int argc, char **argv, char **envp)
 				{
 					temp = shell.token;
 					shell.token = shell.token->next;
-					if(temp->str)
-						free(temp->str);
+					// if(temp->str)
+					// 	free(temp->str);
 
 					if (temp)
 						free(temp);
