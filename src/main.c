@@ -5,24 +5,16 @@ int main(int argc, char **argv, char **envp)
 {
 	t_shell shell;
 	t_token *temp;
-	//t_env	*env_list;
 	int status;
 
 
 	(void)argv;
 	(void)envp;
-	
-	// env_list = NULL;
-	// env_init_list(&env_list, envp);
-	// env_print_list(env_list);
-	// env_free_list(&env_list);
-	
 	if (argc > 1) 
 	{
 		write(2, "Mini_shared: Error: too many arguments\n", 39);
 		exit(EXIT_FAILURE);
 	}
-	//if (init_shell(envp, &shell)) 
 	shell.env_list = NULL;
 	if (env_init_list(&shell.env_list, envp)) 
 	{
@@ -37,12 +29,12 @@ int main(int argc, char **argv, char **envp)
 		if (ft_strncmp(shell.input, "", 1))
 		{
 			status = parse(&shell);
+			executor(&shell, envp);
 			//printf ("status is %d\n", status);
 			if (status != PARSING_OK)
 				handle_error(&shell, status, NULL);
 			else
 			{
-				executor(&shell);
 				while (shell.token) 
 				{
 					temp = shell.token;

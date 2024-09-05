@@ -108,7 +108,6 @@ typedef struct s_env_list
 
 typedef struct s_shell 
 {
-	// char		*pwd;
 	int			pipefd[2];
 	pid_t		parent;
 	int			read_fd;
@@ -203,7 +202,7 @@ void	ft_print_3d_arr(char ***arr);
 
 /* EXECUTOR */
 
-void executor(t_shell *shell);
+void executor(t_shell *shell, char **env);
 
 //EXECUTOR UTILS
 
