@@ -195,6 +195,13 @@ void	handle_error(t_shell *shell, int err_no, void *param);
 char	*ft_strjoin_fs1(char *s1, const char *s2);
 t_token	*get_after_word_token(t_token *token);
 
+//FREE
+
+void	ft_free_2d(void ***arr);
+void	ft_free_3d(void ****arr);
+void	ft_free(void **var);
+
+
 //PRINT
 
 void	ft_print_2d_arr(char **arr);
@@ -207,5 +214,8 @@ void executor(t_shell *shell, char **env);
 //EXECUTOR UTILS
 
 void	redirect_io(t_shell *shell, int io_fd, int io_target);
+
+char	*ft_strjoin_cmd_path(char *path, char *cmd_name);
+char	*get_cmd_path(t_env	*path_node, char *cmd_name);
 
 #endif
