@@ -1,6 +1,8 @@
 #include "../../include/minishell.h"
 
 
+
+
 char	*ft_strjoin_cmd_path(char *path, char *cmd_name)
 {
 	char	*cmd_path;
@@ -22,14 +24,15 @@ char	*ft_strjoin_cmd_path(char *path, char *cmd_name)
 	}
 }
 
-char	*get_cmd_path(t_env	*path_node, char *cmd_name)
+char	*get_cmd_path(t_shell *shell, char *cmd_name)
 {
+	t_env	*path_node;
 	char	*cmd_path;
 	char	**path;
 	int		i;
 	int		status;
 
-
+	path_node = env_find_node(shell->env_list, "PATH");
 	if (!path_node || !path_node->value || !cmd_name)
 		return (NULL); //Idea to set ft_errno.
 	path = ft_split(path_node->value, ':');

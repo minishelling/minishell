@@ -216,6 +216,6 @@ void executor(t_shell *shell, char **env);
 void	redirect_io(t_shell *shell, int io_fd, int io_target);
 
 char	*ft_strjoin_cmd_path(char *path, char *cmd_name);
-char	*get_cmd_path(t_env	*path_node, char *cmd_name);
+char	*get_cmd_path(t_shell *shell, char *cmd_name);
 
 #endif

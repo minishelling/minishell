@@ -2,16 +2,40 @@
 
 void	executor(t_shell *shell, char **env)
 {
-	t_cmd	*cmd;
-	int		status;
+	// int		status;
+	// char	*cmd_path;
+	// pid_t	pid;
 
-	cmd = shell->cmd_list;
-	printf("In executor\n");
-	print_cmd(cmd);
-	status = execve(cmd->args[0], cmd->args, env);
-	perror("Errno: ");
-	printf("Status: %d\n", status);
+	// cmd_path = get_cmd_path(shell, "ls");
+	// printf("In executor\n");
+	// pid = fork();
+	// if (pid == -1)
+	// 	return ;
+	// if (pid == 0)
+	// 	status = execve(cmd_path, shell->cmd_list->args, env);
+	// perror("Errno: ");
+	// printf("Status: %d\n", status);
+
+	(void) env;
+	env_create_array(shell->env_list);
 }
+
+
+// int	execute_single_command(t_shell *shell, char *cmd_name)
+// {
+
+// }
+
+
+
+
+
+
+
+
+
+
+
 
 // void	executor(t_shell *shell)
 // {

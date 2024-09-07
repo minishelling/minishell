@@ -114,3 +114,20 @@ t_env	*env_find_node(t_env *env, char *key)
 	}
 	return (NULL);
 }
+
+char	**env_create_array(t_env *env)
+{
+	int	nodes_count;
+
+	if (!env)
+		return (NULL);
+	nodes_count = 0;
+	while (env && env->next)
+	{
+		printf("NODE key: %s\n", env->key);
+		nodes_count++;
+		env = env->next;
+	}
+	printf("Nodes count: %d\n", nodes_count);
+	return (NULL);
+}
