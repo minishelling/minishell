@@ -93,3 +93,24 @@ t_env_ecode	env_copy_keyval(t_env **new_node, char *keyvalue)
 	(*new_node)->next = NULL;
 	return (ENV_SUCCESS);
 }
+
+t_env	*env_find_node(t_env *env, char *key)
+{
+	t_env	*node;
+	size_t	key_len;
+	int		isnt_key;
+
+	node = env;
+	key_len = ft_strlen(key);
+	while (node)
+	{
+		isnt_key = ft_strncmp(node->key, key, key_len + 1);
+		if (isnt_key)
+		{
+			node = node->next;
+			continue ;
+		}
+		return (node);
+	}
+	return (NULL);
+}

@@ -102,4 +102,7 @@ char	*env_get_value(char *keyvalue);
 */
 t_env_ecode	env_copy_keyval(t_env **new_node, char *keyvalue);
 
+t_env	*env_find_node(t_env *env, char *key);
+
+
 #endif
