@@ -12,8 +12,6 @@ t_token	*skip_whitespace(t_token *list)
 	return (list);
 }
 
-
-
 bool is_par_closed(t_token *token_list_head) 
 {
 	t_token *current_token;
@@ -112,14 +110,14 @@ int	syntax(t_shell *shell)
 	[3] = syntax_id_pipe,
 	[4] = syntax_id_and_opr,
 	[5] = syntax_id_semicol,
-	[6] = syntax_id_misc, //parentheses
-	[7] = syntax_id_misc, //parentheses
+	[6] = syntax_id_parentheses, //parentheses
+	[7] = syntax_id_parentheses, //parentheses
 	[8] = syntax_id_redir,
 	[9] = syntax_id_redir,
 	[10] = syntax_id_misc,
 	[11] = syntax_id_misc,
 	[12] = syntax_id_misc,
-	[13] = syntax_id_misc,
+	[13] = syntax_id_word, //word
 	[14] = syntax_id_pipe // or_opr
 	};
 

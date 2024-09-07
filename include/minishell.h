@@ -42,6 +42,7 @@ enum e_parsing_error
 	ERR_SYNTAX_AND,
 	ERR_SYNTAX_REDIR,
 	ERR_SYNTAX_SEMICOL,
+	ERR_SYNTAX_PAR,
 	ERR_SYNTAX_ERROR
 };
 
@@ -139,7 +140,7 @@ int		init_shell(char **envp, t_shell *shell);
 t_token	*tokenize(char *input);
 int		syntax(t_shell *shell);
 t_token	*expand(t_token *token_list_head, t_env *env_list);
-bool	concat_word_tokens(t_shell *shell);
+bool	join_word_tokens(t_shell *shell);
 int		parse(t_shell *shell);
 
 void	set_pos_end_space_or_word(char *str, size_t *pos, t_token_id token_id);
@@ -157,6 +158,7 @@ int	syntax_id_semicol(t_token *t_prev, t_token *t_cur, t_env *env_list);
 int	syntax_id_parentheses(t_token *t_prev, t_token *t_cur, t_env *env_list);
 int	syntax_id_redir(t_token *t_prev, t_token *t_cur, t_env *env_list);
 int	syntax_id_misc(t_token *t_prev, t_token *t_cur, t_env *env_list);
+int	syntax_id_word(t_token *t_prev, t_token *t_cur, t_env *env_list);
 
 int	parser_space(t_cmd *cmd, t_token *token);
 int	parser_pipe(t_cmd *cmd_node, t_token *token);
@@ -178,7 +180,7 @@ t_token	*free_token_node(t_token *t_node);
 void	free_last_token(t_token *t_list, t_token *(*f) (t_token *));
 t_token	*copy_token(t_token *t_node);
 t_token	*last_token(t_token *token_list_head);
-void	free_token_list(t_token *t_list, t_token *(*f) (t_token *));
+void 	free_token_list(t_token **token_list);
 t_token	*free_token_str(t_token *token);
 
 t_env	*new_env_var(char *env_var_str);
@@ -208,8 +210,10 @@ void	handle_error(t_shell *shell, int err_no, void *param);
 char	*ft_strjoin_fs1(char *s1, const char *s2);
 t_token	*get_after_word_token(t_token *token);
 
-
 t_token *find_last_log_op_token_nip(t_token *token_head, t_token *end_token);
-t_tree *make_tree(t_token *start_token, t_token *end_token);
+t_tree *make_tree(t_shell *shell, t_token *start_token, t_token *end_token);
 void print_tree(t_tree *node, int level);
+void remove_space_tokens(t_token **head);
+t_token *remove_token(t_token *start_token, t_token *token_to_remove);
+void free_tree(t_tree *node);
 #endif

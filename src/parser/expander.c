@@ -183,11 +183,11 @@ t_token	*expand_quote(t_token *token, t_env *env_list)
 
 t_token	*expand(t_token *token_list_head, t_env *env_list)
 {
-	t_token	*new_token_list_head;
+	t_token	*new_token_list;
 	t_token	*current_token;
 	t_token	*expanded_tokens;
 
-	new_token_list_head = NULL;
+	new_token_list = NULL;
 	current_token = token_list_head;
 	while (current_token != NULL)
 	{
@@ -213,14 +213,13 @@ t_token	*expand(t_token *token_list_head, t_env *env_list)
 		{
 			printf ("no expanded_tokens\n");
 			current_token->str = ft_strdup("");
-			// return (free_token_list(token_list_head, free_node), 
-			// 		free_token_list(new_token_list_head, free_node), 
-			// 		NULL); //error_print, 1, "expander: unable to expand")
-		//printf ("current_token is %s, expanded_token is %s\n", current_token->str, expanded_tokens->str);
+			return (free_token_list(&token_list_head), free_token_list(&new_token_list), NULL); 
+			//error_print, 1, "expander: unable to expand")
+			//printf ("current_token is %s, expanded_token is %s\n", current_token->str, expanded_tokens->str);
 		}
-		add_token_in_back(&new_token_list_head, expanded_tokens);
+		add_token_in_back(&new_token_list, expanded_tokens);
 		current_token = current_token->next;
 	}
-	free_token_list(token_list_head, free_node);
-	return (new_token_list_head);
+	free_token_list(&token_list_head);
+	return (new_token_list);
 }
