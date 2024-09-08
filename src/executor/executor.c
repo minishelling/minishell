@@ -1,23 +1,28 @@
 #include "../../include/minishell.h"
 
-void	executor(t_shell *shell, char **env)
+void	executor(t_shell *shell)
 {
-	// int		status;
-	// char	*cmd_path;
+	int		status;
+	char	*cmd_path;
 	// pid_t	pid;
+	char	**env_array;
 
-	// cmd_path = get_cmd_path(shell, "ls");
+	env_array = env_create_array(shell->env_list);
+	cmd_path = get_cmd_path(shell, shell->cmd_list->args[0]);
 	// printf("In executor\n");
 	// pid = fork();
 	// if (pid == -1)
 	// 	return ;
 	// if (pid == 0)
-	// 	status = execve(cmd_path, shell->cmd_list->args, env);
+	printf("Cmd_path: %s\n", cmd_path);
+	status = execve(cmd_path, shell->cmd_list->args, env_array);
 	// perror("Errno: ");
-	// printf("Status: %d\n", status);
+	printf("Status: %d\n", status);
+	ft_free((void **) &cmd_path);
+	ft_free_2d((void ***) &env_array);
 
-	(void) env;
-	env_create_array(shell->env_list);
+	
+	// ft_print_2d_arr(env_array);
 }
 
 
