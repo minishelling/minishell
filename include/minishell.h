@@ -214,7 +214,10 @@ void	executor(t_shell *shell);
 //EXECUTOR UTILS
 
 void	redirect_io(t_shell *shell, int io_fd, int io_target);
-
 char	*get_cmd_path(t_shell *shell, char *cmd_name);
+int		handle_input(t_shell *shell, t_cmd *cmd);
+void	handle_redirections(t_shell *shell, t_cmd *cmd);
+void 	run_child(t_shell *shell, t_cmd *cmd);
+void	execute_single_command(t_shell *shell, t_cmd *cmd);
 
 #endif

@@ -29,7 +29,7 @@ int main(int argc, char **argv, char **envp)
 		if (ft_strncmp(shell.input, "", 1))
 		{
 			status = parse(&shell);
-			executor(&shell, envp);
+			executor(&shell);
 			//printf ("status is %d\n", status);
 			if (status != PARSING_OK)
 				handle_error(&shell, status, NULL);
