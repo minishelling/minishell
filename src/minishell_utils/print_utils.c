@@ -47,7 +47,7 @@ void	print_token(t_token *head)
 	int			size;
 	t_token		*ptr;
 	int	con = token_size(head);
-	char	*token_name[15] = {
+	char	*token_name[16] = {
 	[0] = "SPACE_CHAR",
 	[1] = "TAB_CHAR",
 	[2] = "NL",
@@ -62,7 +62,8 @@ void	print_token(t_token *head)
 	[11] = "DQUOTE",
 	[12] = "ENV_VAR",
 	[13] = "WORD",
-	[14] = "OR_OPR"
+	[14] = "OR_OPR",
+	[15] = "ARITH_EXPAN"
 	};
 	ptr = head;
 

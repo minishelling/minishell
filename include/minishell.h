@@ -62,7 +62,8 @@ typedef enum e_token_id
 	DQUOTE,
 	ENV_VAR,
 	WORD,
-	OR_OPR
+	OR_OPR,
+	ARITH_EXPAN
 }	t_token_id;
 
 typedef enum e_redir_id 

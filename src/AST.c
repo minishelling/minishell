@@ -100,6 +100,15 @@ t_token *get_rid_of_first_parenthesis(t_token *start_token, t_token **end_token)
 				printf ("found close par\n");
 				if (iterator->next == *end_token)
 					*end_token = iterator;
+				if (start_token->next->id == PAR_OPEN && iterator->id == PAR_CLOSE)
+				{
+					printf("arithmetic expantion\n");
+					start_token->next->id = ARITH_EXPAN;
+					start_token->next->str = "((";
+					iterator->id = ARITH_EXPAN;
+					iterator->str = "))";
+					print_token(start_token);
+				}
 				start_token = remove_token (start_token, start_token);
 				start_token = remove_token (start_token, iterator->next);
 				printf ("print token list after amend");
@@ -241,17 +250,18 @@ t_tree *make_tree(t_shell *shell, t_token *start_token, t_token *end_token)
 	if (start_token == NULL || end_token == NULL)
 		return NULL;
 
-	if (start_token->id == PAR_OPEN && end_token->id == PAR_CLOSE)
+	//if (start_token->id == PAR_OPEN && end_token->id == PAR_CLOSE)
+	if (start_token->id == PAR_OPEN)
 	{
 		printf("Removing parentheses: start = %s, end = %s\n", start_token->str, end_token->str);
 		start_token = get_rid_of_first_parenthesis(start_token, &end_token);
-		if (start_token->id == PAR_OPEN && end_token->id == PAR_CLOSE)
-			{
-				printf("arithmetic expantion\n");
-				return init_leaf_node (start_token, end_token);
-			}
-		else	
-			return make_tree(shell, start_token, end_token);
+		// if (start_token->id == PAR_OPEN && end_token->id == PAR_CLOSE)
+		// 	{
+		// 		printf("arithmetic expantion\n");
+		// 		return init_leaf_node (start_token, end_token);
+		// 	}
+		// else	
+		return make_tree(shell, start_token, end_token);
 	}
 
 	// Find the last logical operator not in parentheses
