@@ -14,7 +14,7 @@ void	executor(t_shell *shell)
 	// 	return ;
 	// if (pid == 0)
 	// execute_single_command(shell, shell->cmd_list);
-	execute_cmd_list(shell, shell->cmd_list);
+	execute_cmd_list(shell);
 	// status = execve(cmd_path, shell->cmd_list->args, env_array);
 	// perror("Errno: ");
 	// printf("Status: %d\n", status);
@@ -50,11 +50,13 @@ static size_t	count_cmds(t_cmd *head)
 	return (count);
 }
 
-void	execute_cmd_list(t_shell *shell, t_cmd *cmds_head)
+void	execute_cmd_list(t_shell *shell)
 {
+	t_cmd	*cmds_head;
 	size_t	cmds_count;
 	size_t	i;
 
+	cmds_head = shell->cmd_list;
 	cmds_count = count_cmds(cmds_head);
 	printf("cmds_count in execute_cmd_list: %ld\n", cmds_count);
 	i = 0;
@@ -74,50 +76,60 @@ void	execute_cmd_list(t_shell *shell, t_cmd *cmds_head)
 		if (shell->parent == -1)
 			return ;
 		else if (!shell->parent)
-			run_child(shell, cmds_head, i);
-
-		do_parent_duties(shell, cmds_count, i);
+		{
+			// printf("Does it run the child\n");
+			run_child(shell, cmds_head, cmds_count, i);
+		}
+		do_parent_duties(shell, &cmds_head, cmds_count, i);
 		i++;
 	}
-	waitpid(shell->parent, &shell->status, 0);
+	// waitpid(shell->parent, &shell->status, 0);
 	// while (wait(NULL) != -1)
 	// 	;
 }
 
-static t_cmd	*skip_to_current_cmd(t_cmd *cmds_head, size_t i)
-{
-	while (i > 0)
-	{
-		cmds_head = cmds_head->next;
-		i++;
-	}
-	return (cmds_head);
-}
+// static t_cmd	*skip_to_current_cmd(t_cmd *cmds_head, size_t i)
+// {
+// 	while (i > 0)
+// 	{
+// 		cmds_head = cmds_head->next;
+// 		i++;
+// 	}
+// 	return (cmds_head);
+// }
 
-void	run_child(t_shell *shell, t_cmd *cmds_head, size_t current_child)
+void	run_child(t_shell *shell, t_cmd *cmds_head, size_t cmds_count, size_t current_child)
 {
-	size_t	cmds_count;
 	char	*cmd_path;
 	char	**env_array;
+	int		status;
 
-	cmds_count = count_cmds(cmds_head);
-	cmds_head = skip_to_current_cmd(cmds_head, current_child);
-
+	printf("Printing cmd list in run child:\n");
+	print_cmd(cmds_head);
 	if (current_child > 0)
-		dup2(shell->read_fd, STDIN_FILENO); //Protect dup.
+	{
+		status = dup2(shell->read_fd, STDIN_FILENO); //Protect dup.
+		printf("First dup status: %d\n", status);
+	}
+	
+	printf("Reached checkpoint 1 in run_child\n");
 	if (current_child < cmds_count - 1)
 	{
-		close(shell->pipefd[READ_END]);
-		dup2(shell->pipefd[WRITE_END], STDOUT_FILENO);
+		status = close(shell->pipefd[READ_END]);
+		printf("Close status: %d\n", status);
+		status = dup2(shell->pipefd[WRITE_END], STDOUT_FILENO);
+		printf("Second dup status: %d\n", status);
 	}
-
+	printf("Reached checkpoint 2 in run_child\n");
 	if (cmds_head && cmds_head->args)
 		cmd_path = get_cmd_path(shell, cmds_head->args[0]);
 	env_array = env_create_array(shell->env_list);
 	execve(cmd_path, cmds_head->args, env_array);
+	printf("Failed to execute. Exiting.\n");
+	exit(EXIT_FAILURE);
 }
 
-void	do_parent_duties(t_shell *shell, size_t cmds_count, size_t current_child)
+void	do_parent_duties(t_shell *shell, t_cmd **curr_cmd, size_t cmds_count, size_t current_child)
 {
 	if (current_child > 0)
 		close(shell->read_fd);
@@ -126,6 +138,8 @@ void	do_parent_duties(t_shell *shell, size_t cmds_count, size_t current_child)
 		close(shell->pipefd[WRITE_END]);
 		shell->read_fd = shell->pipefd[READ_END];
 	}
+	waitpid(shell->parent, &shell->status, 0);
+	*curr_cmd = (*curr_cmd)->next;
 }
 
 // void	execute_two_commands(t_shell *shell, t_cmd *cmd)
