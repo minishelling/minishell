@@ -72,8 +72,11 @@ void	print_token(t_token *head)
 	printf("--------------------\n");
 	while (size--)
 	{
-		printf(MAGENTA_TEXT"TOKEN [%02d]"RESET_COLOR"\tid: %s [%d]\n\t\tstr: |%s|\n", (con - size), token_name[ptr->id], ptr->id, ptr->str);
-		ptr = ptr->next;
+		if (ptr && ptr->str)
+		{
+			printf(MAGENTA_TEXT"TOKEN [%02d]"RESET_COLOR"\tid: %s [%d]\n\t\tstr: |%s|\n", (con - size), token_name[ptr->id], ptr->id, ptr->str);
+			ptr = ptr->next;
+		}
 	}
 	return ;
 }

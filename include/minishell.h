@@ -217,4 +217,5 @@ void print_tree(t_tree *node, int level);
 void remove_space_tokens(t_token **head);
 t_token *remove_token(t_token *start_token, t_token *token_to_remove);
 void free_tree(t_tree *node);
+t_token *remove_subshell_parens(t_token **head);
 #endif

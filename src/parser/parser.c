@@ -103,56 +103,9 @@ int	make_cmd(t_shell *shell, t_token *start_token)
 	//free_token_list(shell->token, free_token_non_word);
 	return (0);
 }
-t_token *remove_token(t_token *start_token, t_token *token_to_remove)
-{
-	t_token *current = start_token;
-	t_token *prev = NULL;
 
-	if (current == NULL || token_to_remove == NULL)
-		return start_token;
-	while (current)
-	{
-		if (current == token_to_remove)
-		{
-			if (prev == NULL)
-				start_token = current->next;
-			else
-				prev->next = current->next;
-			free(current->str);
-			free(current);
-			return (start_token);
-		}
-		prev = current;
-		current = current->next;
-	}
-	return (start_token);
-}
 
-void remove_space_tokens(t_token **head)
-{
-	t_token *current = *head;
-	t_token *prev = NULL;
-	t_token *temp = NULL;
 
-	while (current != NULL)
-
-		if (current->id == SPACE_CHAR )
-		{
-			if (prev == NULL)
-				*head = current->next;
-			else
-
-				prev->next = current->next;
-			temp = current;
-			current = current->next;
-			free(temp);
-		}
-		else
-		{
-			prev = current;
-			current = current->next;
-		}
-}
 
 int	parse(t_shell *shell)
 {
@@ -187,6 +140,10 @@ int	parse(t_shell *shell)
 	// 	return (free_token_list(shell->token, list_token_free_node_str),
 	// 			error(append));
 	remove_space_tokens(&shell->token);
+	printf ("after removing space tokens\n");
+	print_token(shell->token);
+	remove_subshell_parens(&(shell->token));
+	printf ("after removing subshell_parens\n");
 	print_token(shell->token);
 	shell->tree = make_tree(shell, shell->token, last_token(shell->token));
 	printf("\n"WHITE_TEXT MAGENTA_BACKGROUND"THE TREE"RESET_COLOR);
