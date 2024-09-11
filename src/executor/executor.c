@@ -24,16 +24,16 @@ void	executor(t_shell *shell)
 }
 
 
-void	execute_single_command(t_shell *shell, t_cmd *cmd)
-{
-	shell->parent = fork();
-	if (shell->parent == -1)
-		return ;
-	else if (shell->parent == 0)
-		run_child_single_command(shell, cmd);
-	waitpid(shell->parent, &shell->status, 0);
-	printf("Finished waiting for children. Status: %d\n", shell->status);
-}
+// void	execute_single_command(t_shell *shell, t_cmd *cmd)
+// {
+// 	shell->parent = fork();
+// 	if (shell->parent == -1)
+// 		return ;
+// 	else if (shell->parent == 0)
+// 		run_child_single_command(shell, cmd);
+// 	waitpid(shell->parent, &shell->status, 0);
+// 	// printf("Finished waiting for children. Status: %d\n", shell->status);
+// }
 
 static size_t	count_cmds(t_cmd *head)
 {
@@ -58,7 +58,7 @@ void	execute_cmd_list(t_shell *shell)
 
 	cmds_head = shell->cmd_list;
 	cmds_count = count_cmds(cmds_head);
-	printf("cmds_count in execute_cmd_list: %ld\n", cmds_count);
+	// printf("cmds_count in execute_cmd_list: %ld\n", cmds_count);
 	i = 0;
 	while (i < cmds_count)
 	{
@@ -88,44 +88,34 @@ void	execute_cmd_list(t_shell *shell)
 	// 	;
 }
 
-// static t_cmd	*skip_to_current_cmd(t_cmd *cmds_head, size_t i)
-// {
-// 	while (i > 0)
-// 	{
-// 		cmds_head = cmds_head->next;
-// 		i++;
-// 	}
-// 	return (cmds_head);
-// }
-
 void	run_child(t_shell *shell, t_cmd *cmds_head, size_t cmds_count, size_t current_child)
 {
 	char	*cmd_path;
 	char	**env_array;
 	int		status;
 
-	printf("Printing cmd list in run child:\n");
-	print_cmd(cmds_head);
+	// printf("Printing cmd list in run child:\n");
+	// print_cmd(cmds_head);
 	if (current_child > 0)
 	{
 		status = dup2(shell->read_fd, STDIN_FILENO); //Protect dup.
-		printf("First dup status: %d\n", status);
+		// printf("First dup status: %d\n", status);
 	}
 	
-	printf("Reached checkpoint 1 in run_child\n");
+	// printf("Reached checkpoint 1 in run_child\n");
 	if (current_child < cmds_count - 1)
 	{
 		status = close(shell->pipefd[READ_END]);
-		printf("Close status: %d\n", status);
+		// printf("Close status: %d\n", status);
 		status = dup2(shell->pipefd[WRITE_END], STDOUT_FILENO);
-		printf("Second dup status: %d\n", status);
+		// printf("Second dup status: %d\n", status);
 	}
-	printf("Reached checkpoint 2 in run_child\n");
+	// printf("Reached checkpoint 2 in run_child\n");
 	if (cmds_head && cmds_head->args)
 		cmd_path = get_cmd_path(shell, cmds_head->args[0]);
 	env_array = env_create_array(shell->env_list);
 	execve(cmd_path, cmds_head->args, env_array);
-	printf("Failed to execute. Exiting.\n");
+	// printf("Failed to execute. Exiting.\n");
 	exit(EXIT_FAILURE);
 }
 
@@ -142,23 +132,6 @@ void	do_parent_duties(t_shell *shell, t_cmd **curr_cmd, size_t cmds_count, size_
 	*curr_cmd = (*curr_cmd)->next;
 }
 
-// void	execute_two_commands(t_shell *shell, t_cmd *cmd)
-// {
-// 	shell->status = pipe(shell->pipefd);
-// 	if (shell->status == -1)
-// 		return (-1);
-// 	shell->parent = fork();
-// 	if (shell->parent == -1)
-// 		return (-1);
-// 	else if (shell->parent == 0)
-// 		run_child(shell, cmd);
-// 	close(shell->pipefd[WRITE_END]);
-// 	while (wait(NULL) != -1)
-// 		;
-// 	printf("Finished waiting for children, returning now.\n");
-// 	return (0);
-// }
-
 static void	run_child_single_command(t_shell *shell, t_cmd *cmd)
 {
 	char	*cmd_path;
@@ -170,30 +143,6 @@ static void	run_child_single_command(t_shell *shell, t_cmd *cmd)
 	execve(cmd_path, cmd->args, env_array);
 
 }
-
-// void	run_child_one(t_shell *shell, t_cmd *cmd)
-// {
-// 	char	*cmd_path;
-// 	char	**env_array;
-
-// 	handle_redirections(shell, cmd);
-// 	cmd_path = get_cmd_path(shell, shell->cmd_list->args[0]);
-// 	env_array = env_create_array(shell->env_list);
-// 	execve(cmd_path, cmd->args, env_array);
-// 	exit(EXIT_FAILURE);
-// }
-
-// void	run_child_two(t_shell *shell, t_cmd *cmd)
-// {
-// 	char	*cmd_path;
-// 	char	**env_array;
-
-// 	handle_redirections(shell, cmd);
-// 	cmd_path = get_cmd_path(shell, shell->cmd_list->args[0]);
-// 	env_array = env_create_array(shell->env_list);
-// 	execve(cmd_path, cmd->args, env_array);
-// 	exit(EXIT_FAILURE);
-// }
 
 // void	handle_redirections(t_shell *shell, t_cmd *cmd)
 // {
@@ -225,70 +174,4 @@ static void	run_child_single_command(t_shell *shell, t_cmd *cmd)
 // 	}
 // 	infile_fd = open(infile_name, O_CREAT);
 // 	return (infile_fd);
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-// void	executor(t_shell *shell)
-// {
-// 	size_t	cmds_nbr;
-// 	size_t	i;
-
-// 	if (!shell->cmd_list)
-// 		return ; //Null
-// 	else
-// 	{
-// 		i = 0;
-// 		cmds_nbr = cmd_size(shell->cmd_list);
-// 		while (i < cmds_nbr)
-// 		{
-// 			if (i < cmds_nbr - 1 && pipe(shell->pipefd) == -1)
-// 				return ; // Pipe failure
-// 			shell->parent = fork();
-// 			if (shell->parent == -1)
-// 				return ; //Fork failure
-// 			else if (!shell->parent)
-// 				run_child(shell, i);
-// 			do_parent_duties(shell, i);
-// 			i++;
-// 		}
-// 		waitpid(shell->parent, &shell->status, 0);
-// 		while (wait(NULL) != -1)
-// 			;
-// 		// print_cmd(shell->cmd_list);
-// 	}
-// }
-
-// void	run_child(t_shell *shell, size_t i, size_t cmds_nbr)
-// {
-// 	if (i == 0)
-// 	{
-// 		redirect_input(t_shell *shell, )
-// 	}
-
-// 	if (i < cmds_nbr - 1)
-// 	{
-// 		close (shell->pipefd[READ_END]); //Protect.
-
-// 		// Check the command. If there is a redirect, redirect to the redirect (if outfile).
-// 		// If there is no redirect, then redirect to the pipe,
-// 		// unless it's the last command.
-
-		
-// 		redirect_io(shell, shell->pipefd[WRITE_END], STDOUT_FILENO);
-// 	}
-// 	else
-// 	{
-// 		open_outfile(t_shell *shell);
-// 		redirect_io(shell, shell->)
-// 	}
 // }
