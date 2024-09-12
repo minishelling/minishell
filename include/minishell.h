@@ -43,7 +43,8 @@ enum e_parsing_error
 	ERR_SYNTAX_REDIR,
 	ERR_SYNTAX_SEMICOL,
 	ERR_SYNTAX_PAR,
-	ERR_SYNTAX_ERROR
+	ERR_SYNTAX_ERROR,
+	ERR_OUT_OF_SCOPE
 };
 
 typedef enum e_token_id 

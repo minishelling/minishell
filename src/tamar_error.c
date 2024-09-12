@@ -11,7 +11,8 @@ char	*get_error_messages(int e)
 		"Syntax error near unexpected token `<` or `>`\n",
 		"Syntax error near unexpected token `;`\n",
 		"Syntax error near unexpected token `)`\n",
-		"Syntax error\n"
+		"Syntax error\n",
+		"Error: out of scope. Parentheses are used for priorities, and we tolerate one command in a subshell\n"
 	};
 
 	return (error_messages[e]);
