@@ -69,7 +69,7 @@ bool	init_cmd(t_shell *shell, t_cmd **current_cmd, t_token *token)
 	return (true);
 }
 
-int	make_cmd(t_shell *shell, t_token *start_token)
+t_cmd	make_cmd(t_shell *shell, t_token *start_token, t_token *end_token)
 {
 	t_token	*token;
 	t_cmd	*current_cmd;
@@ -97,11 +97,13 @@ int	make_cmd(t_shell *shell, t_token *start_token)
 		printf ("managed to add in back\n");
 		token = get_after_pipe_token(token);
 		if (token)
-			printf ("after getting after pipe token now is %s\n", token->str);	
+			printf ("after getting after pipe token now is %s\n", token->str);
+		if (token == end_token)
+			break;
 	}
 	//print_cmd(shell->cmd_list);
 	//free_token_list(shell->token, free_token_non_word);
-	return (0);
+	return (*(shell->cmd_list));
 }
 
 
@@ -157,8 +159,10 @@ int	parse(t_shell *shell)
 	shell->tree = make_tree(shell, shell->token, last_token(shell->token));
 	printf("\n"WHITE_TEXT MAGENTA_BACKGROUND"THE TREE"RESET_COLOR);
 	printf("\n--------------------\n");
+	// if (shell->tree)
+	// 	print_tree(shell->tree, 0);
 	if (shell->tree)
-		print_tree(shell->tree, 0);
+		print_tree_with_cmds(shell->tree, 0);
 	//free_token_list(&shell->token); seems to be unnecessary??
 
 	return (PARSING_OK);

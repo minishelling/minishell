@@ -38,7 +38,7 @@ int parser_redir(t_cmd *cmd, t_token *token)
 		cmd->next = (t_cmd *) 0XFF; // ?
 		return (0);
 	}
-	redir_list->redir = redir_ident(token->str);
+	redir_list->redir_id = redir_ident(token->str);
 	redir_list->file = file_token->str;
 	if (redir_list->file[0] == '|' || redir_list->file[0] == '&' || redir_list->file[0] == ';'
 		|| redir_list->file[0] == '(' || redir_list->file[0] == ')')

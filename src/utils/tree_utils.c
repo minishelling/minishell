@@ -11,3 +11,76 @@ void free_tree(t_tree *node)
 	//     free_cmd_list(node->cmd_list);   //todo
 	free(node);
 }
+
+void print_tree_with_cmds(t_tree *node, int level) 
+{
+    int i;
+	int j;
+	t_cmd *cmd;
+    char *tree_node_name[3] = 
+    {
+        [0] = "AND_OPR",
+        [1] = "OR_OPR",
+        [2] = "CMD",
+    };
+	char *redir_name[4] = 
+    {
+        [0] = "INFILE",
+        [1] = "HEREDOC",
+        [2] = "OUTFILE",
+		[3] = "APPEND",
+    };
+
+    if (!node)
+		return;
+
+	i = 0;
+    // Print indentation for the current level
+    while (i++ < level)
+        printf("    ");
+    if (node->type == CMD)
+    {
+        printf(MAGENTA_TEXT"%s "RESET_COLOR"|%s| |%s|\n", tree_node_name[node->type], node->start_token->str, node->end_token->str);
+        
+        cmd = (t_cmd *)&node->cmd_list;
+		while (cmd)
+        {
+            if (cmd->args)
+            {
+                printf("    Command: ");
+                j = 0;
+                while (cmd->args[j] != NULL)
+                {
+                    if (j > 0) printf(" ");
+                    printf("%s", cmd->args[j]);
+                    j++;
+                }
+                printf("\n");
+            }
+
+            // Print redirections if available
+            if (cmd->redir)
+            {
+                t_redir *redir = cmd->redir;
+                while (redir)
+                {
+                    printf ("    Redirection: %s (%s)\n", redir->file, redir_name[redir->redir_id - 1]);
+                    redir = redir->next;
+                }
+            }
+            cmd = cmd->next;
+        }
+    }
+    else if (node->type == T_AND_OPR || node->type == T_OR_OPR)
+    {
+        // Print logical operators
+        printf(MAGENTA_TEXT"%s"RESET_COLOR"\n", tree_node_name[node->type]);
+    }
+   
+    // Print the left subtree
+    print_tree_with_cmds(node->left, level + 1);
+
+    // Print the right subtree
+    print_tree_with_cmds(node->right, level + 1);
+}
+

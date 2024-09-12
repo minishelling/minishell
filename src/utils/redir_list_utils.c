@@ -7,7 +7,7 @@ t_redir	*new_redir(void)
 	redir = malloc(sizeof(t_redir) * 1);
 	if (!redir)
 		return (NULL);
-	redir->redir = REDIR;
+	redir->redir_id = REDIR;
 	redir->file = NULL;
 	redir->fd = -1;
 	redir->next = NULL;
