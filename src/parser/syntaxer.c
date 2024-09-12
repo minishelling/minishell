@@ -78,7 +78,27 @@ void	tokenize_and_n_or_opr(t_token *token_list_head)
 		current_token = current_token->next;
 	}
 }
+bool is_redir_before_parens(t_token *head)
+{
+    t_token *current = head;
 
+    while (current && current->next)
+    {
+        // Check if current token is a redirection (LT or GT)
+        if (current->id == LT || current->id == GT)
+        {
+            // Check if the next token is PAR_OPEN
+            if (current->next->id == PAR_OPEN)
+            {
+                return 1;
+            }
+        }
+        
+        // Move to the next token
+        current = current->next;
+    }
+	return 0;
+}
 
 int	syntax(t_shell *shell)
 {
@@ -100,6 +120,12 @@ int	syntax(t_shell *shell)
 		printf ("not closed\n");
 		return (ERR_UNCLOSED_PAREN);
 	}
+	if (is_redir_before_parens(shell->token))
+	{
+		printf ("redir before parens\n");
+		return (ERR_SYNTAX_ERROR);
+	}
+
 	tokenize_and_n_or_opr(shell->token);
 	
 	

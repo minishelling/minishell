@@ -145,17 +145,22 @@ int	parse(t_shell *shell)
 	remove_subshell_parens(&(shell->token));
 	printf ("after removing subshell_parens\n");
 	print_token(shell->token);
+
+	//mandatory:
+	//status = make_cmd(shell);
+	// print_cmd(shell->cmd_list);
+	// if (shell->cmd_list == NULL)
+	// 	error(parser);
+	// shell->token = NULL;
+
+	//bonus:
 	shell->tree = make_tree(shell, shell->token, last_token(shell->token));
 	printf("\n"WHITE_TEXT MAGENTA_BACKGROUND"THE TREE"RESET_COLOR);
 	printf("\n--------------------\n");
 	if (shell->tree)
 		print_tree(shell->tree, 0);
 	//free_token_list(&shell->token); seems to be unnecessary??
-	//status = make_cmd(shell);  // for the mandatory
-	// print_cmd(shell->cmd_list); // for the mandatory
-	// if (shell->cmd_list == NULL)
-	// 	error(parser);
-	// shell->token = NULL;
+
 	return (PARSING_OK);
 
 }
