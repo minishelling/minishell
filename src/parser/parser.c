@@ -171,7 +171,11 @@ int	parse(t_shell *shell)
 	// 	print_tree(shell->tree, 0);
 	if (shell->tree)
 		print_tree_with_cmds(shell->tree, 0);
+		
 	//free_token_list(&shell->token); seems to be unnecessary??
+	
+	int exit_code = ping_lisandro(shell, shell->tree, NULL);
+	printf ("final exit code id %d\n", exit_code);
 
 	return (PARSING_OK);
 
