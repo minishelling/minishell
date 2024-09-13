@@ -6,7 +6,7 @@ void	ft_print_2d_arr(char **arr)
 
 	if (!arr || !*arr)
 	{
-		// ft_putstr_fd((char *) get_error_msg(ERR_NULL), STDERR_FILENO);
+		// ft_putstr_fd((char *) get_error_msg(NULL_ERROR), STDERR_FILENO);
 		return ;
 	}
 	i = 0;
@@ -24,7 +24,7 @@ void	ft_print_3d_arr(char ***arr)
 
 	if (!arr || !*arr)
 	{
-		// ft_putstr_fd((char *) get_error_msg(ERR_NULL), STDERR_FILENO);
+		// ft_putstr_fd((char *) get_error_msg(NULL_ERROR), STDERR_FILENO);
 		return ;
 	}
 	i = 0;

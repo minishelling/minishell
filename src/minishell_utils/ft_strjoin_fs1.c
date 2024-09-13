@@ -30,24 +30,24 @@
 // 	return (ft_free((void **) &s1), dst);
 // }
 
-char	*ft_strjoin_fs1(char *s1, char const *s2)
+char	*ft_strjoin_fs1(char **s1, char const *s2)
 {
 	char	*dst;
 	size_t	ls1;
 	size_t	ls2;
 
-	if (!s1)
+	if (!*s1)
 		return (NULL);
 	if (!s2)
-		return (s1);
-	ls1 = ft_strlen(s1);
+		return (*s1);
+	ls1 = ft_strlen(*s1);
 	ls2 = ft_strlen(s2);
 	dst = malloc(sizeof(char) * (ls1 + ls2 + 1));
 	if (!dst)
-		return (free(s1), NULL);
-	ft_strlcpy(dst, s1, (ls1 + 1));
+		return (ft_free((void **) s1), NULL);
+	ft_strlcpy(dst, *s1, (ls1 + 1));
 	ft_strlcat(dst, s2, (ls1 + ls2 + 1));
-	free(s1);
+	ft_free((void **) s1);
 	return (dst);
 }
 

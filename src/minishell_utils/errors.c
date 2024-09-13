@@ -6,7 +6,7 @@
 /*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/07/03 15:44:25 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/07/03 15:52:42 by lprieri       ########   odam.nl         */
+/*   Updated: 2024/09/13 15:12:33 by lprieri       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ static void	init_error_msgs_1(char **e_msg);
 
 const char	*get_error_msg(int e_nbr)
 {
-	static const char	*e_msg[ERR_COUNT];
+	static const char	*e_msg[COUNT_ERROR];
 	static int			is_initialized = 0;
 
 	if (!is_initialized)
@@ -33,6 +33,6 @@ const char	*get_error_msg(int e_nbr)
 
 static void	init_error_msgs_1(char **e_msg)
 {
-	e_msg[ERR_SUCCESS] = "Success.\n";
-	e_msg[ERR_NULL] = "Error\nTrying to access a NULL pointer.\n";
+	e_msg[SUCCESS] = "Success.\n";
+	e_msg[NULL_ERROR] = "Error\nTrying to access a NULL pointer.\n";
 }

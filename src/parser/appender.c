@@ -47,7 +47,7 @@ bool	join_word_tokens(t_shell *shell)
 	{
 		if (is_word(previous_token) && is_word(current_token))
 		{
-			previous_token->str = ft_strjoin_fs1(previous_token->str, current_token->str);
+			previous_token->str = ft_strjoin_fs1(&previous_token->str, current_token->str);
 			if (previous_token->str == NULL)
 				return (false);
 			current_token = free_token_str(current_token);

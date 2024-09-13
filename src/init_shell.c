@@ -126,19 +126,19 @@
 // }
 
 
-// t_env_ecode	env_copy_keyval(t_env **new_node, char *keyvalue)
+// t_ecode	env_copy_keyval(t_env **new_node, char *keyvalue)
 // {
 // 	(*new_node)->keyvalue = ft_strdup(keyvalue);
 // 	if (!(*new_node)->keyvalue)
-// 		return (ENV_GETKEYVALUE_ERROR);
+// 		return (MALLOC_ERROR);
 // 	(*new_node)->key = env_get_key((*new_node)->keyvalue);
 // 	if (!(*new_node)->key)
-// 		return (ENV_GETKEY_ERROR);
+// 		return (MALLOC_ERROR);
 // 	(*new_node)->value = env_get_value((*new_node)->keyvalue);
 // 	if (!(*new_node)->value)
-// 		return (ENV_GETVALUE_ERROR);
+// 		return (MALLOC_ERROR);
 // 	(*new_node)->next = NULL;
-// 	return (ENV_SUCCESS);
+// 	return (SUCCESS);
 // }
 
 // t_env	*env_new_node(void)
@@ -166,37 +166,37 @@
 // 	return (i);
 // }
 
-// static t_env	*env_new_copied_node(char *keyvalue, t_env_ecode *status)
+// static t_env	*env_new_copied_node(char *keyvalue, t_ecode *status)
 // {
 // 	t_env	*new_node;
 
-// 	*status = ENV_SUCCESS;
+// 	*status = SUCCESS;
 // 	new_node = env_new_node();
 // 	if (!new_node)
 // 	{
-// 		*status = ENV_NEW_NODE_ERROR;
+// 		*status = NEW_NODE_ERROR;
 // 		return (NULL);
 // 	}
 // 	*status = env_copy_keyval(&new_node, keyvalue);
-// 	if (*status != ENV_SUCCESS)
+// 	if (*status != SUCCESS)
 // 		return (NULL);
 // 	return (new_node);
 // }
 
-// t_env_ecode	env_init_list(t_env **head, char **envp)
+// t_ecode	env_init_list(t_env **head, char **envp)
 // {
 // 	t_env		*current;
 // 	t_env		*new_node;
-// 	t_env_ecode	status;	
+// 	t_ecode	status;	
 // 	size_t		i;
 
 // 	if (!envp || !*envp)
-// 		return (ENV_NULL);
+// 		return (NULL_ERROR);
 // 	i = 0;
 // 	while (envp[i])
 // 	{
 // 		new_node = env_new_copied_node(envp[i], &status);
-// 		if (status != ENV_SUCCESS)
+// 		if (status != SUCCESS)
 // 			return (status);
 // 		if (!*head)
 // 		{
