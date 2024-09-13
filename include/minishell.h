@@ -1,5 +1,5 @@
 #ifndef MINISHELL_H
-#define MINISHELL_H
+# define MINISHELL_H
 
 # include <unistd.h>
 # include <stdio.h>
@@ -16,8 +16,6 @@
 # include <string.h>
 # include <stddef.h>
 # include "../libft/libft.h"
-# include "builtins.h"
-# include "env.h"
 # include "errors.h"
 # include "free.h"
 # include "utils.h"
@@ -39,6 +37,26 @@
 # define READ_END 0
 # define WRITE_END 1
 
+typedef enum e_codes
+{
+	SUCCESS = 0,
+	FAILURE,
+	PROCEED,
+	NULL_ERROR,
+	COUNT_ERROR,
+	CWD_ERROR,
+	MALLOC_ERROR,
+	HOME_ERROR,
+	ACCESS_ERROR,
+	CHDIR_ERROR,
+	CDPATH_ERROR,
+	CDPATH_NULL,
+	ENV_ERROR,
+	NEW_NODE_ERROR,
+	NULL_STRING,
+	NULL_ARRAY,
+	COUNT
+}	t_ecode;
 
 enum e_parsing_error
 {
@@ -82,6 +100,13 @@ typedef enum e_redir_id
 	APP
 }	t_redir_id;
 
+typedef struct s_curpath
+{
+	char				*dir;
+	struct s_curpath	*previous;
+	struct s_curpath	*next;
+}	t_curpath;
+
 typedef struct s_redir
 {
 	t_redir_id		redir;
@@ -111,6 +136,14 @@ typedef struct s_env_list
 	bool				has_value;
 	struct s_env_list	*next;
 }				t_env_list;
+
+typedef struct s_env
+{
+	char			*keyvalue;
+	char			*key;
+	char			*value;
+	struct s_env	*next;
+}	t_env;
 
 typedef enum e_tree_type
 {
@@ -217,7 +250,6 @@ void	print_token(t_token *head);
 void	print_cmd(t_cmd *cmd_list_head);
 void	handle_error(t_shell *shell, int err_no, void *param);
 
-char	*ft_strjoin_fs1(char *s1, const char *s2);
 t_token	*get_after_word_token(t_token *token);
 
 t_token *find_last_log_op_token_nip(t_token *token_head, t_token *end_token);
@@ -227,6 +259,32 @@ void remove_space_tokens(t_token **head);
 t_token *remove_token(t_token *start_token, t_token *token_to_remove);
 void free_tree(t_tree *node);
 t_token *remove_subshell_parens(t_token **head);
+
+
+//ENV - Lisandro
+void	env_free_list(t_env	**head);
+t_ecode	env_init_list(t_env **head, char **envp);
+void	env_print_list(t_env *head);
+ssize_t	env_count_keys(char **envp);
+t_env	*env_new_node(void);
+char	*env_get_key(char *keyvalue);
+char	*env_get_value(char *keyvalue);
+t_ecode	env_copy_keyval(t_env **new_node, char *keyvalue);
+char	**env_create_array(t_env *env);
+t_env	*env_find_node(t_env *env, char *key);
+size_t	env_count_values(t_env *env, char *key);
+t_ecode	env_update_keyvalue(t_env *node);
+t_ecode env_update_key(t_env *node, char *key);
+t_ecode	env_update_value(t_env *node, char *value);
+t_ecode	env_update_node(t_env *head, char *key, char *value, bool create_node);
+
+t_ecode	update_pwd(t_env *pwd_node);
+t_ecode	update_oldpwd(t_env	*oldpwd_node, char *cwd);
+
+// UTILS
+
+char	*ft_strjoin_fs1(char **s1, const char *s2);
+char	*ft_strjoin_fs2(const char *s1, char **s2);
 
 //FREE
 
@@ -257,6 +315,47 @@ void	execute_cmd_list(t_shell *shell);
 
 
 //BUILTINS
+
+//	CD
+
+t_ecode	builtin_cd(t_shell **shell, char *directory);
+t_ecode	chdir_home(t_env *env_head, char **cwd);
+t_ecode	chdir_cdpath(t_shell **shell, char *directory);
+t_ecode	append_suffix(char **str, char *suffix, bool duplicate);
+
+t_ecode	chdir_cwd(char *directory, int *null_flag);
+t_ecode chdir_cdpath_value(char **curpath, char *directory);
+t_ecode	loop_cdpath_values(char ***values, char *directory);
+
+
+
+//	CURPATH
+
+t_curpath	*curpath_new_node(char *dir, t_curpath *previous, t_curpath *next);
+void		curpath_del_node(t_curpath **node);
+void		curpath_del_list(t_curpath **head);
+t_curpath	*curpath_get_last(t_curpath *head);
+void		curpath_add_back(t_curpath **head, t_curpath *new);
+t_ecode	curpath_create_and_add_back(t_curpath **head, char ***dirs, char *dir);
+void		curpath_del_last(t_curpath **head);
+char		*curpath_concat(t_curpath *head);
+void		curpath_print(t_curpath *head);
+int			curpath_check_access(char *curpath);
+int			curpath_check_access_and_chdir(char *curpath);
+t_ecode		curpath_prepare(char **curpath, char *directory, char *cwd);
+t_ecode		curpath_trim(char *directory, char **curpath);
+t_ecode		init_curpath_dirs(char **curpath, char ***dirs, t_curpath **final_dirs);
+t_ecode		parse_curpath_dirs(t_curpath **final_dirs, char ***dirs);
+t_ecode		remove_previous_dir(t_curpath **final_dirs, char ***dirs, int *i);
+t_ecode		check_access_and_add_back(t_curpath **final_dirs, char ***dirs, int *i);
+
+
+bool		is_dir_prefix_valid(char *directory);
+
+// ERROR
+
+const char	*get_error_msg(int e_nbr);
+
 int echo_builtin(t_cmd *cmd);
 
 #endif

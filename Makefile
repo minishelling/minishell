@@ -8,9 +8,7 @@ LIBFT = $(LIBFT_DIR)/libft.a
 
 INCLUDE_DIR = include
 
-HEADER_FILES = $(INCLUDE_DIR)/env.h \
-			   $(INCLUDE_DIR)/errors.h \
-			   $(INCLUDE_DIR)/minishell.h
+HEADER_FILES = $(INCLUDE_DIR)/minishell.h
 
 SRC_DIR		= src
 SRCS_FILES	= $(shell find $(SRC_DIR) -iname "*.c")
