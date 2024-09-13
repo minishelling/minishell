@@ -1,4 +1,3 @@
-#include "../../../include/builtins.h"
 #include "../../../include/minishell.h"
 
 typedef enum flags
@@ -80,7 +79,7 @@ t_ecode	loop_cdpath_values(char ***values, char *directory)
 		}
 		else
 			return (ft_free((void **) &curpath),
-				ft_free((void ***) values), flag[STATUS_FLAG]);
+				ft_free_2d((void ***) &values), flag[STATUS_FLAG]);
 	}
-	return (ft_free((void ***) values), PROCEED);
+	return (ft_free_2d((void ***) &values), PROCEED);
 }

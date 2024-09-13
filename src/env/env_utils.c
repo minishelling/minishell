@@ -1,6 +1,4 @@
-
 #include "../../include/minishell.h"
-#include "../../include/env.h"
 
 ssize_t	env_count_keys(char **envp)
 {
@@ -100,19 +98,19 @@ char	*env_get_value(char *keyvalue)
 	return (value);
 }
 
-t_env_ecode	env_copy_keyval(t_env **new_node, char *keyvalue)
+t_ecode	env_copy_keyval(t_env **new_node, char *keyvalue)
 {
 	(*new_node)->keyvalue = ft_strdup(keyvalue);
 	if (!(*new_node)->keyvalue)
-		return (ENV_GETKEYVALUE_ERROR);
+		return (MALLOC_ERROR);
 	(*new_node)->key = env_get_key((*new_node)->keyvalue);
 	if (!(*new_node)->key)
-		return (ENV_GETKEY_ERROR);
+		return (MALLOC_ERROR);
 	(*new_node)->value = env_get_value((*new_node)->keyvalue);
 	if (!(*new_node)->value)
-		return (ENV_GETVALUE_ERROR);
+		return (MALLOC_ERROR);
 	(*new_node)->next = NULL;
-	return (ENV_SUCCESS);
+	return (SUCCESS);
 }
 
 t_env	*env_find_node(t_env *env, char *key)
@@ -133,8 +131,8 @@ t_env	*env_find_node(t_env *env, char *key)
 		}
 		return (node);
 	}
-
-
+	return (NULL);
+}
 t_ecode	update_pwd(t_env *pwd_node)
 {
 	if (!pwd_node)
@@ -151,23 +149,21 @@ t_ecode	update_pwd(t_env *pwd_node)
 	return (SUCCESS);
 }
 
-t_ecode	update_oldpwd(t_env	*oldpwd_node, char *cwd)
-{
-	if (!pwd_node)
-	{
-		pwd_node = env_new_populated_node("PWD", getcwd(NULL, PATH_MAX));
-		if (!pwd_node)
-			return (MALLOC_ERROR);
-	}
-	else
-	{
-		if (env_update_value(pwd_node, getcwd(NULL, PATH_MAX)))
-			return (MALLOC_ERROR);
-	}
-	return (SUCCESS);
-}
-	return (NULL);
-}
+// t_ecode	update_oldpwd(t_env	*oldpwd_node, char *cwd)
+// {
+// 	if (!oldpwd_node)
+// 	{
+// 		oldpwd_node = env_new_populated_node("PWD", getcwd(NULL, PATH_MAX));
+// 		if (!pwd_node)
+// 			return (MALLOC_ERROR);
+// 	}
+// 	else
+// 	{
+// 		if (env_update_value(pwd_node, getcwd(NULL, PATH_MAX)))
+// 			return (MALLOC_ERROR);
+// 	}
+// 	return (SUCCESS);
+// }
 
 size_t	env_count_values(t_env *env, char *key)
 {
@@ -177,7 +173,7 @@ size_t	env_count_values(t_env *env, char *key)
 
 	node = env_find_node(env, key);
 	if (!node)
-		return (CD_NO_ENV_NODE);
+		return (ENV_ERROR);
 	values = ft_split(node->value, ':');
 	if (!values)
 		return (-1); //The CD_MALLOC enum should be negative
@@ -192,7 +188,7 @@ t_ecode	env_update_keyvalue(t_env *node)
 	char	*temp;
 
 	if (!node)
-		return (NULL_NODE);
+		return (NULL_ERROR);
 	temp = ft_strdup(node->key);
 	if (!temp)
 		return (MALLOC_ERROR);
@@ -214,7 +210,7 @@ t_ecode	env_update_keyvalue(t_env *node)
 t_ecode env_update_key(t_env *node, char *key)
 {
 	if (!node)
-		return (NULL_NODE);
+		return (NULL_ERROR);
 	if (node->key)
 		ft_free((void **) node->key);
 	if (!key)
@@ -233,7 +229,7 @@ t_ecode env_update_key(t_env *node, char *key)
 t_ecode	env_update_value(t_env *node, char *value)
 {
 	if (!node)
-		return (NULL_NODE);
+		return (NULL_ERROR);
 	if (node->value)
 		ft_free((void **) node->value);
 	if (!value)
@@ -255,7 +251,7 @@ t_ecode	env_update_node(t_env *head, char *key, char *value, bool create_node)
 
 	node = env_find_node(head, key);
 	if (!node && create_node == false)
-		return (NULL_NODE);
+		return (NULL_ERROR);
 	else if (!node && create_node == true) // I would also have to add it to the list.
 	{
 		node = env_new_populated_node(key, value);

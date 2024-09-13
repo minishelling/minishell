@@ -1,4 +1,4 @@
-#include "../../../include/builtins.h"
+#include "../../../include/minishell.h"
 
 bool	is_dir_prefix_valid(char *directory)
 {

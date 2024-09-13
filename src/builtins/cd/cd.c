@@ -1,17 +1,16 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        ::::::::            */
-/*   cd.c                                               :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/07/31 12:47:36 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/07/31 12:47:36 by lprieri       ########   odam.nl         */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "../../../include/builtins.h"
 #include "../../../include/minishell.h"
+
+t_ecode	chdir_curpath(t_shell **shell, char **curpath, char **cwd)
+{
+	int	status;
+
+	(void) shell;
+	status = chdir(*curpath);
+	ft_free((void **) curpath);
+	ft_free((void **) cwd);
+	printf("chdir status: %d\n", status);
+	return (0);
+}
 
 t_ecode	builtin_cd(t_shell **shell, char *directory)
 {
@@ -23,7 +22,7 @@ t_ecode	builtin_cd(t_shell **shell, char *directory)
 	if (!cwd)
 		return (CWD_ERROR);
 	if (!directory)
-		return (chdir_home((*shell)->env, &cwd));
+		return (chdir_home((*shell)->env_list, &cwd));
 	else if (is_dir_prefix_valid(directory))
 	{
 		status = chdir_cdpath(shell, directory);
@@ -68,7 +67,7 @@ t_ecode	chdir_cdpath(t_shell **shell, char *directory)
 	char	**values;
 	t_ecode	status;
 
-	cdpath_node = env_find_node((*shell)->env, "CDPATH");
+	cdpath_node = env_find_node((*shell)->env_list, "CDPATH");
 	if (!cdpath_node || !cdpath_node->value)
 		return (CDPATH_NULL);
 	values = ft_split(cdpath_node->value, ':');

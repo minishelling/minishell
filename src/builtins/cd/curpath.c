@@ -1,16 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        ::::::::            */
-/*   curpath.c                                          :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/07/23 12:54:11 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/08/21 00:11:17 by lisandro      ########   odam.nl         */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "../../../include/builtins.h"
 #include "../../../include/minishell.h"
 
 t_curpath	*curpath_new_node(char *dir, t_curpath *previous, t_curpath *next)
@@ -87,7 +74,7 @@ void	curpath_add_back(t_curpath **head, t_curpath *new)
 	}
 }
 
-t_cd_ecode	curpath_create_and_add_back(t_curpath **head, char ***dirs, char *dir)
+t_ecode	curpath_create_and_add_back(t_curpath **head, char ***dirs, char *dir)
 {
 	t_curpath	*new;
 
@@ -96,10 +83,10 @@ t_cd_ecode	curpath_create_and_add_back(t_curpath **head, char ***dirs, char *dir
 	{
 		ft_free_2d((void ***) dirs);
 		curpath_del_list(head);
-		return (CD_NO_ENV_NODE);
+		return (ENV_ERROR);
 	}
 	curpath_add_back(head, new);
-	return (CD_SUCCESS);
+	return (SUCCESS);
 }
 
 void	curpath_del_last(t_curpath **head)
@@ -189,11 +176,11 @@ int	curpath_check_access_and_chdir(char *curpath)
 
 	e_status = curpath_check_access(curpath);
 	if (e_status)
-		return (CD_NO_ACCESS);
+		return (ACCESS_ERROR);
 	e_status = chdir(curpath);
 	if (e_status)
-		return (CD_CHDIR_ERROR);
-	return (CD_CHDIR_SUCCESS);
+		return (CHDIR_ERROR);
+	return (SUCCESS);
 }
 
 t_ecode	curpath_prepare(char **curpath, char *directory, char *cwd)
@@ -219,6 +206,7 @@ t_ecode	curpath_trim(char *directory, char **curpath) //Is this the format of th
 	char 		**dirs;
 	t_ecode		status;
 
+	(void) directory; //Unused variable??
 	status = init_curpath_dirs(curpath, &dirs, &final_dirs);
 	if (status != SUCCESS)
 		return (status);
@@ -234,10 +222,10 @@ t_ecode	init_curpath_dirs(char **curpath, char ***dirs, t_curpath **final_dirs)
 {
 	t_ecode	status;
 	
-	*dirs = ft_split(*curpath, "/");
+	*dirs = ft_split(*curpath, '/');
 	if (!dirs)
 		return (NULL_ARRAY);
-	if (*curpath[0] == "/")
+	if (*curpath[0] == '/')
 	{
 		status = curpath_create_and_add_back(final_dirs, dirs, "/");
 		if (status)
@@ -255,12 +243,12 @@ t_ecode	parse_curpath_dirs(t_curpath **final_dirs, char ***dirs)
 	i = 0;
 	while ((*dirs)[i])
 	{
-		if ((*dirs)[i][0] == '.' && (*dirs)[i][1] == '/0')
+		if ((*dirs)[i][0] == '.' && (*dirs)[i][1] == '\0')
 		{
 			i++;
 			continue ;
 		}
-		else if ((*dirs)[i][0] == '.' && (*dirs)[i][1] == '.' && (*dirs)[i][2] == '/0')
+		else if ((*dirs)[i][0] == '.' && (*dirs)[i][1] == '.' && (*dirs)[i][2] == '\0')
 		{
 			status = remove_previous_dir(final_dirs, dirs, &i);
 			if (status)
@@ -269,6 +257,7 @@ t_ecode	parse_curpath_dirs(t_curpath **final_dirs, char ***dirs)
 		}
 		status = check_access_and_add_back(final_dirs, dirs, &i);
 	}
+	return (status);
 }
 
 t_ecode	remove_previous_dir(t_curpath **final_dirs, char ***dirs, int *i)
@@ -287,7 +276,7 @@ t_ecode	remove_previous_dir(t_curpath **final_dirs, char ***dirs, int *i)
 		return (status);
 	}
 	curpath_del_last(final_dirs);
-	*i++;
+	*i += 1;
 	return (SUCCESS);
 }
 
@@ -297,7 +286,7 @@ t_ecode	check_access_and_add_back(t_curpath **final_dirs, char ***dirs, int *i)
 	t_ecode	status;
 	
 	curpath = curpath_concat(*final_dirs);
-	status = curpath_check_access(*curpath);
+	status = curpath_check_access(curpath);
 	ft_free((void **) &curpath);
 	if (status)
 	{
@@ -318,7 +307,7 @@ t_ecode	check_access_and_add_back(t_curpath **final_dirs, char ***dirs, int *i)
 		if (status)
 			return (status);
 	}
-	*i++;
+	*i += 1;
 	return (SUCCESS);
 }
 
