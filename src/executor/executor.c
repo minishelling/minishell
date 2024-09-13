@@ -1,6 +1,6 @@
 #include "../../include/minishell.h"
 
-static void	run_child_single_command(t_shell *shell, t_cmd *cmd);
+// static void	run_child_single_command(t_shell *shell, t_cmd *cmd);
 
 void	executor(t_shell *shell)
 {
@@ -132,17 +132,17 @@ void	do_parent_duties(t_shell *shell, t_cmd **curr_cmd, size_t cmds_count, size_
 	*curr_cmd = (*curr_cmd)->next;
 }
 
-static void	run_child_single_command(t_shell *shell, t_cmd *cmd)
-{
-	char	*cmd_path;
-	char	**env_array;
+// static void	run_child_single_command(t_shell *shell, t_cmd *cmd)
+// {
+// 	char	*cmd_path;
+// 	char	**env_array;
 
-	// handle_redirections(shell, cmd);
-	cmd_path = get_cmd_path(shell, shell->cmd_list->args[0]);
-	env_array = env_create_array(shell->env_list);
-	execve(cmd_path, cmd->args, env_array);
+// 	// handle_redirections(shell, cmd);
+// 	cmd_path = get_cmd_path(shell, shell->cmd_list->args[0]);
+// 	env_array = env_create_array(shell->env_list);
+// 	execve(cmd_path, cmd->args, env_array);
 
-}
+// }
 
 // void	handle_redirections(t_shell *shell, t_cmd *cmd)
 // {
