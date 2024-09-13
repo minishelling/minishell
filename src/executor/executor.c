@@ -2,28 +2,17 @@
 
 // static void	run_child_single_command(t_shell *shell, t_cmd *cmd);
 
-void	executor(t_shell *shell)
+int	executor(t_shell *shell, t_cmd *cmds_list)
 {
-	// int		status;
-	// pid_t	pid;
+	int	status;
 
-	
-	// printf("In executor\n");
-	// pid = fork();
-	// if (pid == -1)
-	// 	return ;
-	// if (pid == 0)
-	// execute_single_command(shell, shell->cmd_list);
-	if (!shell->cmd_list || !shell->cmd_list->args)
-		printf("In executor: Cmd list is null\n");
-
-	execute_cmd_list(shell);
-	// status = execve(cmd_path, shell->cmd_list->args, env_array);
-	// perror("Errno: ");
-	// printf("Status: %d\n", status);
-
-	
-	// ft_print_2d_arr(env_array);
+	// if (!ft_strncmp(shell->cmd_list->args[0], "cd", 2))
+	// {
+	// 	printf("Executing cd\n");
+	// 	builtin_cd(&shell, shell->cmd_list->args[1]);
+	// }
+	status = execute_cmd_list(shell, cmds_list);
+	return (status);
 }
 
 
@@ -53,14 +42,12 @@ static size_t	count_cmds(t_cmd *head)
 	return (count);
 }
 
-void	execute_cmd_list(t_shell *shell)
+int	execute_cmd_list(t_shell *shell, t_cmd *cmds_list)
 {
-	t_cmd	*cmds_head;
 	size_t	cmds_count;
 	size_t	i;
 
-	cmds_head = shell->cmd_list;
-	cmds_count = count_cmds(cmds_head);
+	cmds_count = count_cmds(cmds_list);
 	// printf("cmds_count in execute_cmd_list: %ld\n", cmds_count);
 	i = 0;
 	while (i < cmds_count)
@@ -71,24 +58,22 @@ void	execute_cmd_list(t_shell *shell)
 		{
 			shell->status = pipe(shell->pipefd);
 			if (shell->status == -1)
-				return ;
+				return (1);
 		}
 
 		//New process
 		shell->parent = fork();
 		if (shell->parent == -1)
-			return ;
+			return (1);
 		else if (!shell->parent)
 		{
 			// printf("Does it run the child\n");
-			run_child(shell, cmds_head, cmds_count, i);
+			run_child(shell, cmds_list, cmds_count, i);
 		}
-		do_parent_duties(shell, &cmds_head, cmds_count, i);
+		do_parent_duties(shell, &cmds_list, cmds_count, i);
 		i++;
 	}
-	// waitpid(shell->parent, &shell->status, 0);
-	// while (wait(NULL) != -1)
-	// 	;
+	return (0);
 }
 
 void	run_child(t_shell *shell, t_cmd *cmds_head, size_t cmds_count, size_t current_child)

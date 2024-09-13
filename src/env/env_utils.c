@@ -199,9 +199,9 @@ t_ecode	env_update_keyvalue(t_env *node)
 	if (!temp)
 		return (MALLOC_ERROR);
 	if (node->keyvalue)
-		ft_free((void **)node->keyvalue);
+		ft_free((void **) &node->keyvalue);
 	node->keyvalue = ft_strdup(temp);
-	ft_free((void **) temp);
+	ft_free((void **) &temp);
 	if (!node->keyvalue)
 		return (MALLOC_ERROR);
 	return (SUCCESS);
@@ -230,8 +230,8 @@ t_ecode	env_update_value(t_env *node, char *value)
 {
 	if (!node)
 		return (NULL_ERROR);
-	if (node->value)
-		ft_free((void **) node->value);
+	if (node && node->value)
+		ft_free((void **) &node->value);
 	if (!value)
 		node->value = NULL;
 	else
@@ -245,6 +245,7 @@ t_ecode	env_update_value(t_env *node, char *value)
 	return (SUCCESS);
 }
 
+//create_node creates the node if it doesn't exist.
 t_ecode	env_update_node(t_env *head, char *key, char *value, bool create_node)
 {
 	t_env	*node;
