@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/utils.h"
+#include "../../include/minishell.h"
 
 char	*ft_strjoin_fs2(const char *s1, char **s2)
 {

@@ -16,9 +16,6 @@
 # include <string.h>
 # include <stddef.h>
 # include "../libft/libft.h"
-# include "errors.h"
-# include "free.h"
-# include "utils.h"
 
 //# define MINISHARED_PROMPT "\001\033[1;32m\002Mini_shared<🤜 🤛> \001\033[0m\002"
 #define MINISHARED_PROMPT "\001\033[38;5;196m\002M\001\033[38;5;202m\002i\001\033[38;5;208m\002n\001\033[38;5;214m\002i\001\033[38;5;220m\002_\001\033[38;5;226m\002s\001\033[38;5;190m\002h\001\033[38;5;154m\002a\001\033[38;5;118m\002r\001\033[38;5;82m\002e\001\033[38;5;120m\002d\001\033[0m\002<🤜 🤛> \001\033[0m\002"
