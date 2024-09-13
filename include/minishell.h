@@ -274,6 +274,7 @@ t_ecode	env_update_keyvalue(t_env *node);
 t_ecode env_update_key(t_env *node, char *key);
 t_ecode	env_update_value(t_env *node, char *value);
 t_ecode	env_update_node(t_env *head, char *key, char *value, bool create_node);
+void	env_print_node(t_env *node);
 
 t_ecode	update_pwd(t_env *pwd_node);
 t_ecode	update_oldpwd(t_env	*oldpwd_node, char *cwd);
@@ -297,7 +298,7 @@ void	ft_print_3d_arr(char ***arr);
 
 /* EXECUTOR */
 
-void	executor(t_shell *shell);
+int	executor(t_shell *shell, t_cmd *cmds_list);
 
 //EXECUTOR UTILS
 
@@ -308,7 +309,7 @@ void	handle_redirections(t_shell *shell, t_cmd *cmd);
 void 	run_child(t_shell *shell, t_cmd *cmd_head, size_t cmds_count, size_t current_child);
 void	do_parent_duties(t_shell *shell, t_cmd **curr_cmd, size_t cmds_count, size_t current_child);
 void	execute_single_command(t_shell *shell, t_cmd *cmd);
-void	execute_cmd_list(t_shell *shell);
+int		execute_cmd_list(t_shell *shell, t_cmd *cmds_list);
 
 
 //BUILTINS
@@ -340,7 +341,7 @@ void		curpath_print(t_curpath *head);
 int			curpath_check_access(char *curpath);
 int			curpath_check_access_and_chdir(char *curpath);
 t_ecode		curpath_prepare(char **curpath, char *directory, char *cwd);
-t_ecode		curpath_trim(char *directory, char **curpath);
+t_ecode		curpath_trim(char **curpath);
 t_ecode		init_curpath_dirs(char **curpath, char ***dirs, t_curpath **final_dirs);
 t_ecode		parse_curpath_dirs(t_curpath **final_dirs, char ***dirs);
 t_ecode		remove_previous_dir(t_curpath **final_dirs, char ***dirs, int *i);

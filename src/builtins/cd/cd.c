@@ -31,9 +31,11 @@ t_ecode	builtin_cd(t_shell **shell, char *directory)
 		else if (status == MALLOC_ERROR)
 			return (FAILURE); //And free everything... Rather 'exit' than return.
 	}
-	status = curpath_trim(directory, &curpath);
+	// curpath = ft_strjoin(cwd, directory);
+	status = curpath_trim(&curpath); // I think I have to append cwd to curpath, otherwise .. doesn't work.
 	if (status)
 		return (status); //Free everything.
+	printf("Curpath in builtin_cd: %s\n", curpath);
 	return (chdir_curpath(shell, &curpath, &cwd));
 }
 

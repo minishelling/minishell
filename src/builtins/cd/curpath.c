@@ -107,9 +107,10 @@ char	*curpath_concat(t_curpath *head)
 {
 	char	*curpath;
 	
-	if (!head)
+	if (!head || !head->dir)
 		return (NULL);
-	if (head->dir && head->dir[0] != '/')
+	printf("head->dir in curpath_concat: %s\n", head->dir);
+	if (head->dir && head->dir[0] && head->dir[0] != '/')
 	{
 		curpath = ft_strdup("/");
 		if (!curpath)
@@ -200,13 +201,12 @@ t_ecode	curpath_prepare(char **curpath, char *directory, char *cwd)
 		return (SUCCESS);
 }
 
-t_ecode	curpath_trim(char *directory, char **curpath) //Is this the format of the old version or the new?
+t_ecode	curpath_trim(char **curpath) //Is this the format of the old version or the new?
 {
 	t_curpath	*final_dirs;
 	char 		**dirs;
 	t_ecode		status;
 
-	(void) directory; //Unused variable??
 	status = init_curpath_dirs(curpath, &dirs, &final_dirs);
 	if (status != SUCCESS)
 		return (status);
@@ -218,10 +218,16 @@ t_ecode	curpath_trim(char *directory, char **curpath) //Is this the format of th
 	return (SUCCESS);
 }
 
+//Fix the segfault here.
 t_ecode	init_curpath_dirs(char **curpath, char ***dirs, t_curpath **final_dirs)
 {
 	t_ecode	status;
 	
+	if (*curpath && !ft_strchr(*curpath, '/'))
+	{
+		printf("In init_curpath_dirs, curpath is: %s and returning success\n", *curpath);
+		return (SUCCESS);
+	}
 	*dirs = ft_split(*curpath, '/');
 	if (!dirs)
 		return (NULL_ARRAY);
@@ -241,6 +247,7 @@ t_ecode	parse_curpath_dirs(t_curpath **final_dirs, char ***dirs)
 	t_ecode	status;
 
 	i = 0;
+	status = SUCCESS;
 	while ((*dirs)[i])
 	{
 		if ((*dirs)[i][0] == '.' && (*dirs)[i][1] == '\0')
@@ -285,6 +292,8 @@ t_ecode	check_access_and_add_back(t_curpath **final_dirs, char ***dirs, int *i)
 	char	*curpath;
 	t_ecode	status;
 	
+	// curpath = NULL;
+	// if (final_dirs && *final_dirs && (*final_dirs)->dir)
 	curpath = curpath_concat(*final_dirs);
 	status = curpath_check_access(curpath);
 	ft_free((void **) &curpath);
