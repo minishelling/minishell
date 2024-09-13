@@ -273,7 +273,7 @@ t_tree *make_tree(t_shell *shell, t_token *start_token, t_token *end_token)
 	{
 		// Create a leaf node that groups all tokens from start_token to end_token
 		// printf("Creating CMD node from %s to %s\n", start_token->str, end_token->str);
-		return init_leaf_node(start_token, end_token);
+		return init_leaf_node(shell, start_token, end_token);
 	}
 
 	// If a logical operator is found, create a subtree

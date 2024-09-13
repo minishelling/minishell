@@ -1,31 +1,31 @@
 
 #include "../../include/minishell.h"
 
-int lisandro_execute(t_shell *shell, t_cmd *cmd_list) 
-{
-    int i;
-    t_cmd *cmd = cmd_list;
+// int lisandro_execute(t_shell *shell, t_cmd *cmd_list) 
+// {
+//     int i;
+//     t_cmd *cmd = cmd_list;
 
-    (void)shell;
-    // Traverse the linked list of commands and print each command
-    while (cmd != NULL) 
-    {
-        if (cmd->args)
-            {
-                printf("Executing command: ");
-                i = 0;
-                while (cmd->args[i] != NULL)
-                {
-                    if (i > 0) printf(" ");
-                    printf("%s", cmd->args[i]);
-                    i++;
-                }
-                printf("\n");
-            }
-        cmd = cmd->next;
-    }
-    return 1;
-}
+//     (void)shell;
+//     // Traverse the linked list of commands and print each command
+//     while (cmd != NULL) 
+//     {
+//         if (cmd->args)
+//             {
+//                 printf("Executing command: ");
+//                 i = 0;
+//                 while (cmd->args[i] != NULL)
+//                 {
+//                     if (i > 0) printf(" ");
+//                     printf("%s", cmd->args[i]);
+//                     i++;
+//                 }
+//                 printf("\n");
+//             }
+//         cmd = cmd->next;
+//     }
+//     return 1;
+// }
 
 int ping_lisandro(t_shell *shell, t_tree *node, t_tree *parent_node) 
 {
@@ -47,7 +47,7 @@ int ping_lisandro(t_shell *shell, t_tree *node, t_tree *parent_node)
         //printf ("node is %s\n", node->cmd_list.args[0]);
         if (node->left)
             printf ("node->left is %s\n", node->left->cmd_list.args[0]);
-        exit_code = lisandro_execute(shell, &(node->cmd_list));
+        exit_code = executor(shell, &(node->cmd_list));
         // printf ("exit code is %d\n", exit_code);
         // if (parent_node)
         //     printf ("parent_node_type is %d (and = 0, or = 1)\n", parent_node->type);
