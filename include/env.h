@@ -13,6 +13,8 @@
 #ifndef ENV_H
 # define ENV_H
 
+# include "minishell.h"
+
 typedef struct s_env
 {
 	char			*keyvalue;
@@ -102,8 +104,48 @@ char	*env_get_value(char *keyvalue);
 */
 t_env_ecode	env_copy_keyval(t_env **new_node, char *keyvalue);
 
-t_env	*env_find_node(t_env *env, char *key);
 char	**env_create_array(t_env *env);
+
+
+/**
+* @brief Finds the environment node that corresponds to the variable being searched.
+*
+* @param env This is the head node of the linked list containing all the environment variables.
+* @param key This is the name of the environment variable.
+* @return Returns the node that corresponds to that variable.
+*/
+t_env	*env_find_node(t_env *env, char *key);
+
+/**
+* @brief
+*
+*/
+size_t	env_count_values(t_env *env, char *key);
+
+/**
+* @brief
+*
+*/
+t_env_ecode	env_update_keyvalue(t_env *node);
+
+/**
+* @brief
+*
+*/
+t_env_ecode env_update_key(t_env *node, char *key);
+
+/**
+* @brief
+*
+*/
+t_env_ecode	env_update_value(t_env *node, char *value);
+
+/**
+* @brief
+*
+*/
+t_env_ecode	env_update_node(t_env *head, char *key, char *value, bool create_node);
+
 
 
 #endif

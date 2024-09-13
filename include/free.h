@@ -1,30 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        ::::::::            */
-/*   ft_free_2d.c                                       :+:    :+:            */
+/*   free.h                                             :+:    :+:            */
 /*                                                     +:+                    */
 /*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
-/*   Created: 2024/07/17 15:44:59 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/09/13 13:30:32 by lprieri       ########   odam.nl         */
+/*   Created: 2024/07/17 15:44:17 by lprieri       #+#    #+#                 */
+/*   Updated: 2024/07/25 18:02:32 by lprieri       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/minishell.h"
+#ifndef FREE_H
+# define FREE_H
 
-void	ft_free_2d(void ***arr)
-{
-	int	i;
+# include "minishell.h"
 
-	if (!arr || !*arr)
-		return ;
-	i = 0;
-	while ((*arr)[i] != NULL)
-	{
-		free((*arr)[i]);
-		i++;
-	}
-	free(*arr);
-	*arr = NULL;
-	return ;
-}
+void	ft_free(void **var);
+void	ft_free_2d(void ***arr);
+void	ft_free_3d(void ****arr);
+
+#endif
