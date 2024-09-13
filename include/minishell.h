@@ -222,4 +222,8 @@ void	do_parent_duties(t_shell *shell, t_cmd **curr_cmd, size_t cmds_count, size_
 void	execute_single_command(t_shell *shell, t_cmd *cmd);
 void	execute_cmd_list(t_shell *shell);
 
+
+//BUILTINS
+int echo_builtin(t_cmd *cmd);
+
 #endif
