@@ -125,9 +125,9 @@ int	syntax(t_shell *shell)
 	current_token = skip_whitespace(shell->token);
 	while (current_token != NULL)
 	{
-		printf ("in syntax, current_token->id is %d\n", current_token->id);
+		// printf ("in syntax, current_token->id is %d\n", current_token->id);
 		status = (func[current_token->id](previous_token, current_token, shell->env_list));
-		printf ("status is %d\n", status);
+		// printf ("status is %d\n", status);
 		if (status)	
 			return (status);
 		previous_token = current_token;

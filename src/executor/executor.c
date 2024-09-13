@@ -14,6 +14,9 @@ void	executor(t_shell *shell)
 	// 	return ;
 	// if (pid == 0)
 	// execute_single_command(shell, shell->cmd_list);
+	if (!shell->cmd_list || !shell->cmd_list->args)
+		printf("In executor: Cmd list is null\n");
+
 	execute_cmd_list(shell);
 	// status = execve(cmd_path, shell->cmd_list->args, env_array);
 	// perror("Errno: ");

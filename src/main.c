@@ -29,7 +29,6 @@ int main(int argc, char **argv, char **envp)
 		if (ft_strncmp(shell.input, "", 1))
 		{
 			add_history(shell.input);
-			add_history(shell.input);
 			status = parse(&shell);
 			executor(&shell);
 			//printf ("status is %d\n", status);

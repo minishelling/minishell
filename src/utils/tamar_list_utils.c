@@ -156,7 +156,7 @@ t_token *remove_subshell_parens(t_token **head)
             current = current->next;
 		
         }
-		printf ("current is %s\n", current->str);
+		// printf ("current is %s\n", current->str);
     }
     return (*head);
 }

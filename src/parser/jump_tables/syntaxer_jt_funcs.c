@@ -8,12 +8,12 @@ int	syntax_id_pipe(t_token *t_prev, t_token *t_cur, t_env *env_list)
 	t_next = get_after_space_token((t_token *) t_cur);
 	if (t_prev == NULL || t_next == NULL)
 		return (ERR_SYNTAX_PIPE);
-	if (t_prev)
-		printf ("t_prev is %s\n", t_prev->str);
-	if (t_cur)
-		printf ("t_cur is %s\n", t_cur->str);
-	if (t_next)
-		printf ("t_next is %s\n", t_next->str);
+	// if (t_prev)
+	// 	printf ("t_prev is %s\n", t_prev->str);
+	// if (t_cur)
+	// 	printf ("t_cur is %s\n", t_cur->str);
+	// if (t_next)
+	// 	printf ("t_next is %s\n", t_next->str);
 
 	if (t_cur->id == PIPE && (t_prev->id == GT || t_prev->id == LT))
 		return (ERR_SYNTAX_PIPE);

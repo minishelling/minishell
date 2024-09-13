@@ -11,7 +11,7 @@ t_token *token_before(t_token *start_token, t_token *before_what)
 		return_token = return_token->next;
 		//printf ("return_token is |%s|\n", return_token->str);
 	}
-	printf("the \"token_before\" we are returning is: |%s|\n", return_token->str);
+	// printf("the \"token_before\" we are returning is: |%s|\n", return_token->str);
 	return (return_token);
 }
 
@@ -259,19 +259,19 @@ t_tree *make_tree(t_shell *shell, t_token *start_token, t_token *end_token)
 	
 	// Find the last logical operator not in parentheses
 	log_op_token = find_last_log_op_token_nip(start_token, end_token);
-	printf("Found log_op: %s\n", log_op_token ? log_op_token->str : "NULL");
+	// printf("Found log_op: %s\n", log_op_token ? log_op_token->str : "NULL");
 
 	// If no logical operator is found, treat the range of tokens as a command
 	if (!log_op_token)
 	{
 		// Create a leaf node that groups all tokens from start_token to end_token
-		printf("Creating CMD node from %s to %s\n", start_token->str, end_token->str);
+		// printf("Creating CMD node from %s to %s\n", start_token->str, end_token->str);
 		return init_leaf_node(start_token, end_token);
 	}
 
 	// If a logical operator is found, create a subtree
 	subtree = init_tree_node(log_op_token);
-	printf("Creating tree node with log_op: %s\n", log_op_token->str);
+	// printf("Creating tree node with log_op: %s\n", log_op_token->str);
 
 	// Divide the token list into left and right parts
 	divide_token_list(start_token, log_op_token, &left_head, &right_head);
