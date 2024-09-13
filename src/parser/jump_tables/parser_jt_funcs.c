@@ -38,7 +38,7 @@ int parser_redir(t_cmd *cmd, t_token *token)
 		cmd->next = (t_cmd *) 0XFF; // ?
 		return (0);
 	}
-	redir_list->redir = redir_ident(token->str);
+	redir_list->redir_id = redir_ident(token->str);
 	redir_list->file = file_token->str;
 	if (redir_list->file[0] == '|' || redir_list->file[0] == '&' || redir_list->file[0] == ';'
 		|| redir_list->file[0] == '(' || redir_list->file[0] == ')')
@@ -101,5 +101,14 @@ int parser_or_opr(t_cmd *cmd_node, t_token *token)
 {
 	(void) cmd_node;
 	(void) token;
+	return (0);
+}
+
+int parser_arith_expan(t_cmd *cmd_node, t_token *token)
+{
+	(void) token;
+    cmd_node->args = ft_calloc(2, sizeof(char *));
+    cmd_node->args[0] = ft_strdup("((");
+    cmd_node->args[1] = NULL;
 	return (0);
 }

@@ -114,7 +114,7 @@ void	print_redir(t_redir *redir_list_head)
 	ft_printf("\n"MAGENTA_TEXT WHITE_BACKGROUND"REDIRECTIONS"RESET_COLOR"\n");
 	while (current_redir != NULL)
 	{
-		ft_printf("TYPE [%d]\t%s\n", current_redir->redir, redir_name[current_redir->redir]);
+		ft_printf("TYPE [%d]\t%s\n", current_redir->redir_id, redir_name[current_redir->redir_id]);
 		ft_printf("FILE\t\t%s\n", current_redir->file);
 		current_redir = current_redir->next;
 	}

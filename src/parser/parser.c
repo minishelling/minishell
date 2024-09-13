@@ -29,7 +29,7 @@ bool	init_cmd(t_shell *shell, t_cmd **current_cmd, t_token *token)
 {
 	size_t		arg_num = get_arg_num(token);
 	int			status;
-	t_parser_func	func[15] = {
+	t_parser_func	func[16] = {
 	[0] = parser_space,
 	[1] = parser_space,
 	[2] = parser_space,
@@ -44,7 +44,8 @@ bool	init_cmd(t_shell *shell, t_cmd **current_cmd, t_token *token)
 	[11] = NULL, //quotes after handling
 	[12] = NULL, //env var after handling
 	[13] = parser_word,
-	[14] = parser_or_opr
+	[14] = parser_or_opr,
+	[15] = parser_arith_expan
 	};
 	(*current_cmd)->args = ft_calloc(sizeof(char *), (arg_num + 1));
 	if (!(*current_cmd)->args)
@@ -57,6 +58,13 @@ bool	init_cmd(t_shell *shell, t_cmd **current_cmd, t_token *token)
 			handle_error(shell, status, NULL);
 		if (token->id == LT || token->id == GT)
 			token = get_after_word_token(token);
+		else if (token->id == ARITH_EXPAN)
+		{
+		
+			token = get_after_arith_expan_token(token);
+			if (token)
+				printf ("token after arith_expan %s\n", token->str);	
+		}
 		else
 			token = get_after_space_token(token);
 		// if (token)
@@ -69,7 +77,7 @@ bool	init_cmd(t_shell *shell, t_cmd **current_cmd, t_token *token)
 	return (true);
 }
 
-int	make_cmd(t_shell *shell, t_token *start_token)
+t_cmd	make_cmd(t_shell *shell, t_token *start_token, t_token *end_token)
 {
 	t_token	*token;
 	t_cmd	*current_cmd;
@@ -98,11 +106,13 @@ int	make_cmd(t_shell *shell, t_token *start_token)
 		// printf ("managed to add in back\n");
 		token = get_after_pipe_token(token);
 		// if (token)
-		// 	printf ("after getting after pipe token now is %s\n", token->str);	
+		// 	printf ("after getting after pipe token now is %s\n", token->str);
+		if (token == end_token)
+			break;
 	}
 	//print_cmd(shell->cmd_list);
 	//free_token_list(shell->token, free_token_non_word);
-	return (0);
+	return (*(shell->cmd_list));
 }
 
 
@@ -152,18 +162,34 @@ int	parse(t_shell *shell)
 	// printf ("after removing subshell_parens\n");
 	// print_token(shell->token);
 
+
+	//mandatory:
+	//status = make_cmd(shell);
+	// print_cmd(shell->cmd_list);
+	// if (shell->cmd_list == NULL)
+	// 	error(parser);
+	// shell->token = NULL;
+
+	//bonus:
 	shell->tree = make_tree(shell, shell->token, last_token(shell->token));
 
 	// printf("\n"WHITE_TEXT MAGENTA_BACKGROUND"THE TREE"RESET_COLOR);
 	// printf("\n--------------------\n");
 	// if (shell->tree)
 	// 	print_tree(shell->tree, 0);
+	// if (shell->tree)
+	// 	print_tree_with_cmds(shell->tree, 0);
+		
 	//free_token_list(&shell->token); seems to be unnecessary??
-	status = make_cmd(shell, shell->token);  // for the mandatory
+	// status = make_cmd(shell, shell->token);  // for the mandatory
 	// print_cmd(shell->cmd_list); // for the mandatory
 	// if (shell->cmd_list == NULL)
 	// 	error(parser);
 	// shell->token = NULL;
+	
+	int exit_code = ping_lisandro(shell, shell->tree, NULL);
+	printf ("final exit code id %d\n", exit_code);
+
 	return (PARSING_OK);
 
 }

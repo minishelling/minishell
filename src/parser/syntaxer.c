@@ -78,6 +78,56 @@ void	tokenize_and_n_or_opr(t_token *token_list_head)
 		current_token = current_token->next;
 	}
 }
+bool is_redir_before_parens(t_token *head)
+{
+    t_token *current = head;
+
+    while (current && current->next)
+    {
+        // Check if current token is a redirection (LT or GT)
+        if (current->id == LT || current->id == GT)
+        {
+            // Check if the next token is PAR_OPEN
+            if (current->next->id == PAR_OPEN)
+            {
+                return 1;
+            }
+        }
+        
+        // Move to the next token
+        current = current->next;
+    }
+	return 0;
+}
+
+int is_cmds_in_subshell_after_pipe(t_token *head)
+{
+    t_token *current = head;
+
+    while (current && current->next)
+    {
+ 
+		// Look for a PIPE followed by PAR_OPEN
+        if (current->id == PIPE && get_after_space_token(current)->id == PAR_OPEN)
+        {
+            t_token *next_token = current->next->next; // Move past PAR_OPEN
+  
+			printf ("I'm here\n");
+            // Traverse tokens inside the parentheses
+            while (next_token)
+            {
+				printf ("next token is %s\n", next_token->str);
+                // If we encounter LOG_AND or LOG_OR inside the parentheses
+                if (next_token->id == AND_OPR || next_token->id == OR_OPR)
+                    return 1; // Throw the error
+                next_token = next_token->next;
+            }
+        }
+        // Move to the next token in the list
+        current = current->next;
+    }
+    return 0; // Return 0 if no errors were found
+}
 
 
 int	syntax(t_shell *shell)
@@ -100,7 +150,19 @@ int	syntax(t_shell *shell)
 		printf ("not closed\n");
 		return (ERR_UNCLOSED_PAREN);
 	}
+	if (is_redir_before_parens(shell->token))
+	{
+		printf ("redir before parens\n");
+		return (ERR_SYNTAX_ERROR);
+	}
+	
 	tokenize_and_n_or_opr(shell->token);
+
+	if (is_cmds_in_subshell_after_pipe(shell->token))
+		return (ERR_OUT_OF_SCOPE);
+	
+	
+	
 	
 	
 	t_syntax_func	func[15] = {

@@ -163,3 +163,23 @@ void free_token_list(t_token **token_list)
 	}
 	*token_list = NULL;
 }
+
+t_token *get_after_arith_expan_token(t_token *token)
+{
+
+	if (token == NULL)
+		return (NULL);
+	if (token->next)
+		token = token->next;
+	while (token)
+	{
+		printf ("	in the arith_expan thingie, token is %s\n", token->str);
+		if (token->id == ARITH_EXPAN)
+		{
+			return (token->next);
+			break ;
+		}
+		token = token->next;
+	}
+	return (token);
+}

@@ -65,7 +65,8 @@ enum e_parsing_error
 	ERR_SYNTAX_REDIR,
 	ERR_SYNTAX_SEMICOL,
 	ERR_SYNTAX_PAR,
-	ERR_SYNTAX_ERROR
+	ERR_SYNTAX_ERROR,
+	ERR_OUT_OF_SCOPE
 };
 
 typedef enum e_token_id 
@@ -106,7 +107,7 @@ typedef struct s_curpath
 
 typedef struct s_redir
 {
-	t_redir_id		redir;
+	t_redir_id		redir_id;
 	int				fd;
 	char			*file;
 	struct s_redir	*next;
@@ -256,6 +257,11 @@ void remove_space_tokens(t_token **head);
 t_token *remove_token(t_token *start_token, t_token *token_to_remove);
 void free_tree(t_tree *node);
 t_token *remove_subshell_parens(t_token **head);
+t_cmd	make_cmd(t_shell *shell, t_token *start_token, t_token *end_token);
+void print_tree_with_cmds(t_tree *node, int level);
+t_token *get_after_arith_expan_token(t_token *token);
+int parser_arith_expan(t_cmd *cmd_node, t_token *token);
+int ping_lisandro(t_shell *shell, t_tree *node, t_tree *parent_node);
 
 
 //ENV - Lisandro
