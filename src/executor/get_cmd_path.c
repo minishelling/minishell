@@ -20,7 +20,7 @@ static char	*ft_strjoin_cmd_path(char *path, char *cmd_name)
 	{
 		// printf("Not ending in slash.\n");
 		cmd_path = ft_strjoin(path, "/");
-		return (ft_strjoin_fs1(cmd_path, cmd_name));
+		return (ft_strjoin_fs1(&cmd_path, cmd_name));
 	}
 }
 
