@@ -29,7 +29,7 @@ bool	init_cmd(t_shell *shell, t_cmd **current_cmd, t_token *token)
 {
 	size_t		arg_num = get_arg_num(token);
 	int			status;
-	t_parser_func	func[15] = {
+	t_parser_func	func[16] = {
 	[0] = parser_space,
 	[1] = parser_space,
 	[2] = parser_space,
@@ -44,7 +44,8 @@ bool	init_cmd(t_shell *shell, t_cmd **current_cmd, t_token *token)
 	[11] = NULL, //quotes after handling
 	[12] = NULL, //env var after handling
 	[13] = parser_word,
-	[14] = parser_or_opr
+	[14] = parser_or_opr,
+	[15] = parser_arith_expan
 	};
 	(*current_cmd)->args = ft_calloc(sizeof(char *), (arg_num + 1));
 	if (!(*current_cmd)->args)
@@ -57,6 +58,13 @@ bool	init_cmd(t_shell *shell, t_cmd **current_cmd, t_token *token)
 			handle_error(shell, status, NULL);
 		if (token->id == LT || token->id == GT)
 			token = get_after_word_token(token);
+		else if (token->id == ARITH_EXPAN)
+		{
+		
+			token = get_after_arith_expan_token(token);
+			if (token)
+				printf ("token after arith_expan %s\n", token->str);	
+		}
 		else
 			token = get_after_space_token(token);
 		if (token)

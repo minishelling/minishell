@@ -221,4 +221,6 @@ void free_tree(t_tree *node);
 t_token *remove_subshell_parens(t_token **head);
 t_cmd	make_cmd(t_shell *shell, t_token *start_token, t_token *end_token);
 void print_tree_with_cmds(t_tree *node, int level);
+t_token *get_after_arith_expan_token(t_token *token);
+int parser_arith_expan(t_cmd *cmd_node, t_token *token);
 #endif

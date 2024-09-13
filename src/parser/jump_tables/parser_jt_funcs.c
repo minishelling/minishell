@@ -103,3 +103,12 @@ int parser_or_opr(t_cmd *cmd_node, t_token *token)
 	(void) token;
 	return (0);
 }
+
+int parser_arith_expan(t_cmd *cmd_node, t_token *token)
+{
+	(void) token;
+    cmd_node->args = ft_calloc(2, sizeof(char *));
+    cmd_node->args[0] = ft_strdup("((");
+    cmd_node->args[1] = NULL;
+	return (0);
+}

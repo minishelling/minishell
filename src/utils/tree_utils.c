@@ -47,6 +47,9 @@ void print_tree_with_cmds(t_tree *node, int level)
         {
             if (cmd->args)
             {
+                i = 0;
+                 while (i++ < level)
+                    printf("    ");
                 printf("    Command: ");
                 j = 0;
                 while (cmd->args[j] != NULL)
@@ -63,7 +66,10 @@ void print_tree_with_cmds(t_tree *node, int level)
             {
                 t_redir *redir = cmd->redir;
                 while (redir)
-                {
+                {   
+                    i = 0;
+                    while (i++ < level)
+                        printf("    ");
                     printf ("    Redirection: %s (%s)\n", redir->file, redir_name[redir->redir_id - 1]);
                     redir = redir->next;
                 }
