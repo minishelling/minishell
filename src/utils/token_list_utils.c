@@ -54,7 +54,6 @@ t_token	*get_after_space_token(t_token *token)
 		return (NULL);
 	if (return_token->id == SPACE_CHAR || return_token->id == TAB_CHAR || return_token->id == NL)
 		return_token = return_token->next;
-	//printf ("returning %s\n", return_token->str);
 	return (return_token);
 }
 
@@ -116,14 +115,14 @@ void	free_last_token(t_token *token, t_token *(*f) (t_token *))
 	previous_token->next = f(token);
 }
 
-void	free_token_list(t_token *t_list, t_token *(*f) (t_token *))
-{
-	if (t_list == NULL)
-		return ;
-	while (t_list != NULL)
-		t_list = f(t_list);
-	return ;
-}
+// void	free_token_list(t_token *t_list, t_token *(*f) (t_token *))
+// {
+// 	if (t_list == NULL)
+// 		return ;
+// 	while (t_list != NULL)
+// 		t_list = f(t_list);
+// 	return ;
+// }
 t_token	*free_token_str(t_token *token)
 {
 	t_token	*next_token;
@@ -148,4 +147,19 @@ t_token	*free_token_non_word(t_token *token)
 		free(token->str);
 	free(token);
 	return (current_token);
+}
+
+void free_token_list(t_token **token_list)
+{
+	t_token *temp;
+
+	while (*token_list)
+	{
+		temp = *token_list;
+		*token_list = (*token_list)->next;
+		if (temp->str)
+			free(temp->str);
+		free(temp);
+	}
+	*token_list = NULL;
 }

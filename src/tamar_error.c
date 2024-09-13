@@ -10,6 +10,7 @@ char	*get_error_messages(int e)
 		"Syntax error near unexpected token `&` or `&&`\n",
 		"Syntax error near unexpected token `<` or `>`\n",
 		"Syntax error near unexpected token `;`\n",
+		"Syntax error near unexpected token `)`\n",
 		"Syntax error\n"
 	};
 

@@ -7,7 +7,6 @@ int main(int argc, char **argv, char **envp)
 	t_token *temp;
 	int status;
 
-
 	(void)argv;
 	(void)envp;
 	if (argc > 1) 
@@ -16,7 +15,7 @@ int main(int argc, char **argv, char **envp)
 		exit(EXIT_FAILURE);
 	}
 	shell.env_list = NULL;
-	if (env_init_list(&shell.env_list, envp)) 
+	if (env_init_list(&shell.env_list, envp))
 	{
 		write(2, "Mini_shared: Error: Failed to initialize\n", 42);
 		exit(EXIT_FAILURE);
@@ -24,10 +23,12 @@ int main(int argc, char **argv, char **envp)
 	while (1) 
 	{
 		shell.input = readline(MINISHARED_PROMPT);
-		if (!shell.input)
+		if (!shell.input)  // Check for EOF or error
 			break;
+			
 		if (ft_strncmp(shell.input, "", 1))
 		{
+			add_history(shell.input);
 			add_history(shell.input);
 			status = parse(&shell);
 			executor(&shell);

@@ -69,13 +69,13 @@ bool	init_cmd(t_shell *shell, t_cmd **current_cmd, t_token *token)
 	return (true);
 }
 
-int	make_cmd(t_shell *shell)
+int	make_cmd(t_shell *shell, t_token *start_token)
 {
 	t_token	*token;
 	t_cmd	*current_cmd;
 
 	shell->cmd_list = NULL;
-	token = shell->token;
+	token = start_token;
 	while (token != NULL)
 	{
 		current_cmd = new_cmd();
@@ -87,6 +87,7 @@ int	make_cmd(t_shell *shell)
 		{
 			
 			// return (free_token_list(shell->token, free_token_str), 
+			// return (free_token_list(shell->token, free_token_str),
 			// 		free_cmd_list(cmd_list_head), NULL);
 		}
 
@@ -104,6 +105,9 @@ int	make_cmd(t_shell *shell)
 	return (0);
 }
 
+
+
+
 int	parse(t_shell *shell)
 {
 	int status;
@@ -112,7 +116,6 @@ int	parse(t_shell *shell)
 	if (shell->token == NULL)
 	{
 		//error
-		
 	}
 	printf ("After tokenization:\n");
 	print_token(shell->token);
@@ -124,7 +127,8 @@ int	parse(t_shell *shell)
 	{
 		//printf ("syntax error\n");
 		// error(syntax_error, 258, shell->syntax->str);;
-		free_token_list(shell->token, free_token_str);
+		//free_token_list(shell->token, free_token_str);
+		free_token_list(&shell->token);
 		return (status);
 	}
 	//env_var_print_linked_list (shell->env_list);
@@ -132,14 +136,24 @@ int	parse(t_shell *shell)
 	shell->token = expand(shell->token, shell->env_list);
 	printf ("After expantion:\n");
 	print_token(shell->token);
-	concat_word_tokens(shell);
+	join_word_tokens(shell);
 	// if (concatenate_word_tokens(shell) == false)
 	// 	return (free_token_list(shell->token, list_token_free_node_str),
 	// 			error(append));
-	
-	status = make_cmd(shell);
-	//printf ("sadasdasd\n");
-	print_cmd(shell->cmd_list);
+	remove_space_tokens(&shell->token);
+	printf ("after removing space tokens\n");
+	print_token(shell->token);
+	remove_subshell_parens(&(shell->token));
+	printf ("after removing subshell_parens\n");
+	print_token(shell->token);
+	shell->tree = make_tree(shell, shell->token, last_token(shell->token));
+	printf("\n"WHITE_TEXT MAGENTA_BACKGROUND"THE TREE"RESET_COLOR);
+	printf("\n--------------------\n");
+	if (shell->tree)
+		print_tree(shell->tree, 0);
+	//free_token_list(&shell->token); seems to be unnecessary??
+	//status = make_cmd(shell);  // for the mandatory
+	// print_cmd(shell->cmd_list); // for the mandatory
 	// if (shell->cmd_list == NULL)
 	// 	error(parser);
 	// shell->token = NULL;
