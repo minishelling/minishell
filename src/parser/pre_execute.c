@@ -24,7 +24,7 @@
 //             }
 //         cmd = cmd->next;
 //     }
-//     return 1;
+//     return 0;
 // }
 
 int ping_lisandro(t_shell *shell, t_tree *node, t_tree *parent_node) 
