@@ -66,7 +66,7 @@ t_token	*expand_env_var(t_token *token, t_env *env_list)
 	i = 0;
 
 	char *env_value = get_env_value_from_key(env_list, (token->str + 1));
-	printf ("in expand_env_var str is %s\n", env_value);
+	//printf ("in expand_env_var str is %s\n", env_value);
 	
 	split = ft_split (env_value, ' ');
 	if (!split)
@@ -74,14 +74,14 @@ t_token	*expand_env_var(t_token *token, t_env *env_list)
 	while (split[i] != NULL)
 	{
 		expanded_token = create_expanded_tokens(split[i]);
-		printf ("LIST OF EXPANDED TOKENS ");
-		print_token(expanded_token);
+		//printf ("LIST OF EXPANDED TOKENS ");
+		//print_token(expanded_token);
 		// if (expanded_token)
 		// 	...
 		add_token_in_back(&return_tokens, expanded_token);
 		i++;
 	}
-	printf ("i is %zu\n", i);
+	//printf ("i is %zu\n", i);
 	free(split);
 	if (i == 0)
 		return (new_token());
@@ -105,9 +105,9 @@ char	*get_expanded_value(char *token_str, size_t pos, size_t *env_key_len, t_env
 	char	*env_key;
 
 	*env_key_len = 0;
-	printf ("str[pos] is %s[%zu]\n", token_str, pos);
+	//printf ("str[pos] is %s[%zu]\n", token_str, pos);
 	set_pos_end_env_var(&token_str[pos], env_key_len, 0);
-	printf ("     env_key_len is now %zu\n", *env_key_len);
+	//printf ("     env_key_len is now %zu\n", *env_key_len);
 	env_key = ft_substr(token_str, pos + 1, *env_key_len - 1);
 	if (!env_key)
 		return (NULL);
@@ -125,22 +125,22 @@ int	interpolate_env_var(t_token *token, int pos, t_env *env_list)
 
 	if (!token || !token->str)
 		return (ERROR);
-	printf ("pos is %d\n", pos);
+	//printf ("pos is %d\n", pos);
 	expanded_value = get_expanded_value(token->str, pos, &env_key_len, env_list);
-	printf ("shell expand is %s\n", expanded_value);
+	//printf ("shell expand is %s\n", expanded_value);
 	if (!expanded_value)
 		expanded_value_len = 0;
 	else
 		expanded_value_len = ft_strlen(expanded_value);
 	new_token_str = ft_calloc(sizeof(char), \
 			((ft_strlen(token->str) - env_key_len + expanded_value_len) + 1));
-	printf ("ft_strlen(t_current->str) is %zu, env_key_len is %zu, expanded_value_len is %zu\n", ft_strlen(token->str), env_key_len, expanded_value_len);
+	//printf ("ft_strlen(t_current->str) is %zu, env_key_len is %zu, expanded_value_len is %zu\n", ft_strlen(token->str), env_key_len, expanded_value_len);
 	if (!new_token_str)
 		return (ERROR);
 	ft_strlcpy(new_token_str, token->str, pos + 1);
-	printf ("1st new_token_str is |%s|\n", new_token_str);
+	//printf ("1st new_token_str is |%s|\n", new_token_str);
 	ft_strlcat(new_token_str, expanded_value, pos + expanded_value_len + 1);
-	printf ("2nd new_token_str is |%s|\n", new_token_str);
+	//printf ("2nd new_token_str is |%s|\n", new_token_str);
 	// echo "$PATH$TERM"
 	ft_strlcat(new_token_str, &(token->str)[pos + env_key_len], \
 			(ft_strlen(token->str) - env_key_len + expanded_value_len + 1));
@@ -154,7 +154,7 @@ t_token	*expand_quote(t_token *token, t_env *env_list)
 	size_t	i;
 	int		tmp;
 
-	printf ("			Reached here\n");
+	//printf ("			Reached here\n");
 	if (token->str == NULL)
 		return (NULL);
 	remove_quotes(token);
@@ -168,7 +168,7 @@ t_token	*expand_quote(t_token *token, t_env *env_list)
 	{
 		if ((token->str)[i] == '$')
 		{
-			printf ("Going to interpolate_e\n");
+			//printf ("going to interpolate_e\n");
 			tmp = interpolate_env_var(token, i, env_list);
 			if (tmp < 0)
 				return (NULL);
@@ -193,7 +193,7 @@ t_token	*expand(t_token *token_list_head, t_env *env_list)
 	{
 		if (current_token->id == ENV_VAR)
 		{
-			printf ("expanding env_var\n");
+			//printf ("expanding env_var\n");
 			//env_var_print_linked_list (env_list);
 			//env_print_list (env_list);  // lisandro
 			expanded_tokens = expand_env_var(current_token, env_list);
@@ -201,7 +201,7 @@ t_token	*expand(t_token *token_list_head, t_env *env_list)
 		}
 		else if (current_token->id == DQUOTE || current_token->id == SQUOTE)
 		{
-			printf ("handeling quotes\n");
+			//printf ("handeling quotes\n");
 			expanded_tokens = expand_quote(current_token, env_list);
 		}
 		else
@@ -211,15 +211,15 @@ t_token	*expand(t_token *token_list_head, t_env *env_list)
 		}
 		if (!expanded_tokens)
 		{
-			printf ("no expanded_tokens\n");
+			//printf ("no expanded_tokens\n");
 			current_token->str = ft_strdup("");
-			return (free_token_list(&token_list_head), free_token_list(&new_token_list), NULL); 
+			return (free_token_list(token_list_head), free_token_list(new_token_list), NULL); 
 			//error_print, 1, "expander: unable to expand")
 			//printf ("current_token is %s, expanded_token is %s\n", current_token->str, expanded_tokens->str);
 		}
 		add_token_in_back(&new_token_list, expanded_tokens);
 		current_token = current_token->next;
 	}
-	free_token_list(&token_list_head);
+	free_token_list(token_list_head);
 	return (new_token_list);
 }

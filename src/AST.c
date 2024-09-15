@@ -66,8 +66,8 @@ t_token *get_rid_of_first_parenthesis(t_token *start_token, t_token **end_token)
 	t_token *iterator;
 	int		parentheses;
 	
-	printf ("Reached get rid of parens\n");
-	printf ("start is %s and end is %s\n", start_token->str, (*end_token)->str);
+	//printf ("Reached get rid of parens\n");
+	//printf ("start is %s and end is %s\n", start_token->str, (*end_token)->str);
 	
 	//start_token = get_after_space_token(start_token);
 	iterator = start_token;
@@ -75,11 +75,11 @@ t_token *get_rid_of_first_parenthesis(t_token *start_token, t_token **end_token)
 	while (iterator->next && parentheses !=0)
 	//while (iterator && iterator->next && iterator->next != *end_token)
 	{
-		printf ("parentheses  is %d\n", parentheses);
-		printf ("iterator->next is %s\n", iterator->next->str);
+		//printf ("parentheses  is %d\n", parentheses);
+		//printf ("iterator->next is %s\n", iterator->next->str);
 		if (iterator->next->id == PAR_OPEN)
 		{
-			printf ("found open par\n");
+			//printf ("found open par\n");
 			parentheses++;
 		}
 			else if (iterator->next->id == PAR_CLOSE)
@@ -87,10 +87,10 @@ t_token *get_rid_of_first_parenthesis(t_token *start_token, t_token **end_token)
 			parentheses--;
 			if (parentheses == 0)
 			{
-				printf ("found close par\n");
+				//printf ("found close par\n");
 				if (iterator->next == *end_token)
 					*end_token = iterator;
-				printf ("start_token->next is %s, and iterator->id is %s\n", start_token->next->str, iterator->str);
+				//printf ("start_token->next is %s, and iterator->id is %s\n", start_token->next->str, iterator->str);
 				// if (start_token->next->id == PAR_OPEN && iterator->id == PAR_CLOSE)
 				// {
 				// 	printf("arithmetic expantion\n");
@@ -102,8 +102,8 @@ t_token *get_rid_of_first_parenthesis(t_token *start_token, t_token **end_token)
 				// }
 				start_token = remove_token (start_token, start_token);
 				start_token = remove_token (start_token, iterator->next);
-				printf ("print token list after amend");
-				print_token (start_token);
+				//printf ("print token list after amend");
+				//print_token (start_token);
 				//sleep (5);
 				break;
 			}
@@ -248,7 +248,7 @@ t_tree *make_tree(t_shell *shell, t_token *start_token, t_token *end_token)
 	if (start_token->id == PAR_OPEN && end_token->id == PAR_CLOSE)
 	// if (start_token->id == PAR_OPEN)
 	{
-		printf("Removing parentheses: start = %s, end = %s\n", start_token->str, end_token->str);
+		//printf("Removing parentheses: start = %s, end = %s\n", start_token->str, end_token->str);
 		start_token = get_rid_of_first_parenthesis(start_token, &end_token);
 		if (end_token->next)
 		{

@@ -56,12 +56,3 @@ t_cmd	*free_cmd(t_cmd *cmd)
 	free(cmd);
 	return (current_cmd);
 }
-
-void	free_cmd_list(t_cmd *cmd_list_head)
-{
-	if (cmd_list_head == NULL)
-		return ;
-	while (cmd_list_head != NULL)
-		cmd_list_head = free_cmd(cmd_list_head);
-	return ;
-}

@@ -80,22 +80,22 @@ void	run_child(t_shell *shell, t_cmd *cmds_head, size_t cmds_count, size_t curre
 {
 	char	*cmd_path;
 	char	**env_array;
-	int		status;
+	//int		status;
 
 	// printf("Printing cmd list in run child:\n");
 	// print_cmd(cmds_head);
 	if (current_child > 0)
 	{
-		status = dup2(shell->read_fd, STDIN_FILENO); //Protect dup.
+		//status = dup2(shell->read_fd, STDIN_FILENO); //Protect dup.
 		// printf("First dup status: %d\n", status);
 	}
 	
 	// printf("Reached checkpoint 1 in run_child\n");
 	if (current_child < cmds_count - 1)
 	{
-		status = close(shell->pipefd[READ_END]);
+		//status = close(shell->pipefd[READ_END]);
 		// printf("Close status: %d\n", status);
-		status = dup2(shell->pipefd[WRITE_END], STDOUT_FILENO);
+		//status = dup2(shell->pipefd[WRITE_END], STDOUT_FILENO);
 		// printf("Second dup status: %d\n", status);
 	}
 	// printf("Reached checkpoint 2 in run_child\n");

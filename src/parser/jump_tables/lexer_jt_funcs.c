@@ -47,7 +47,7 @@ void	set_pos_end_env_var(char *str, size_t *pos, t_token_id token_id)
 	(void) token_id;
 	(*pos)++;
 
-	printf ("str is %s\n", str);
+	//printf ("str is %s\n", str);
 	if (str[*pos] == '?')
 	{
 		(*pos)++;
@@ -58,7 +58,7 @@ void	set_pos_end_env_var(char *str, size_t *pos, t_token_id token_id)
 	(*pos)++;
 	while (str[*pos] && (ft_isalnum(str[*pos]) || str[*pos] == '_'))
 		(*pos)++;
-	printf ("pos is now %zu\n", *pos);
+	//printf ("pos is now %zu\n", *pos);
 }
 
 

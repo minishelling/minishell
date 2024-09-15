@@ -51,7 +51,7 @@ bool	is_quote_closed(t_token *token_list_head)
 			str = current_token->str;
 			if (len == 1 || str[0] != str[len - 1])
 			{
-				printf("str[0] is %c and quote is unclosed\n", str[0]);
+				//printf("str[0] is %c and quote is unclosed\n", str[0]);
 				//error 258, "unclosed quotes";
 				return (false);
 			}
@@ -112,11 +112,10 @@ int is_cmds_in_subshell_after_pipe(t_token *head)
         {
             t_token *next_token = current->next->next; // Move past PAR_OPEN
   
-			printf ("I'm here\n");
             // Traverse tokens inside the parentheses
             while (next_token)
             {
-				printf ("next token is %s\n", next_token->str);
+				//printf ("next token is %s\n", next_token->str);
                 // If we encounter LOG_AND or LOG_OR inside the parentheses
                 if (next_token->id == AND_OPR || next_token->id == OR_OPR)
                     return 1; // Throw the error
@@ -147,12 +146,12 @@ int	syntax(t_shell *shell)
 	par_closed = is_par_closed(shell->token);
 	if (!par_closed)
 	{
-		printf ("not closed\n");
+		//printf ("not closed\n");
 		return (ERR_UNCLOSED_PAREN);
 	}
 	if (is_redir_before_parens(shell->token))
 	{
-		printf ("redir before parens\n");
+		//printf ("redir before parens\n");
 		return (ERR_SYNTAX_ERROR);
 	}
 	

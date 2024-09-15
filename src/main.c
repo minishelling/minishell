@@ -32,15 +32,8 @@
 // 		if (ft_strncmp(shell.input, "", 1))
 // 		{
 // 			add_history(shell.input);
-
 // 			//TEST HERE
 // 			test_handle(&shell);
-
-
-
-
-
-
 // 			shell.input = NULL;
 // 		}
 // 	}
@@ -51,7 +44,7 @@
 int main(int argc, char **argv, char **envp)
 {
 	t_shell shell;
-	t_token *temp;
+	//t_token *temp;
 	int status;
 
 	(void)argv;
@@ -77,25 +70,26 @@ int main(int argc, char **argv, char **envp)
 		{
 			add_history(shell.input);
 			status = parse(&shell);
-			ping_lisandro(&shell, shell.tree, NULL);
 			//printf ("status is %d\n", status);
 			if (status != PARSING_OK)
 				handle_error(&shell, status, NULL);
 			else
 			{
-				while (shell.token) 
-				{
-					temp = shell.token;
-					shell.token = shell.token->next;
-					if(temp->str)
-						free(temp->str);
-					if (temp)
-						free(temp);
-				}
+				// while (shell.token) 
+				// {
+				// 	temp = shell.token;
+				// 	shell.token = shell.token->next;
+				// 	if(temp->str)
+				// 		free(temp->str);
+				// 	if (temp)
+				// 		free(temp);
+				// }
+				//free_token_list(&shell.token);
 				free(shell.input);
 			}
 			shell.input = NULL;
 		}
+		
 	}
 	exit(EXIT_SUCCESS);
 }
