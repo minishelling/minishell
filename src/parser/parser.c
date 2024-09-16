@@ -174,18 +174,11 @@ int	parse(t_shell *shell)
 	// if (shell->tree)
 	// 	print_tree(shell->tree, 0);
 	
-	// if (shell->tree)
-	// 	print_tree_with_cmds(shell->tree, 0);
+	if (shell->tree)
+		print_tree_with_cmds(shell->tree, 0);
 		
 	// if (shell->tree)
 	// 	free_token_list(shell->token); //???
-	
-	
-
-	
-	int exit_code = execute(shell, shell->tree, NULL, 0);
-	//printf ("final exit code %d\n", exit_code);
-	(void)exit_code;
 	
 	return (PARSING_OK);
 

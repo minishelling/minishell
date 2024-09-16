@@ -31,14 +31,13 @@ int execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int pre
         exit_code = executor(shell, tree_node->cmd_list);
         // printf ("exit code is %d\n", exit_code);
     }
-
-    if (parent_tree_node && parent_tree_node->type == T_AND_OPR && exit_code == 0 && parent_tree_node->right != NULL) 
+    if (parent_tree_node && parent_tree_node->type == T_AND_OPR && exit_code == 0) 
     {
         // printf ("performing the right side of AND\n");
         if (tree_node->right)
             return execute(shell, parent_tree_node->right, tree_node, exit_code);
     }
-    else if (parent_tree_node && parent_tree_node->type == T_OR_OPR && exit_code != 0 && parent_tree_node->right != NULL) 
+    else if (parent_tree_node && parent_tree_node->type == T_OR_OPR && exit_code != 0) 
     {
         // printf ("performing the right side of OR");
         if (tree_node->right)

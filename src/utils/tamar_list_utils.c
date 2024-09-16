@@ -144,10 +144,9 @@ t_token *remove_subshell_parens(t_token **head)
             t_token *word_token = current->next;
 
             // Loop through to find WORD tokens until PAR_CLOSE
-            while (word_token && word_token->id == WORD)
-            {
+            while (word_token && word_token->id == WORD && word_token->next)
                 word_token = word_token->next;
-            }
+
 
             // Check if we reached PAR_CLOSE after all WORD tokens
             if (word_token && word_token->id == PAR_CLOSE)
@@ -158,7 +157,8 @@ t_token *remove_subshell_parens(t_token **head)
                 *head = remove_token(*head, word_token); // Remove PAR_CLOSE
 
                 // Move current to the first WORD token in the middle
-                current = current->next;
+				if (current->next)
+                	current = current->next;
                 //printf("after removing subshells:\n");
                	//print_token(*head);
 
@@ -183,7 +183,6 @@ t_token *remove_subshell_parens(t_token **head)
         {
             current = current->next;
         }
-
         // Debugging print statement
         // if (current)
             // printf("current is %s\n", current->str);

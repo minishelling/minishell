@@ -47,7 +47,7 @@ void print_tree_with_cmds(t_tree *node, int level)
                     j++;
                 }
                 printf("\n");
-                printf ("        "GREY_BACKGROUND"&cmd is"RESET_COLOR": %p\n", cmd);
+                //printf ("        "GREY_BACKGROUND"&cmd is"RESET_COLOR": %p\n", cmd);
             }
 
             // Print redirections if available
@@ -71,7 +71,7 @@ void print_tree_with_cmds(t_tree *node, int level)
         // Print logical operators
         printf(MAGENTA_TEXT"%s"RESET_COLOR"\n", tree_node_name[node->type]);
     }
-    printf ("        "GREY_BACKGROUND"&node is"RESET_COLOR": %p\n", node);
+    //printf ("        "GREY_BACKGROUND"&node is"RESET_COLOR": %p\n", node);
     // Print the left subtree
     print_tree_with_cmds(node->left, level + 1);
 
