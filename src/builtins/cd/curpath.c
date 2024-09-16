@@ -189,6 +189,7 @@ t_ecode	curpath_prepare(char **curpath, char *directory, char *cwd)
 	int		status;
 	
 	status = append_suffix(&cwd, "/", false); //This affects the local cwd variable, right?
+	// printf("In curpath_prepare: cwd: %s\n", cwd);
 	if (status == MALLOC_ERROR)
 		return (MALLOC_ERROR);
 	if (directory[0] != '/')
@@ -207,6 +208,8 @@ t_ecode	curpath_trim(char **curpath) //Is this the format of the old version or 
 	char 		**dirs;
 	t_ecode		status;
 
+	printf("In curpath_trim, curpath: %s\n", *curpath);
+	final_dirs = (t_curpath *) malloc(sizeof(t_curpath));
 	status = init_curpath_dirs(curpath, &dirs, &final_dirs);
 	if (status != SUCCESS)
 		return (status);
@@ -223,11 +226,6 @@ t_ecode	init_curpath_dirs(char **curpath, char ***dirs, t_curpath **final_dirs)
 {
 	t_ecode	status;
 	
-	if (*curpath && !ft_strchr(*curpath, '/'))
-	{
-		printf("In init_curpath_dirs, curpath is: %s and returning success\n", *curpath);
-		return (SUCCESS);
-	}
 	*dirs = ft_split(*curpath, '/');
 	if (!dirs)
 		return (NULL_ARRAY);
@@ -248,7 +246,7 @@ t_ecode	parse_curpath_dirs(t_curpath **final_dirs, char ***dirs)
 
 	i = 0;
 	status = SUCCESS;
-	while ((*dirs)[i])
+	while ((*dirs) && (*dirs)[i])
 	{
 		if ((*dirs)[i][0] == '.' && (*dirs)[i][1] == '\0')
 		{

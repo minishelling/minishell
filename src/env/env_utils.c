@@ -267,3 +267,18 @@ t_ecode	env_update_node(t_env *head, char *key, char *value, bool create_node)
 	}
 	return (SUCCESS);
 }
+
+t_ecode	env_free_node(t_env **node)
+{
+	if (!*node)
+		return (SUCCESS);
+	if ((*node)->keyvalue)
+	{
+		ft_free((void **) &(*node)->keyvalue);
+		ft_free((void **) &(*node)->key);
+		if ((*node)->value)
+			ft_free((void **) &(*node)->value);
+	}
+	ft_free((void **) node);
+	return (SUCCESS);
+}

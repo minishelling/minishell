@@ -77,7 +77,7 @@ int main(int argc, char **argv, char **envp)
 		{
 			add_history(shell.input);
 			status = parse(&shell);
-			ping_lisandro(&shell, shell.tree, NULL);
+			// ping_lisandro(&shell, shell.tree, NULL);
 			//printf ("status is %d\n", status);
 			if (status != PARSING_OK)
 				handle_error(&shell, status, NULL);

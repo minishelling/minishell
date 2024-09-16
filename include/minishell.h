@@ -50,6 +50,7 @@ typedef enum e_codes
 	CDPATH_NULL,
 	ENV_ERROR,
 	NEW_NODE_ERROR,
+	NODE_NOT_FOUND,
 	NULL_STRING,
 	NULL_ARRAY,
 	COUNT
@@ -281,6 +282,7 @@ t_ecode env_update_key(t_env *node, char *key);
 t_ecode	env_update_value(t_env *node, char *value);
 t_ecode	env_update_node(t_env *head, char *key, char *value, bool create_node);
 void	env_print_node(t_env *node);
+t_ecode	env_free_node(t_env **node);
 
 t_ecode	update_pwd(t_env *pwd_node);
 t_ecode	update_oldpwd(t_env	*oldpwd_node, char *cwd);
@@ -340,7 +342,7 @@ void		curpath_del_node(t_curpath **node);
 void		curpath_del_list(t_curpath **head);
 t_curpath	*curpath_get_last(t_curpath *head);
 void		curpath_add_back(t_curpath **head, t_curpath *new);
-t_ecode	curpath_create_and_add_back(t_curpath **head, char ***dirs, char *dir);
+t_ecode		curpath_create_and_add_back(t_curpath **head, char ***dirs, char *dir);
 void		curpath_del_last(t_curpath **head);
 char		*curpath_concat(t_curpath *head);
 void		curpath_print(t_curpath *head);
@@ -354,12 +356,15 @@ t_ecode		remove_previous_dir(t_curpath **final_dirs, char ***dirs, int *i);
 t_ecode		check_access_and_add_back(t_curpath **final_dirs, char ***dirs, int *i);
 
 
-bool		is_dir_prefix_valid(char *directory);
+bool		is_dir_prefix_valid_for_cdpath(char *directory);
+t_ecode		check_for_special_cd_cases(t_env *env, char *directory, char **curpath);
+char		*get_home(void);
 
 // ERROR
 
 const char	*get_error_msg(int e_nbr);
 
 int echo_builtin(t_cmd *cmd);
+t_ecode	unset_builtin(t_shell *shell, char *key);
 
 #endif
