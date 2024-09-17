@@ -325,43 +325,60 @@ int		execute_cmd_list(t_shell *shell, t_cmd *cmds_list);
 
 //	CD
 
-t_ecode	builtin_cd(t_shell **shell, char *directory);
-t_ecode	chdir_home(t_env *env_head, char **cwd);
-t_ecode	chdir_cdpath(t_shell **shell, char *directory);
-t_ecode	append_suffix(char **str, char *suffix, bool duplicate);
-
-t_ecode	chdir_cwd(char *directory, int *null_flag);
-t_ecode chdir_cdpath_value(char **curpath, char *directory);
-t_ecode	loop_cdpath_values(char ***values, char *directory);
-
-
-
-//	CURPATH
-
-t_curpath	*curpath_new_node(char *dir);
-void		curpath_del_node(t_curpath **node);
-void		curpath_del_list(t_curpath **head);
-t_curpath	*get_last_curpath_node(t_curpath *head);
-void		curpath_add_back(t_curpath **head, t_curpath *new);
-t_ecode	create_and_add_back_curpath_node(t_curpath **head, char *directory);
-void		curpath_del_last(t_curpath **head);
-char		*curpath_concat(t_curpath *head);
-void		curpath_print(t_curpath *head);
+t_ecode		execute_cd(t_env *env, char *directory);
+t_ecode		cd_chdir_home(t_env *env);
+t_ecode 	cd_chdir_cdpath(t_env *env, char *directory);
+char		*cd_trim_curpath(char **curpath);
+int			curpath_check_access_and_chdir(char *curpath);
 int			curpath_check_access(char *curpath);
-t_ecode		curpath_check_access_and_chdir(char *curpath);
-t_ecode		curpath_prepare(char **curpath, char *directory, char *cwd);
-t_ecode		curpath_trim(char **curpath);
-t_ecode		init_and_populate_curpath_list(char **curpath, char ***dirs, t_curpath **final_dirs);
-t_ecode		parse_curpath_dirs(t_curpath **final_dirs);
-t_ecode		remove_previous_dir(t_curpath **final_dirs, char ***dirs, int *i);
-t_ecode		check_access_and_add_back(t_curpath **final_dirs, char ***dirs, int *i);
-t_ecode		remove_curpath_node(t_curpath **head, t_curpath **node);
-void		curpath_del_node_definitely(t_curpath **node);
+void		curpath_print(t_curpath *head);
+char		*curpath_concat(t_curpath *head);
+void		curpath_del_last(t_curpath **head);
+t_ecode		curpath_create_and_add_back(t_curpath **head, char ***dirs, char *dir);
+void		curpath_add_back(t_curpath **head, t_curpath *new);
+t_curpath	*curpath_get_last(t_curpath *head);
+void		curpath_del_list(t_curpath **head);
+void		curpath_del_node(t_curpath **node);
+t_curpath	*curpath_new_node(char *dir, t_curpath *previous, t_curpath *next);
 
 
-bool		is_dir_prefix_valid_for_cdpath(char *directory);
-t_ecode		check_for_special_cd_cases(t_env *env, char *directory, char **curpath);
-char		*get_home(void);
+// t_ecode	builtin_cd(t_shell **shell, char *directory);
+// t_ecode	chdir_home(t_env *env_head, char **cwd);
+// t_ecode	chdir_cdpath(t_shell **shell, char *directory);
+// t_ecode	append_suffix(char **str, char *suffix, bool duplicate);
+
+// t_ecode	chdir_cwd(char *directory, int *null_flag);
+// t_ecode chdir_cdpath_value(char **curpath, char *directory);
+// t_ecode	loop_cdpath_values(char ***values, char *directory);
+
+
+
+// //	CURPATH
+
+// t_curpath	*curpath_new_node(char *dir);
+// void		curpath_del_node(t_curpath **node);
+// void		curpath_del_list(t_curpath **head);
+// t_curpath	*get_last_curpath_node(t_curpath *head);
+// void		curpath_add_back(t_curpath **head, t_curpath *new);
+// t_ecode	create_and_add_back_curpath_node(t_curpath **head, char *directory);
+// void		curpath_del_last(t_curpath **head);
+// char		*curpath_concat(t_curpath *head);
+// void		curpath_print(t_curpath *head);
+// int			curpath_check_access(char *curpath);
+// t_ecode		curpath_check_access_and_chdir(char *curpath);
+// t_ecode		curpath_prepare(char **curpath, char *directory, char *cwd);
+// t_ecode		curpath_trim(char **curpath);
+// t_ecode		init_and_populate_curpath_list(char **curpath, char ***dirs, t_curpath **final_dirs);
+// t_ecode		parse_curpath_dirs(t_curpath **final_dirs);
+// t_ecode		remove_previous_dir(t_curpath **final_dirs, char ***dirs, int *i);
+// t_ecode		check_access_and_add_back(t_curpath **final_dirs, char ***dirs, int *i);
+// t_ecode		remove_curpath_node(t_curpath **head, t_curpath **node);
+// void		curpath_del_node_definitely(t_curpath **node);
+
+
+// bool		is_dir_prefix_valid_for_cdpath(char *directory);
+// t_ecode		check_for_special_cd_cases(t_env *env, char *directory, char **curpath);
+// char		*get_home(void);
 
 // ERROR
 

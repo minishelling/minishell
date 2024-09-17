@@ -9,7 +9,7 @@ int	executor(t_shell *shell, t_cmd *cmds_list)
 	if (!ft_strncmp(shell->cmd_list->args[0], "cd", 2))
 	{
 		printf("Executing cd\n");
-		builtin_cd(&shell, shell->cmd_list->args[1]);
+		execute_cd(shell->env_list, shell->cmd_list->args[1]);
 	}
 	status = execute_cmd_list(shell, cmds_list);
 	return (status);

@@ -1,164 +1,433 @@
 #include "../../../include/minishell.h"
 
-// typedef	struct s_cd_struct
-// {
-
-// }	t_cd_struct;
-
-t_ecode	chdir_curpath(t_shell **shell, char **curpath, char **cwd)
+typedef enum
 {
-	int	status;
+	CURPATH,
+	CURWD,
+	OLDWD,
+	TEMP
+}	t_cdvar; //For storing strings. I don't have enough space to declare many, but I can like this.
 
-	(void) shell;
-	status = chdir(*curpath);
-	ft_free((void **) curpath);
-	ft_free((void **) cwd);
-	printf("chdir status: %d\n", status);
-	return (0);
-}
-
-t_ecode	chdir_tilde(t_env *env_list, char **cwd)
+t_ecode	cd_chdir_home(t_env *env)
 {
 	t_env	*home_node;
-	char	*home_path;
-	int		status;
+	int		e_status;
 
-	home_node = env_find_node(env_list, "HOME");
-	if (home_node)
-		return (chdir_home(env_list, cwd));
-	home_path = get_home();
-	if (!home_path)
-	{
-		//PRINT mini_shared: cd: HOME not set.
-		return (FAILURE);
-	}
-	status = chdir(home_path);
-	ft_free((void **) &home_path);
-	//CALL FUNCTION TO UPDATE PWD, OLDPWD and free cwd.
-	return (status);
-}
-
-t_ecode	chdir_dash(t_env *env_list, char **cwd)
-{
-	t_env	*oldpwd_node;
-	int		status;
-
-	oldpwd_node = env_find_node(env_list, "OLDPWD");
-	if (!oldpwd_node)
-	{
-		//PRINT mini_shared: cd: OLDPWD not set.
-		return (FAILURE);
-	}
-	status = chdir(oldpwd_node->value);
-	(void) cwd;
-	//CALL FUNCTION TO UPDATE PWD, OLDPWD and free cwd.
-	return (status);
-}
-
-//For ~ use getenv("HOME");
-t_ecode	builtin_cd(t_shell **shell, char *directory)
-{
-	char		*curpath;
-	char		*cwd;
-	t_ecode		status;
-
-	curpath = NULL;
-	cwd = getcwd(NULL, PATH_MAX);
-	if (!cwd)
-		return (CWD_ERROR);
-	if (!directory || !ft_strncmp(directory, "--", ft_strlen(directory)))
-		return (chdir_home((*shell)->env_list, &cwd));
-	else if (!ft_strncmp(directory, "~", ft_strlen(directory)))
-	{
-		status = chdir_tilde((*shell)->env_list, &cwd);
-		return (status);
-	}
-	else if (!ft_strncmp(directory, "-", ft_strlen(directory)))
-	{
-		status = chdir_dash((*shell)->env_list, &cwd);
-		return (status);
-	}
-	else if (is_dir_prefix_valid_for_cdpath(directory))
-	{
-		status = chdir_cdpath(shell, directory);
-		if (!status)
-			return (SUCCESS);
-		else if (status == MALLOC_ERROR)
-			return (FAILURE); //And free everything... Rather 'exit' than return.
-	}
-	// curpath = ft_strdup(directory);
-	// if (!curpath)
-	// 	return (MALLOC_ERROR);
-	// if (ft_strncmp(curpath, "/", ft_strlen(curpath)))
-	// {
-
-	// }
-	status = curpath_prepare(&curpath, directory, cwd);
-	if (status)
-		return (status);
-	status = curpath_trim(&curpath); // I think I have to append cwd to curpath, otherwise .. doesn't work.
-	if (status)
-		return (status); //Free everything.
-	printf("Curpath in builtin_cd: %s\n", curpath);
-	return (chdir_curpath(shell, &curpath, &cwd));
-}
-
-t_ecode	chdir_home(t_env *env_head, char **cwd)
-{
-	t_env	*home_node;
-	t_ecode	exit_status;
-
-	home_node = env_find_node(env_head, "HOME");
+	home_node = env_find_node(env, "HOME");
 	if (!home_node || !home_node->value)
-	{
-		// PRINT ERROR
-		ft_free((void **) cwd);
 		return (HOME_ERROR);
-	}
 	else
 	{
-		exit_status = chdir(home_node->value);
-		if (exit_status)
-			return (CHDIR_ERROR);
-		env_update_node(env_head, "PWD", getcwd(NULL, PATH_MAX), true);
-		env_update_node(env_head, "OLDPWD", *cwd, true);
-		ft_free((void **) cwd);
+		e_status = chdir(home_node->value);
+		if (e_status)
+			return (CHDIR_ERROR); //Errno is also set.
 		return (SUCCESS);
 	}
 }
 
-t_ecode	chdir_cdpath(t_shell **shell, char *directory)
+t_ecode cd_chdir_cdpath(t_env *env, char *directory)
 {
-	t_env	*cdpath_node;
-	char	**values;
-	t_ecode	status;
+	t_env		*cdpath_node;
+	size_t		i;
+	size_t		values_count; //Not enough space for this var.
+	char		*curpath;
+	char		**values;
+	int			null_flag;
+	t_ecode	e_status;
 
-	cdpath_node = env_find_node((*shell)->env_list, "CDPATH");
-	if (!cdpath_node || !cdpath_node->value)
-		return (CDPATH_NULL);
+	cdpath_node = env_find_node(env, "CDPATH");
+	if (cdpath_node == NULL || cdpath_node->value == NULL)
+		return (PROCEED);
+	values_count = env_count_values(env, "CDPATH");
 	values = ft_split(cdpath_node->value, ':');
 	if (!values)
 		return (MALLOC_ERROR);
-	status = loop_cdpath_values(&values, directory);
-	return (status);
-}
-
-// TEST This function. Idea: make test directory equipped with libft.
-t_ecode	append_suffix(char **str, char *suffix, bool duplicate)
-{
-	size_t	suffix_len;
-
-	if (!*str || !suffix)
-		return (NULL_STRING);
-	suffix_len = ft_strlen(suffix);
-	// printf("In append_suffix: str[suffix_len]: %s\n", str[suffix_len]);
-	if (!ft_strncmp(str[suffix_len], suffix, suffix_len) && !duplicate)
+	ft_print_2d_arr(values);
+	i = 0;
+	while (i < values_count)
 	{
-		// printf("in append_suffix, returning success\n");
-		return (SUCCESS);
+		printf("[%li]/[%li]\n", i, values_count);//
+		curpath = ft_strdup(values[i]);
+		printf("%s\n", curpath);
+		if (!curpath && !null_flag)
+		{
+			null_flag = 1;
+			curpath = ft_strjoin("./", directory);
+			e_status = curpath_check_access(curpath);
+			if (e_status)
+			{
+				(ft_free((void **) &curpath), ft_free_2d((void ***) &values));
+				i++;
+				continue ;
+			}
+			e_status = chdir(curpath);
+			ft_free((void **) &curpath);
+			if (e_status)
+			{
+				i++;
+				continue ;
+			}
+			else
+			{
+				ft_free_2d((void ***) &values);
+				return (SUCCESS);
+			}
+		}
+		else if (!curpath && null_flag)
+		{
+			i++;
+			continue ;
+		}
+		if (curpath[ft_strlen(curpath) - 1] != '/')
+		{
+			curpath = ft_strjoin_fs1(&curpath, "/");
+			if (!curpath)
+				return (MALLOC_ERROR);
+		}
+		curpath = ft_strjoin_fs1(&curpath, directory);
+		if (!curpath)
+			return (MALLOC_ERROR);
+		e_status = curpath_check_access(curpath);
+		if (e_status)
+		{
+			ft_free((void **) &curpath);
+			i++;
+			continue ;
+		}
+		e_status = chdir(curpath);
+		ft_free((void **) &curpath);
+		if (e_status)
+		{
+			i++;
+			continue ;
+		}
+		else
+		{
+			ft_free_2d((void ***) &values);
+			return (SUCCESS);
+		}
 	}
-	*str = ft_strjoin_fs1(str, suffix);
-	if (!*str)
-		return (MALLOC_ERROR);
-	else return (SUCCESS);
+	return (PROCEED);
 }
+
+t_ecode	execute_cd(t_env *env, char *directory)
+{
+	t_ecode	e_status;
+	char		*curpath;
+	char		*cwd;
+	// char		*oldwd;
+
+	cwd = getcwd(NULL, PATH_MAX);
+	if (!cwd)
+		return (CWD_ERROR); //ERRNO IS SET
+	cwd = ft_strjoin_fs1(&cwd, "/");
+	if (!cwd)
+		return (MALLOC_ERROR);
+	if (!directory)
+	{
+		e_status = cd_chdir_home(env);
+		if (e_status != SUCCESS)
+			return (HOME_ERROR);
+		else
+			return (SUCCESS);
+	}
+	else if (directory[0] != '/' && directory[0] != '.'
+			&& (directory[0] != '.' && directory[1] != '.'))
+	{
+		e_status = cd_chdir_cdpath(env, directory);
+		if (e_status == SUCCESS)
+			return (SUCCESS); //Print the CWD here!
+		if (e_status != PROCEED)
+			return (CDPATH_ERROR);
+	}
+	curpath = ft_strdup(directory);
+	if (curpath[0] != '/')
+	{
+		curpath = ft_strjoin_fs2(cwd, &curpath);
+		if (!curpath)
+			return (MALLOC_ERROR);
+	}
+	curpath = cd_trim_curpath(&curpath);
+	if (!curpath)
+		return (MALLOC_ERROR);
+	e_status = curpath_check_access(curpath);
+	if (e_status)
+		return (ACCESS_ERROR);
+	e_status = chdir(curpath);
+	if (e_status)
+		return (CHDIR_ERROR); //Errno is set
+	return (SUCCESS);
+}
+
+char	*cd_trim_curpath(char **curpath)
+{
+	char		**dirs;
+	t_curpath	*final_dirs;
+	int			i;
+	int			status;
+
+	dirs = NULL;
+	final_dirs = NULL;
+	dirs = ft_split(*curpath, '/');
+	if (!dirs)
+		return (NULL);
+	if (*curpath[0] == '/')
+	{
+		status = curpath_create_and_add_back(&final_dirs, &dirs, "/");
+		if (status)
+			return (NULL); //PRINT APPROPRIATE ERROR MESSAGE
+	}
+	ft_free((void **) curpath);
+	i = 0;
+	while (dirs[i])
+	{
+		if (dirs[i][0] == '.' && dirs[i][1] == '\0')
+		{
+			i++;
+			continue ;
+		}
+		else if (dirs[i][0] == '.' && dirs[i][1] == '.' && dirs[i][2] == '\0')
+		{
+			*curpath = curpath_concat(final_dirs);
+			status = curpath_check_access(*curpath);
+			ft_free((void **) curpath);
+			if (status)
+			{
+				ft_free_2d((void ***) &dirs);
+				if (final_dirs)
+					curpath_del_list(&final_dirs);
+				return (NULL); //PRINT APPROPRIATE ERROR MESSAGE
+			}
+			curpath_del_last(&final_dirs);
+			i++;
+			continue ;
+		}
+		*curpath = curpath_concat(final_dirs);
+		status = curpath_check_access(*curpath);
+		ft_free((void **) curpath);
+		if (status)
+		{
+			ft_free_2d((void ***) &dirs);
+			if (final_dirs)
+				curpath_del_list(&final_dirs);
+			return (NULL); //PRINT APPROPRIATE ERROR MESSAGE
+		}
+		else
+		{
+			if (final_dirs == NULL)
+			{
+				status = curpath_create_and_add_back(&final_dirs, &dirs, "/");
+				if (status)
+					return (NULL); //PRINT APPROPRIATE ERROR MESSAGE
+			}
+			status = curpath_create_and_add_back(&final_dirs, &dirs, dirs[i]);
+			if (status)
+				return (NULL); //PRINT APPROPRIATE ERROR MESSAGE
+				
+		}
+		i++;
+	}
+	*curpath = curpath_concat(final_dirs);
+	ft_free_2d((void ***) &dirs);
+	if (final_dirs)
+		curpath_del_list(&final_dirs);
+	return (*curpath);
+}
+
+//Old EXECUTE_CD Function that served as prototype
+// t_ecode	execute_cd(t_env *env, char *directory)
+// {
+// 	char	*curpath;
+// 	char	*cwd;
+// 	void	*temp;
+// 	int		i;
+// 	int		no_cdpath_flag;
+
+// 	if (!directory) //First step
+// 	{
+// 		temp = env_find_node("HOME");
+// 		if (!temp || !temp.key)
+// 			return (ERR_CD_NO_HOME);
+// 		else //Second step
+// 		{
+// 			if (chdir(temp.key) == -1)
+// 				return (ERR_CD_CHDIR_ERROR); //Errno is set.
+// 		}	
+// 	}
+// 	else if (directory[0] == '/' || directory[0] == '.'
+// 		|| (directory[0] == '.' && directory[1] == '.')) //Steps 3 and 4
+// 		curpath = directory;
+// 	else //Step 5 - Which was wrong, because it has to set and then proceed to step 6 outside of the else statement.
+// 	{
+// 		temp = (t_env *)env_find_node("CDPATH"); //Look for CDPATH in env. Retrieve the node. - Testing the use of (void *).
+// 		i = 0;
+// 		while (i < env_count_values(env, "CDPATH")) //A value can be an empty string. 
+// 		{
+// 			curpath = ft_strdup(temp.values[i]); //Dups so I can use ft_strjoin_fs1 or simply ft_free on curpath. - Protect malloc.
+// 			if (curpath == NULL && no_cdpath_flag == 0) //If the string is empty or is NULL (strdup takes care of handling empty strings, converting them to NULL),
+// 			{//Then execute step 4
+// 				curpath = ft_strjoin("./", directory); //Append current directory and the directory provided.
+// 				if (access(curpath, F_OK) == -1) //Why would I replace access with a dir function?
+// 				{
+// 					ft_free(&curpath);
+// 					i++;
+// 					continue ;
+// 				}
+// 				if (chdir(curpath) == -1)
+// 				{
+// 					ft_free(&curpath); //Repeated functionality... How can I optimize this?
+// 					i++;
+// 					continue ;
+// 				}
+// 				no_cdpath_flag = 1; //Flags this occurrence so it doesn't do it again.
+// 			}
+// 			else if (curpath == NULL && no_cdpath_flag == 1) //New addition that I forgot in the initial implementation.
+// 			{
+// 				i++;
+// 				continue ;
+// 			}
+// 			if (curpath[len -1] != '/') //Continues execution when the node found in CDPATH is true.
+// 				curpath = ft_strjoin_fs1(curpath, "/"); //Appends a slash if the path in CDPATH didn't end with one. - Protect the malloc.
+// 			curpath = ft_strjoin_fs1(curpath, directory); //Appends the path in CDPATH with the directory.
+// 			if (access(curpath, F_OK) == -1) //Checks if it is a valid dir.
+// 			{
+// 				ft_free(&curpath);
+// 				i++;
+// 				continue ;
+// 			}
+// 			if (chdir(curpath) == -1) //Checks if changing to that dir fails.
+// 			{
+// 				ft_free(&curpath);
+// 				i++;
+// 				continue ;
+// 			}
+// 			else //Forgot to add the action for when it succeeds. So adding it now:
+// 			{
+// 				ft_free(&curpath);
+// 				//Update pwd and oldpwd.
+// 				return (SUCCESS);
+// 			}
+// 			i++;
+// 		}
+// 	}
+// 	curpath = directory; //Step 6
+// 	if (shell->pwd[len - 1] != '/') //Here I can use either PWD from the shell struct (not from the env), or the getcwd command.
+// 		shell->pwd = ft_strjoin_fs1(shell->pwd, "/"); //Protect mallocs.
+
+// 	//Shouldn't I be concatenating PWD with curpath here?
+
+// 	curpath = cd_trim_curpath(shell, &curpath); //Return a trimmed path that is ready to be used.
+// 	// Check if (ft_strlen(curpath) + 1 > PATH_MAX)
+// 	status = chdir(curpath);
+// 	free(curpath); //The end of the journey.
+// 	if (status == -1) //Status could be called ret, becasue after all it has to return a value.
+// 		return (ERR_CD_CHDIR_ERROR);
+// 	return (SUCCESS);
+// }
+
+
+
+//Old function that I'm looking forward to replace.
+// static char	*cd_trim_curpath(t_shell **shell, char **curpath)
+// {
+// 	t_curpath	*curr_dirs_head;
+// 	t_curpath	*curr_dirs_iterator;
+// 	t_curpath	*final_dirs_head;
+// 	t_curpath	*final_dirs_iterator;
+// 	char		*dir;
+
+// 	curr_dirs_head = cd_split_curpath(*curpath);// Create array to store each directory separately, without including slashes. - Ensure we are not passing the root directory.
+// 	if (!curr_dirs_head)
+// 		return (NULL);
+// 	curr_dirs_iterator = curr_dirs_head;
+// 	final_dirs_head = NULL; //Initialize to null. When appropriate it will add the valid nodes inside the loop.
+// 	while (curr_dirs_iterator) //Iterate through the list of directories using a helping iterating variable (keeping the head var to free when neccessary).
+// 	{
+// 		dir = curr_dirs_iterator->dir; //Assign the dir in curr_dirs to a shorter named var. -- Keep in mind that the first node is okay, but for the rest it needs to keep concatenating them. Maybe add a helper funct.
+// 		if (!dir) //If one of the dirs is NULL then the whole path is invalid.
+// 		{
+// 			curpath_free_list(&curr_dirs_head);
+// 			return (NULL);
+// 		}
+// 		if (dir[0] == '.' && dir[1] == '\0') //If the dir is a single dot, then we just skip this directory. It is not added to final_dirs.
+// 		{
+// 			curr_dirs_iterator = curr_dirs_iterator->next;
+// 			continue ;
+// 		}
+// 		else if (dir[0] == '.' && dir[1] == '.' && dir[2] == '\0') //If the dir is a double dot...
+// 		{
+// 			final_dirs_iterator = final_dirs_head;
+// 			while (final_dirs_iterator != NULL && final_dirs_iterator->next != NULL)
+// 				final_dirs_iterator = final_dirs_iterator->next;
+// 			if (final_dirs_iterator != NULL && final_dirs_iterator->previous)
+// 			{
+// 				dir = final_dirs_iterator->previous->dir;
+// 				if (!dir)
+// 				{
+// 					curpath_free_list(&curr_dirs_head);
+// 					return (NULL);
+// 				}
+// 				else
+// 				{
+// 					final_dirs_iterator = final_dirs_iterator->previous;
+// 					final_dirs_iterator = final_dirs_iterator->previous; // This can be either true or NULL
+// 					final_dirs_iterator = final_dirs_iterator->previous; // This can either be true or segfault
+// 					final_dirs_iterator->next = NULL; // Umm, check if this actually modifies final_dirs_head.
+// 				}
+// 			}
+// 			else
+// 			{
+// 				curpath_free_list(&curr_dirs_head);
+// 				return (ft_strdup("/"));
+// 			}
+// 		}
+// 		else
+// 		{
+// 			//Ummm, what did I do here? It needs to keep iterating, right?
+// 		}
+// 		dir = ft_strdup(final_dirs_head->dir);
+// 		final_dirs_head = final_dirs_head->next;
+// 		while (final_dirs_head)
+// 		{
+// 			dir = ft_strjoin_fs1(dir, final_dirs_head->dir);
+// 			final_dirs_head = final_dirs_head->next;
+// 		}
+// 		return (dir);
+// 	}
+// }
+
+
+//It's not going to be needed since I'll use ft_split to create an array.
+// t_curpath	*cd_split_curpath(char *curpath)
+// {
+// 	t_curpath	*head;
+// 	t_curpath	*current;
+// 	char		**directories;
+// 	int			i;
+
+// 	if (curpath == NULL || *curpath == '\0')
+// 		return (NULL);
+// 	directories = ft_split(curpath, '/');
+// 	if (!directories || !*directories)
+// 		return (NULL);
+// 	if ((*directories[0]) == '\0') //Is this neccessary?
+// 		ft_free_2d((void ***) &directories);
+// 	head = curpath_new_node(directories[0], NULL, NULL);
+// 	if (!head)
+// 		ft_free_2d((void ***) &directories);
+// 	current = head;
+// 	i = 1;
+// 	while (directories[i])
+// 	{
+// 		current->next = curpath_new_node(directories[i], current, NULL);
+// 		if (!current->next)
+// 		{
+// 			ft_free_2d((void ***) &directories);
+// 			curpath_free_list(&head);
+// 		}
+// 		current = current->next;
+// 		i++;
+// 	}
+// 	ft_free_2d((void ***) &directories);
+// 	return (head);
+// }
