@@ -53,6 +53,7 @@ typedef enum e_codes
 	NODE_NOT_FOUND,
 	NULL_STRING,
 	NULL_ARRAY,
+	NULL_CURPATH_LIST,
 	COUNT
 }	t_ecode;
 
@@ -337,23 +338,25 @@ t_ecode	loop_cdpath_values(char ***values, char *directory);
 
 //	CURPATH
 
-t_curpath	*curpath_new_node(char *dir, t_curpath *previous, t_curpath *next);
+t_curpath	*curpath_new_node(char *dir);
 void		curpath_del_node(t_curpath **node);
 void		curpath_del_list(t_curpath **head);
-t_curpath	*curpath_get_last(t_curpath *head);
+t_curpath	*get_last_curpath_node(t_curpath *head);
 void		curpath_add_back(t_curpath **head, t_curpath *new);
-t_ecode		curpath_create_and_add_back(t_curpath **head, char ***dirs, char *dir);
+t_ecode	create_and_add_back_curpath_node(t_curpath **head, char *directory);
 void		curpath_del_last(t_curpath **head);
 char		*curpath_concat(t_curpath *head);
 void		curpath_print(t_curpath *head);
 int			curpath_check_access(char *curpath);
-int			curpath_check_access_and_chdir(char *curpath);
+t_ecode		curpath_check_access_and_chdir(char *curpath);
 t_ecode		curpath_prepare(char **curpath, char *directory, char *cwd);
 t_ecode		curpath_trim(char **curpath);
-t_ecode		init_curpath_dirs(char **curpath, char ***dirs, t_curpath **final_dirs);
-t_ecode		parse_curpath_dirs(t_curpath **final_dirs, char ***dirs);
+t_ecode		init_and_populate_curpath_list(char **curpath, char ***dirs, t_curpath **final_dirs);
+t_ecode		parse_curpath_dirs(t_curpath **final_dirs);
 t_ecode		remove_previous_dir(t_curpath **final_dirs, char ***dirs, int *i);
 t_ecode		check_access_and_add_back(t_curpath **final_dirs, char ***dirs, int *i);
+t_ecode		remove_curpath_node(t_curpath **head, t_curpath **node);
+void		curpath_del_node_definitely(t_curpath **node);
 
 
 bool		is_dir_prefix_valid_for_cdpath(char *directory);
