@@ -323,6 +323,12 @@ int		execute_cmd_list(t_shell *shell, t_cmd *cmds_list);
 
 //BUILTINS
 
+// ECHO
+
+int echo_builtin(char **args);
+
+
+
 //	CD
 
 t_ecode	builtin_cd(t_shell **shell, char *directory);
@@ -367,7 +373,6 @@ char		*get_home(void);
 
 const char	*get_error_msg(int e_nbr);
 
-int echo_builtin(t_cmd *cmd);
 t_ecode	unset_builtin(t_shell *shell, char *key);
 
 #endif
