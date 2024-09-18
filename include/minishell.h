@@ -42,6 +42,7 @@ typedef enum e_codes
 	NULL_ERROR,
 	COUNT_ERROR,
 	CWD_ERROR,
+	INVALID_OPTION,
 	MALLOC_ERROR,
 	HOME_ERROR,
 	ACCESS_ERROR,
@@ -326,6 +327,7 @@ int		execute_cmd_list(t_shell *shell, t_cmd *cmds_list);
 // ECHO
 
 int echo_builtin(char **args);
+int	pwd_builtin(char **args);
 
 
 

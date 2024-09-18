@@ -8,20 +8,20 @@ int echo_builtin(char **args) //Return unsigned int8_t?
 
 	if (!args)
 		return (FAILURE);
-	if (!args[0])
+	if (!args[1])
 	{
 		ft_putchar_fd('\n', 1);
 		return (SUCCESS);
 	}
-	if (args[1] && !ft_strncmp(args[0], "-n", 2))
+	if (args[1] && !ft_strncmp(args[1], "-n", 2))
 		{
 			newline = false;
-			str_arr = &args[1];
+			str_arr = &args[2];
 		}
 	else
 	{
 		newline = true;
-		str_arr = &args[0];
+		str_arr = &args[1];
 	}
 	i = 0;
 	while (str_arr[i])
