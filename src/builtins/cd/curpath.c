@@ -48,6 +48,8 @@ t_ecode	init_and_populate_curpath_list(char **curpath, char ***dirs, t_curpath *
 	return (SUCCESS);
 }
 
+
+//STOPPED HERE...
 t_ecode	parse_curpath_dirs(t_curpath **final_dirs)
 {
 	t_curpath	*iterator;
@@ -64,6 +66,7 @@ t_ecode	parse_curpath_dirs(t_curpath **final_dirs)
 		dir_len = ft_strlen(iterator->dir);
 		if (iterator->dir && !ft_strncmp(iterator->dir, ".", dir_len))
 		{
+			printf("Removing . from curpath\n");
 			current = iterator;
 			iterator = iterator->next;
 			remove_curpath_node(final_dirs, &current);
@@ -71,11 +74,18 @@ t_ecode	parse_curpath_dirs(t_curpath **final_dirs)
 		}
 		else if (iterator->dir && !ft_strncmp(iterator->dir, "..", dir_len))
 		{
-			//STOPPING HERE...
-			current = iterator;
+			printf("Removing .. from curpath\n");
+			if (iterator->previous && !ft_strncmp(iterator->previous->dir, "/", ft_strlen(iterator->previous->dir)))
+			{
+				current = iterator->previous;
+				remove_curpath_node(final_dirs, &current);
+				current = iterator;
+			}
+			else
+				current = iterator;
 			iterator = iterator->next;
-			remove_curpath_node(final_dirs, &current->previous); //Check if the path is actually valid.
 			remove_curpath_node(final_dirs, &current);
+			// remove_curpath_node(final_dirs, &current); //Check if the path is actually valid.
 			continue ;
 		}
 		iterator = iterator->next;
@@ -83,36 +93,6 @@ t_ecode	parse_curpath_dirs(t_curpath **final_dirs)
 	curpath_print(*final_dirs);
 	return (SUCCESS);
 }
-
-// t_ecode	parse_curpath_dirs(t_curpath **final_dirs, char ***dirs)
-// {
-// 	int		i;
-// 	t_ecode	status;
-
-// 	i = 0;
-// 	status = SUCCESS;
-// 	while ((*dirs) && (*dirs)[i])
-// 	{
-// 		printf("In parse_curpath: dir[%d]: %s\n", i, (*dirs)[i]);
-// 		if ((*dirs)[i][0] == '.' && (*dirs)[i][1] == '\0')
-// 		{
-// 			i++;
-// 			continue ;
-// 		}
-// 		else if ((*dirs)[i][0] == '.' && (*dirs)[i][1] == '.' && (*dirs)[i][2] == '\0')
-// 		{
-// 			// status = remove_current_dir(final_dirs, dirs, &i);
-// 			status = remove_previous_dir(final_dirs, dirs, &i);
-// 			if (status)
-// 				return (status);
-// 			continue ;
-// 		}
-// 		status = check_access_and_add_back(final_dirs, dirs, &i);
-// 	}
-// 	printf("\n\n\nAt the end of parse_curpath_dirs:\n\n");
-// 	curpath_print(*final_dirs);
-// 	return (status);
-// }
 
 char	*curpath_concat(t_curpath *head)
 {

@@ -6,10 +6,24 @@ int	executor(t_shell *shell, t_cmd *cmds_list)
 {
 	int	status;
 
-	if (!ft_strncmp(shell->cmd_list->args[0], "cd", 2))
+	declare_builtin(shell);
+
+	// if (!ft_strncmp(shell->cmd_list->args[0], "cd", 2))
+	// {
+	// 	printf("Executing cd\n");
+	// 	builtin_cd(&shell, shell->cmd_list->args[1]);
+	// }
+	if (!ft_strncmp(shell->cmd_list->args[0], "echo", 4))
 	{
-		printf("Executing cd\n");
-		builtin_cd(&shell, shell->cmd_list->args[1]);
+		// printf("Executing cd\n");
+		status = echo_builtin(shell->cmd_list->args);
+		return (status);
+	}
+	else if (!ft_strncmp(shell->cmd_list->args[0], "pwd", 3))
+	{
+		// printf("Executing cd\n");
+		status = pwd_builtin(shell->cmd_list->args);
+		return (status);
 	}
 	status = execute_cmd_list(shell, cmds_list);
 	return (status);
