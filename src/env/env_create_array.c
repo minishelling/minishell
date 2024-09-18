@@ -1,29 +1,29 @@
 #include "../../include/minishell.h"
 
-static size_t	count_env_nodes(t_env *env_list)
-{
-	size_t	count;
+// static size_t	count_env_nodes(t_env *env_list)
+// {
+// 	size_t	count;
 
-	if (!env_list || !env_list->key)
-		return (0);
-	count = 0;
-	while (env_list && env_list->next)
-	{
-		count++;
-		env_list = env_list->next;
-	}
-	return (count + 1); // The +1 counts the last node (not the null node).
-}
+// 	if (!env_list || !env_list->key)
+// 		return (0);
+// 	count = 0;
+// 	while (env_list && env_list->next)
+// 	{
+// 		count++;
+// 		env_list = env_list->next;
+// 	}
+// 	return (count + 1); // The +1 counts the last node (not the null node).
+// }
 
 char	**env_create_array(t_env *env)
 {
 	char	**env_array;
-	size_t	nodes_count;
-	size_t	i;
+	ssize_t	nodes_count;
+	ssize_t	i;
 
 	if (!env)
 		return (NULL);
-	nodes_count = count_env_nodes(env);
+	nodes_count = env_count_nodes(env);
 	env_array = ft_calloc (nodes_count + 1, sizeof(char *));
 	if (!env_array)
 		return (NULL);

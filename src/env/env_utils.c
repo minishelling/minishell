@@ -1,5 +1,18 @@
 #include "../../include/minishell.h"
 
+ssize_t	env_count_nodes(t_env *env_list)
+{
+	ssize_t	count;
+
+	count = 0;
+	while (env_list && env_list->key)
+	{
+		count++;
+		env_list = env_list->next;
+	}
+	return (count);
+}
+
 ssize_t	env_count_keys(char **envp)
 {
 	int	i;
@@ -71,42 +84,70 @@ char	*env_get_key(char *keyvalue)
 	return (key);
 }
 
-char	*env_get_value(char *keyvalue)
+t_ecode	*env_get_value(char *keyvalue, char **value_ptr)
 {
-	char	*value;
-	int		i;
-	int		value_len;
-	
+	size_t	value_len;
+	size_t	i;
 
 	if (!keyvalue || !keyvalue[0])
-		return (NULL);
-	i = 0;
-	while (*keyvalue && *keyvalue != '=')
+		return (NULL_STRING);
+	while (*keyvalue && *keyvalue!= '=')
 		keyvalue++;
-	keyvalue++;
+	if (*keyvalue != '=')
+		return (NULL_STRING);
 	value_len = ft_strlen(keyvalue);
-	value = ft_calloc(value_len + 1, sizeof(char));
-	if (!value)
-		return (NULL);
+	*value_ptr = (char *) ft_calloc(value_len + 1, sizeof(char));
+	if (!*value_ptr)
+		return (MALLOC_ERROR);
 	i = 0;
 	while (i < value_len)
 	{
-		value[i] = keyvalue[i];
+		(*value_ptr)[i] = keyvalue[i];
 		i++;
 	}
-	value[i] = '\0';
-	return (value);
+	(*value_ptr)[i] = '\0';
+	return (SUCCESS);
 }
+
+// char	*env_get_value(char *keyvalue) // Old version
+// {
+// 	char	*value;
+// 	int		i;
+// 	int		value_len;
+	
+
+// 	if (!keyvalue || !keyvalue[0])
+// 		return (NULL);
+// 	i = 0;
+// 	while (*keyvalue && *keyvalue != '=')
+// 		keyvalue++;
+// 	keyvalue++;
+// 	value_len = ft_strlen(keyvalue);
+// 	value = ft_calloc(value_len + 1, sizeof(char));
+// 	if (!value)
+// 		return (NULL);
+// 	i = 0;
+// 	while (i < value_len)
+// 	{
+// 		value[i] = keyvalue[i];
+// 		i++;
+// 	}
+// 	value[i] = '\0';
+// 	return (value);
+// }
 
 t_ecode	env_copy_keyval(t_env **new_node, char *keyvalue)
 {
+	t_ecode	status;
+
+	
 	(*new_node)->keyvalue = ft_strdup(keyvalue);
 	if (!(*new_node)->keyvalue)
 		return (MALLOC_ERROR);
 	(*new_node)->key = env_get_key((*new_node)->keyvalue);
 	if (!(*new_node)->key)
 		return (MALLOC_ERROR);
-	(*new_node)->value = env_get_value((*new_node)->keyvalue);
+	status = env_get_value((*new_node)->keyvalue, &(*new_node)->value);
 	if (!(*new_node)->value)
 		return (MALLOC_ERROR);
 	(*new_node)->next = NULL;

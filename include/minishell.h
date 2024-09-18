@@ -268,13 +268,15 @@ int ping_lisandro(t_shell *shell, t_tree *node, t_tree *parent_node);
 
 
 //ENV - Lisandro
+ssize_t	env_count_nodes(t_env *env_list);
 void	env_free_list(t_env	**head);
 t_ecode	env_init_list(t_env **head, char **envp);
 void	env_print_list(t_env *head);
 ssize_t	env_count_keys(char **envp);
 t_env	*env_new_node(void);
 char	*env_get_key(char *keyvalue);
-char	*env_get_value(char *keyvalue);
+// char	*env_get_value(char *keyvalue);
+t_ecode	*env_get_value(char *keyvalue, char **value_ptr);
 t_ecode	env_copy_keyval(t_env **new_node, char *keyvalue);
 char	**env_create_array(t_env *env);
 t_env	*env_find_node(t_env *env, char *key);
@@ -328,6 +330,7 @@ int		execute_cmd_list(t_shell *shell, t_cmd *cmds_list);
 
 int echo_builtin(char **args);
 int	pwd_builtin(char **args);
+int	declare_builtin(t_shell *shell);
 
 
 
