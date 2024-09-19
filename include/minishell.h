@@ -289,7 +289,7 @@ t_ecode	update_value_in_env_node(t_env *node, char *value);
 t_ecode	update_keyvalue_in_env_node(t_env *node);
 t_ecode	update_pwd(t_env *env_head);
 char	*get_key_from_keyvalue(char *keyvalue);
-t_ecode	*get_value_from_keyvalue(char *keyvalue, char **value_ptr);
+t_ecode	get_value_from_keyvalue(char *keyvalue, char **value_ptr);
 t_env	*find_env_node(t_env *env, char *key);
 t_env	*get_last_env_node(t_env *head);
 
@@ -332,12 +332,10 @@ int		execute_cmd_list(t_shell *shell, t_cmd *cmds_list);
 
 //BUILTINS
 
-// ECHO
-
 int echo_builtin(char **args);
 int	pwd_builtin(char **args);
 int	declare_builtin(t_shell *shell);
-
+int	export_builtin(t_shell *shell, char **args);
 
 
 //	CD
