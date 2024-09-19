@@ -23,7 +23,7 @@ t_ecode	chdir_tilde(t_env *env_list, char **cwd)
 	char	*home_path;
 	int		status;
 
-	home_node = env_find_node(env_list, "HOME");
+	home_node = find_env_node(env_list, "HOME");
 	if (home_node)
 		return (chdir_home(env_list, cwd));
 	home_path = get_home();
@@ -43,7 +43,7 @@ t_ecode	chdir_dash(t_env *env_list, char **cwd)
 	t_env	*oldpwd_node;
 	int		status;
 
-	oldpwd_node = env_find_node(env_list, "OLDPWD");
+	oldpwd_node = find_env_node(env_list, "OLDPWD");
 	if (!oldpwd_node)
 	{
 		//PRINT mini_shared: cd: OLDPWD not set.
@@ -108,7 +108,7 @@ t_ecode	chdir_home(t_env *env_head, char **cwd)
 	t_env	*home_node;
 	t_ecode	exit_status;
 
-	home_node = env_find_node(env_head, "HOME");
+	home_node = find_env_node(env_head, "HOME");
 	if (!home_node || !home_node->value)
 	{
 		// PRINT ERROR
@@ -120,8 +120,8 @@ t_ecode	chdir_home(t_env *env_head, char **cwd)
 		exit_status = chdir(home_node->value);
 		if (exit_status)
 			return (CHDIR_ERROR);
-		env_update_node(env_head, "PWD", getcwd(NULL, PATH_MAX), true);
-		env_update_node(env_head, "OLDPWD", *cwd, true);
+		update_env_node(env_head, "PWD", getcwd(NULL, PATH_MAX), true);
+		update_env_node(env_head, "OLDPWD", *cwd, true);
 		ft_free((void **) cwd);
 		return (SUCCESS);
 	}
@@ -133,7 +133,7 @@ t_ecode	chdir_cdpath(t_shell **shell, char *directory)
 	char	**values;
 	t_ecode	status;
 
-	cdpath_node = env_find_node((*shell)->env_list, "CDPATH");
+	cdpath_node = find_env_node((*shell)->env_list, "CDPATH");
 	if (!cdpath_node || !cdpath_node->value)
 		return (CDPATH_NULL);
 	values = ft_split(cdpath_node->value, ':');

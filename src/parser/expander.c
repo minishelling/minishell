@@ -60,7 +60,7 @@ t_token	*expand_env_var(t_token *token, t_env *env_list)
 	size_t	i;
 
 	//env_var_print_linked_list (env_list);
-	// env_print_list (env_list);  // lisandro
+	// print_env_list (env_list);  // lisandro
 
 	return_tokens = NULL;
 	i = 0;
@@ -195,7 +195,7 @@ t_token	*expand(t_token *token_list_head, t_env *env_list)
 		{
 			printf ("expanding env_var\n");
 			//env_var_print_linked_list (env_list);
-			//env_print_list (env_list);  // lisandro
+			//print_env_list (env_list);  // lisandro
 			expanded_tokens = expand_env_var(current_token, env_list);
 		
 		}

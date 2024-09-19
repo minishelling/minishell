@@ -54,7 +54,7 @@ t_ecode	remove_curpath_node(t_curpath **head, t_curpath **node)
 	// t_curpath	*next_node;
 
 	if (!*node || !*head)
-		return (NODE_NOT_FOUND);
+		return (NULL_NODE);
 	previous_node = (*node)->previous;
 	curpath_del_node(node);
 	// *node = previous_node;

@@ -1,5 +1,154 @@
-#include "../include/minishell.h"
+// #include "../include/minishell.h"
 
+//	OLD ENV_INIT FUNCTION
+t_ecode	init_env_list(t_env **head, char **envp)
+{
+	t_env		*current;
+	t_env		*new_node;
+	t_ecode		status;	
+	size_t		i;
+
+	if (!envp || !*envp)
+		return (NULL_ERROR);
+	i = 0;
+	while (envp[i])
+	{
+		new_node = new_copied_env_node(envp[i], &status);
+		if (status != SUCCESS)
+			return (status);
+		if (!*head)
+		{
+			*head = new_node;
+			current = *head;
+		}
+		else
+		{
+			current->next = new_node;
+			current = current->next;
+		}
+		i++;
+	}
+	return (SUCCESS);
+}
+
+static t_env	*new_copied_env_node(char *keyvalue, t_ecode *status)
+{
+	t_env	*new_node;
+
+	*status = SUCCESS;
+	new_node = new_env_node();
+	if (!new_node)
+	{
+		*status = NEW_NODE_ERROR;
+		return (NULL);
+	}
+	*status = copy_keyvalue_into_env_node(&new_node, keyvalue);
+	if (*status != SUCCESS)
+		return (NULL);
+	return (new_node);
+}
+
+t_env	*new_populated_env_node(char *key, char *value)
+{
+	t_env	*new_node;
+	
+	new_node = new_env_node();
+	if (!new_node)
+		return (NULL);
+	if (update_key_in_env_node(new_node, key))
+	{
+		ft_free((void **) &new_node);
+		return (NULL);
+	}
+	if (update_value_in_env_node(new_node, value))
+	{
+		ft_free((void **) &new_node->key);
+		ft_free((void **) &new_node->keyvalue);
+		ft_free((void **) &new_node);
+		return (NULL);
+	}
+	return (new_node);
+}
+
+// char	*get_value_from_keyvalue(char *keyvalue) // Old version
+// {
+// 	char	*value;
+// 	int		i;
+// 	int		value_len;
+	
+
+// 	if (!keyvalue || !keyvalue[0])
+// 		return (NULL);
+// 	i = 0;
+// 	while (*keyvalue && *keyvalue != '=')
+// 		keyvalue++;
+// 	keyvalue++;
+// 	value_len = ft_strlen(keyvalue);
+// 	value = ft_calloc(value_len + 1, sizeof(char));
+// 	if (!value)
+// 		return (NULL);
+// 	i = 0;
+// 	while (i < value_len)
+// 	{
+// 		value[i] = keyvalue[i];
+// 		i++;
+// 	}
+// 	value[i] = '\0';
+// 	return (value);
+// }
+
+// t_ecode	update_oldpwd(t_env	*oldpwd_node, char *cwd)
+// {
+// 	if (!oldpwd_node)
+// 	{
+// 		oldpwd_node = new_populated_env_node("PWD", getcwd(NULL, PATH_MAX));
+// 		if (!pwd_node)
+// 			return (MALLOC_ERROR);
+// 	}
+// 	else
+// 	{
+// 		if (update_value_in_env_node(pwd_node, getcwd(NULL, PATH_MAX)))
+// 			return (MALLOC_ERROR);
+// 	}
+// 	return (SUCCESS);
+// }
+
+// t_ecode update_key_in_env_node(t_env *node, char *key)
+// {
+// 	if (!node || !key)
+// 		return (NULL_ERROR);
+// 	if (node->key)
+// 		ft_free((void **) &node->key);
+// 	else
+// 	{
+// 		node->key = ft_strdup(key);
+// 		if (!node->key)
+// 			return (MALLOC_ERROR);
+// 	}
+// 	if (update_keyvalue_in_env_node(node))
+// 		return (MALLOC_ERROR);
+// 	return (SUCCESS);
+// }
+
+
+t_ecode	copy_keyvalue_into_env_node(t_env **new_node, char *keyvalue)
+{
+	t_ecode	status;
+
+	(*new_node)->keyvalue = ft_strdup(keyvalue);
+	if (!(*new_node)->keyvalue)
+		return (MALLOC_ERROR);
+	(*new_node)->key = get_key_from_keyvalue((*new_node)->keyvalue);
+	if (!(*new_node)->key)
+		return (MALLOC_ERROR);
+	status = get_value_from_keyvalue((*new_node)->keyvalue, &(*new_node)->value);
+	if (!(*new_node)->value)
+		return (MALLOC_ERROR);
+	(*new_node)->next = NULL;
+	return (SUCCESS);
+}
+
+//FROM INIT_SHELL.c
 // int	unset_env_var(char *key, t_env **env_list)  //builtin
 // {
 // 	int		key_len;
@@ -75,7 +224,7 @@
 //--------------------------
 
 
-// char	*env_get_value(char *keyvalue)
+// char	*get_value_from_keyvalue(char *keyvalue)
 // {
 // 	char	*value;
 // 	int		i;
@@ -101,7 +250,7 @@
 // 	return (value);
 // }
 
-// char	*env_get_key(char *keyvalue)
+// char	*get_key_from_keyvalue(char *keyvalue)
 // {
 // 	char	*key;
 // 	int		i;
@@ -126,22 +275,22 @@
 // }
 
 
-// t_ecode	env_copy_keyval(t_env **new_node, char *keyvalue)
+// t_ecode	copy_keyvalue_into_env_node(t_env **new_node, char *keyvalue)
 // {
 // 	(*new_node)->keyvalue = ft_strdup(keyvalue);
 // 	if (!(*new_node)->keyvalue)
 // 		return (MALLOC_ERROR);
-// 	(*new_node)->key = env_get_key((*new_node)->keyvalue);
+// 	(*new_node)->key = get_key_from_keyvalue((*new_node)->keyvalue);
 // 	if (!(*new_node)->key)
 // 		return (MALLOC_ERROR);
-// 	(*new_node)->value = env_get_value((*new_node)->keyvalue);
+// 	(*new_node)->value = get_value_from_keyvalue((*new_node)->keyvalue);
 // 	if (!(*new_node)->value)
 // 		return (MALLOC_ERROR);
 // 	(*new_node)->next = NULL;
 // 	return (SUCCESS);
 // }
 
-// t_env	*env_new_node(void)
+// t_env	*new_env_node(void)
 // {
 // 	t_env	*new_node;
 	
@@ -154,7 +303,7 @@
 // 	return (new_node);
 // }
 
-// ssize_t	env_count_keys(char **envp)
+// ssize_t	count_envp_keys(char **envp)
 // {
 // 	int	i;
 
@@ -166,24 +315,24 @@
 // 	return (i);
 // }
 
-// static t_env	*env_new_copied_node(char *keyvalue, t_ecode *status)
+// static t_env	*new_copied_env_node(char *keyvalue, t_ecode *status)
 // {
 // 	t_env	*new_node;
 
 // 	*status = SUCCESS;
-// 	new_node = env_new_node();
+// 	new_node = new_env_node();
 // 	if (!new_node)
 // 	{
 // 		*status = NEW_NODE_ERROR;
 // 		return (NULL);
 // 	}
-// 	*status = env_copy_keyval(&new_node, keyvalue);
+// 	*status = copy_keyvalue_into_env_node(&new_node, keyvalue);
 // 	if (*status != SUCCESS)
 // 		return (NULL);
 // 	return (new_node);
 // }
 
-// t_ecode	env_init_list(t_env **head, char **envp)
+// t_ecode	init_env_list(t_env **head, char **envp)
 // {
 // 	t_env		*current;
 // 	t_env		*new_node;
@@ -195,7 +344,7 @@
 // 	i = 0;
 // 	while (envp[i])
 // 	{
-// 		new_node = env_new_copied_node(envp[i], &status);
+// 		new_node = new_copied_env_node(envp[i], &status);
 // 		if (status != SUCCESS)
 // 			return (status);
 // 		if (!*head)
@@ -211,3 +360,4 @@
 // 		i++;
 // 	}
 // }
+

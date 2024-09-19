@@ -23,7 +23,7 @@ static char	**sort_env_list(t_env *env_list_head)
 	env_arr = create_full_env_array(env_list_head);
 	if (!env_arr)
 		return (NULL);
-	count = env_count_nodes(env_list_head);
+	count = count_key_env_nodes(env_list_head);
 	bubblesort_array(env_arr, count);
 	return (env_arr);
 }
@@ -36,7 +36,7 @@ static char	**create_full_env_array(t_env *env_head)
 
 	if (!env_head)
 		return (NULL);
-	nodes_count = env_count_nodes(env_head);
+	nodes_count = count_key_env_nodes(env_head);
 	env_array = ft_calloc (nodes_count + 1, sizeof(char *));
 	if (!env_array)
 		return (NULL);

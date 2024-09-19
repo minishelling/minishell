@@ -142,7 +142,7 @@ int	parse(t_shell *shell)
 		return (status);
 	}
 	//env_var_print_linked_list (shell->env_list);
-	//env_print_list (shell->env_list);  // lisandro
+	//print_env_list (shell->env_list);  // lisandro
 	shell->token = expand(shell->token, shell->env_list);
 
 	// printf ("After expantion:\n");

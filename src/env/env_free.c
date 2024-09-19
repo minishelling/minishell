@@ -1,6 +1,7 @@
 #include "../../include/minishell.h"
 
-void	env_free_list(t_env	**head)
+//Done
+void	free_env_list(t_env	**head)
 {
 	t_env	*current;
 	t_env	*temp;
@@ -8,14 +9,26 @@ void	env_free_list(t_env	**head)
 	if (!head || !*head)
 		return ;
 	current = *head;
-	while (current != NULL)
+	while (current)
 	{
-		free(current->keyvalue);
-		free(current->key);
-		free(current->value);
 		temp = current;
 		current = current->next;
-		free(temp);
+		free_env_node(&temp);
 	}
-	free(current);
+	return ;
+}
+
+//Done
+void	free_env_node(t_env **node)
+{
+	if (!*node)
+		return ;
+	if ((*node)->keyvalue)
+		ft_free((void **) &(*node)->keyvalue);
+	if ((*node)->key)
+		ft_free((void **) &(*node)->key);
+	if ((*node)->value)
+		ft_free((void **) &(*node)->value);
+	ft_free((void **) node);
+	return ;
 }

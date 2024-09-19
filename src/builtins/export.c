@@ -11,13 +11,13 @@ int	export_builtin(t_shell *shell, char **args)
 		return (FAILURE);
 	if (!args[1])
 		return (declare_builtin(shell));
-	key = env_get_key(args[1]);
+	key = get_key_from_keyvalue(args[1]);
 	if (!key)
 		return (MALLOC_ERROR);
-	status = env_get_value(args[1]);
+	status = get_value_from_keyvalue(args[1]);
 	if (!value)
 		return (MALLOC_ERROR);
-	env_update_node(shell->env_list, )
+	update_env_node(shell->env_list, )
 
 	return (SUCCESS);
 }

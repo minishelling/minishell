@@ -87,7 +87,7 @@ int	execute_cmd_list(t_shell *shell, t_cmd *cmds_list)
 		do_parent_duties(shell, &cmds_list, cmds_count, i);
 		i++;
 	}
-	return (0);
+	return (WEXITSTATUS(shell->status));
 }
 
 void	run_child(t_shell *shell, t_cmd *cmds_head, size_t cmds_count, size_t current_child)
@@ -115,7 +115,7 @@ void	run_child(t_shell *shell, t_cmd *cmds_head, size_t cmds_count, size_t curre
 	// printf("Reached checkpoint 2 in run_child\n");
 	if (cmds_head && cmds_head->args)
 		cmd_path = get_cmd_path(shell, cmds_head->args[0]);
-	env_array = env_create_array(shell->env_list);
+	env_array = create_env_array(shell->env_list);
 	execve(cmd_path, cmds_head->args, env_array);
 	// printf("Failed to execute. Exiting.\n");
 	exit(EXIT_FAILURE);
@@ -141,7 +141,7 @@ void	do_parent_duties(t_shell *shell, t_cmd **curr_cmd, size_t cmds_count, size_
 
 // 	// handle_redirections(shell, cmd);
 // 	cmd_path = get_cmd_path(shell, shell->cmd_list->args[0]);
-// 	env_array = env_create_array(shell->env_list);
+// 	env_array = create_env_array(shell->env_list);
 // 	execve(cmd_path, cmd->args, env_array);
 
 // }

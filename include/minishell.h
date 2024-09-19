@@ -51,7 +51,7 @@ typedef enum e_codes
 	CDPATH_NULL,
 	ENV_ERROR,
 	NEW_NODE_ERROR,
-	NODE_NOT_FOUND,
+	NULL_NODE,
 	NULL_STRING,
 	NULL_ARRAY,
 	NULL_CURPATH_LIST,
@@ -140,9 +140,9 @@ typedef struct s_env_list
 
 typedef struct s_env
 {
-	char			*keyvalue;
 	char			*key;
 	char			*value;
+	char			*keyvalue;
 	struct s_env	*next;
 }	t_env;
 
@@ -229,8 +229,8 @@ t_token	*free_token_str(t_token *token);
 t_env	*new_env_var(char *env_var_str);
 void	add_env_var_in_back(t_env **env_var, t_env *new_env_var);
 char	*get_env_value_from_key(t_env *env_head, char *key);
-void	free_env_node(t_env *env_var_node);
-void	free_env_list(t_env *env_list);
+// void	free_env_node(t_env *env_var_node);
+// void	free_env_list(t_env *env_list);
 
 t_cmd	*new_cmd(void);
 t_cmd	*cmd_last(t_cmd *cmd);
@@ -254,39 +254,45 @@ void	handle_error(t_shell *shell, int err_no, void *param);
 t_token	*get_after_word_token(t_token *token);
 
 t_token *find_last_log_op_token_nip(t_token *token_head, t_token *end_token);
-t_tree *make_tree(t_shell *shell, t_token *start_token, t_token *end_token);
-void print_tree(t_tree *node, int level);
-void remove_space_tokens(t_token **head);
+t_tree 	*make_tree(t_shell *shell, t_token *start_token, t_token *end_token);
+void	print_tree(t_tree *node, int level);
+void 	remove_space_tokens(t_token **head);
 t_token *remove_token(t_token *start_token, t_token *token_to_remove);
-void free_tree(t_tree *node);
+void 	free_tree(t_tree *node);
 t_token *remove_subshell_parens(t_token **head);
 t_cmd	make_cmd(t_shell *shell, t_token *start_token, t_token *end_token);
-void print_tree_with_cmds(t_tree *node, int level);
+void 	print_tree_with_cmds(t_tree *node, int level);
 t_token *get_after_arith_expan_token(t_token *token);
-int parser_arith_expan(t_cmd *cmd_node, t_token *token);
-int ping_lisandro(t_shell *shell, t_tree *node, t_tree *parent_node);
+int 	parser_arith_expan(t_cmd *cmd_node, t_token *token);
+int 	ping_lisandro(t_shell *shell, t_tree *node, t_tree *parent_node);
 
 
 //ENV - Lisandro
-ssize_t	env_count_nodes(t_env *env_list);
-void	env_free_list(t_env	**head);
-t_ecode	env_init_list(t_env **head, char **envp);
-void	env_print_list(t_env *head);
-ssize_t	env_count_keys(char **envp);
-t_env	*env_new_node(void);
-char	*env_get_key(char *keyvalue);
-// char	*env_get_value(char *keyvalue);
-t_ecode	*env_get_value(char *keyvalue, char **value_ptr);
-t_ecode	env_copy_keyval(t_env **new_node, char *keyvalue);
-char	**env_create_array(t_env *env);
-t_env	*env_find_node(t_env *env, char *key);
-size_t	env_count_values(t_env *env, char *key);
-t_ecode	env_update_keyvalue(t_env *node);
-t_ecode env_update_key(t_env *node, char *key);
-t_ecode	env_update_value(t_env *node, char *value);
-t_ecode	env_update_node(t_env *head, char *key, char *value, bool create_node);
-void	env_print_node(t_env *node);
-t_ecode	env_free_node(t_env **node);
+
+ssize_t	count_keyvalue_env_nodes(t_env *env_list);
+ssize_t	count_key_env_nodes(t_env *env_list);
+ssize_t	count_envp_keys(char **envp);
+ssize_t	count_values_from_env_node(t_env *env, char *key);
+char	**create_env_array(t_env *env);
+char	**create_export_array(t_env *env);
+void	free_env_list(t_env	**head);
+void	free_env_node(t_env **node);
+t_env	*new_env_node(void);
+t_ecode	populate_env_node(t_env **node, char *keyval);
+t_env	*create_populated_env_node(char *keyval);
+t_ecode	init_env_list(t_env **head, char **envp);
+void	print_env_node(t_env *node);
+void	print_env_list(t_env *head);
+t_ecode	add_last_env_node(t_env **head, t_env *env);
+t_ecode	update_env_node(t_env **head, char *key, char *value, bool create_node);
+t_ecode	update_value_in_env_node(t_env *node, char *value);
+t_ecode	update_keyvalue_in_env_node(t_env *node);
+t_ecode	update_pwd(t_env *env_head);
+char	*get_key_from_keyvalue(char *keyvalue);
+t_ecode	*get_value_from_keyvalue(char *keyvalue, char **value_ptr);
+t_env	*find_env_node(t_env *env, char *key);
+t_env	*get_last_env_node(t_env *head);
+
 
 t_ecode	update_pwd(t_env *pwd_node);
 t_ecode	update_oldpwd(t_env	*oldpwd_node, char *cwd);

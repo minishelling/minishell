@@ -2,9 +2,9 @@
 
 // static void	test_handle(t_shell *shell)
 // {
-// 	env_print_node(env_find_node(shell->env_list, "PWD"));
-// 	env_update_node(shell->env_list, "PWD", "NEW_VALUE", true);
-// 	env_print_node(env_find_node(shell->env_list, "PWD"));
+// 	print_env_node(find_env_node(shell->env_list, "PWD"));
+// 	update_env_node(shell->env_list, "PWD", "NEW_VALUE", true);
+// 	print_env_node(find_env_node(shell->env_list, "PWD"));
 // }
 
 // Main function for testing purposes.
@@ -19,7 +19,7 @@
 // 		exit(EXIT_FAILURE);
 // 	}
 // 	shell.env_list = NULL;
-// 	if (env_init_list(&shell.env_list, envp))
+// 	if (init_env_list(&shell.env_list, envp))
 // 	{
 // 		write(2, "Mini_shared: Error: Failed to initialize\n", 42);
 // 		exit(EXIT_FAILURE);
@@ -62,7 +62,7 @@ int main(int argc, char **argv, char **envp)
 		exit(EXIT_FAILURE);
 	}
 	shell.env_list = NULL;
-	if (env_init_list(&shell.env_list, envp))
+	if (init_env_list(&shell.env_list, envp))
 	{
 		write(2, "Mini_shared: Error: Failed to initialize\n", 42);
 		exit(EXIT_FAILURE);

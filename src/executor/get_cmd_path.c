@@ -32,7 +32,7 @@ char	*get_cmd_path(t_shell *shell, char *cmd_name)
 	int		i;
 	int		status;
 
-	path_node = env_find_node(shell->env_list, "PATH");
+	path_node = find_env_node(shell->env_list, "PATH");
 	if (!path_node || !path_node->value || !cmd_name)
 		return (NULL); //Idea to set ft_errno.
 	paths = ft_split(path_node->value, ':');

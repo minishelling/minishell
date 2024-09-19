@@ -44,7 +44,7 @@ t_ecode	check_for_special_cd_cases(t_env *env, char *directory, char **curpath)
 	if (!ft_strncmp(directory, "~", 1))
 	{
 		printf("~ is home\n");
-		env_node = env_find_node(env, "HOME");
+		env_node = find_env_node(env, "HOME");
 		if (!env_node)
 			return (ENV_ERROR);
 		*curpath = ft_strdup(env_node->value);
@@ -54,7 +54,7 @@ t_ecode	check_for_special_cd_cases(t_env *env, char *directory, char **curpath)
 	else if (!ft_strncmp(*curpath, "-", 1))
 	{
 		printf("~ is home\n");
-		env_node = env_find_node(env, "OLDPWD");
+		env_node = find_env_node(env, "OLDPWD");
 		if (!env_node)
 			return (ENV_ERROR);
 		*curpath = ft_strdup(env_node->value);

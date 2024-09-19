@@ -1,15 +1,12 @@
 #include "../../include/minishell.h"
 
-void	env_print_node(t_env *node)
+//Done
+void	print_env_node(t_env *node)
 {
 	if (!node)
 		return ;
 	else
 	{
-		if (node->keyvalue)
-			ft_printf("Key-value: %s\n", node->keyvalue);
-		else
-			ft_printf("No key-value\n");
 		if (node->key)
 			ft_printf("Key: %s\n", node->key);
 		else
@@ -18,19 +15,23 @@ void	env_print_node(t_env *node)
 			ft_printf("Value: %s\n\n\n", node->value);
 		else
 			ft_printf("No value\n");
+		if (node->keyvalue)
+			ft_printf("Key-value: %s\n", node->keyvalue);
+		else
+			ft_printf("No key-value\n");
 	}
+	return ;
 }
 
-void	env_print_list(t_env *head)
+//Done
+void	print_env_list(t_env *head)
 {
-	printf ("Lisandro's\n");
 	if (!head)
 		return ;
-	while(head != NULL)
+	while (head)
 	{
-		ft_printf("Key-value: %s\n", head->keyvalue);
-		ft_printf("Key: %s\n", head->key);
-		ft_printf("Value: %s\n\n\n", head->value);
+		print_env_node(head);
 		head = head->next;
 	}
+	return ;
 }
