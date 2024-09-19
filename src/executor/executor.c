@@ -73,7 +73,7 @@ int	execute_cmd_list(t_shell *shell, t_cmd *cmds_list)
 		do_parent_duties(shell, &cmds_list, cmds_count, i);
 		i++;
 	}
-	return (0);
+	return (WEXITSTATUS(shell->status));
 }
 
 void	run_child(t_shell *shell, t_cmd *cmds_head, size_t cmds_count, size_t current_child)
