@@ -59,8 +59,6 @@ void print_tree(t_tree *node, int level)
 
 
 
-
-
 t_token *get_rid_of_first_parenthesis(t_token *start_token, t_token **end_token)
 {
 	t_token *iterator;

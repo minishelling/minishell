@@ -102,21 +102,21 @@ t_token *find_previous(t_token *head, t_token *target)
 }
 
 
-t_token *handle_arith_expan(t_token **head, t_token *cur_open, t_token **cur_close)
+t_token *handle_arith_expan(t_token **head, t_token **cur_open, t_token **cur_close)
 {
 
 	t_token *outer_open;
 	t_token *outer_close;
-	printf ("in arith expan\n");
-	printf (">cur_open is %s , cur_close is %s\n", cur_open->str, (*cur_close)->str);
-	while (cur_open && cur_close && cur_open->id == PAR_OPEN && (*cur_close)->id == PAR_CLOSE)
+	//printf ("in arith expan\n");
+	//printf (">cur_open is %s , cur_close is %s\n", (*cur_open)->str, (*cur_close)->str);
+	while (*cur_open && cur_close && (*cur_open)->id == PAR_OPEN && (*cur_close)->id == PAR_CLOSE)
 	{
 		//printf ("I'm in the while loop\n");
 	
-		outer_open = cur_open;
+		outer_open = (*cur_open);
 		outer_close = *cur_close;
 		//printf (">outer_open is %s , outer_close is %s\n", outer_open->str, outer_close->str);
-		cur_open = find_previous(*head, cur_open);
+		(*cur_open) = find_previous(*head, (*cur_open));
         (*cur_close) = (*cur_close)->next;
 		// if (cur_open && cur_close)
 			//printf (">cur_open is %s , cur_close is %s\n", cur_open->str, cur_close->str);
@@ -126,8 +126,8 @@ t_token *handle_arith_expan(t_token **head, t_token *cur_open, t_token **cur_clo
 	outer_open->str = "((";
 	outer_close->id = ARITH_EXPAN;
 	outer_close->str = "))";
-    //printf("after handling arith expan:\n");
-    //print_token(*head);
+    // printf("after handling arith expan:\n");
+    // print_token(*head);
     return (*head);
 }
 
@@ -171,11 +171,11 @@ t_token *remove_subshell_parens(t_token **head)
                 // Check for arithmetic expansion and handle it
                 if (opening_par && opening_par->id == PAR_OPEN && closing_par && closing_par->id == PAR_CLOSE)
                 {
-                    handle_arith_expan(head, opening_par, &closing_par);
+                    handle_arith_expan(head, &opening_par, &closing_par);
                 }
 
                 //printf("after arith expan head is %p\n", *head);
-				if (closing_par->next)
+				if (closing_par && closing_par->next)
 					current = closing_par->next;
             }
             else
@@ -189,11 +189,9 @@ t_token *remove_subshell_parens(t_token **head)
         {
             current = current->next;
         }
-
-        // Debugging print statement
         // if (current)
             // printf("current is %s\n", current->str);
     }
-
+	
     return (*head);
 }
