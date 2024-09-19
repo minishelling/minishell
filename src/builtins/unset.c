@@ -7,5 +7,5 @@ t_ecode	unset_builtin(t_shell *shell, char *key)
 	env_node = find_env_node(shell->env_list, key);
 	if (!env_node)
 		return (NULL_NODE);
-	return (free_env_node(&env_node));
+	return (free_env_node(&env_node), SUCCESS);
 }

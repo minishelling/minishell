@@ -48,27 +48,27 @@ void	add_env_var_in_back(t_env **env_list, t_env *new_env_var)
 	current->next = new_env_var;
 }
 
-void	free_env_node(t_env *env_var_node)
-{
-	free(env_var_node->key);
-	if (env_var_node->value)
-		free(env_var_node->value);
-	free(env_var_node);
-}
+// void	free_env_node(t_env *env_var_node)
+// {
+// 	free(env_var_node->key);
+// 	if (env_var_node->value)
+// 		free(env_var_node->value);
+// 	free(env_var_node);
+// }
 
-void	free_env_list(t_env *env_list)
-{
-	t_env	*tmp_env;
+// void	free_env_list(t_env *env_list)
+// {
+// 	t_env	*tmp_env;
 
-	if (env_list == NULL)
-		return ;
-	while (env_list)
-	{
-		tmp_env = env_list->next;
-		free_env_node(env_list);
-		env_list = tmp_env;
-	}
-}
+// 	if (env_list == NULL)
+// 		return ;
+// 	while (env_list)
+// 	{
+// 		tmp_env = env_list->next;
+// 		free_env_node(env_list);
+// 		env_list = tmp_env;
+// 	}
+// }
 
 
 

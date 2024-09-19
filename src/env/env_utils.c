@@ -26,13 +26,13 @@ char	*get_key_from_keyvalue(char *keyvalue)
 }
 
 //Done
-t_ecode	*get_value_from_keyvalue(char *keyvalue, char **value_ptr)
+t_ecode	get_value_from_keyvalue(char *keyvalue, char **value_ptr)
 {
 	size_t	value_len;
 	size_t	i;
 
 	if (!keyvalue || !keyvalue[0])
-		return (NULL_STRING);
+		return (NULL_ERROR);
 	while (*keyvalue && *keyvalue!= '=')
 		keyvalue++;
 	if (*keyvalue != '=')

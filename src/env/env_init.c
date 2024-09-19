@@ -17,7 +17,6 @@ t_env	*new_env_node(void)
 //Done
 t_ecode	populate_env_node(t_env **node, char *keyval)
 {
-	t_ecode	status;
 	if (!*node)
 		return (NULL_NODE);
 	if (!keyval)

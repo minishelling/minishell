@@ -6,8 +6,6 @@ int	executor(t_shell *shell, t_cmd *cmds_list)
 {
 	int	status;
 
-	declare_builtin(shell);
-
 	// if (!ft_strncmp(shell->cmd_list->args[0], "cd", 2))
 	// {
 	// 	printf("Executing cd\n");
@@ -23,6 +21,12 @@ int	executor(t_shell *shell, t_cmd *cmds_list)
 	{
 		// printf("Executing cd\n");
 		status = pwd_builtin(shell->cmd_list->args);
+		return (status);
+	}
+	else if (!ft_strncmp(shell->cmd_list->args[0], "export", 6))
+	{
+		// printf("Executing cd\n");
+		status = export_builtin(shell, shell->cmd_list->args);
 		return (status);
 	}
 	status = execute_cmd_list(shell, cmds_list);
