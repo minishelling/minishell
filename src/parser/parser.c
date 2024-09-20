@@ -42,7 +42,7 @@ bool	init_cmd(t_shell *shell, t_cmd **current_cmd, t_token *token)
 		[9] = parser_redir,
 		[10] = NULL, //quotes after handling 
 		[11] = NULL, //quotes after handling
-		[12] = NULL, //env var after handling
+		[12] = parser_env_var, //env var after handling
 		[13] = parser_word,
 		[14] = parser_or_opr,
 		[15] = parser_arith_expan
@@ -137,24 +137,26 @@ int	parse(t_shell *shell)
 	}
 	//env_var_print_linked_list (shell->env_list);
 	//env_print_list (shell->env_list);  // lisandro
-	shell->token = expand(shell->token, shell->env_list);
+	//shell->token = expand(shell->token, shell->env_list);
 
 	// printf ("After expantion:\n");
 	// print_token(shell->token);
 
-	join_word_tokens(shell);
+	join_word_and_env_var_tokens(shell);
 	// if (concatenate_word_tokens(shell) == false)
 	// 	return (free_token_list(shell->token, list_token_free_node_str),
 	// 			error(append));
+	printf ("after concat words and env_vars tokens\n");
+	print_token(shell->token);
+	
 	remove_space_tokens(&shell->token);
-
-	// printf ("after removing space tokens\n");
-	// print_token(shell->token);
+	printf ("after removing space tokens\n");
+	print_token(shell->token);
 
 	remove_subshell_parens(&(shell->token));
 
-	// printf ("after removing subshell_parens\n");
-	// print_token(shell->token);
+	printf ("after removing subshell_parens\n");
+	print_token(shell->token);
 
 
 	//mandatory:
@@ -168,8 +170,8 @@ int	parse(t_shell *shell)
 	//bonus:
 	shell->tree = make_tree(shell, shell->token, last_token(shell->token));
 
-	// printf("\n"WHITE_TEXT MAGENTA_BACKGROUND"THE TREE"RESET_COLOR);
-	// printf("\n--------------------\n");
+	printf("\n"WHITE_TEXT MAGENTA_BACKGROUND"THE TREE"RESET_COLOR);
+	printf("\n--------------------\n");
 	
 	// if (shell->tree)
 	// 	print_tree(shell->tree, 0);

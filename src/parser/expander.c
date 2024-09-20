@@ -52,42 +52,9 @@ t_token	*create_expanded_tokens(char *str)
 	return (expanded_token_list);
 }
 
-t_token	*expand_env_var(t_token *token, t_env *env_list)
-{
-	t_token	*return_tokens;
-	t_token	*expanded_token;
-	char	**split;
-	size_t	i;
 
-	//env_var_print_linked_list (env_list);
-	// env_print_list (env_list);  // lisandro
 
-	return_tokens = NULL;
-	i = 0;
 
-	char *env_value = get_env_value_from_key(env_list, (token->str + 1));
-	//printf ("in expand_env_var str is %s\n", env_value);
-	
-	split = ft_split (env_value, ' ');
-	if (!split)
-		return (NULL);
-	while (split[i] != NULL)
-	{
-		expanded_token = create_expanded_tokens(split[i]);
-		//printf ("LIST OF EXPANDED TOKENS ");
-		//print_token(expanded_token);
-		// if (expanded_token)
-		// 	...
-		add_token_in_back(&return_tokens, expanded_token);
-		i++;
-	}
-	//printf ("i is %zu\n", i);
-	free(split);
-	if (i == 0)
-		return (new_token());
-	free_last_token(return_tokens, free_node);
-	return (return_tokens);
-}
 
 void remove_quotes(t_token *token)
 {
@@ -181,45 +148,117 @@ t_token	*expand_quote(t_token *token, t_env *env_list)
 	return (copy_token(token));
 }
 
+void expand_env_var(t_token *token, t_env *env_list)
+{
+    char *expanded_str;
+    char *var_start;
+    char *env_value;
+    char *temp_str;
+    char *var_end;
+
+    expanded_str = ft_strdup(""); // Start with an empty string to concatenate to
+
+    while (*token->str) // While there is something to process in the token string
+    {
+        var_start = ft_strchr(token->str, '$'); // Find the start of the next variable
+        if (!var_start) // No more variables to expand
+        {
+            // Add the rest of the string (including any spaces)
+            temp_str = ft_strjoin(expanded_str, token->str);
+			// if (!temp_str)
+				//error
+            free(expanded_str); 
+            expanded_str = temp_str; 
+            break;
+        }
+        else
+        {
+            // Add the part before the '$', including any spaces
+            temp_str = ft_strjoin(expanded_str, ft_substr(token->str, 0, var_start - token->str));
+			//if (!tempstr)
+				//error
+			token->id = WORD;
+            free(expanded_str);
+            expanded_str = temp_str;
+
+            // Find the end of the variable name (alphanumeric or underscore)
+            var_end = var_start + 1; // Start right after the '$'
+            while (ft_isalnum(*var_end) || *var_end == '_')
+                var_end++; // Move forward until the end of the variable name
+
+            // Extract the variable name
+            char *var_name = ft_substr(var_start + 1, 0, var_end - var_start - 1);
+            
+            // Get the environment variable's value
+            env_value = get_env_value_from_key(env_list, var_name); 
+            free(var_name); // Free temporary var_name after use
+
+            // Concatenate the env variable's value, spaces included
+            if (env_value)
+            {
+                temp_str = ft_strjoin(expanded_str, env_value); 
+                free(expanded_str); 
+                expanded_str = temp_str;
+            }
+			printf ("token_str is %s\n", token->str);
+            // Move the token pointer forward, past the variable name
+            token->str = var_end;
+        }
+    }
+
+    // Free the original token->str
+   //free(token->str);
+
+    // Assign the new expanded string to token->str
+    token->str = expanded_str;
+	printf ("the expanded str is %s\n", expanded_str);
+}
+
 t_token	*expand(t_token *token_list_head, t_env *env_list)
 {
-	t_token	*new_token_list;
+	//t_token	*new_token_list;
 	t_token	*current_token;
-	t_token	*expanded_tokens;
+	//t_token	*expanded_token;
 
-	new_token_list = NULL;
+	//new_token_list = NULL;
 	current_token = token_list_head;
 	while (current_token != NULL)
 	{
+		printf ("current token is %s\n", current_token->str);
 		if (current_token->id == ENV_VAR)
 		{
-			//printf ("expanding env_var\n");
+			printf ("expanding env_var\n");
 			//env_var_print_linked_list (env_list);
 			//env_print_list (env_list);  // lisandro
-			expanded_tokens = expand_env_var(current_token, env_list);
+			expand_env_var(current_token, env_list);
+			//expanded_token = expand_env_var(current_token, env_list);
 		
 		}
 		else if (current_token->id == DQUOTE || current_token->id == SQUOTE)
 		{
-			//printf ("handeling quotes\n");
-			expanded_tokens = expand_quote(current_token, env_list);
+			printf ("handeling quotes\n");
+			//expanded_token = expand_quote(current_token, env_list);
 		}
 		else
 		{
-			//printf ("copying token\n");
-			expanded_tokens = copy_token(current_token);
+			printf ("copying token\n");
+			//expanded_token = copy_token(current_token);
 		}
-		if (!expanded_tokens)
-		{
-			//printf ("no expanded_tokens\n");
-			current_token->str = ft_strdup("");
-			return (free_token_list(token_list_head), free_token_list(new_token_list), NULL); 
-			//error_print, 1, "expander: unable to expand")
-			//printf ("current_token is %s, expanded_token is %s\n", current_token->str, expanded_tokens->str);
-		}
-		add_token_in_back(&new_token_list, expanded_tokens);
+		// if (!expanded_token)
+		// {
+		// 	printf ("no expanded_tokens\n");
+		// 	current_token->str = ft_strdup("");
+		// 	return (free_token_list(token_list_head), free_token_list(new_token_list), NULL); 
+		// 	//error_print, 1, "expander: unable to expand")
+		// 	//printf ("current_token is %s, expanded_token is %s\n", current_token->str, expanded_tokens->str);
+		// }
+		//add_token_in_back(&new_token_list, expanded_token);
+		printf ("added in back . all the list is :");
+		print_token(token_list_head);
 		current_token = current_token->next;
 	}
-	free_token_list(token_list_head);
-	return (new_token_list);
+	//free_token_list(token_list_head);
+	printf("new token list\n");
+	print_token (token_list_head);
+	return (token_list_head);
 }

@@ -1,4 +1,4 @@
-#include "../../include/minishell.h"
+#include "../include/minishell.h"
 
 t_token	*new_token(void)
 {

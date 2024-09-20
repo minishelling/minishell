@@ -1,5 +1,12 @@
 #include "../../../include/minishell.h"
 
+int parser_env_var(t_cmd *cmd_node, t_token *token)
+{
+	(void) cmd_node;
+	(void) token;
+	return (0);
+}
+
 int parser_pipe(t_cmd *cmd_node, t_token *token)
 {
 	(void) cmd_node;

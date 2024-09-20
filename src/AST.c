@@ -178,8 +178,9 @@ t_tree *init_leaf_node(t_shell *shell, t_token *start_token, t_token *end_token)
 	while (end_token->id == SPACE_CHAR)
 		end_token = token_before (start_token, end_token);
 	leaf_node->end_token = end_token;
-	 
-	
+	shell->token = expand(shell->token, shell->env_list);
+	printf ("in init leaf node, after expansion\n");
+	print_token(shell->token);
 	leaf_node->cmd_list = make_cmd(shell, start_token, end_token);
 	leaf_node->left = NULL;
 	leaf_node->right = NULL;

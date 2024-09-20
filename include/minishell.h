@@ -181,7 +181,7 @@ int		init_shell(char **envp, t_shell *shell);
 t_token	*tokenize(char *input);
 int		syntax(t_shell *shell);
 t_token	*expand(t_token *token_list_head, t_env *env_list);
-bool	join_word_tokens(t_shell *shell);
+bool	join_word_and_env_var_tokens(t_shell *shell);
 int		parse(t_shell *shell);
 
 void	set_pos_end_space_or_word(char *str, size_t *pos, t_token_id token_id);
@@ -264,6 +264,8 @@ t_token *get_after_arith_expan_token(t_token *token);
 int parser_arith_expan(t_cmd *cmd_node, t_token *token);
 int execute(t_shell *shell, t_tree *node, t_tree *parent_node, int prev_exit_code);
 void free_cmd_list(t_cmd *cmd_list);
+
+int parser_env_var(t_cmd *cmd_node, t_token *token);
 
 
 //ENV - Lisandro

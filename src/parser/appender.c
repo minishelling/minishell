@@ -9,6 +9,15 @@ bool	is_word(t_token *token)
 	return (false);
 }
 
+bool	is_env_var(t_token *token)
+{
+	if (token == NULL)
+		return (false);
+	if (token->id == ENV_VAR)
+		return (true);
+	return (false);
+}
+
 t_token	*remove_empty_token(t_token *token)
 {
 	t_token	*current_token;
@@ -35,7 +44,7 @@ t_token	*remove_empty_token(t_token *token)
 	return (token);
 }
 
-bool	join_word_tokens(t_shell *shell)
+bool	join_word_and_env_var_tokens(t_shell *shell)
 {
 	t_token	*current_token;
 	t_token	*previous_token;
@@ -45,11 +54,13 @@ bool	join_word_tokens(t_shell *shell)
 	previous_token = NULL;
 	while (current_token != NULL)
 	{
-		if (is_word(previous_token) && is_word(current_token))
+		if ((is_word(previous_token) || is_env_var(previous_token)) && (is_word(current_token) || is_env_var(current_token)))
 		{
 			previous_token->str = ft_strjoin_fs1(&previous_token->str, current_token->str);
 			if (previous_token->str == NULL)
 				return (false);
+			if (is_env_var(previous_token) || is_env_var(current_token))
+				previous_token->id = ENV_VAR;
 			current_token = free_token_str(current_token);
 			previous_token->next = current_token;
 			continue ;
