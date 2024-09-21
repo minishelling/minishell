@@ -67,7 +67,8 @@ enum e_parsing_error
 	ERR_SYNTAX_SEMICOL,
 	ERR_SYNTAX_PAR,
 	ERR_SYNTAX_ERROR,
-	ERR_OUT_OF_SCOPE
+	ERR_OUT_OF_SCOPE,
+	ERR_MEM
 };
 
 typedef enum e_token_id 
@@ -180,7 +181,7 @@ typedef struct s_shell
 int		init_shell(char **envp, t_shell *shell);
 t_token	*tokenize(char *input);
 int		syntax(t_shell *shell);
-t_token	*expand(t_token *token_list_head, t_env *env_list);
+t_token	*expand(t_token *start_token, t_token *end_token, t_env *env_list);
 bool	join_word_and_env_var_tokens(t_shell *shell);
 int		parse(t_shell *shell);
 
@@ -266,6 +267,10 @@ int execute(t_shell *shell, t_tree *node, t_tree *parent_node, int prev_exit_cod
 void free_cmd_list(t_cmd *cmd_list);
 
 int parser_env_var(t_cmd *cmd_node, t_token *token);
+bool	join_quotes_tokens(t_shell *shell);
+char *process_double_quotes(char **str_ptr, char *expanded_str, t_env *env_list);
+char *process_single_quotes(char **str_ptr, char *expanded_str);
+char *process_unquoted(char **str_ptr, char *expanded_str, t_env *env_list);
 
 
 //ENV - Lisandro

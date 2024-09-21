@@ -42,8 +42,8 @@ int parser_redir(t_cmd *cmd, t_token *token)
 	redir_list = new_redir();
 	if (!redir_list)
 	{
-		cmd->next = (t_cmd *) 0XFF; // ?
-		return (0);
+		// cmd->next = (t_cmd *) 0XFF; // ?
+		return (ERR_MEM);
 	}
 	redir_list->redir_id = redir_ident(token->str);
 	redir_list->file = file_token->str;
@@ -61,8 +61,11 @@ int parser_word(t_cmd *cmd, t_token *token)
 
 	arr = cmd->args;
 	i = 0;
-	while (arr[i] != NULL)
+	printf("token is %s\n", token->str);
+	while (arr[i])
+	{
 		i++;
+	}
 	arr[i] = token->str;
 	
 	return (0);

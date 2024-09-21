@@ -15,6 +15,7 @@ void	add_token_in_back(t_token **token_list_head, t_token *new_token)
 
 t_token *remove_token(t_token *start_token, t_token *token_to_remove)
 {
+	printf ("start token is %s\n", start_token->str);
 	t_token *current = start_token;
 	t_token *prev = NULL;
 
@@ -28,6 +29,7 @@ t_token *remove_token(t_token *start_token, t_token *token_to_remove)
 				start_token = current->next;
 			else
 				prev->next = current->next;
+			printf ("I'm freeing %p\n", current);
 			free(current->str);
 			free(current);
 			return (start_token);
@@ -64,32 +66,7 @@ void remove_space_tokens(t_token **head)
 		}
 }
 
-// t_token *remove_subshell_parens(t_token *head)
-// {
-// 	t_token *current = head;
 
-// 	while (current && current->next && current->next->next)
-// 	{
-// 		// Check if the pattern PAR_OPEN -> WORD -> PAR_CLOSE exists
-// 		if (current->id == PAR_OPEN && current->next->id == WORD && current->next->next->id == PAR_CLOSE)
-// 		{
-// 			// Remove the PAR_OPEN token
-// 			head = remove_token(head, current);
-			
-// 			// Remove the PAR_CLOSE token
-// 			head = remove_token(head, current->next->next);
-			
-// 			// Move current to the next token after the WORD token
-// 			current = current->next;
-// 		}
-// 		else
-// 		{
-// 			// Move to the next token in the list
-// 			current = current->next;
-// 		}
-// 	}
-// 	return head;
-// }
 
 t_token *find_previous(t_token *head, t_token *target)
 {
@@ -158,19 +135,14 @@ t_token *remove_subshell_parens(t_token **head)
 				if (find_previous(*head, current))
 					opening_par = find_previous(*head, current);
 				 // Remove the PAR_OPEN and PAR_CLOSE tokens
+				 printf ("from subshell removing %p and %p\n", current, word_token);
                 *head = remove_token(*head, current); // Remove PAR_OPEN
                 *head = remove_token(*head, word_token); // Remove PAR_CLOSE
-
-                // Move current to the first WORD token in the middle
-            
-                //printf("after removing subshells:\n");
-               	//print_token(*head);
-
-				//if (find_previous(*head, current) && closing_par)
-					//printf ("find_previous is %s, closing_par is %s\n", find_previous(*head, current)->str, closing_par->str );
-                // Check for arithmetic expansion and handle it
+				
+				printf ("from subshell checking %p and %p\n", opening_par, closing_par);
                 if (opening_par && opening_par->id == PAR_OPEN && closing_par && closing_par->id == PAR_CLOSE)
                 {
+					printf ("subshell arith expan\n");
                     handle_arith_expan(head, &opening_par, &closing_par);
                 }
 

@@ -10,7 +10,6 @@
 int main(int argc, char **argv, char **envp)
 {
 	t_shell shell;
-	//t_token *temp;
 	int status;
 
 	(void)argv;
@@ -43,8 +42,8 @@ int main(int argc, char **argv, char **envp)
 			{
 				free(shell.input);
 				int exit_code = execute(&shell, shell.tree, NULL, 0);
-				printf ("final exit code %d\n", exit_code);
-				//(void)exit_code;
+				//printf ("final exit code %d\n", exit_code);
+				(void)exit_code;
 				//free_token_list(shell.token);
 				free_tree(shell.tree);
 				shell.tree = NULL;
