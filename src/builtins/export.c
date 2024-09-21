@@ -1,22 +1,23 @@
 #include "../../include/minishell.h"
 
-int	export_builtin(t_shell *shell, char **args)
+t_ecode	export_builtin(t_shell *shell, char **cmd_args)
 {
 	char	*key;
 	char	*value;
 	t_ecode	status;
 
-	if (!args)
+	if (!cmd_args)
 		return (FAILURE);
-	if (!args[1])
-		return (declare_builtin(shell));
-	key = get_key_from_keyvalue(args[1]);
+	if (!cmd_args[1])
+		return (declare_builtin(shell, cmd_args));
+	key = get_key_from_keyvalue(cmd_args[1]);
 	if (!key)
 		return (MALLOC_ERROR);
+	// printf("KEY: %s\n", key);
 	value = NULL;
-	status = get_value_from_keyvalue(args[1], &value);
+	status = get_value_from_keyvalue(cmd_args[1], &value);
 	if (status != SUCCESS && status != NULL_STRING)
 		return (ft_free((void **) &key), MALLOC_ERROR);
-	update_env_node(&shell->env_list, key, value, true);
-	return (SUCCESS);
+	// printf("VALUE: %s\n", value);
+	return (update_env_node(&shell->env_list, key, value, true));
 }

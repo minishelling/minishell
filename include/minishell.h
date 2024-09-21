@@ -39,10 +39,14 @@ typedef enum e_codes
 	SUCCESS = 0,
 	FAILURE,
 	PROCEED,
+	INVALID_OPTION,
 	NULL_ERROR,
+	NULL_NODE,
+	NULL_STRING,
+	NULL_ARRAY,
+	NULL_CURPATH_LIST,
 	COUNT_ERROR,
 	CWD_ERROR,
-	INVALID_OPTION,
 	MALLOC_ERROR,
 	HOME_ERROR,
 	ACCESS_ERROR,
@@ -51,10 +55,6 @@ typedef enum e_codes
 	CDPATH_NULL,
 	ENV_ERROR,
 	NEW_NODE_ERROR,
-	NULL_NODE,
-	NULL_STRING,
-	NULL_ARRAY,
-	NULL_CURPATH_LIST,
 	COUNT
 }	t_ecode;
 
@@ -329,13 +329,16 @@ void	do_parent_duties(t_shell *shell, t_cmd **curr_cmd, size_t cmds_count, size_
 void	execute_single_command(t_shell *shell, t_cmd *cmd);
 int		execute_cmd_list(t_shell *shell, t_cmd *cmds_list);
 
-
 //BUILTINS
 
-int echo_builtin(char **args);
-int	pwd_builtin(char **args);
-int	declare_builtin(t_shell *shell);
-int	export_builtin(t_shell *shell, char **args);
+t_ecode echo_builtin(t_shell *shell, char **cmd_args);
+t_ecode	cd_builtin(t_shell *shell, char **cmd_args);
+t_ecode	env_builtin(t_shell *shell, char **cmd_args);
+t_ecode	unset_builtin(t_shell *shell, char **cmd_args);
+t_ecode	pwd_builtin(t_shell *shell, char **cmd_args);
+t_ecode	declare_builtin(t_shell *shell, char **cmd_args);
+t_ecode	export_builtin(t_shell *shell, char **args);
+t_ecode	exit_builtin(t_shell *shell, char **cmd_args);
 
 
 //	CD
@@ -381,7 +384,5 @@ char		*get_home(void);
 // ERROR
 
 const char	*get_error_msg(int e_nbr);
-
-t_ecode	unset_builtin(t_shell *shell, char *key);
 
 #endif

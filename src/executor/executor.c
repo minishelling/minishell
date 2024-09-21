@@ -1,49 +1,72 @@
 #include "../../include/minishell.h"
 
-// static void	run_child_single_command(t_shell *shell, t_cmd *cmd);
+typedef enum e_builtin
+{
+	ECHO,
+	CD,
+	PWD,
+	EXPORT,
+	DECLARE,
+	UNSET,
+	ENV,
+	EXIT,
+	NON_BUILTIN,
+	NULL_CMD,
+}	t_builtin;
+
+t_builtin	check_builtin(char *cmd_name)
+{
+	size_t	cmd_name_len;
+
+	if (!cmd_name)
+		return (NULL_CMD);
+	cmd_name_len = ft_strlen(cmd_name);
+	if (ft_strncmp(cmd_name, "ECHO", cmd_name_len))
+		return (ECHO);
+	else if (ft_strncmp(cmd_name, "CD", cmd_name_len))
+		return (CD);
+	else if (ft_strncmp(cmd_name, "PWD", cmd_name_len))
+		return (PWD);
+	else if (ft_strncmp(cmd_name, "EXPORT", cmd_name_len))
+		return (EXPORT);
+	else if (ft_strncmp(cmd_name, "DECLARE", cmd_name_len))
+		return (DECLARE);
+	else if (ft_strncmp(cmd_name, "UNSET", cmd_name_len))
+		return (UNSET);
+	else if (ft_strncmp(cmd_name, "ENV", cmd_name_len))
+		return (ENV);
+	else if (ft_strncmp(cmd_name, "EXIT", cmd_name_len))
+		return (EXIT);
+	else
+		return (NON_BUILTIN);
+}
+
+t_ecode	execute_builtin(t_shell *shell, char **cmd_args)
+{
+	t_builtin	builtin_code;
+
+	t_ecode	(*builtins_jumptable[])(t_shell *, char **) = {echo_builtin, cd_builtin,
+		pwd_builtin, export_builtin, declare_builtin,
+		unset_builtin, env_builtin, exit_builtin};
+	if (!shell || !cmd_args)
+		return (NULL_ERROR);
+	builtin_code = check_builtin(cmd_args[0]);
+	if (builtin_code == NULL_CMD)
+		return (NULL_ERROR);
+	else if (builtin_code == NON_BUILTIN)
+		return (PROCEED);
+	else
+		return (builtins_jumptable[builtin_code](shell, cmd_args));
+}
 
 int	executor(t_shell *shell, t_cmd *cmds_list)
 {
 	int	status;
 
-	// if (!ft_strncmp(shell->cmd_list->args[0], "cd", 2))
-	// {
-	// 	printf("Executing cd\n");
-	// 	builtin_cd(&shell, shell->cmd_list->args[1]);
-	// }
-	if (!ft_strncmp(shell->cmd_list->args[0], "echo", 4))
-	{
-		// printf("Executing cd\n");
-		status = echo_builtin(shell->cmd_list->args);
-		return (status);
-	}
-	else if (!ft_strncmp(shell->cmd_list->args[0], "pwd", 3))
-	{
-		// printf("Executing cd\n");
-		status = pwd_builtin(shell->cmd_list->args);
-		return (status);
-	}
-	else if (!ft_strncmp(shell->cmd_list->args[0], "export", 6))
-	{
-		// printf("Executing cd\n");
-		status = export_builtin(shell, shell->cmd_list->args);
-		return (status);
-	}
 	status = execute_cmd_list(shell, cmds_list);
 	return (status);
 }
 
-
-// void	execute_single_command(t_shell *shell, t_cmd *cmd)
-// {
-// 	shell->parent = fork();
-// 	if (shell->parent == -1)
-// 		return ;
-// 	else if (shell->parent == 0)
-// 		run_child_single_command(shell, cmd);
-// 	waitpid(shell->parent, &shell->status, 0);
-// 	// printf("Finished waiting for children. Status: %d\n", shell->status);
-// }
 
 static size_t	count_cmds(t_cmd *head)
 {
@@ -105,7 +128,7 @@ void	run_child(t_shell *shell, t_cmd *cmds_head, size_t cmds_count, size_t curre
 	if (current_child > 0)
 	{
 		status = dup2(shell->read_fd, STDIN_FILENO); //Protect dup.
-		// printf("First dup status: %d\n", status);
+		printf("First dup status: %d\n", status);
 	}
 	
 	// printf("Reached checkpoint 1 in run_child\n");
@@ -137,47 +160,3 @@ void	do_parent_duties(t_shell *shell, t_cmd **curr_cmd, size_t cmds_count, size_
 	waitpid(shell->parent, &shell->status, 0);
 	*curr_cmd = (*curr_cmd)->next;
 }
-
-// static void	run_child_single_command(t_shell *shell, t_cmd *cmd)
-// {
-// 	char	*cmd_path;
-// 	char	**env_array;
-
-// 	// handle_redirections(shell, cmd);
-// 	cmd_path = get_cmd_path(shell, shell->cmd_list->args[0]);
-// 	env_array = create_env_array(shell->env_list);
-// 	execve(cmd_path, cmd->args, env_array);
-
-// }
-
-// void	handle_redirections(t_shell *shell, t_cmd *cmd)
-// {
-// 	int	input_fd;
-
-// 	close(shell->pipefd[READ_END]);
-// 	input_fd = handle_input(shell, cmd);
-// 	dup2(input_fd, STDIN_FILENO);
-// 	close(input_fd);
-// 	dup2(shell->pipefd[WRITE_END], STDOUT_FILENO);
-// 	close(shell->pipefd[WRITE_END]);
-// }
-
-// int	handle_input(t_shell *shell, t_cmd *cmd)
-// {
-// 	t_redir	*iterator;
-// 	char	*infile_name;
-// 	int		infile_fd;
-
-// 	(void) shell;
-// 	if (!cmd || cmd->redir)
-// 		return (0);
-// 	iterator = cmd->redir;
-// 	while (iterator->redir)
-// 	{
-// 		if (iterator->redir == IN || iterator->redir == HERE) //Change HERE to HDOC
-// 			infile_name = iterator->file;
-// 		iterator = iterator->next;
-// 	}
-// 	infile_fd = open(infile_name, O_CREAT);
-// 	return (infile_fd);
-// }

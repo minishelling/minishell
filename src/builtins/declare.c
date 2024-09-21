@@ -4,10 +4,11 @@ static char	**create_full_env_array(t_env *env_head);
 static char	**sort_env_list(t_env *env_list_head);
 static void	bubblesort_array(char **arr, ssize_t count);
 
-int	declare_builtin(t_shell *shell)
+t_ecode	declare_builtin(t_shell *shell, char **cmd_args)
 {
 	char	**sorted_env;
 
+	(void) cmd_args;
 	sorted_env = sort_env_list(shell->env_list);
 	if (!sorted_env)
 		return (FAILURE);
