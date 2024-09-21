@@ -117,43 +117,43 @@ void expand_str(t_token *token, t_env *env_list)
     {
         if (*token->str == '\'') // Found a single quote
         {
-			printf ("found single quotes\n");
+			//printf ("found single quotes\n");
             token->str++; // Move past the opening quote
             expanded_str = process_single_quotes(&(token->str), expanded_str);
         }
         else if (*token->str == '\"') // Found a double quote
         {
-			printf ("found double quotes\n");
+			//printf ("found double quotes\n");
             token->str++; // Move past the opening quote
             expanded_str = process_double_quotes(&(token->str), expanded_str, env_list);
         }
         else if (*token->str == '$') // Found a dollar sign for variable expansion
         {
-			printf ("found $\n");
+			//printf ("found $\n");
             expanded_str = expand_variable(&(token->str), expanded_str, env_list); // Pass address of token->str
         }
         else
         {
-			printf ("didnt find, copying\n");
+			//printf ("didnt find, copying\n");
             expanded_str = copy_chars(token->str, expanded_str); // Pass token->str to copy_chars
             token->str += ft_strcspn(token->str, "\'\"$ "); // Move token->str forward by the length we copied
         }
     }
 
     token->str = expanded_str; // Assign the new expanded string to token->str
-    printf("The expanded str is %s\n", expanded_str);
+    //printf("The expanded str is %s\n", expanded_str);
 }
 
 t_token	*expand(t_token *start_token, t_token *end_token, t_env *env_list)
 {
 	t_token	*current_token;
 	
-	printf ("begining of expand\n");
-	print_token(start_token);
+	//printf ("begining of expand\n");
+	//print_token(start_token);
 	current_token = start_token;
 	while (current_token)
 	{
-		printf("current token is %s\n", current_token->str);
+		//printf("current token is %s\n", current_token->str);
 		expand_str(current_token, env_list);
 
 		if (current_token == end_token)
@@ -161,7 +161,7 @@ t_token	*expand(t_token *start_token, t_token *end_token, t_env *env_list)
 		current_token = current_token->next;
 }
 	//free_token_list(token_list_head);
-	printf("new token list\n");
-	print_token (start_token);
+	//printf("new token list\n");
+	//print_token (start_token);
 	return (start_token);
 }

@@ -1,23 +1,5 @@
 #include "../../include/minishell.h"
 
-bool	is_word(t_token *token)
-{
-	if (token == NULL)
-		return (false);
-	if (token->id == WORD)
-		return (true);
-	return (false);
-}
-
-bool	is_env_var(t_token *token)
-{
-	if (token == NULL)
-		return (false);
-	if (token->id == ENV_VAR)
-		return (true);
-	return (false);
-}
-
 bool	is_squote(t_token *token)
 {
 	if (token == NULL)
@@ -32,6 +14,24 @@ bool	is_dquote(t_token *token)
 	if (token == NULL)
 		return (false);
 	if (token->id == DQUOTE)
+		return (true);
+	return (false);
+}
+
+bool	is_word(t_token *token)
+{
+	if (token == NULL)
+		return (false);
+	if (token->id == WORD)
+		return (true);
+	return (false);
+}
+
+bool	is_env_var(t_token *token)
+{
+	if (token == NULL)
+		return (false);
+	if (token->id == ENV_VAR)
 		return (true);
 	return (false);
 }
@@ -165,14 +165,6 @@ bool join_quotes_tokens(t_shell *shell)
     return (true);
 }
 
-
-
-
-
-
-
-
-
 bool	join_word_and_env_var_tokens(t_shell *shell)
 {
 	t_token	*current_token;
@@ -183,13 +175,14 @@ bool	join_word_and_env_var_tokens(t_shell *shell)
 	previous_token = NULL;
 	while (current_token != NULL)
 	{
-		if ((is_word(previous_token) || is_env_var(previous_token)) && (is_word(current_token) || is_env_var(current_token)))
+		if ((is_word(previous_token) || is_env_var(previous_token) || is_squote(previous_token) || is_dquote(previous_token)) 
+			&& (is_word(current_token) || is_env_var(current_token) || is_squote(current_token) || is_dquote(current_token)))
 		{
 			previous_token->str = ft_strjoin_fs1(&previous_token->str, current_token->str);
 			if (previous_token->str == NULL)
 				return (false);
-			if (is_env_var(previous_token) || is_env_var(current_token))
-				previous_token->id = ENV_VAR;
+			// if (is_env_var(previous_token) || is_env_var(current_token))
+			// 	previous_token->id = ENV_VAR;
 			current_token = free_token_str(current_token);
 			previous_token->next = current_token;
 			continue ;

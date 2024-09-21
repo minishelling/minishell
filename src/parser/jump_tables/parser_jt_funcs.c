@@ -61,7 +61,7 @@ int parser_word(t_cmd *cmd, t_token *token)
 
 	arr = cmd->args;
 	i = 0;
-	printf("token is %s\n", token->str);
+	//printf("token is %s\n", token->str);
 	while (arr[i])
 	{
 		i++;

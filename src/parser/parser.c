@@ -64,7 +64,7 @@ bool	init_cmd(t_shell *shell, t_cmd **current_cmd, t_token *token)
 		else
 			token = get_after_space_token(token);
 		if (token)
-			printf ("next token is %s\n", token->str);
+			//printf ("next token is %s\n", token->str);
 		if ((*current_cmd)->next)
 			return (free_cmd(*current_cmd), false);
 	}
@@ -83,7 +83,7 @@ t_cmd	*make_cmd(t_shell *shell, t_token *start_token, t_token *end_token)
 	while (token)
 	{
 		current_cmd = new_cmd();
-		printf ("made a new cmd \n");
+		//printf ("made a new cmd \n");
 
 		if (!init_cmd(shell, &current_cmd, token))
 		{
@@ -93,7 +93,7 @@ t_cmd	*make_cmd(t_shell *shell, t_token *start_token, t_token *end_token)
 		}
 
 		add_cmd_in_back(&shell->cmd_list, current_cmd);
-		printf ("managed to add in back\n");
+		//printf ("managed to add in back\n");
 
 		if (token == end_token)
 			break;  // Process the end_token, then break out of the loop
@@ -103,32 +103,6 @@ t_cmd	*make_cmd(t_shell *shell, t_token *start_token, t_token *end_token)
 
 	return (shell->cmd_list);
 }
-
-// void remove_sq(t_token *token_list)
-// {
-//     t_token *current;
-
-//     current = token_list;
-//     while (current != NULL)
-//     {
-//         if (current->id == SQUOTE)  // Check if token ID indicates single quotes
-//         {
-//             char *new_str;
-//             size_t len = ft_strlen(current->str);
-
-//             if (len >= 2 && current->str[0] == '\'' && current->str[len - 1] == '\'')
-//             {
-//                 // Create a new string without the quotes by copying the middle part
-//                 new_str = ft_substr(current->str, 1, len - 2); // Copy between the quotes
-
-//                 // Free the original token string and replace it with the new one
-//                 current->str = new_str;
-//             }
-//         }
-//         current = current->next; // Move to the next token in the list
-//     }
-// }
-
 
 
 int	parse(t_shell *shell)
@@ -140,8 +114,8 @@ int	parse(t_shell *shell)
 	{
 		//error
 	}
-	printf ("After tokenization:\n");
-	print_token(shell->token);
+	// printf ("After tokenization:\n");
+	// print_token(shell->token);
 	
 	status = syntax(shell);
 	// printf ("After syntax:\n");
@@ -158,25 +132,24 @@ int	parse(t_shell *shell)
 	//env_print_list (shell->env_list);  // lisandro
 
 	
-	
 	join_quotes_tokens(shell);
-	printf ("after joining quotes tokens:\n");
-	print_token(shell->token);
+	// printf ("after joining quotes tokens:\n");
+	// print_token(shell->token);
 	
 	join_word_and_env_var_tokens(shell);
-	// if (concatenate_word_tokens(shell) == false)
+	// if (join_word_and_env_var_tokens(shell) == false)
 	// 	return (free_token_list(shell->token, list_token_free_node_str),
 	// 			error(append));
-	printf ("after concat words and env_vars tokens\n");
-	print_token(shell->token);
+	// printf ("after concat words and env_vars tokens\n");
+	// print_token(shell->token);
 	
 	remove_space_tokens(&shell->token);
-	printf ("after removing space tokens\n");
-	print_token(shell->token);
+	// printf ("after removing space tokens\n");
+	// print_token(shell->token);
 
 	remove_subshell_parens(&(shell->token));
-	printf ("after removing subshell_parens\n");
-	print_token(shell->token);
+	// printf ("after removing subshell_parens\n");
+	// print_token(shell->token);
 
 
 	//mandatory:
@@ -198,6 +171,7 @@ int	parse(t_shell *shell)
 	
 	if (shell->tree)
 		print_tree_with_cmds(shell->tree, 0);
+	printf ("\n");
 		
 	// if (shell->tree)
 	// 	free_token_list(shell->token); //???
