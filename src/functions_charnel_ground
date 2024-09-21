@@ -1,5 +1,59 @@
 // #include "../include/minishell.h"
 
+// void	execute_single_command(t_shell *shell, t_cmd *cmd)
+// {
+// 	shell->parent = fork();
+// 	if (shell->parent == -1)
+// 		return ;
+// 	else if (shell->parent == 0)
+// 		run_child_single_command(shell, cmd);
+// 	waitpid(shell->parent, &shell->status, 0);
+// 	// printf("Finished waiting for children. Status: %d\n", shell->status);
+// }
+
+// static void	run_child_single_command(t_shell *shell, t_cmd *cmd)
+// {
+// 	char	*cmd_path;
+// 	char	**env_array;
+
+// 	// handle_redirections(shell, cmd);
+// 	cmd_path = get_cmd_path(shell, shell->cmd_list->args[0]);
+// 	env_array = create_env_array(shell->env_list);
+// 	execve(cmd_path, cmd->args, env_array);
+// }
+
+// void	handle_redirections(t_shell *shell, t_cmd *cmd)
+// {
+// 	int	input_fd;
+
+// 	close(shell->pipefd[READ_END]);
+// 	input_fd = handle_input(shell, cmd);
+// 	dup2(input_fd, STDIN_FILENO);
+// 	close(input_fd);
+// 	dup2(shell->pipefd[WRITE_END], STDOUT_FILENO);
+// 	close(shell->pipefd[WRITE_END]);
+// }
+
+// int	handle_input(t_shell *shell, t_cmd *cmd)
+// {
+// 	t_redir	*iterator;
+// 	char	*infile_name;
+// 	int		infile_fd;
+
+// 	(void) shell;
+// 	if (!cmd || cmd->redir)
+// 		return (0);
+// 	iterator = cmd->redir;
+// 	while (iterator->redir)
+// 	{
+// 		if (iterator->redir == IN || iterator->redir == HERE) //Change HERE to HDOC
+// 			infile_name = iterator->file;
+// 		iterator = iterator->next;
+// 	}
+// 	infile_fd = open(infile_name, O_CREAT);
+// 	return (infile_fd);
+// }
+
 //	OLD ENV_INIT FUNCTION
 t_ecode	init_env_list(t_env **head, char **envp)
 {

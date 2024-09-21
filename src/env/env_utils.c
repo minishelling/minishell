@@ -37,6 +37,7 @@ t_ecode	get_value_from_keyvalue(char *keyvalue, char **value_ptr)
 		keyvalue++;
 	if (*keyvalue != '=')
 		return (NULL_STRING);
+	keyvalue++;
 	value_len = ft_strlen(keyvalue);
 	*value_ptr = (char *) ft_calloc(value_len + 1, sizeof(char));
 	if (!*value_ptr)

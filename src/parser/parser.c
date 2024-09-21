@@ -127,8 +127,8 @@ int	parse(t_shell *shell)
 	{
 		//error
 	}
-	// printf ("After tokenization:\n");
-	// print_token(shell->token);
+	printf ("After tokenization:\n");
+	print_token(shell->token);
 	
 	status = syntax(shell);
 	// printf ("After syntax:\n");
@@ -145,8 +145,8 @@ int	parse(t_shell *shell)
 	//print_env_list (shell->env_list);  // lisandro
 	shell->token = expand(shell->token, shell->env_list);
 
-	// printf ("After expantion:\n");
-	// print_token(shell->token);
+	printf ("After expantion:\n");
+	print_token(shell->token);
 
 	join_word_tokens(shell);
 	// if (concatenate_word_tokens(shell) == false)
@@ -154,8 +154,8 @@ int	parse(t_shell *shell)
 	// 			error(append));
 	remove_space_tokens(&shell->token);
 
-	// printf ("after removing space tokens\n");
-	// print_token(shell->token);
+	printf ("after removing space tokens\n");
+	print_token(shell->token);
 
 	remove_subshell_parens(&(shell->token));
 
