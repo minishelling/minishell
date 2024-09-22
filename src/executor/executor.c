@@ -141,13 +141,14 @@ int	execute_cmd_list(t_shell *shell, t_cmd *cmds_list)
 		i++;
 	}
 	return (WEXITSTATUS(shell->status));
+	return (WEXITSTATUS(shell->status));
 }
 
 void	run_child(t_shell *shell, t_cmd *cmds_head, size_t cmds_count, size_t current_child)
 {
 	char	*cmd_path;
 	char	**env_array;
-	int		status;
+	//int		status;
 
 	// printf("Printing cmd list in run child:\n");
 	// print_cmd(cmds_head);
@@ -162,7 +163,7 @@ void	run_child(t_shell *shell, t_cmd *cmds_head, size_t cmds_count, size_t curre
 	{
 		status = close(shell->pipefd[READ_END]); // This should be in the upper one, where the dup is?!!!
 		// printf("Close status: %d\n", status);
-		status = dup2(shell->pipefd[WRITE_END], STDOUT_FILENO);
+		//status = dup2(shell->pipefd[WRITE_END], STDOUT_FILENO);
 		// printf("Second dup status: %d\n", status);
 	}
 	// printf("Reached checkpoint 2 in run_child\n");

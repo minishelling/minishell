@@ -7,9 +7,9 @@ t_token_id	get_token_id(char c)
 {
 	t_token_id	token_id;
 
-    char *delimiters_set = (char *)malloc(strlen(SPECIAL_CHARS) + strlen(META_CHARS_SET) + 1); 
-    strcpy(delimiters_set, META_CHARS_SET);
-    strcat(delimiters_set, SPECIAL_CHARS);
+    char *delimiters_set = (char *)malloc(ft_strlen(SPECIAL_CHARS) + ft_strlen(META_CHARS_SET) + 1); 
+    strcpy(delimiters_set, META_CHARS_SET);  // use the right function
+    strcat(delimiters_set, SPECIAL_CHARS);   // use the right function
 
     // remember to free the allocated memory
 

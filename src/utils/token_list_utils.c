@@ -1,4 +1,4 @@
-#include "../../include/minishell.h"
+#include "../include/minishell.h"
 
 t_token	*new_token(void)
 {
@@ -149,19 +149,19 @@ t_token	*free_token_non_word(t_token *token)
 	return (current_token);
 }
 
-void free_token_list(t_token **token_list)
+void free_token_list(t_token *token_list)
 {
 	t_token *temp;
 
-	while (*token_list)
+	while (token_list)
 	{
-		temp = *token_list;
-		*token_list = (*token_list)->next;
+		temp = token_list;
+		token_list = (token_list)->next;
 		if (temp->str)
 			free(temp->str);
 		free(temp);
 	}
-	*token_list = NULL;
+	token_list = NULL;
 }
 
 t_token *get_after_arith_expan_token(t_token *token)
@@ -173,7 +173,7 @@ t_token *get_after_arith_expan_token(t_token *token)
 		token = token->next;
 	while (token)
 	{
-		printf ("	in the arith_expan thingie, token is %s\n", token->str);
+		//printf ("	in the arith_expan thingie, token is %s\n", token->str);
 		if (token->id == ARITH_EXPAN)
 		{
 			return (token->next);

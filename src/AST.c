@@ -59,15 +59,13 @@ void print_tree(t_tree *node, int level)
 
 
 
-
-
-t_token *get_rid_of_first_parenthesis(t_token *start_token, t_token **end_token)
+t_token *get_rid_of_first_parenthesis(t_token *start_token, t_token **middle, t_token **end_token)
 {
 	t_token *iterator;
 	int		parentheses;
 	
 	printf ("Reached get rid of parens\n");
-	printf ("start is %s and end is %s\n", start_token->str, (*end_token)->str);
+	printf ("start is %p and end is %p\n", start_token, (*end_token));
 	
 	//start_token = get_after_space_token(start_token);
 	iterator = start_token;
@@ -75,11 +73,11 @@ t_token *get_rid_of_first_parenthesis(t_token *start_token, t_token **end_token)
 	while (iterator->next && parentheses !=0)
 	//while (iterator && iterator->next && iterator->next != *end_token)
 	{
-		printf ("parentheses  is %d\n", parentheses);
-		printf ("iterator->next is %s\n", iterator->next->str);
+		//printf ("parentheses  is %d\n", parentheses);
+		//printf ("iterator->next is %s\n", iterator->next->str);
 		if (iterator->next->id == PAR_OPEN)
 		{
-			printf ("found open par\n");
+			//printf ("found open par\n");
 			parentheses++;
 		}
 			else if (iterator->next->id == PAR_CLOSE)
@@ -90,7 +88,9 @@ t_token *get_rid_of_first_parenthesis(t_token *start_token, t_token **end_token)
 				printf ("found close par\n");
 				if (iterator->next == *end_token)
 					*end_token = iterator;
-				printf ("start_token->next is %s, and iterator->id is %s\n", start_token->next->str, iterator->str);
+				*middle = iterator;
+
+				//printf ("start_token->next is %s, and iterator->id is %s\n", start_token->next->str, iterator->str);
 				// if (start_token->next->id == PAR_OPEN && iterator->id == PAR_CLOSE)
 				// {
 				// 	printf("arithmetic expantion\n");
@@ -100,11 +100,9 @@ t_token *get_rid_of_first_parenthesis(t_token *start_token, t_token **end_token)
 				// 	iterator->str = "))";
 				// 	print_token(start_token);
 				// }
+				printf ("in get rid start_token is %p, iterator->next is %p\n", start_token, iterator->next);
 				start_token = remove_token (start_token, start_token);
 				start_token = remove_token (start_token, iterator->next);
-				printf ("print token list after amend");
-				print_token (start_token);
-				//sleep (5);
 				break;
 			}
 		}
@@ -123,8 +121,7 @@ t_token *find_last_log_op_token_nip(t_token *token_head, t_token *end_token)
 	return_token = NULL;
 	token_iterator = token_head;
 	parenthesis = 0;
-	// if (token_head->id == PAR_OPEN && end_token->id == PAR_CLOSE)
-	// 	token_head = get_rid_of_outer_most_parenthesis(token_head, &end_token);
+
 	while (token_iterator && token_iterator != end_token)
 	{
 		//printf ("in find last op nip, token is %s and par is %d\n", token_iterator->str, parenthesis);
@@ -175,13 +172,16 @@ t_tree *init_leaf_node(t_shell *shell, t_token *start_token, t_token *end_token)
 		perror("malloc");
 		exit(EXIT_FAILURE);
 	}
+	
 	leaf_node->type = CMD;
 	leaf_node->start_token = start_token;
 	while (end_token->id == SPACE_CHAR)
 		end_token = token_before (start_token, end_token);
 	leaf_node->end_token = end_token;
-	 
 	
+	shell->token = expand(start_token, end_token, shell->env_list);
+	//printf ("in init leaf node, after expansion\n");
+	//print_token(shell->token);
 	leaf_node->cmd_list = make_cmd(shell, start_token, end_token);
 	leaf_node->left = NULL;
 	leaf_node->right = NULL;
@@ -223,14 +223,14 @@ t_tree *create_log_op_subtree(t_shell *shell, t_token *log_op, t_token *start_to
 	
 	left_head = NULL;
 	right_head = NULL;
-	printf ("in create_log_op_subtree\n");
+	//printf ("in create_log_op_subtree\n");
 	subtree = init_tree_node(log_op);
 	divide_token_list(start_token, log_op, &left_head, &right_head);
-	printf ("LEFT CHILD:\n");
-	printf ("in create sub tree left head is |%s|, token_before(start_token,log_op) is |%s|\n", left_head->str, token_before(start_token, log_op)->str);
+	//printf ("LEFT CHILD:\n");
+	//printf ("in create sub tree left head is |%s|, token_before(start_token,log_op) is |%s|\n", left_head->str, token_before(start_token, log_op)->str);
 	subtree->left = make_tree(shell, left_head, token_before(start_token, log_op));
-	printf ("And now RIGHT CHILD:\n");
-	printf ("in create sub tree right head is %s, end_token is %s\n", right_head->str, end_token->str);
+	//printf ("And now RIGHT CHILD:\n");
+	//printf ("in create sub tree right head is %s, end_token is %s\n", right_head->str, end_token->str);
 	subtree->right = make_tree(shell, right_head, end_token);
 	return (subtree);
 }
@@ -241,23 +241,29 @@ t_tree *make_tree(t_shell *shell, t_token *start_token, t_token *end_token)
 	t_token *left_head;
 	t_token *right_head;
 	t_tree *subtree;
-
+	t_token *middle = NULL;
+	//printf ("making tree\n");
 	if (start_token == NULL || end_token == NULL)
 		return NULL;
-
+	
 	if (start_token->id == PAR_OPEN && end_token->id == PAR_CLOSE)
 	// if (start_token->id == PAR_OPEN)
 	{
-		printf("Removing parentheses: start = %s, end = %s\n", start_token->str, end_token->str);
-		start_token = get_rid_of_first_parenthesis(start_token, &end_token);
-		if (end_token->next)
+		//printf("Removing parentheses: start = %p, end = %p\n", start_token, end_token);
+		start_token = get_rid_of_first_parenthesis(start_token, &middle, &end_token);
+		//printf ("got rid of parens\n");
+		//printf ("start token is %p and end token is %p\n", start_token, end_token);
+		// print_token(start_token);
+		if (end_token)
 		{
-			if (start_token->id == PAR_OPEN && end_token->next->id == PAR_CLOSE)
+			if (start_token->id == PAR_OPEN && middle->id == PAR_CLOSE)
 			{
-				printf("arithmetic expantion\n");
+				//printf("arithmetic expantion\n");
 				start_token->str = "((";
+				start_token->id = ARITH_EXPAN;
 				end_token->str = "))";
-				return init_leaf_node (shell, start_token, end_token);
+				end_token->id = ARITH_EXPAN;
+				return init_leaf_node (shell, start_token, middle);
 			}
 			else	
 				return make_tree(shell, start_token, end_token);
@@ -267,7 +273,7 @@ t_tree *make_tree(t_shell *shell, t_token *start_token, t_token *end_token)
 	// Find the last logical operator not in parentheses
 	log_op_token = find_last_log_op_token_nip(start_token, end_token);
 	// printf("Found log_op: %s\n", log_op_token ? log_op_token->str : "NULL");
-
+	
 	// If no logical operator is found, treat the range of tokens as a command
 	if (!log_op_token)
 	{
@@ -278,13 +284,14 @@ t_tree *make_tree(t_shell *shell, t_token *start_token, t_token *end_token)
 
 	// If a logical operator is found, create a subtree
 	subtree = init_tree_node(log_op_token);
-	// printf("Creating tree node with log_op: %s\n", log_op_token->str);
+	//printf("Creating tree node with log_op: %s\n", log_op_token->str);
 
 	// Divide the token list into left and right parts
 	divide_token_list(start_token, log_op_token, &left_head, &right_head);
-
 	// Recursively create left and right subtrees
+	//printf ("doing LEFT, left_head is %s\n", left_head->str);
 	subtree->left = make_tree(shell, left_head, token_before(start_token, log_op_token));
+	//printf ("now right\n");
 	subtree->right = make_tree(shell, right_head, end_token);
 
 	return subtree;

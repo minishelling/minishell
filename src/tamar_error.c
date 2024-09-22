@@ -12,7 +12,8 @@ char	*get_error_messages(int e)
 		"Syntax error near unexpected token `;`\n",
 		"Syntax error near unexpected token `)`\n",
 		"Syntax error\n",
-		"Error: out of scope. Parentheses are used for priorities, and we tolerate one command in a subshell\n"
+		"Error: out of scope. Parentheses are used for priorities, and we tolerate one command in a subshell\n",
+		"Error: unable to allocate dynamic memory\n"
 	};
 
 	return (error_messages[e]);

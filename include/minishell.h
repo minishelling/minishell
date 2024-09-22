@@ -30,6 +30,7 @@
 #define WHITE_TEXT "\033[0;37m"
 #define MAGENTA_BACKGROUND "\033[45m"
 #define WHITE_BACKGROUND "\033[47m"
+#define GREY_BACKGROUND "\033[48;5;24m"
 
 # define READ_END 0
 # define WRITE_END 1
@@ -69,7 +70,8 @@ enum e_parsing_error
 	ERR_SYNTAX_SEMICOL,
 	ERR_SYNTAX_PAR,
 	ERR_SYNTAX_ERROR,
-	ERR_OUT_OF_SCOPE
+	ERR_OUT_OF_SCOPE,
+	ERR_MEM
 };
 
 typedef enum e_token_id 
@@ -160,7 +162,7 @@ typedef struct s_tree
 	t_tree_type		type;
 	t_token 		*start_token;
     t_token 		*end_token;
-	t_cmd			cmd_list;
+	t_cmd			*cmd_list;
 } t_tree;
 
 typedef struct s_shell 
@@ -182,8 +184,8 @@ typedef struct s_shell
 int		init_shell(char **envp, t_shell *shell);
 t_token	*tokenize(char *input);
 int		syntax(t_shell *shell);
-t_token	*expand(t_token *token_list_head, t_env *env_list);
-bool	join_word_tokens(t_shell *shell);
+t_token	*expand(t_token *start_token, t_token *end_token, t_env *env_list);
+bool	join_word_and_env_var_tokens(t_shell *shell);
 int		parse(t_shell *shell);
 
 void	set_pos_end_space_or_word(char *str, size_t *pos, t_token_id token_id);
@@ -223,7 +225,7 @@ t_token	*free_token_node(t_token *t_node);
 void	free_last_token(t_token *t_list, t_token *(*f) (t_token *));
 t_token	*copy_token(t_token *t_node);
 t_token	*last_token(t_token *token_list_head);
-void 	free_token_list(t_token **token_list);
+void 	free_token_list(t_token *token_list);
 t_token	*free_token_str(t_token *token);
 
 t_env	*new_env_var(char *env_var_str);
@@ -260,11 +262,18 @@ void 	remove_space_tokens(t_token **head);
 t_token *remove_token(t_token *start_token, t_token *token_to_remove);
 void 	free_tree(t_tree *node);
 t_token *remove_subshell_parens(t_token **head);
-t_cmd	make_cmd(t_shell *shell, t_token *start_token, t_token *end_token);
-void 	print_tree_with_cmds(t_tree *node, int level);
+t_cmd	*make_cmd(t_shell *shell, t_token *start_token, t_token *end_token);
+void print_tree_with_cmds(t_tree *node, int level);
 t_token *get_after_arith_expan_token(t_token *token);
-int 	parser_arith_expan(t_cmd *cmd_node, t_token *token);
-int 	ping_lisandro(t_shell *shell, t_tree *node, t_tree *parent_node);
+int parser_arith_expan(t_cmd *cmd_node, t_token *token);
+int execute(t_shell *shell, t_tree *node, t_tree *parent_node, int prev_exit_code);
+void free_cmd_list(t_cmd *cmd_list);
+
+int parser_env_var(t_cmd *cmd_node, t_token *token);
+bool	join_quotes_tokens(t_shell *shell);
+char *process_double_quotes(char **str_ptr, char *expanded_str, t_env *env_list);
+char *process_single_quotes(char **str_ptr, char *expanded_str);
+char *process_unquoted(char **str_ptr, char *expanded_str, t_env *env_list);
 
 
 //ENV - Lisandro
