@@ -114,8 +114,8 @@ int	parse(t_shell *shell)
 	{
 		//error
 	}
-	printf ("After tokenization:\n");
-	print_token(shell->token);
+	// printf ("After tokenization:\n");
+	// print_token(shell->token);
 	
 	status = syntax(shell);
 	// printf ("After syntax:\n");
@@ -163,15 +163,15 @@ int	parse(t_shell *shell)
 	//bonus:
 	shell->tree = make_tree(shell, shell->token, last_token(shell->token));
 
-	printf("\n"WHITE_TEXT MAGENTA_BACKGROUND"THE TREE"RESET_COLOR);
-	printf("\n--------------------\n");
+	//printf("\n"WHITE_TEXT MAGENTA_BACKGROUND"THE TREE"RESET_COLOR);
+	//printf("\n--------------------\n");
 	
 	// if (shell->tree)
 	// 	print_tree(shell->tree, 0);
 	
-	if (shell->tree)
-		print_tree_with_cmds(shell->tree, 0);
-	printf ("\n");
+	// if (shell->tree)
+	// 	print_tree_with_cmds(shell->tree, 0);
+	//printf ("\n");
 		
 	// if (shell->tree)
 	// 	free_token_list(shell->token); //???

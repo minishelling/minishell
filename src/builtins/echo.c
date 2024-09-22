@@ -6,6 +6,7 @@ t_ecode echo_builtin(t_shell *shell, char **cmd_args) //Return unsigned int8_t?
 	char	**str_arr;
 	int		i;
 
+	//printf("We're running echo\n");
 	(void) shell;
 	if (!cmd_args)
 		return (FAILURE);
