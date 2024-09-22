@@ -138,8 +138,8 @@ void free_tree(t_tree *node)
     free_tree(node->right);
 
     // Free the cmd_list
-    if (node->type == CMD)
-        free_cmd_list(node->cmd_list);
+    //  if (node->type == CMD)
+    //    free_cmd_list(node->cmd_list);
 
     // Finally, free the node itself
     free(node);

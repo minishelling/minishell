@@ -91,7 +91,7 @@ int	execute_cmd_list(t_shell *shell, t_cmd *cmds_list)
 	int		dup_status;
 
 	cmds_count = count_cmds(cmds_list);
-	printf("cmds_count in execute_cmd_list: %ld\n", cmds_count);
+	//printf("cmds_count in execute_cmd_list: %ld\n", cmds_count);
 	i = 0;
 	while (i < cmds_count)
 	{
@@ -126,13 +126,14 @@ int	execute_cmd_list(t_shell *shell, t_cmd *cmds_list)
 			{
 				dup_status = dup2(shell->read_fd, STDIN_FILENO);
 				close(shell->read_fd);
-				printf("Dup status: %d\n", dup_status);
+				if (dup_status == -1)
+					printf("Dup status: %d\n", dup_status);
 			}
 			if (i < cmds_count - 1)
 			{
 				dup_status = dup2(shell->pipefd[WRITE_END], STDOUT_FILENO);
 				close(shell->pipefd[WRITE_END]);
-				printf("Dup status: %d\n", dup_status);
+				// printf("Dup status: %d\n", dup_status);
 				shell->read_fd = shell->pipefd[READ_END];
 			}
 			shell->status = execute_builtin(shell, cmds_list->args);
@@ -140,7 +141,6 @@ int	execute_cmd_list(t_shell *shell, t_cmd *cmds_list)
 		}
 		i++;
 	}
-	return (WEXITSTATUS(shell->status));
 	return (WEXITSTATUS(shell->status));
 }
 
@@ -155,7 +155,8 @@ void	run_child(t_shell *shell, t_cmd *cmds_head, size_t cmds_count, size_t curre
 	if (current_child > 0)
 	{
 		status = dup2(shell->read_fd, STDIN_FILENO); //Protect dup.
-		printf("First dup status: %d\n", status);
+		if (status)
+			printf("First dup status: %d\n", status);
 	}
 	
 	// printf("Reached checkpoint 1 in run_child\n");
@@ -163,7 +164,7 @@ void	run_child(t_shell *shell, t_cmd *cmds_head, size_t cmds_count, size_t curre
 	{
 		status = close(shell->pipefd[READ_END]); // This should be in the upper one, where the dup is?!!!
 		// printf("Close status: %d\n", status);
-		//status = dup2(shell->pipefd[WRITE_END], STDOUT_FILENO);
+		status = dup2(shell->pipefd[WRITE_END], STDOUT_FILENO);
 		// printf("Second dup status: %d\n", status);
 	}
 	// printf("Reached checkpoint 2 in run_child\n");
