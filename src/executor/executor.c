@@ -20,22 +20,23 @@ t_builtin	check_builtin(char *cmd_name)
 
 	if (!cmd_name)
 		return (NULL_CMD);
+	// printf("CMD_NAME in check_builtin: %s\n", cmd_name);
 	cmd_name_len = ft_strlen(cmd_name);
-	if (ft_strncmp(cmd_name, "ECHO", cmd_name_len))
+	if (!ft_strncmp(cmd_name, "echo", cmd_name_len))
 		return (ECHO);
-	else if (ft_strncmp(cmd_name, "CD", cmd_name_len))
+	else if (!ft_strncmp(cmd_name, "cd", cmd_name_len))
 		return (CD);
-	else if (ft_strncmp(cmd_name, "PWD", cmd_name_len))
+	else if (!ft_strncmp(cmd_name, "pwd", cmd_name_len))
 		return (PWD);
-	else if (ft_strncmp(cmd_name, "EXPORT", cmd_name_len))
+	else if (!ft_strncmp(cmd_name, "export", cmd_name_len))
 		return (EXPORT);
-	else if (ft_strncmp(cmd_name, "DECLARE", cmd_name_len))
+	else if (!ft_strncmp(cmd_name, "declare", cmd_name_len))
 		return (DECLARE);
-	else if (ft_strncmp(cmd_name, "UNSET", cmd_name_len))
+	else if (!ft_strncmp(cmd_name, "unset", cmd_name_len))
 		return (UNSET);
-	else if (ft_strncmp(cmd_name, "ENV", cmd_name_len))
+	else if (!ft_strncmp(cmd_name, "env", cmd_name_len))
 		return (ENV);
-	else if (ft_strncmp(cmd_name, "EXIT", cmd_name_len))
+	else if (!ft_strncmp(cmd_name, "exit", cmd_name_len))
 		return (EXIT);
 	else
 		return (NON_BUILTIN);
@@ -46,8 +47,7 @@ t_ecode	execute_builtin(t_shell *shell, char **cmd_args)
 	t_builtin	builtin_code;
 
 	t_ecode	(*builtins_jumptable[])(t_shell *, char **) = {echo_builtin, cd_builtin,
-		pwd_builtin, export_builtin, declare_builtin,
-		unset_builtin, env_builtin, exit_builtin};
+		pwd_builtin, export_builtin, declare_builtin, unset_builtin, env_builtin, exit_builtin};
 	if (!shell || !cmd_args)
 		return (NULL_ERROR);
 	builtin_code = check_builtin(cmd_args[0]);
@@ -87,14 +87,15 @@ int	execute_cmd_list(t_shell *shell, t_cmd *cmds_list)
 {
 	size_t	cmds_count;
 	size_t	i;
+	t_builtin	is_builtin;
+	int		dup_status;
 
 	cmds_count = count_cmds(cmds_list);
-	// printf("cmds_count in execute_cmd_list: %ld\n", cmds_count);
+	printf("cmds_count in execute_cmd_list: %ld\n", cmds_count);
 	i = 0;
 	while (i < cmds_count)
 	{
-
-		//Create pipe
+		//Create pipe if not the last cmd
 		if (i < cmds_count - 1)
 		{
 			shell->status = pipe(shell->pipefd);
@@ -102,16 +103,41 @@ int	execute_cmd_list(t_shell *shell, t_cmd *cmds_list)
 				return (1);
 		}
 
-		//New process
-		shell->parent = fork();
-		if (shell->parent == -1)
-			return (1);
-		else if (!shell->parent)
+		is_builtin = check_builtin(cmds_list->args[0]);
+		if (is_builtin == NULL_CMD)
+			exit(EXIT_FAILURE) ;
+		else if (is_builtin == NON_BUILTIN)
 		{
-			// printf("Does it run the child\n");
-			run_child(shell, cmds_list, cmds_count, i);
+			//New process for non-builtin cmds
+			shell->parent = fork();
+			if (shell->parent == -1)
+				return (1);
+			else if (!shell->parent)
+			{
+				// printf("Does it run the child\n");
+				run_child(shell, cmds_list, cmds_count, i);
+			}
+			do_parent_duties(shell, &cmds_list, cmds_count, i);
 		}
-		do_parent_duties(shell, &cmds_list, cmds_count, i);
+		else
+		{
+			//Handling builtins without fork
+			if (i > 0)
+			{
+				dup_status = dup2(shell->read_fd, STDIN_FILENO);
+				close(shell->read_fd);
+				printf("Dup status: %d\n", dup_status);
+			}
+			if (i < cmds_count - 1)
+			{
+				dup_status = dup2(shell->pipefd[WRITE_END], STDOUT_FILENO);
+				close(shell->pipefd[WRITE_END]);
+				printf("Dup status: %d\n", dup_status);
+				shell->read_fd = shell->pipefd[READ_END];
+			}
+			shell->status = execute_builtin(shell, cmds_list->args);
+			cmds_list = cmds_list->next;
+		}
 		i++;
 	}
 	return (WEXITSTATUS(shell->status));
@@ -134,7 +160,7 @@ void	run_child(t_shell *shell, t_cmd *cmds_head, size_t cmds_count, size_t curre
 	// printf("Reached checkpoint 1 in run_child\n");
 	if (current_child < cmds_count - 1)
 	{
-		status = close(shell->pipefd[READ_END]);
+		status = close(shell->pipefd[READ_END]); // This should be in the upper one, where the dup is?!!!
 		// printf("Close status: %d\n", status);
 		status = dup2(shell->pipefd[WRITE_END], STDOUT_FILENO);
 		// printf("Second dup status: %d\n", status);
