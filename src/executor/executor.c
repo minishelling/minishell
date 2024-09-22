@@ -148,7 +148,7 @@ void	run_child(t_shell *shell, t_cmd *cmds_head, size_t cmds_count, size_t curre
 {
 	char	*cmd_path;
 	char	**env_array;
-	//int		status;
+	int		status;
 
 	// printf("Printing cmd list in run child:\n");
 	// print_cmd(cmds_head);
