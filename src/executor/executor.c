@@ -88,6 +88,7 @@ int	execute_cmd_list(t_shell *shell, t_cmd *cmds_list)
 	size_t		cmds_count;
 	size_t		i;
 	t_builtin	is_builtin;
+	int			std_backup[2];
 
 	cmds_count = count_cmds(cmds_list);
 	// printf("cmds_count in execute_cmd_list: %ld\n", cmds_count);
@@ -125,13 +126,15 @@ int	execute_cmd_list(t_shell *shell, t_cmd *cmds_list)
 			//Handling builtins without fork
 			if (i > 0)
 			{
-				// if (dup2(shell->read_fd, STDIN_FILENO) == -1)
-				// 	return (1); //Print error.
+				std_backup[STDIN_FILENO] = dup(STDIN_FILENO);
+				if (dup2(shell->read_fd, STDIN_FILENO) == -1)
+					return (1); //Print error.
 				if (close(shell->read_fd) == -1)
 					return (1); //Print error.
 			}
 			if (i < cmds_count - 1)
 			{
+				std_backup[STDOUT_FILENO] = dup(STDOUT_FILENO);
 				if (dup2(shell->pipefd[WRITE_END], STDOUT_FILENO) == -1)
 					return (1); //Print error.
 				if (close(shell->pipefd[WRITE_END]) == -1)
@@ -139,6 +142,12 @@ int	execute_cmd_list(t_shell *shell, t_cmd *cmds_list)
 				shell->read_fd = shell->pipefd[READ_END];
 			}
 			shell->status = execute_builtin(shell, cmds_list->args);
+
+			//Bring back the STD_REDIRECTIONS.
+			if (dup2(std_backup[STDIN_FILENO], STDIN_FILENO) == -1)
+				return (1); //Print error.
+			if (dup2(std_backup[STDOUT_FILENO], STDOUT_FILENO) == -1)
+				return (1); //Print error. Should it return or exit?
 			cmds_list = cmds_list->next;
 		}
 		i++;
