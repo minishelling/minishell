@@ -30,22 +30,18 @@ void print_tree(t_tree *node, int level)
 		return;
 	}
 	i = 0;
-	// Print indentation for the current level
 	while (i < level)
 	{
 		printf("    ");
 		i++;
 	}
 	
-	// Print the current node's value
 	if (node->type == CMD)
 		printf("%s |%s| |%s|\n", tree_node_name[node->type], node->start_token->str, node->end_token->str);
 	else if (node->type == T_AND_OPR || node->type == T_OR_OPR)
-	// If node->token is not NULL, print the token's value
 		printf("%s\n",  tree_node_name[node->type]);
 	else
 		{
-		// If node->token is NULL, print "NULL"
 			printf("NULL\n");
 			exit(EXIT_FAILURE);
 		}
@@ -56,6 +52,36 @@ void print_tree(t_tree *node, int level)
 	// Print the right subtree
 	print_tree(node->right, level + 1);
 }
+
+
+t_token *get_matching_parenthesis(t_token *start_token)
+{
+	t_token *iterator;
+	int		parentheses;
+	
+	iterator = start_token;
+	parentheses = 1;
+	while (iterator->next && parentheses)
+	{
+		if (iterator->next->id == PAR_OPEN)
+		{
+			//printf ("found open par\n");
+			parentheses++;
+		}
+			else if (iterator->next->id == PAR_CLOSE)
+		{
+			parentheses--;
+			if (parentheses == 0)
+			{
+				printf ("found close par\n");
+				return (iterator->next);
+			}
+		}
+		iterator = iterator->next;
+	}
+	return (NULL);
+}
+
 
 
 
@@ -70,7 +96,7 @@ t_token *get_rid_of_first_parenthesis(t_token *start_token, t_token **middle, t_
 	//start_token = get_after_space_token(start_token);
 	iterator = start_token;
 	parentheses = 1;
-	while (iterator->next && parentheses !=0)
+	while (iterator->next && parentheses)
 	//while (iterator && iterator->next && iterator->next != *end_token)
 	{
 		//printf ("parentheses  is %d\n", parentheses);
@@ -89,20 +115,12 @@ t_token *get_rid_of_first_parenthesis(t_token *start_token, t_token **middle, t_
 				if (iterator->next == *end_token)
 					*end_token = iterator;
 				*middle = iterator;
-
-				//printf ("start_token->next is %s, and iterator->id is %s\n", start_token->next->str, iterator->str);
-				// if (start_token->next->id == PAR_OPEN && iterator->id == PAR_CLOSE)
-				// {
-				// 	printf("arithmetic expantion\n");
-				// 	start_token->next->id = ARITH_EXPAN;
-				// 	start_token->next->str = "((";
-				// 	iterator->id = ARITH_EXPAN;
-				// 	iterator->str = "))";
-				// 	print_token(start_token);
-				// }
-				printf ("in get rid start_token is %p, iterator->next is %p\n", start_token, iterator->next);
+				printf ("*middle is %p\n", *middle);
+				//printf ("in get rid start_token is %p, iterator->next is %p\n", start_token, iterator->next);
 				start_token = remove_token (start_token, start_token);
 				start_token = remove_token (start_token, iterator->next);
+				printf ("after getting rid of parens\n");
+				print_token (start_token);
 				break;
 			}
 		}
@@ -214,25 +232,6 @@ t_tree *init_tree_node(t_token *op_token)
 	return tree_node;
 }
 
-t_tree *create_log_op_subtree(t_shell *shell, t_token *log_op, t_token *start_token, t_token *end_token)
-{
-	t_token *left_head;
-	t_token *right_head;
-	t_tree	*subtree;
-	
-	left_head = NULL;
-	right_head = NULL;
-	//printf ("in create_log_op_subtree\n");
-	subtree = init_tree_node(log_op);
-	divide_token_list(start_token, log_op, &left_head, &right_head);
-	//printf ("LEFT CHILD:\n");
-	//printf ("in create sub tree left head is |%s|, token_before(start_token,log_op) is |%s|\n", left_head->str, token_before(start_token, log_op)->str);
-	subtree->left = make_tree(shell, left_head, token_before(start_token, log_op));
-	//printf ("And now RIGHT CHILD:\n");
-	//printf ("in create sub tree right head is %s, end_token is %s\n", right_head->str, end_token->str);
-	subtree->right = make_tree(shell, right_head, end_token);
-	return (subtree);
-}
 
 t_tree *make_tree(t_shell *shell, t_token *start_token, t_token *end_token)
 {
@@ -255,7 +254,7 @@ t_tree *make_tree(t_shell *shell, t_token *start_token, t_token *end_token)
 		// print_token(start_token);
 		if (end_token)
 		{
-			if (start_token->id == PAR_OPEN && middle->id == PAR_CLOSE)
+			if (start_token->id == PAR_OPEN && middle->id == PAR_CLOSE && get_matching_parenthesis(start_token) == middle)
 			{
 				//printf("arithmetic expantion\n");
 				start_token->str = "((";

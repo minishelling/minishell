@@ -70,7 +70,11 @@ void remove_space_tokens(t_token **head)
 
 t_token *find_previous(t_token *head, t_token *target)
 {
-    t_token *current = head;
+	t_token *current;
+
+	if (head == target)
+		return (NULL);
+  	current = head;
     while (current && current->next != target)
     {
         current = current->next;
@@ -108,62 +112,4 @@ t_token *handle_arith_expan(t_token **head, t_token **cur_open, t_token **cur_cl
     return (*head);
 }
 
-t_token *remove_subshell_parens(t_token **head)
-{
-    t_token *current = *head;
-	t_token *closing_par;
-	t_token *opening_par;
 
-    while (current && current->next)
-    {
-        // Check if the pattern starts with PAR_OPEN
-        if (current->id == PAR_OPEN)
-        {
-            t_token *word_token = current->next;
-
-            // Loop through to find WORD tokens until PAR_CLOSE
-            while (word_token && word_token->id == WORD)
-            {
-                word_token = word_token->next;
-            }
-
-            // Check if we reached PAR_CLOSE after all WORD tokens
-            if (word_token && word_token->id == PAR_CLOSE)
-            {
-               	if (word_token->next)
-					closing_par = word_token->next;
-				if (find_previous(*head, current))
-					opening_par = find_previous(*head, current);
-				 // Remove the PAR_OPEN and PAR_CLOSE tokens
-				 printf ("from subshell removing %p and %p\n", current, word_token);
-                *head = remove_token(*head, current); // Remove PAR_OPEN
-                *head = remove_token(*head, word_token); // Remove PAR_CLOSE
-				
-				printf ("from subshell checking %p and %p\n", opening_par, closing_par);
-                if (opening_par && opening_par->id == PAR_OPEN && closing_par && closing_par->id == PAR_CLOSE)
-                {
-					printf ("subshell arith expan\n");
-                    handle_arith_expan(head, &opening_par, &closing_par);
-                }
-
-                //printf("after arith expan head is %p\n", *head);
-				if (closing_par && closing_par->next)
-					current = closing_par->next;
-            }
-            else
-            {
-                // If the pattern is incomplete, move current to the next token
-				if (current->next)
-                	current = current->next;
-            }
-        }
-        else
-        {
-            current = current->next;
-        }
-        // if (current)
-            // printf("current is %s\n", current->str);
-    }
-	
-    return (*head);
-}

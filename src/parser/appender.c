@@ -45,9 +45,9 @@ t_token	*remove_empty_token(t_token *token)
 		return (NULL);
 	current_token = token;
 	previous_token = NULL;
-	while (current_token != NULL)
+	while (current_token)
 	{
-		if (current_token->str != NULL)
+		if (current_token->str)
 		{
 			previous_token = current_token;
 			current_token = current_token->next;
@@ -64,105 +64,102 @@ t_token	*remove_empty_token(t_token *token)
 
 t_token *free_token(t_token *token)
 {
-    t_token *next_token;
+	t_token *next_token;
 
-    if (token == NULL)
-        return (NULL);
-    
-    next_token = token->next;  // Save the pointer to the next token before freeing
-    // if (token && token->str)
-	// 	free(token->str);          // Free the token's string
-    if (token)
-		free(token);               // Free the token itself
+	if (token == NULL)
+		return (NULL);
 
-    return (next_token);       // Return the next token in the list
+	next_token = token->next;
+	if (token)
+		free(token);
+	return (next_token);
 }
 
 
 bool join_quotes_tokens(t_shell *shell)
 {
-    t_token *current_token = shell->token;
-    t_token *previous_token = NULL;
+	t_token *current_token = shell->token;
+	t_token *previous_token = NULL;
 
-    shell->token = remove_empty_token(shell->token);  // Remove any empty tokens
+	shell->token = remove_empty_token(shell->token);  // Remove any empty tokens
 
-    while (current_token != NULL)
-    {
-        // Case 1: Previous and current tokens are double quotes
-        if (is_dquote(previous_token) && is_dquote(current_token))
-        {
-            // Remove the inner quotes: closing quote from previous and opening quote from current
-            size_t prev_len = ft_strlen(previous_token->str);
-            if (prev_len > 0 && previous_token->str[prev_len - 1] == '"')
-                previous_token->str[prev_len - 1] = '\0'; // Null-terminate to remove
+	while (current_token != NULL)
+	{
+		// Case 1: Previous and current tokens are double quotes
+		if (is_dquote(previous_token) && is_dquote(current_token))
+		{
+			// Remove the inner quotes: closing quote from previous and opening quote from current
+			size_t prev_len = ft_strlen(previous_token->str);
+			if (prev_len > 0 && previous_token->str[prev_len - 1] == '"')
+				previous_token->str[prev_len - 1] = '\0'; // Null-terminate to remove
 
-            // Skip the first quote of current_token
-            if (current_token->str[0] == '"')
-                current_token->str++; // Skip the first quote
+			// Skip the first quote of current_token
+			if (current_token->str[0] == '"')
+				current_token->str++; // Skip the first quote
 
-            // Concatenate the two token strings
-            char *new_str = ft_strjoin_fs1(&previous_token->str, current_token->str);
-            if (!new_str)
-                return (false);
-            previous_token->str = new_str;
+			// Concatenate the two token strings
+			char *new_str = ft_strjoin_fs1(&previous_token->str, current_token->str);
+			if (!new_str)
+				return (false);
+			previous_token->str = new_str;
 
-            // Free the current token
-            t_token *temp = current_token;
-            current_token = current_token->next; // Move to the next token
-            free_token(temp); // Free the current token
-            previous_token->next = current_token; // Link previous token to the next
-            continue;
-        }
+			// Free the current token
+			t_token *temp = current_token;
+			current_token = current_token->next; // Move to the next token
+			free_token(temp); // Free the current token
+			previous_token->next = current_token; // Link previous token to the next
+			continue;
+		}
 
-        // Case 2: Previous token is single quote and current is single quote
-        if (is_squote(previous_token) && is_squote(current_token))
-        {
-            // Remove the inner quotes: closing quote from previous and opening quote from current
-            size_t prev_len = ft_strlen(previous_token->str);
-            if (prev_len > 0 && previous_token->str[prev_len - 1] == '\'')
-                previous_token->str[prev_len - 1] = '\0'; // Null-terminate to remove
+		// Case 2: Previous token is single quote and current is single quote
+		if (is_squote(previous_token) && is_squote(current_token))
+		{
+			// Remove the inner quotes: closing quote from previous and opening quote from current
+			size_t prev_len = ft_strlen(previous_token->str);
+			if (prev_len > 0 && previous_token->str[prev_len - 1] == '\'')
+				previous_token->str[prev_len - 1] = '\0'; // Null-terminate to remove
 
-            // Skip the first quote of current_token
-            if (current_token->str[0] == '\'')
-                current_token->str++; // Skip the first quote
+			// Skip the first quote of current_token
+			if (current_token->str[0] == '\'')
+				current_token->str++; // Skip the first quote
 
-            // Concatenate the two token strings
-            char *new_str = ft_strjoin_fs1(&previous_token->str, current_token->str);
-            if (!new_str)
-                return (false);
-            previous_token->str = new_str;
+			// Concatenate the two token strings
+			char *new_str = ft_strjoin_fs1(&previous_token->str, current_token->str);
+			if (!new_str)
+				return (false);
+			previous_token->str = new_str;
 
-            // Free the current token
-            t_token *temp = current_token;
-            current_token = current_token->next; // Move to the next token
-            free_token(temp); // Free the current token
-            previous_token->next = current_token; // Link previous token to the next
-            continue;
-        }
+			// Free the current token
+			t_token *temp = current_token;
+			current_token = current_token->next; // Move to the next token
+			free_token(temp); // Free the current token
+			previous_token->next = current_token; // Link previous token to the next
+			continue;
+		}
 
-        // Case 3: Previous is double quote and current is single quote (or vice versa)
-        if ((is_dquote(previous_token) && is_squote(current_token)) || 
-            (is_squote(previous_token) && is_dquote(current_token)))
-        {
-            // Concatenate without removing any quotes
-            char *new_str = ft_strjoin_fs1(&previous_token->str, current_token->str);
-            if (!new_str)
-                return (false);
-            previous_token->str = new_str;
+		// Case 3: Previous is double quote and current is single quote (or vice versa)
+		if ((is_dquote(previous_token) && is_squote(current_token)) || 
+			(is_squote(previous_token) && is_dquote(current_token)))
+		{
+			// Concatenate without removing any quotes
+			char *new_str = ft_strjoin_fs1(&previous_token->str, current_token->str);
+			if (!new_str)
+				return (false);
+			previous_token->str = new_str;
 
-            // Free the current token
-            t_token *temp = current_token;
-            current_token = current_token->next; // Move to the next token
-            free_token(temp); // Free the current token
-            previous_token->next = current_token; // Link previous token to the next
-            continue;
-        }
+			// Free the current token
+			t_token *temp = current_token;
+			current_token = current_token->next; // Move to the next token
+			free_token(temp); // Free the current token
+			previous_token->next = current_token; // Link previous token to the next
+			continue;
+		}
 
-        // Update previous and current tokens
-        previous_token = current_token;
-        current_token = current_token->next;
-    }
-    return (true);
+		// Update previous and current tokens
+		previous_token = current_token;
+		current_token = current_token->next;
+	}
+	return (true);
 }
 
 bool	join_word_and_env_var_tokens(t_shell *shell)

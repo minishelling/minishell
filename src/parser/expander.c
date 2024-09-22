@@ -75,7 +75,6 @@ char *process_double_quotes(char **str, char *expanded_str, t_env *env_list)
 }
 
 
-
 char *process_single_quotes(char **str, char *expanded_str)
 {
 	char	*end_quote;

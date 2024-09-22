@@ -40,10 +40,10 @@ bool	init_cmd(t_shell *shell, t_cmd **current_cmd, t_token *token)
 		[7] = parser_par_close,
 		[8] = parser_redir,
 		[9] = parser_redir,
-		[10] = parser_word, //squotes
-		[11] = parser_word, //dquotes
-		[12] = parser_word, //env var
-		[13] = parser_word,
+		[10] = add_new_arg, //squotes
+		[11] = add_new_arg, //dquotes
+		[12] = add_new_arg, //env var
+		[13] = add_new_arg,
 		[14] = parser_or_opr,
 		[15] = parser_arith_expan
 	};
@@ -104,6 +104,64 @@ t_cmd	*make_cmd(t_shell *shell, t_token *start_token, t_token *end_token)
 	return (shell->cmd_list);
 }
 
+t_token *remove_subshell_parens(t_token **head)
+{
+    t_token *current = *head;
+	t_token *closing_par;
+	t_token *opening_par = NULL;
+
+    while (current && current->next)
+    {
+        // Check if the pattern starts with PAR_OPEN
+        if (current->id == PAR_OPEN)
+        {
+            t_token *word_token = current->next;
+
+            // Loop through to find WORD tokens until PAR_CLOSE
+            while (word_token && word_token->id == WORD)
+            {
+                word_token = word_token->next;
+            }
+
+            // Check if we reached PAR_CLOSE after all WORD tokens
+            if (word_token && word_token->id == PAR_CLOSE)
+            {
+               	if (word_token->next)
+					closing_par = word_token->next;
+				if (find_previous(*head, current))
+				{
+					printf ("found previous\n");
+					opening_par = find_previous(*head, current);
+				}
+				 // Remove the PAR_OPEN and PAR_CLOSE tokens
+				 printf ("from subshell removing %p and %p\n", current, word_token);
+                *head = remove_token(*head, current); // Remove PAR_OPEN
+                *head = remove_token(*head, word_token); // Remove PAR_CLOSE
+				
+				printf ("from subshell checking %p and %p\n", opening_par, closing_par);
+                if (opening_par && opening_par->id == PAR_OPEN && closing_par && closing_par->id == PAR_CLOSE)
+                {
+					printf ("subshell arith expan\n");
+                    handle_arith_expan(head, &opening_par, &closing_par);
+                }
+				if (closing_par && closing_par->next)
+					current = closing_par->next;
+            }
+            else
+            {
+				if (current->next)
+                	current = current->next;
+            }
+        }
+        else
+        {
+            current = current->next;
+        }
+
+    }
+	
+    return (*head);
+}
 
 int	parse(t_shell *shell)
 {
@@ -144,12 +202,12 @@ int	parse(t_shell *shell)
 	// print_token(shell->token);
 	
 	remove_space_tokens(&shell->token);
-	// printf ("after removing space tokens\n");
-	// print_token(shell->token);
+	printf ("after removing space tokens\n");
+	print_token(shell->token);
 
 	remove_subshell_parens(&(shell->token));
-	// printf ("after removing subshell_parens\n");
-	// print_token(shell->token);
+	printf ("after removing subshell_parens\n");
+	print_token(shell->token);
 
 
 	//mandatory:
@@ -163,11 +221,11 @@ int	parse(t_shell *shell)
 	//bonus:
 	shell->tree = make_tree(shell, shell->token, last_token(shell->token));
 
-	//printf("\n"WHITE_TEXT MAGENTA_BACKGROUND"THE TREE"RESET_COLOR);
-	//printf("\n--------------------\n");
+	printf("\n"WHITE_TEXT MAGENTA_BACKGROUND"THE TREE"RESET_COLOR);
+	printf("\n--------------------\n");
 	
-	// if (shell->tree)
-	// 	print_tree(shell->tree, 0);
+	if (shell->tree)
+		print_tree(shell->tree, 0);
 	
 	// if (shell->tree)
 	// 	print_tree_with_cmds(shell->tree, 0);

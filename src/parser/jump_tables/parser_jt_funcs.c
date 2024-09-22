@@ -38,11 +38,15 @@ int parser_redir(t_cmd *cmd, t_token *token)
 	t_token	*file_token;
 	t_redir	*redir_list;
 
-	file_token = get_after_space_token(token);
+	// file_token = get_after_space_token(token);
+	if (token->next)
+		file_token = token->next;
+	else
+		file_token = NULL;
 	redir_list = new_redir();
 	if (!redir_list)
 	{
-		// cmd->next = (t_cmd *) 0XFF; // ?
+		//error
 		return (ERR_MEM);
 	}
 	redir_list->redir_id = redir_ident(token->str);
@@ -54,14 +58,13 @@ int parser_redir(t_cmd *cmd, t_token *token)
 	return (0);
 }
 
-int parser_word(t_cmd *cmd, t_token *token)
+int add_new_arg(t_cmd *cmd, t_token *token)
 {
 	size_t	i;
 	char	**arr;
 
 	arr = cmd->args;
 	i = 0;
-	//printf("token is %s\n", token->str);
 	while (arr[i])
 	{
 		i++;

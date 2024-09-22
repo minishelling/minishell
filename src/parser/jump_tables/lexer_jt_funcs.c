@@ -36,12 +36,6 @@ void	set_pos_end_redir(char *str, size_t *pos, t_token_id token_id)
 	}
 }
 
-/*
-** token_id_env_var
-** first character of "name" should be alphabetic (isalpha) or underscore "_"
-** rest of characters of "name" should be alphabetic
-** or numeric (isalnum) or "_" underscore
-*/
 void	set_pos_end_env_var(char *str, size_t *pos, t_token_id token_id)
 {
 	(void) token_id;
@@ -60,7 +54,6 @@ void	set_pos_end_env_var(char *str, size_t *pos, t_token_id token_id)
 		(*pos)++;
 	//printf ("pos is now %zu\n", *pos);
 }
-
 
 void	set_pos_end_space_or_word(char *str, size_t *pos, t_token_id token_id)
 {

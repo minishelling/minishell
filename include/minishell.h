@@ -170,12 +170,10 @@ typedef struct s_shell
 	int			pipefd[2];
 	pid_t		parent;
 	int			read_fd;
-	int			write_fd; //Not needed
 	int			status;
     char 		*input;
     t_token 	*token;
 	t_tree		*tree;
-	t_token		*syntax; //?
 	t_env		*env_list;
 	t_cmd		*cmd_list;
 } t_shell;
@@ -213,7 +211,7 @@ int	parser_par_open(t_cmd *cmd, t_token *token);
 int	parser_par_close(t_cmd *cmd, t_token *token);
 int	parser_redir(t_cmd *cmd, t_token *token);
 int	parser_or_opr(t_cmd *cmd, t_token *token);
-int	parser_word(t_cmd *cmd, t_token *token);
+int	add_new_arg(t_cmd *cmd, t_token *token);
 
 t_token	*new_token(void);
 void	add_token_in_back(t_token **t_list, t_token *new);
@@ -274,6 +272,8 @@ bool	join_quotes_tokens(t_shell *shell);
 char *process_double_quotes(char **str_ptr, char *expanded_str, t_env *env_list);
 char *process_single_quotes(char **str_ptr, char *expanded_str);
 char *process_unquoted(char **str_ptr, char *expanded_str, t_env *env_list);
+t_token *find_previous(t_token *head, t_token *target);
+t_token *handle_arith_expan(t_token **head, t_token **cur_open, t_token **cur_close);
 
 
 //ENV - Lisandro
