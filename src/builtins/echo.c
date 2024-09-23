@@ -16,10 +16,10 @@ t_ecode echo_builtin(t_shell *shell, char **cmd_args)
 		return (SUCCESS);
 	}
 	if (cmd_args[1] && !ft_strncmp(cmd_args[1], "-n", 2))
-		{
-			newline = false;
-			str_arr = &cmd_args[2];
-		}
+	{
+		newline = false;
+		str_arr = &cmd_args[2];
+	}
 	else
 	{
 		newline = true;

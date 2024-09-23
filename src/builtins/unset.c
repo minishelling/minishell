@@ -7,6 +7,8 @@ t_ecode	unset_builtin(t_shell *shell, char **cmd_args)
 
 	if (!shell || !cmd_args)
 		return (NULL_ERROR);
+	if (!cmd_args[1])
+		return (SUCCESS);
 	key = cmd_args[1];
 	env_node = find_env_node(shell->env_list, key);
 	if (!env_node)
