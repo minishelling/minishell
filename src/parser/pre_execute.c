@@ -31,6 +31,7 @@ int execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int pre
 
         tree_node->start_token = expand(tree_node->start_token, tree_node->end_token, shell->env_list);
 	    tree_node->cmd_list = make_cmd(shell, tree_node->start_token, tree_node->end_token);
+        // handle_redirs(shell, tree_node->cmd_list); //Still to implement.
         print_cmd(tree_node->cmd_list);
         //print_tree_with_cmds(shell->tree, 0);
         exit_code = executor(shell, tree_node->cmd_list);

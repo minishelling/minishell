@@ -24,6 +24,7 @@
 # define META_CHARS_SET " \t\n|&;()><"
 # define SPECIAL_CHARS "\'\"$"
 # define ERROR -1
+# define REDIR_INIT -2
 
 #define RESET_COLOR "\033[0m"
 #define MAGENTA_TEXT "\033[0;35m"
@@ -129,6 +130,8 @@ typedef struct s_cmd
 {
 	char			**args;
 	t_redir			*redir;
+	int				latest_in;
+	int				latest_out;
 	struct s_cmd	*next;
 }					t_cmd;
 
@@ -275,6 +278,9 @@ char *process_unquoted(char **str_ptr, char *expanded_str, t_env *env_list);
 t_token *find_previous(t_token *head, t_token *target);
 t_token *handle_arith_expan(t_token **head, t_token **cur_open, t_token **cur_close);
 void handle_heredocs(t_token *token_list) ;
+t_ecode	open_redirs(t_shell *shell, t_cmd *head);
+
+
 
 
 //ENV - Lisandro

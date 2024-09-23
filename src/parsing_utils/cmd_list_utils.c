@@ -10,6 +10,8 @@ t_cmd	*new_cmd(void)
 	current_cmd->args = NULL;
 	current_cmd->redir = NULL;
 	current_cmd->next = NULL;
+	current_cmd->latest_in = REDIR_INIT;
+	current_cmd->latest_out = REDIR_INIT;
 	return (current_cmd);
 }
 

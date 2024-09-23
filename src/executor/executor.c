@@ -83,6 +83,58 @@ static size_t	count_cmds(t_cmd *head)
 	return (count);
 }
 
+t_ecode	open_redirs(t_shell *shell, t_cmd *cmd)
+{
+	if (!shell || !cmd)
+		return (NULL_ERROR);
+	while (cmd->redir)
+	{
+		if (cmd->redir->redir_id == HERE)
+			cmd->redir->fd = ft_atoi(cmd->redir->file);
+		else if (cmd->redir->redir_id == IN)
+			cmd->redir->fd = open(cmd->redir->file, O_RDONLY);
+		else if (cmd->redir->redir_id == OUT)
+			cmd->redir->fd = open(cmd->redir->file, O_WRONLY | O_TRUNC | O_CREAT, 0644);
+		else if (cmd->redir->redir_id == APP)
+			cmd->redir->fd = open(cmd->redir->file, O_WRONLY | O_APPEND | O_CREAT, 0644);
+		else
+			//Run Alex's close all fd's and exit.
+		if (cmd->redir->redir_id == HERE || cmd->redir->redir_id == IN)
+		{
+			if (cmd->latest_in != REDIR_INIT)
+				close(cmd->latest_in); //Protect
+			cmd->latest_in = cmd->redir->fd;
+		}
+		else if (cmd->redir->redir_id == OUT || cmd->redir->redir_id == APP)
+		{
+			if (cmd->latest_out != REDIR_INIT)
+				close(cmd->latest_out); //Protect
+			cmd->latest_out = cmd->redir->fd;
+		}
+		if (cmd->redir->fd == -1)
+			//Perror, Alex and good bye.
+		cmd->redir = cmd->redir->next;
+	}
+	return (SUCCESS);
+}
+
+// t_ecode	handle_redirs(t_shell *shell, t_cmd *head)
+// {
+// 	if (!shell || !head)
+// 		return (NULL_ERROR);
+// 	while (head)
+// 	{
+// 		if (open_redirs(shell, head, ???????) == SUCCESS)
+// 		{
+// 			if (latest_in != REDIR_INIT)
+				
+
+// 		}
+
+// 	}
+	
+// }
+
 int	execute_cmd_list(t_shell *shell, t_cmd *cmds_list)
 {
 	size_t		cmds_count;
