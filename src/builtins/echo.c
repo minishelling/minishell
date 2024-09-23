@@ -1,12 +1,12 @@
 #include "../../include/minishell.h"
 
-t_ecode echo_builtin(t_shell *shell, char **cmd_args) //Return unsigned int8_t?
+t_ecode echo_builtin(t_shell *shell, char **cmd_args)
 {
 	bool	newline;
 	char	**str_arr;
 	int		i;
+	int		j;
 
-	//printf("We're running echo\n");
 	(void) shell;
 	if (!cmd_args)
 		return (FAILURE);
@@ -16,10 +16,10 @@ t_ecode echo_builtin(t_shell *shell, char **cmd_args) //Return unsigned int8_t?
 		return (SUCCESS);
 	}
 	if (cmd_args[1] && !ft_strncmp(cmd_args[1], "-n", 2))
-		{
-			newline = false;
-			str_arr = &cmd_args[2];
-		}
+	{
+		newline = false;
+		str_arr = &cmd_args[2];
+	}
 	else
 	{
 		newline = true;
@@ -28,7 +28,13 @@ t_ecode echo_builtin(t_shell *shell, char **cmd_args) //Return unsigned int8_t?
 	i = 0;
 	while (str_arr[i])
 	{
-		ft_putstr_fd(str_arr[i], 1);
+		j = 0;
+		while (str_arr[i][j])
+		{
+			if (str_arr[i][j] != '\\')
+				ft_putchar_fd(str_arr[i][j], 1);
+			j++;
+		}
 		if (str_arr[i + 1])
 			ft_putchar_fd(' ', 1);
 		i++;
