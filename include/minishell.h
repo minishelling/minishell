@@ -274,6 +274,7 @@ char *process_single_quotes(char **str_ptr, char *expanded_str);
 char *process_unquoted(char **str_ptr, char *expanded_str, t_env *env_list);
 t_token *find_previous(t_token *head, t_token *target);
 t_token *handle_arith_expan(t_token **head, t_token **cur_open, t_token **cur_close);
+void handle_heredocs(t_token *token_list) ;
 
 
 //ENV - Lisandro

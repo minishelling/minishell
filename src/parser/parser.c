@@ -209,7 +209,9 @@ int	parse(t_shell *shell)
 	printf ("after removing subshell_parens\n");
 	print_token(shell->token);
 
-
+	handle_heredocs(shell->token);
+	printf ("after heredocs handling\n");
+	print_token(shell->token);
 	//mandatory:
 	// status = make_cmd(shell, shell->token);
 	// if (shell->cmd_list == NULL)
