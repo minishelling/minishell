@@ -3,16 +3,23 @@
 static char	**create_full_env_array(t_env *env_head);
 static char	**sort_env_list(t_env *env_list_head);
 static void	bubblesort_array(char **arr, ssize_t count);
+static char	**ft_strjoin_arr(char **arr, char *str);
 
 t_ecode	declare_builtin(t_shell *shell, char **cmd_args)
 {
 	char	**sorted_env;
+	char	**declare_array;
 
 	(void) cmd_args;
 	sorted_env = sort_env_list(shell->env_list);
 	if (!sorted_env)
 		return (FAILURE);
-	ft_print_2d_arr(sorted_env);
+	declare_array = ft_strjoin_arr(sorted_env, "declare -x ");
+	ft_free_2d((void ***) &sorted_env);
+	if (!declare_array)
+		return (FAILURE);
+	ft_print_2d_arr(declare_array);
+	ft_free_2d((void ***) &declare_array);
 	return (SUCCESS);
 }
 
@@ -79,4 +86,27 @@ static void	bubblesort_array(char **arr, ssize_t count)
 		}
 		i++;
 	}
+}
+
+static char	**ft_strjoin_arr(char **arr, char *str)
+{
+	char	**new;
+	size_t	i;
+
+	if (!arr || !str)
+		return (NULL);
+	i = 0;
+	while (arr[i])
+		i++;
+	new = (char **) ft_calloc(i + 1, sizeof(char *));
+	i = 0;
+	while (arr[i])
+	{
+		new[i] = ft_strjoin(str, arr[i]);
+		if (!new[i])
+			return (ft_free_2d((void ***) &new), NULL);
+		i++;
+	}
+	new[i] = NULL;
+	return (new);
 }
