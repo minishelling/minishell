@@ -6,6 +6,7 @@ t_ecode	export_builtin(t_shell *shell, char **cmd_args)
 	char	*value;
 	t_ecode	status;
 
+	//printf("We're running export\n");
 	if (!cmd_args)
 		return (FAILURE);
 	if (!cmd_args[1])

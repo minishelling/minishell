@@ -2,7 +2,7 @@
 
 typedef enum e_builtin
 {
-	ECHO,
+	ECHO, //0
 	CD,
 	PWD,
 	EXPORT,
@@ -10,7 +10,7 @@ typedef enum e_builtin
 	UNSET,
 	ENV,
 	EXIT,
-	NON_BUILTIN,
+	NON_BUILTIN, //8
 	NULL_CMD,
 }	t_builtin;
 
@@ -85,33 +85,33 @@ static size_t	count_cmds(t_cmd *head)
 
 int	execute_cmd_list(t_shell *shell, t_cmd *cmds_list)
 {
-	size_t	cmds_count;
-	size_t	i;
+	size_t		cmds_count;
+	size_t		i;
 	t_builtin	is_builtin;
-	int		dup_status;
 
 	cmds_count = count_cmds(cmds_list);
-	printf("cmds_count in execute_cmd_list: %ld\n", cmds_count);
+	// printf("cmds_count in execute_cmd_list: %ld\n", cmds_count);
 	i = 0;
 	while (i < cmds_count)
 	{
 		//Create pipe if not the last cmd
 		if (i < cmds_count - 1)
 		{
-			shell->status = pipe(shell->pipefd);
-			if (shell->status == -1)
-				return (1);
+			if (pipe(shell->pipefd) == -1)
+				return (1); //Print error.
 		}
 
 		is_builtin = check_builtin(cmds_list->args[0]);
+		// printf("is_builtin: %d\n", is_builtin);
 		if (is_builtin == NULL_CMD)
 			exit(EXIT_FAILURE) ;
+
 		else if (is_builtin == NON_BUILTIN)
 		{
 			//New process for non-builtin cmds
 			shell->parent = fork();
 			if (shell->parent == -1)
-				return (1);
+				return (1); //Print error.
 			else if (!shell->parent)
 			{
 				// printf("Does it run the child\n");
@@ -119,20 +119,23 @@ int	execute_cmd_list(t_shell *shell, t_cmd *cmds_list)
 			}
 			do_parent_duties(shell, &cmds_list, cmds_count, i);
 		}
+
 		else
 		{
 			//Handling builtins without fork
 			if (i > 0)
 			{
-				dup_status = dup2(shell->read_fd, STDIN_FILENO);
-				close(shell->read_fd);
-				printf("Dup status: %d\n", dup_status);
+				// if (dup2(shell->read_fd, STDIN_FILENO) == -1)
+				// 	return (1); //Print error.
+				if (close(shell->read_fd) == -1)
+					return (1); //Print error.
 			}
 			if (i < cmds_count - 1)
 			{
-				dup_status = dup2(shell->pipefd[WRITE_END], STDOUT_FILENO);
-				close(shell->pipefd[WRITE_END]);
-				printf("Dup status: %d\n", dup_status);
+				if (dup2(shell->pipefd[WRITE_END], STDOUT_FILENO) == -1)
+					return (1); //Print error.
+				if (close(shell->pipefd[WRITE_END]) == -1)
+					return (1); //Print error.
 				shell->read_fd = shell->pipefd[READ_END];
 			}
 			shell->status = execute_builtin(shell, cmds_list->args);
@@ -140,42 +143,38 @@ int	execute_cmd_list(t_shell *shell, t_cmd *cmds_list)
 		}
 		i++;
 	}
-	return (WEXITSTATUS(shell->status));
+	return (shell->status);
 }
 
 void	run_child(t_shell *shell, t_cmd *cmds_head, size_t cmds_count, size_t current_child)
 {
 	char	*cmd_path;
 	char	**env_array;
-	int		status;
 
-	// printf("Printing cmd list in run child:\n");
-	// print_cmd(cmds_head);
 	if (current_child > 0)
 	{
-		status = dup2(shell->read_fd, STDIN_FILENO); //Protect dup.
-		printf("First dup status: %d\n", status);
+		if (dup2(shell->read_fd, STDIN_FILENO) == -1)
+			return ; //Print error.
 	}
-	
-	// printf("Reached checkpoint 1 in run_child\n");
 	if (current_child < cmds_count - 1)
 	{
-		status = close(shell->pipefd[READ_END]); // This should be in the upper one, where the dup is?!!!
-		// printf("Close status: %d\n", status);
-		status = dup2(shell->pipefd[WRITE_END], STDOUT_FILENO);
-		// printf("Second dup status: %d\n", status);
+		if (close(shell->pipefd[READ_END]) == -1)
+			return ; //Print error.
+		if (dup2(shell->pipefd[WRITE_END], STDOUT_FILENO) == -1)
+			return ; //Print error.
 	}
-	// printf("Reached checkpoint 2 in run_child\n");
 	if (cmds_head && cmds_head->args)
 		cmd_path = get_cmd_path(shell, cmds_head->args[0]);
 	env_array = create_env_array(shell->env_list);
 	execve(cmd_path, cmds_head->args, env_array);
-	// printf("Failed to execute. Exiting.\n");
-	exit(EXIT_FAILURE);
+	exit(EXIT_FAILURE); //Print error.
 }
 
 void	do_parent_duties(t_shell *shell, t_cmd **curr_cmd, size_t cmds_count, size_t current_child)
 {
+	int	wstatus;
+
+	wstatus = 0;
 	if (current_child > 0)
 		close(shell->read_fd);
 	if (current_child < cmds_count - 1)
@@ -183,6 +182,7 @@ void	do_parent_duties(t_shell *shell, t_cmd **curr_cmd, size_t cmds_count, size_
 		close(shell->pipefd[WRITE_END]);
 		shell->read_fd = shell->pipefd[READ_END];
 	}
-	waitpid(shell->parent, &shell->status, 0);
+	waitpid(shell->parent, &wstatus, 0);
+	shell->status = WEXITSTATUS(wstatus);
 	*curr_cmd = (*curr_cmd)->next;
 }
