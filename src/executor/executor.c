@@ -63,11 +63,15 @@ int	executor(t_shell *shell, t_cmd *cmds_list)
 {
 	int	status;
 
+	// if (fcntl(cmds_list->latest_in, F_GETFD) == -1)
+    // 	perror("Invalid latest_in");
+	// else
+	// 	printf("Not giving an error \n");
+	// if (fcntl(cmds_list->latest_out, F_GETFD) == -1)
+	// 	perror("Invalid latest_out");
+	// else
+	// 	printf("Not giving an error \n");
 	status = execute_cmd_list(shell, cmds_list);
-	if (fcntl(cmds_list->latest_in, F_GETFD) == -1)
-    	perror("Invalid latest_in");
-	else
-		printf("Not giving an error \n");
 	return (status);
 }
 
@@ -130,7 +134,8 @@ t_ecode	open_redirs(t_shell *shell, t_cmd *head)
 					// if (close(current_cmd->latest_in) == -1) //Not recycling fds.
 						// printf("It isn't closing\n"); //Protect
 				}
-				current_cmd->latest_in = current_redir->fd;
+				else
+					current_cmd->latest_in = current_redir->fd;
 			}
 			else if (current_redir->redir_id == OUT || current_redir->redir_id == APP)
 			{
@@ -138,12 +143,13 @@ t_ecode	open_redirs(t_shell *shell, t_cmd *head)
 				{
 					if (dup2(current_redir->fd, current_cmd->latest_out) == -1)
 						printf("Dup failure in open_redirs\n"); //Protect
-					// if (close(current_redir->fd) == -1)
-					// 	printf("It isn't closing\n"); //Protect
+					if (close(current_redir->fd) == -1)
+						printf("It isn't closing\n"); //Protect
 					// if (close(current_cmd->latest_out) == -1) //Not recycling fds.
 					// 	printf("It isn't closing\n"); //Protect
 				}
-				current_cmd->latest_out = current_redir->fd;
+				else
+					current_cmd->latest_out = current_redir->fd;
 			}
 			current_redir = current_redir->next;
 		}
@@ -167,7 +173,6 @@ int	execute_cmd_list(t_shell *shell, t_cmd *cmds_list)
 	size_t		cmds_count;
 	size_t		i;
 	t_builtin	is_builtin;
-	int			std_backup[2];
 	t_cmd		*current_cmd;
 
 	cmds_count = count_cmds(cmds_list);
@@ -202,57 +207,80 @@ int	execute_cmd_list(t_shell *shell, t_cmd *cmds_list)
 			}
 			do_parent_duties(shell, &current_cmd, cmds_count, i);
 		}
-
 		else
 		{
-			//Handling builtins without fork
-			if (i > 0)
-			{
-				std_backup[STDIN_FILENO] = dup(STDIN_FILENO);
-				if (current_cmd->latest_in != STDIN_FILENO)
-				{
-					dup2(current_cmd->latest_in, STDIN_FILENO);
-					close(current_cmd->latest_in);
-				}
-				else
-				{
-					if (dup2(shell->read_fd, STDIN_FILENO) == -1)
-						return (1); //Print error.
-					if (close(shell->read_fd) == -1)
-						return (1); //Print error.
-				}
-			}
-			if (i < cmds_count - 1)
-			{
-				std_backup[STDOUT_FILENO] = dup(STDOUT_FILENO);
-				if (current_cmd->latest_out != STDOUT_FILENO)
-				{
-					dup2(current_cmd->latest_out, STDOUT_FILENO);
-					close(current_cmd->latest_out);
-				}
-				else
-				{
-					if (dup2(shell->pipefd[WRITE_END], STDOUT_FILENO) == -1)
-						return (1); //Print error.
-					if (close(shell->pipefd[WRITE_END]) == -1)
-						return (1); //Print error.
-					shell->read_fd = shell->pipefd[READ_END];
-				}
-			}
-			shell->status = execute_builtin(shell, current_cmd->args);
-
-			//Bring back the STD_REDIRECTIONS.
-			if (dup2(std_backup[STDIN_FILENO], STDIN_FILENO) == -1)
-				return (1); //Print error.
-			close(std_backup[STDIN_FILENO]); //Protect
-			if (dup2(std_backup[STDOUT_FILENO], STDOUT_FILENO) == -1)
-				return (1); //Print error. Should it return or exit?
-			close(std_backup[STDOUT_FILENO]); //Protect
+			handle_builtin(shell, current_cmd, cmds_count, i);
 			current_cmd = current_cmd->next;
 		}
 		i++;
 	}
+	// close(shell->read_fd);
 	return (shell->status);
+}
+
+int	handle_builtin(t_shell *shell, t_cmd *current_cmd, size_t cmds_count, size_t i)
+{
+	//MAKE STD_BACKUP
+	int	std_backup[2];
+
+	std_backup[STDIN_FILENO] = dup(STDIN_FILENO);
+	std_backup[STDOUT_FILENO] = dup(STDOUT_FILENO);
+
+	//REDIRECT INPUT: FROM LATEST_IN IF AVAILABLE, OTHERWISE FROM PIPE IF WE ARE NOT AT THE FIRST COMMAND.
+	if (current_cmd->latest_in != STDIN_FILENO)
+	{
+		dup2(current_cmd->latest_in, STDIN_FILENO);
+		// close(current_cmd->latest_in);
+	}
+	else
+	{
+		if (i > 0)
+		{
+			if (dup2(shell->read_fd, STDIN_FILENO) == -1)
+				return (1); // Print error.
+			if (close(shell->read_fd) == -1)
+				return (1); // Print error.
+		}
+	}
+
+	//STORE READ_END FOR NEXT CMD
+	if (i < cmds_count - 1)
+		shell->read_fd = shell->pipefd[READ_END];
+
+
+	//REDIRECT OUTPUT: TO LATEST_OUT IF AVAILABLE,
+	if (current_cmd->latest_out != STDOUT_FILENO)
+	{
+		dup2(current_cmd->latest_out, STDOUT_FILENO);
+		// close(current_cmd->latest_out);
+		if (i < cmds_count - 1)
+		{
+			if (close(shell->pipefd[WRITE_END]) == -1)
+				return (1); // Print error.
+		}
+	}
+	//OTHERWISE TO PIPE[WRITE END] (IF WE ARE NOT AT THE LAST COMMAND).
+	else
+	{
+		if (i < cmds_count - 1)
+		{
+			if (dup2(shell->pipefd[WRITE_END], STDOUT_FILENO) == -1)
+				return (1); // Print error.
+			if (close(shell->pipefd[WRITE_END]) == -1)
+				return (1); // Print error.
+		}
+	}
+
+	shell->status = execute_builtin(shell, current_cmd->args);
+
+	// Bring back the STD_REDIRECTIONS.
+	if (dup2(std_backup[STDIN_FILENO], STDIN_FILENO) == -1)
+		return (1); // Print error.
+	// close(std_backup[STDIN_FILENO]); //Protect
+	if (dup2(std_backup[STDOUT_FILENO], STDOUT_FILENO) == -1)
+		return (1); // Print error. Should it return or exit?
+					// close(std_backup[STDOUT_FILENO]); //Protect
+	return (SUCCESS);
 }
 
 void	run_child(t_shell *shell, t_cmd *current_cmd, size_t cmds_count, size_t current_child)
@@ -270,7 +298,7 @@ void	run_child(t_shell *shell, t_cmd *current_cmd, size_t cmds_count, size_t cur
 			printf("latest_in in run_child: %d\n", current_cmd->latest_in);
 			return ;
 		}
-		close(current_cmd->latest_in);
+		// close(current_cmd->latest_in);
 	}
 	else
 	{
@@ -291,7 +319,7 @@ void	run_child(t_shell *shell, t_cmd *current_cmd, size_t cmds_count, size_t cur
 			printf("dup2 failed 3\n");
 			return;
 		}
-		close(current_cmd->latest_out);
+		// close(current_cmd->latest_out);
 	}
 	else
 	{
@@ -313,6 +341,7 @@ void	run_child(t_shell *shell, t_cmd *current_cmd, size_t cmds_count, size_t cur
 	if (current_cmd && current_cmd->args)
 		cmd_path = get_cmd_path(shell, current_cmd->args[0]);
 	env_array = create_env_array(shell->env_list);
+	// printf("Cat is saying all of this:\n");
 	execve(cmd_path, current_cmd->args, env_array);
 	// exit(EXIT_FAILURE); //Print error.
 }

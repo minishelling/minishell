@@ -32,14 +32,14 @@ t_ecode echo_builtin(t_shell *shell, char **cmd_args)
 		while (str_arr[i][j])
 		{
 			if (str_arr[i][j] != '\\')
-				ft_putchar_fd(str_arr[i][j], 1);
+				ft_putchar_fd(str_arr[i][j], STDOUT_FILENO);
 			j++;
 		}
 		if (str_arr[i + 1])
-			ft_putchar_fd(' ', 1);
+			ft_putchar_fd(' ', STDOUT_FILENO);
 		i++;
 	}
 	if (newline)
-		ft_putchar_fd('\n', 1);
+		ft_putchar_fd('\n', STDOUT_FILENO);
 	return (SUCCESS);
 }

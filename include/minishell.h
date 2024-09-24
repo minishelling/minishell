@@ -343,6 +343,7 @@ void 	run_child(t_shell *shell, t_cmd *current_cmd, size_t cmds_count, size_t cu
 void	do_parent_duties(t_shell *shell, t_cmd **curr_cmd, size_t cmds_count, size_t current_child);
 void	execute_single_command(t_shell *shell, t_cmd *cmd);
 int		execute_cmd_list(t_shell *shell, t_cmd *cmds_list);
+int		handle_builtin(t_shell *shell, t_cmd *current_cmd, size_t cmds_count, size_t i);
 
 //BUILTINS
 
