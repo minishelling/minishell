@@ -64,6 +64,10 @@ int	executor(t_shell *shell, t_cmd *cmds_list)
 	int	status;
 
 	status = execute_cmd_list(shell, cmds_list);
+	if (fcntl(cmds_list->latest_in, F_GETFD) == -1)
+    	perror("Invalid latest_in");
+	else
+		printf("Not giving an error \n");
 	return (status);
 }
 
@@ -86,54 +90,62 @@ static size_t	count_cmds(t_cmd *head)
 t_ecode	open_redirs(t_shell *shell, t_cmd *head)
 {
 	t_cmd	*current_cmd;
+	t_redir	*current_redir;
 
 	if (!shell || !head)
 		return (NULL_ERROR);
 	current_cmd = head;
 	while (current_cmd)
 	{
-		while (current_cmd->redir)
+		current_redir = current_cmd->redir;
+		while (current_redir)
 		{
-			// printf ("current redir is %d\n", current_cmd->redir->redir_id);
-			if (current_cmd->redir->redir_id == HERE)
-				current_cmd->redir->fd = ft_atoi(current_cmd->redir->file);
-			else if (current_cmd->redir->redir_id == IN)
-			{
-				// printf("Reached checkpoint at redir_id == IN\n");
-				current_cmd->redir->fd = open(current_cmd->redir->file, O_RDONLY);
-				// printf("current_cmd->redir->fd after opening: %d\n", current_cmd->redir->fd);
-			}
-			else if (current_cmd->redir->redir_id == OUT)
-				current_cmd->redir->fd = open(current_cmd->redir->file, O_WRONLY | O_TRUNC | O_CREAT, 0644);
-			else if (current_cmd->redir->redir_id == APP)
-				current_cmd->redir->fd = open(current_cmd->redir->file, O_WRONLY | O_APPEND | O_CREAT, 0644);
+			if (current_redir->redir_id == HERE)
+				current_redir->fd = ft_atoi(current_redir->file);
+			else if (current_redir->redir_id == IN)
+				current_redir->fd = open(current_redir->file, O_RDONLY);
+			else if (current_redir->redir_id == OUT)
+				current_redir->fd = open(current_redir->file, O_WRONLY | O_TRUNC | O_CREAT, 0644);
+			else if (current_redir->redir_id == APP)
+				current_redir->fd = open(current_redir->file, O_WRONLY | O_APPEND | O_CREAT, 0644);
 			else
 			{
-				current_cmd->redir = current_cmd->redir->next;
+				current_redir = current_redir->next;
 				continue ;
 			}
-			if (current_cmd->redir->redir_id == HERE || current_cmd->redir->redir_id == IN)
+			if (current_redir->fd == -1)
+				printf("Problem opening.\n"); //Problem opening. Perror, Alex and good bye.
+			if (current_redir->redir_id == HERE || current_redir->redir_id == IN)
 			{
 				if (current_cmd->latest_in != STDIN_FILENO)
 				{
-					// printf("Closing fd |%d|\n", current_cmd->latest_in);
-					// if (dup2(current_cmd->redir->fd, current_cmd->latest_in) == -1) //Dup alternative for recycling. We still need to close redir->fd.
-					if (close(current_cmd->latest_in) == -1)
-						printf("It isn't closing\n"); //Protect
-					// printf("Fd latest_in now is: |%d|\n", current_cmd->latest_in);
+					if (dup2(current_redir->fd, current_cmd->latest_in) == -1)
+						printf("Dup failure in open_redirs\n"); //Protect
+					// printf("The fd we want to close: %d\n", current_redir->fd);
+					// printf("The latest_in fd: %d\n", current_cmd->latest_in);
+					// if (close(current_redir->fd) == -1)
+					// 	printf("It isn't closing\n"); //Protect
+					// if (fcntl(current_cmd->latest_in, F_GETFD) == -1)
+					// 	perror("Invalid current_cmd->latest_in before dup2");
+					// if (close(current_cmd->latest_in) == -1) //Not recycling fds.
+						// printf("It isn't closing\n"); //Protect
 				}
-				current_cmd->latest_in = current_cmd->redir->fd;
+				current_cmd->latest_in = current_redir->fd;
 			}
-			else if (current_cmd->redir->redir_id == OUT || current_cmd->redir->redir_id == APP)
+			else if (current_redir->redir_id == OUT || current_redir->redir_id == APP)
 			{
 				if (current_cmd->latest_out != STDOUT_FILENO)
-					close(current_cmd->latest_out); //Protect
-				current_cmd->latest_out = current_cmd->redir->fd;
+				{
+					if (dup2(current_redir->fd, current_cmd->latest_out) == -1)
+						printf("Dup failure in open_redirs\n"); //Protect
+					// if (close(current_redir->fd) == -1)
+					// 	printf("It isn't closing\n"); //Protect
+					// if (close(current_cmd->latest_out) == -1) //Not recycling fds.
+					// 	printf("It isn't closing\n"); //Protect
+				}
+				current_cmd->latest_out = current_redir->fd;
 			}
-			// printf ("latest_in is %d and latest_out %d\n", current_cmd->latest_in, current_cmd->latest_out);
-			if (current_cmd->redir->fd == -1)
-				printf("Problem opening.\n"); //Problem opening. Perror, Alex and good bye.
-			current_cmd->redir = current_cmd->redir->next;
+			current_redir = current_redir->next;
 		}
 		current_cmd = current_cmd->next;
 	}
@@ -147,16 +159,6 @@ t_ecode	open_redirs(t_shell *shell, t_cmd *head)
 // 	if (!shell || !head)
 // 		return (NULL_ERROR);
 // 	current_cmd = head;
-// 	while (current_cmd)
-// 	{
-// 		if (open_redirs(shell, head) == SUCCESS)
-// 		{
-// 			if (current_cmd->latest_in != REDIR_INIT)
-				
-
-// 		}
-
-// 	}
 	
 // }
 
@@ -166,10 +168,12 @@ int	execute_cmd_list(t_shell *shell, t_cmd *cmds_list)
 	size_t		i;
 	t_builtin	is_builtin;
 	int			std_backup[2];
+	t_cmd		*current_cmd;
 
 	cmds_count = count_cmds(cmds_list);
 	// printf("cmds_count in execute_cmd_list: %ld\n", cmds_count);
 	i = 0;
+	current_cmd = cmds_list;
 	while (i < cmds_count)
 	{
 		//Create pipe if not the last cmd
@@ -179,10 +183,10 @@ int	execute_cmd_list(t_shell *shell, t_cmd *cmds_list)
 				return (1); //Print error.
 		}
 
-		is_builtin = check_builtin(cmds_list->args[0]);
+		is_builtin = check_builtin(current_cmd->args[0]);
 		// printf("is_builtin: %d\n", is_builtin);
 
-		// if (is_builtin == NULL_CMD)
+		// if (is_builtin == NULL_CMD) //commented so testing wouldn't exit minishared
 			// exit(EXIT_FAILURE) ;
 
 		if (is_builtin == NON_BUILTIN)
@@ -194,9 +198,9 @@ int	execute_cmd_list(t_shell *shell, t_cmd *cmds_list)
 			else if (!shell->parent)
 			{
 				// printf("Does it run the child\n");
-				run_child(shell, cmds_list, cmds_count, i);
+				run_child(shell, current_cmd, cmds_count, i);
 			}
-			do_parent_duties(shell, &cmds_list, cmds_count, i);
+			do_parent_duties(shell, &current_cmd, cmds_count, i);
 		}
 
 		else
@@ -205,55 +209,111 @@ int	execute_cmd_list(t_shell *shell, t_cmd *cmds_list)
 			if (i > 0)
 			{
 				std_backup[STDIN_FILENO] = dup(STDIN_FILENO);
-				if (dup2(shell->read_fd, STDIN_FILENO) == -1)
-					return (1); //Print error.
-				if (close(shell->read_fd) == -1)
-					return (1); //Print error.
+				if (current_cmd->latest_in != STDIN_FILENO)
+				{
+					dup2(current_cmd->latest_in, STDIN_FILENO);
+					close(current_cmd->latest_in);
+				}
+				else
+				{
+					if (dup2(shell->read_fd, STDIN_FILENO) == -1)
+						return (1); //Print error.
+					if (close(shell->read_fd) == -1)
+						return (1); //Print error.
+				}
 			}
 			if (i < cmds_count - 1)
 			{
 				std_backup[STDOUT_FILENO] = dup(STDOUT_FILENO);
-				if (dup2(shell->pipefd[WRITE_END], STDOUT_FILENO) == -1)
-					return (1); //Print error.
-				if (close(shell->pipefd[WRITE_END]) == -1)
-					return (1); //Print error.
-				shell->read_fd = shell->pipefd[READ_END];
+				if (current_cmd->latest_out != STDOUT_FILENO)
+				{
+					dup2(current_cmd->latest_out, STDOUT_FILENO);
+					close(current_cmd->latest_out);
+				}
+				else
+				{
+					if (dup2(shell->pipefd[WRITE_END], STDOUT_FILENO) == -1)
+						return (1); //Print error.
+					if (close(shell->pipefd[WRITE_END]) == -1)
+						return (1); //Print error.
+					shell->read_fd = shell->pipefd[READ_END];
+				}
 			}
-			shell->status = execute_builtin(shell, cmds_list->args);
+			shell->status = execute_builtin(shell, current_cmd->args);
 
 			//Bring back the STD_REDIRECTIONS.
 			if (dup2(std_backup[STDIN_FILENO], STDIN_FILENO) == -1)
 				return (1); //Print error.
+			close(std_backup[STDIN_FILENO]); //Protect
 			if (dup2(std_backup[STDOUT_FILENO], STDOUT_FILENO) == -1)
 				return (1); //Print error. Should it return or exit?
-			cmds_list = cmds_list->next;
+			close(std_backup[STDOUT_FILENO]); //Protect
+			current_cmd = current_cmd->next;
 		}
 		i++;
 	}
 	return (shell->status);
 }
 
-void	run_child(t_shell *shell, t_cmd *cmds_head, size_t cmds_count, size_t current_child)
+void	run_child(t_shell *shell, t_cmd *current_cmd, size_t cmds_count, size_t current_child)
 {
-	char	*cmd_path;
+	char	*cmd_path = NULL;
 	char	**env_array;
 
-	if (current_child > 0)
+	if (current_cmd->latest_in != STDIN_FILENO)
 	{
-		if (dup2(shell->read_fd, STDIN_FILENO) == -1)
-			return ; //Print error.
+		if (dup2(current_cmd->latest_in, STDIN_FILENO) == -1)
+		{
+			printf("dup2 failed 1\n");
+			perror("dup2:");
+			printf("current_cmd in run_child: %s\n", current_cmd->args[0]);
+			printf("latest_in in run_child: %d\n", current_cmd->latest_in);
+			return ;
+		}
+		close(current_cmd->latest_in);
+	}
+	else
+	{
+		if (current_child > 0)
+		{
+			if (dup2(shell->read_fd, STDIN_FILENO) == -1)
+			{
+				printf("dup2 failed 2\n");
+				return;
+			}
+			close (shell->read_fd);
+		}
+	}
+	if (current_cmd->latest_out != STDOUT_FILENO)
+	{
+		if (dup2(current_cmd->latest_out, STDOUT_FILENO) == -1)
+		{
+			printf("dup2 failed 3\n");
+			return;
+		}
+		close(current_cmd->latest_out);
+	}
+	else
+	{
+		if (current_child < cmds_count - 1)
+		{
+			if (dup2(shell->pipefd[WRITE_END], STDOUT_FILENO) == -1)
+			{
+				printf("dup2 failed 4\n");
+				return;
+			}
+			close(shell->pipefd[WRITE_END]);
+		}
 	}
 	if (current_child < cmds_count - 1)
 	{
 		if (close(shell->pipefd[READ_END]) == -1)
 			return ; //Print error.
-		if (dup2(shell->pipefd[WRITE_END], STDOUT_FILENO) == -1)
-			return ; //Print error.
 	}
-	if (cmds_head && cmds_head->args)
-		cmd_path = get_cmd_path(shell, cmds_head->args[0]);
+	if (current_cmd && current_cmd->args)
+		cmd_path = get_cmd_path(shell, current_cmd->args[0]);
 	env_array = create_env_array(shell->env_list);
-	execve(cmd_path, cmds_head->args, env_array);
+	execve(cmd_path, current_cmd->args, env_array);
 	// exit(EXIT_FAILURE); //Print error.
 }
 
