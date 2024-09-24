@@ -24,7 +24,6 @@
 # define META_CHARS_SET " \t\n|&;()><"
 # define SPECIAL_CHARS "\'\"$"
 # define ERROR -1
-# define REDIR_INIT -2
 
 #define RESET_COLOR "\033[0m"
 #define MAGENTA_TEXT "\033[0;35m"

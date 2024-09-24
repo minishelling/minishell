@@ -135,6 +135,7 @@ void	print_cmd(t_cmd *cmd_list_head)
 		ft_printf(MAGENTA_TEXT"CMD [%d]"RESET_COLOR"\n\n", (con - --size));
 		print_cmd_args((char **)current_cmd->args);
 		print_redir(current_cmd->redir);
+		printf ("latest_in is %d and latest_out %d\n", current_cmd->latest_in, current_cmd->latest_out);
 		current_cmd = current_cmd->next;
 		ft_printf("______________________\n\n");
 	}

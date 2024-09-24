@@ -1,5 +1,41 @@
 // #include "../include/minishell.h"
 
+
+t_ecode	open_redirs(t_shell *shell, t_cmd *cmd)
+{
+	if (!shell || !cmd)
+		return (NULL_ERROR);
+	while (cmd->redir)
+	{
+		if (cmd->redir->redir_id == HERE)
+			cmd->redir->fd = ft_atoi(cmd->redir->file);
+		else if (cmd->redir->redir_id == IN)
+			cmd->redir->fd = open(cmd->redir->file, O_RDONLY);
+		else if (cmd->redir->redir_id == OUT)
+			cmd->redir->fd = open(cmd->redir->file, O_WRONLY | O_TRUNC | O_CREAT, 0644);
+		else if (cmd->redir->redir_id == APP)
+			cmd->redir->fd = open(cmd->redir->file, O_WRONLY | O_APPEND | O_CREAT, 0644);
+		else
+			//Run Alex's close all fd's and exit.
+		if (cmd->redir->redir_id == HERE || cmd->redir->redir_id == IN)
+		{
+			if (cmd->latest_in != REDIR_INIT)
+				close(cmd->latest_in); //Protect
+			cmd->latest_in = cmd->redir->fd;
+		}
+		else if (cmd->redir->redir_id == OUT || cmd->redir->redir_id == APP)
+		{
+			if (cmd->latest_out != REDIR_INIT)
+				close(cmd->latest_out); //Protect
+			cmd->latest_out = cmd->redir->fd;
+		}
+		if (cmd->redir->fd == -1)
+			//Perror, Alex and good bye.
+		cmd->redir = cmd->redir->next;
+	}
+	return (SUCCESS);
+}
+
 // void	execute_single_command(t_shell *shell, t_cmd *cmd)
 // {
 // 	shell->parent = fork();

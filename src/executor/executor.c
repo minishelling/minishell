@@ -83,50 +83,75 @@ static size_t	count_cmds(t_cmd *head)
 	return (count);
 }
 
-t_ecode	open_redirs(t_shell *shell, t_cmd *cmd)
+t_ecode	open_redirs(t_shell *shell, t_cmd *head)
 {
-	if (!shell || !cmd)
+	t_cmd	*current_cmd;
+
+	if (!shell || !head)
 		return (NULL_ERROR);
-	while (cmd->redir)
+	current_cmd = head;
+	while (current_cmd)
 	{
-		if (cmd->redir->redir_id == HERE)
-			cmd->redir->fd = ft_atoi(cmd->redir->file);
-		else if (cmd->redir->redir_id == IN)
-			cmd->redir->fd = open(cmd->redir->file, O_RDONLY);
-		else if (cmd->redir->redir_id == OUT)
-			cmd->redir->fd = open(cmd->redir->file, O_WRONLY | O_TRUNC | O_CREAT, 0644);
-		else if (cmd->redir->redir_id == APP)
-			cmd->redir->fd = open(cmd->redir->file, O_WRONLY | O_APPEND | O_CREAT, 0644);
-		else
-			//Run Alex's close all fd's and exit.
-		if (cmd->redir->redir_id == HERE || cmd->redir->redir_id == IN)
+		while (current_cmd->redir)
 		{
-			if (cmd->latest_in != REDIR_INIT)
-				close(cmd->latest_in); //Protect
-			cmd->latest_in = cmd->redir->fd;
+			// printf ("current redir is %d\n", current_cmd->redir->redir_id);
+			if (current_cmd->redir->redir_id == HERE)
+				current_cmd->redir->fd = ft_atoi(current_cmd->redir->file);
+			else if (current_cmd->redir->redir_id == IN)
+			{
+				// printf("Reached checkpoint at redir_id == IN\n");
+				current_cmd->redir->fd = open(current_cmd->redir->file, O_RDONLY);
+				// printf("current_cmd->redir->fd after opening: %d\n", current_cmd->redir->fd);
+			}
+			else if (current_cmd->redir->redir_id == OUT)
+				current_cmd->redir->fd = open(current_cmd->redir->file, O_WRONLY | O_TRUNC | O_CREAT, 0644);
+			else if (current_cmd->redir->redir_id == APP)
+				current_cmd->redir->fd = open(current_cmd->redir->file, O_WRONLY | O_APPEND | O_CREAT, 0644);
+			else
+			{
+				current_cmd->redir = current_cmd->redir->next;
+				continue ;
+			}
+			if (current_cmd->redir->redir_id == HERE || current_cmd->redir->redir_id == IN)
+			{
+				if (current_cmd->latest_in != STDIN_FILENO)
+				{
+					// printf("Closing fd |%d|\n", current_cmd->latest_in);
+					// if (dup2(current_cmd->redir->fd, current_cmd->latest_in) == -1) //Dup alternative for recycling. We still need to close redir->fd.
+					if (close(current_cmd->latest_in) == -1)
+						printf("It isn't closing\n"); //Protect
+					// printf("Fd latest_in now is: |%d|\n", current_cmd->latest_in);
+				}
+				current_cmd->latest_in = current_cmd->redir->fd;
+			}
+			else if (current_cmd->redir->redir_id == OUT || current_cmd->redir->redir_id == APP)
+			{
+				if (current_cmd->latest_out != STDOUT_FILENO)
+					close(current_cmd->latest_out); //Protect
+				current_cmd->latest_out = current_cmd->redir->fd;
+			}
+			// printf ("latest_in is %d and latest_out %d\n", current_cmd->latest_in, current_cmd->latest_out);
+			if (current_cmd->redir->fd == -1)
+				printf("Problem opening.\n"); //Problem opening. Perror, Alex and good bye.
+			current_cmd->redir = current_cmd->redir->next;
 		}
-		else if (cmd->redir->redir_id == OUT || cmd->redir->redir_id == APP)
-		{
-			if (cmd->latest_out != REDIR_INIT)
-				close(cmd->latest_out); //Protect
-			cmd->latest_out = cmd->redir->fd;
-		}
-		if (cmd->redir->fd == -1)
-			//Perror, Alex and good bye.
-		cmd->redir = cmd->redir->next;
+		current_cmd = current_cmd->next;
 	}
 	return (SUCCESS);
 }
 
 // t_ecode	handle_redirs(t_shell *shell, t_cmd *head)
 // {
+// 	t_cmd	*current_cmd;
+
 // 	if (!shell || !head)
 // 		return (NULL_ERROR);
-// 	while (head)
+// 	current_cmd = head;
+// 	while (current_cmd)
 // 	{
-// 		if (open_redirs(shell, head, ???????) == SUCCESS)
+// 		if (open_redirs(shell, head) == SUCCESS)
 // 		{
-// 			if (latest_in != REDIR_INIT)
+// 			if (current_cmd->latest_in != REDIR_INIT)
 				
 
 // 		}
@@ -156,10 +181,11 @@ int	execute_cmd_list(t_shell *shell, t_cmd *cmds_list)
 
 		is_builtin = check_builtin(cmds_list->args[0]);
 		// printf("is_builtin: %d\n", is_builtin);
-		if (is_builtin == NULL_CMD)
-			exit(EXIT_FAILURE) ;
 
-		else if (is_builtin == NON_BUILTIN)
+		// if (is_builtin == NULL_CMD)
+			// exit(EXIT_FAILURE) ;
+
+		if (is_builtin == NON_BUILTIN)
 		{
 			//New process for non-builtin cmds
 			shell->parent = fork();
@@ -228,7 +254,7 @@ void	run_child(t_shell *shell, t_cmd *cmds_head, size_t cmds_count, size_t curre
 		cmd_path = get_cmd_path(shell, cmds_head->args[0]);
 	env_array = create_env_array(shell->env_list);
 	execve(cmd_path, cmds_head->args, env_array);
-	exit(EXIT_FAILURE); //Print error.
+	// exit(EXIT_FAILURE); //Print error.
 }
 
 void	do_parent_duties(t_shell *shell, t_cmd **curr_cmd, size_t cmds_count, size_t current_child)
