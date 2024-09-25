@@ -35,6 +35,8 @@
 # define READ_END 0
 # define WRITE_END 1
 
+extern int	g_signal;
+
 typedef enum e_codes
 {
 	SUCCESS = 0,
@@ -280,7 +282,9 @@ void handle_heredocs(t_token *token_list) ;
 t_ecode	open_redirs(t_shell *shell, t_cmd *head);
 
 
+//SIGNALS
 
+void	init_signals(void);
 
 //ENV - Lisandro
 
