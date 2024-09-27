@@ -1,6 +1,8 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
+# define _GNU_SOURCE // FOR SIGACTION...
+
 # include <unistd.h>
 # include <stdio.h>
 # include <stdlib.h>
@@ -35,7 +37,22 @@
 # define READ_END 0
 # define WRITE_END 1
 
-extern int	g_signal;
+extern int	g_exitcode;
+
+typedef enum	signal_mode
+{
+	INTERACTIVE,
+	NON_INTERACTIVE,
+	HEREDOC
+}	t_signal_mode;
+
+typedef enum exit_code
+{
+	EXIT_CMD_NOT_EXECUTABLE = 126,
+	EXIT_CMD_NOT_FOUND = 127,
+	EXIT_SIGINT = 130,
+	EXIT_SIGQUIT = 131
+}	t_exit_code;
 
 typedef enum e_codes
 {
@@ -43,7 +60,9 @@ typedef enum e_codes
 	FAILURE,
 	PROCEED,
 	INVALID_OPTION,
+	INVALID_FILE,
 	NULL_ERROR,
+	NULL_ENV,
 	NULL_NODE,
 	NULL_STRING,
 	NULL_ARRAY,
@@ -284,14 +303,15 @@ t_ecode	open_redirs(t_shell *shell, t_cmd *head);
 
 //SIGNALS
 
-void	init_signals(void);
+void	set_signals(t_signal_mode signal_mode);
+void 	print_heredoc_newline(void);
 
 //ENV - Lisandro
 
 ssize_t	count_keyvalue_env_nodes(t_env *env_list);
 ssize_t	count_key_env_nodes(t_env *env_list);
 ssize_t	count_envp_keys(char **envp);
-ssize_t	count_values_from_env_node(t_env *env, char *key);
+ssize_t	count_values_from_env_node(t_env *env_list, char *key);
 char	**create_env_array(t_env *env);
 char	**create_export_array(t_env *env);
 void	free_env_list(t_env	**head);
@@ -320,6 +340,7 @@ t_ecode	update_oldpwd(t_env	*oldpwd_node, char *cwd);
 
 char	*ft_strjoin_fs1(char **s1, const char *s2);
 char	*ft_strjoin_fs2(const char *s1, char **s2);
+t_ecode	append_suffix(char **str, char *suffix, bool duplicate);
 
 //FREE
 
@@ -363,42 +384,56 @@ t_ecode	exit_builtin(t_shell *shell, char **cmd_args);
 
 //	CD
 
-t_ecode	builtin_cd(t_shell **shell, char *directory);
-t_ecode	chdir_home(t_env *env_head, char **cwd);
-t_ecode	chdir_cdpath(t_shell **shell, char *directory);
-t_ecode	append_suffix(char **str, char *suffix, bool duplicate);
+t_ecode	cd_builtin(t_shell *shell, char **cmd_args);
+t_ecode	chdir_home(t_env **env_list, char **cwd);
+t_ecode	update_oldpwd_pwd(t_env **env_list, char **cwd);
+t_ecode	chdir_tilde(t_env **env_list, char **cwd);
+t_ecode	chdir_dash(t_env **env_list, char **cwd);
+t_ecode	chdir_cdpath(t_env **env_list, char *directory, char **cwd);
+t_ecode	traverse_and_chdir_cdpath(char **cdpath_values, ssize_t values_count, char *directory);
+t_ecode	check_curpath_access(char *curpath);
+t_ecode	chdir_null_cdpath(char *directory, ssize_t *i, int8_t *null_flag);
+t_ecode chdir_default_cdpath(char *cdpath_value, char *directory, ssize_t *i);
+t_ecode	chdir_default(t_env **env_list, char *directory, char **cwd);
 
-t_ecode	chdir_cwd(char *directory, int *null_flag);
-t_ecode chdir_cdpath_value(char **curpath, char *directory);
-t_ecode	loop_cdpath_values(char ***values, char *directory);
+
+
+// t_ecode	builtin_cd(t_shell **shell, char *directory);
+// t_ecode	chdir_home(t_env *env_head, char **cwd);
+// t_ecode	chdir_cdpath(t_env *env_list, char *directory, char **cwd);
+// t_ecode	append_suffix(char **str, char *suffix, bool duplicate);
+
+// t_ecode	chdir_cwd(char *directory, int *null_flag);
+// t_ecode chdir_cdpath_value(char **curpath, char *directory);
+// t_ecode	loop_cdpath_values(char ***values, char *directory);
 
 
 
 //	CURPATH
 
-t_curpath	*curpath_new_node(char *dir);
-void		curpath_del_node(t_curpath **node);
-void		curpath_del_list(t_curpath **head);
-t_curpath	*get_last_curpath_node(t_curpath *head);
-void		curpath_add_back(t_curpath **head, t_curpath *new);
-t_ecode	create_and_add_back_curpath_node(t_curpath **head, char *directory);
-void		curpath_del_last(t_curpath **head);
-char		*curpath_concat(t_curpath *head);
-void		curpath_print(t_curpath *head);
-int			curpath_check_access(char *curpath);
-t_ecode		curpath_check_access_and_chdir(char *curpath);
-t_ecode		curpath_prepare(char **curpath, char *directory, char *cwd);
-t_ecode		curpath_trim(char **curpath);
-t_ecode		init_and_populate_curpath_list(char **curpath, char ***dirs, t_curpath **final_dirs);
-t_ecode		parse_curpath_dirs(t_curpath **final_dirs);
-t_ecode		remove_previous_dir(t_curpath **final_dirs, char ***dirs, int *i);
-t_ecode		check_access_and_add_back(t_curpath **final_dirs, char ***dirs, int *i);
-t_ecode		remove_curpath_node(t_curpath **head, t_curpath **node);
-void		curpath_del_node_definitely(t_curpath **node);
+// t_curpath	*curpath_new_node(char *dir);
+// void		curpath_del_node(t_curpath **node);
+// void		curpath_del_list(t_curpath **head);
+// t_curpath	*get_last_curpath_node(t_curpath *head);
+// void		curpath_add_back(t_curpath **head, t_curpath *new);
+// t_ecode	create_and_add_back_curpath_node(t_curpath **head, char *directory);
+// void		curpath_del_last(t_curpath **head);
+// char		*curpath_concat(t_curpath *head);
+// void		curpath_print(t_curpath *head);
+// int			curpath_check_access(char *curpath);
+// t_ecode		curpath_check_access_and_chdir(char *curpath);
+// t_ecode		curpath_prepare(char **curpath, char *directory, char *cwd);
+// t_ecode		curpath_trim(char **curpath);
+// t_ecode		init_and_populate_curpath_list(char **curpath, char ***dirs, t_curpath **final_dirs);
+// t_ecode		parse_curpath_dirs(t_curpath **final_dirs);
+// t_ecode		remove_previous_dir(t_curpath **final_dirs, char ***dirs, int *i);
+// t_ecode		check_access_and_add_back(t_curpath **final_dirs, char ***dirs, int *i);
+// t_ecode		remove_curpath_node(t_curpath **head, t_curpath **node);
+// void		curpath_del_node_definitely(t_curpath **node);
 
 
-bool		is_dir_prefix_valid_for_cdpath(char *directory);
-t_ecode		check_for_special_cd_cases(t_env *env, char *directory, char **curpath);
+bool		has_cdpath_prefix(char *directory);
+// t_ecode		check_for_special_cd_cases(t_env *env, char *directory, char **curpath);
 char		*get_home(void);
 
 // ERROR

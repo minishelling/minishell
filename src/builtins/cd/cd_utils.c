@@ -26,7 +26,7 @@ char	*get_home(void)
 	return (home_path);
 }
 
-bool	is_dir_prefix_valid_for_cdpath(char *directory)
+bool	has_cdpath_prefix(char *directory)
 {
 	if (!directory || directory[0] == '/' || directory[0] == '.'
 		|| (directory[0] == '.' && directory[1] == '.'))

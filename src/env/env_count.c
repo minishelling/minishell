@@ -43,15 +43,17 @@ ssize_t	count_envp_keys(char **envp)
 }
 
 //Done
-ssize_t	count_values_from_env_node(t_env *env, char *key)
+ssize_t	count_values_from_env_node(t_env *env_list, char *key)
 {
 	t_env	*node;
 	ssize_t	i;
 	char	**values;
 
-	node = find_env_node(env, key);
+	if (!env_list)
+		return (-1);
+	node = find_env_node(env_list, key);
 	if (!node)
-		return (ENV_ERROR);
+		return (-1);
 	values = ft_split(node->value, ':');
 	if (!values)
 		return (-1);

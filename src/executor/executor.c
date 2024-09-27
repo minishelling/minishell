@@ -341,7 +341,6 @@ void	run_child(t_shell *shell, t_cmd *current_cmd, size_t cmds_count, size_t cur
 	if (current_cmd && current_cmd->args)
 		cmd_path = get_cmd_path(shell, current_cmd->args[0]);
 	env_array = create_env_array(shell->env_list);
-	// printf("Cat is saying all of this:\n");
 	execve(cmd_path, current_cmd->args, env_array);
 	// exit(EXIT_FAILURE); //Print error.
 }

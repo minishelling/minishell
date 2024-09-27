@@ -111,7 +111,7 @@ int read_heredoc_input(const char *file_name, const char *delimiter)
     char *line = NULL;
     ssize_t bytes_read;
 
-
+    set_signals(HEREDOC);
     // Open the temporary file for writing
     int fd = open(file_name, O_RDWR | O_CREAT | O_TRUNC, 0644);
     // if (fd == -1) 
@@ -123,13 +123,20 @@ int read_heredoc_input(const char *file_name, const char *delimiter)
     {
         // Prompt user for input and read a line
         line = readline("heredoc> ");
+
+        if (g_exitcode == EXIT_SIGINT)
+        {
+            free(line);
+			print_heredoc_newline(); //Not working as intended.
+            break ;
+        }
         
         // If line is NULL (EOF or error), break
         if (line == NULL)
             break;
 
         // If the line matches the delimiter, stop reading
-        if ((!ft_strncmp(line, delimiter, ft_strlen(delimiter))) && (line[ft_strlen(delimiter)] == '\0')) 
+        if ((!ft_strncmp(line, delimiter, ft_strlen(delimiter))) && (line[ft_strlen(delimiter)] == '\0'))
         {
             free(line); // Free the line before breaking
             break;
@@ -143,6 +150,7 @@ int read_heredoc_input(const char *file_name, const char *delimiter)
         // Free the line after it's written
         free(line);
     }
+	set_signals(NON_INTERACTIVE);
     close(fd);
     fd = open(file_name, O_RDONLY);
     // unlink(file_name);
