@@ -56,6 +56,7 @@ typedef enum exit_code
 
 typedef enum e_codes
 {
+	INIT = -1,
 	SUCCESS = 0,
 	FAILURE,
 	PROCEED,
@@ -393,7 +394,7 @@ t_ecode	chdir_cdpath(t_env **env_list, char *directory, char **cwd);
 t_ecode	traverse_and_chdir_cdpath(char **cdpath_values, ssize_t values_count, char *directory);
 t_ecode	check_curpath_access(char *curpath);
 t_ecode	chdir_null_cdpath(char *directory, ssize_t *i, int8_t *null_flag);
-t_ecode chdir_default_cdpath(char *cdpath_value, char *directory, ssize_t *i);
+t_ecode chdir_cdpath_value(char *cdpath_value, char *directory, ssize_t *i);
 t_ecode	chdir_default(t_env **env_list, char *directory, char **cwd);
 
 

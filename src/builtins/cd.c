@@ -10,10 +10,10 @@ t_ecode	cd_builtin(t_shell *shell, char **cmd_args)
 		return (NULL_ERROR);
 	directory = cmd_args[1];
 	cwd = getcwd(NULL, PATH_MAX);
-	e_status = SUCCESS;
+	e_status = INIT;
 	if (!cwd)
 		return (CWD_ERROR);
-	if (!directory || !ft_strncmp(directory, "--", ft_strlen(directory)))
+	if (!directory || !ft_strncmp(directory, "--", 3))
 		e_status = chdir_home(&shell->env_list, &cwd);
 	else if (!ft_strncmp(directory, "~", ft_strlen(directory)))
 		e_status = chdir_tilde(&shell->env_list, &cwd);
@@ -21,10 +21,11 @@ t_ecode	cd_builtin(t_shell *shell, char **cmd_args)
 		e_status = chdir_dash(&shell->env_list, &cwd);
 	else if (has_cdpath_prefix(directory))
 		e_status = chdir_cdpath(&shell->env_list, directory, &cwd);
-	if (e_status == PROCEED)
+	if (e_status == INIT) //Maybe include if e_status != CDPATH_SUCCESS || e_status == PROCEED. Or maybe initialize e_status differently.
 		e_status = chdir_default(&shell->env_list, directory, &cwd);
-	//Handle exit codes and errors.
-	return (SUCCESS);
+	if (e_status && e_status != PROCEED)
+		return (e_status);
+	return (SUCCESS); //Handle exit codes and errors and return success.
 }
 
 //Chdir functions
@@ -164,7 +165,7 @@ t_ecode	traverse_and_chdir_cdpath(char **cdpath_values, ssize_t values_count, ch
 				continue ;
 			return (SUCCESS);
 		}
-		status = chdir_default_cdpath(cdpath_values[i], directory, &i);
+		status = chdir_cdpath_value(cdpath_values[i], directory, &i);
 		if (status == MALLOC_ERROR)
 			return (MALLOC_ERROR);
 		else if (status)
@@ -214,7 +215,7 @@ t_ecode	chdir_null_cdpath(char *directory, ssize_t *i, int8_t *null_flag)
 	return (SUCCESS);
 }
 
-t_ecode chdir_default_cdpath(char *cdpath_value, char *directory, ssize_t *i)
+t_ecode chdir_cdpath_value(char *cdpath_value, char *directory, ssize_t *i)
 {
 	char	*curpath;
 	t_ecode	status;
@@ -225,7 +226,11 @@ t_ecode chdir_default_cdpath(char *cdpath_value, char *directory, ssize_t *i)
 		return (MALLOC_ERROR);
 	if (append_suffix(&curpath, "/", false))
 		return (MALLOC_ERROR);
+	printf("curpath in chdir_cdpath_value: %s\n", curpath);
 	curpath = ft_strjoin_fs1(&curpath, directory);
+	if (!curpath)
+		return (MALLOC_ERROR);
+	printf("curpath in chdir_cdpath_value: %s\n", curpath);
 		// status = check_curpath_access(curpath);
 		// if (status)
 		// {
@@ -233,7 +238,7 @@ t_ecode chdir_default_cdpath(char *cdpath_value, char *directory, ssize_t *i)
 		// 	continue ;
 		// }
 	status = chdir(curpath);
-	ft_free((void **) curpath);
+	ft_free((void **) &curpath);
 	if (status)
 		return (PROCEED);
 	return (SUCCESS);
@@ -244,20 +249,30 @@ t_ecode	chdir_default(t_env **env_list, char *directory, char **cwd)
 	char	*curpath;
 	t_ecode	status;
 
-	curpath = ft_strdup(*cwd);
-	if (!curpath)
-		return (MALLOC_ERROR);
-	status = (t_ecode) append_suffix(&curpath, "/", false);
-	if (status)
-		return (MALLOC_ERROR);
-	curpath = ft_strjoin_fs1(&curpath, directory);
-	if (!curpath)
-		return (MALLOC_ERROR);
-	status = check_curpath_access(curpath);
-	if (status)
-		return (ft_free((void **) &curpath), status);
-	status = chdir(curpath);
-	ft_free((void **) &curpath);
+	if (directory[0] == '/') //Split into handle_absolute_path
+	{
+		status = check_curpath_access(directory);
+		if (status)
+			return (status);
+		status = chdir(directory);
+	}
+	else //Split into handle_relative_path
+	{
+		curpath = ft_strdup(*cwd);
+		if (!curpath)
+			return (MALLOC_ERROR);
+		status = (t_ecode)append_suffix(&curpath, "/", false);
+		if (status)
+			return (MALLOC_ERROR);
+		curpath = ft_strjoin_fs1(&curpath, directory);
+		if (!curpath)
+			return (MALLOC_ERROR);
+		status = check_curpath_access(curpath);
+		if (status)
+			return (ft_free((void **)&curpath), status);
+		status = chdir(curpath);
+		ft_free((void **)&curpath);
+	}
 	if (status)
 		return (status);
 	return (update_oldpwd_pwd(env_list, cwd));
