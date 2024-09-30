@@ -68,6 +68,7 @@ typedef enum e_codes
 	NULL_STRING,
 	NULL_ARRAY,
 	NULL_CURPATH_LIST,
+	DUP_ERROR,
 	COUNT_ERROR,
 	CWD_ERROR,
 	MALLOC_ERROR,
@@ -124,6 +125,20 @@ typedef enum e_redir_id
 	OUT,
 	APP
 }	t_redir_id;
+
+typedef enum e_builtin
+{
+	ECHO, //0
+	CD,
+	PWD,
+	EXPORT,
+	DECLARE,
+	UNSET,
+	ENV,
+	EXIT,
+	NON_BUILTIN, //8
+	NULL_CMD,
+}	t_builtin;
 
 typedef struct s_curpath
 {
@@ -299,7 +314,7 @@ char *process_unquoted(char **str_ptr, char *expanded_str, t_env *env_list);
 t_token *find_previous(t_token *head, t_token *target);
 t_token *handle_arith_expan(t_token **head, t_token **cur_open, t_token **cur_close);
 void handle_heredocs(t_token *token_list) ;
-t_ecode	open_redirs(t_shell *shell, t_cmd *head);
+t_ecode	open_redirections(t_shell *shell, t_cmd *head);
 
 
 //SIGNALS
@@ -361,15 +376,22 @@ int	executor(t_shell *shell, t_cmd *cmds_list);
 
 //EXECUTOR UTILS
 
+t_builtin	check_builtin(char *cmd_name);
+size_t		count_cmds(t_cmd *head);
+t_ecode		create_std_backup(int backup[2]);
+t_ecode		dup_and_close(int oldfd, int newfd);
+
 void	redirect_io(t_shell *shell, int io_fd, int io_target);
 char	*get_cmd_path(t_shell *shell, char *cmd_name);
 int		handle_input(t_shell *shell, t_cmd *cmd);
 void	handle_redirections(t_shell *shell, t_cmd *cmd);
 void 	run_child(t_shell *shell, t_cmd *current_cmd, size_t cmds_count, size_t current_child);
-void	do_parent_duties(t_shell *shell, t_cmd **curr_cmd, size_t cmds_count, size_t current_child);
+void	do_parent_duties(t_shell *shell, size_t cmds_count, size_t current_child);
 void	execute_single_command(t_shell *shell, t_cmd *cmd);
 int		execute_cmd_list(t_shell *shell, t_cmd *cmds_list);
 int		handle_builtin(t_shell *shell, t_cmd *current_cmd, size_t cmds_count, size_t i);
+t_ecode	execute_builtin(t_shell *shell, char **cmd_args);
+int		handle_non_builtin(t_shell *shell, t_cmd *current_cmd, size_t cmds_count, size_t i);
 
 //BUILTINS
 

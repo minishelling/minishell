@@ -1,8 +1,5 @@
 #include "../../include/minishell.h"
 
-
-
-
 static char	*ft_strjoin_cmd_path(char *path, char *cmd_name)
 {
 	char	*cmd_path;
