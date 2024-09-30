@@ -26,8 +26,11 @@ int	execute_cmd_list(t_shell *shell, t_cmd *cmds_list)
 				exit(EXIT_FAILURE); //Print error.
 		}
 		is_builtin = check_builtin(current_cmd->args[0]);
-		// if (is_builtin == NULL_CMD) //commented so testing wouldn't exit minishared
-			// exit(EXIT_FAILURE) ;
+		if (is_builtin == NULL_CMD)
+		{
+			printf("NULL CMD\n");
+			// exit(EXIT_FAILURE) ; //commented so testing wouldn't exit minishared
+		}	
 		if (is_builtin == NON_BUILTIN)
 		{
 			handle_non_builtin(shell, current_cmd, cmds_count, i);
@@ -39,7 +42,6 @@ int	execute_cmd_list(t_shell *shell, t_cmd *cmds_list)
 		current_cmd = current_cmd->next;
 		i++;
 	}
-	// close(shell->read_fd);
 	return (shell->status);
 }
 
@@ -60,32 +62,33 @@ void	run_child(t_shell *shell, t_cmd *current_cmd, size_t cmds_count, size_t cur
 {
 	char	*cmd_path = NULL;
 	char	**env_array;
+	t_ecode	status = SUCCESS;
 
+	if (current_cmd->latest_in == ERROR || current_cmd->latest_in == ERROR)
+		exit(EXIT_FAILURE); //Should it close the pipes?
 	if (current_cmd->latest_in != STDIN_FILENO)
-	{
-		if (dup_and_close(current_cmd->latest_in, STDIN_FILENO))
-			printf("Dup | Close failed. Exiting now!\n");
-	}
+		status = dup_and_close(current_cmd->latest_in, STDIN_FILENO);
 	else
 	{
 		if (current_child > 0)
-		{
-			if (dup_and_close(shell->read_fd, STDIN_FILENO))
-				printf("Dup | Close failed. Exiting now!\n");
-		}
+			status = dup_and_close(shell->read_fd, STDIN_FILENO);
+	}
+	if (status)
+	{
+		ft_putstr_fd("Dup error in run_child |->STDIN|\n", 2);
+		return ;
 	}
 	if (current_cmd->latest_out != STDOUT_FILENO)
-	{
-		if (dup_and_close(current_cmd->latest_out, STDOUT_FILENO))
-			printf("Dup | Close failed. Exiting now!\n");
-	}
+		status = dup_and_close(current_cmd->latest_out, STDOUT_FILENO);
 	else
 	{
 		if (current_child < cmds_count - 1)
-		{
-			if (dup_and_close(shell->pipefd[WRITE_END], STDOUT_FILENO))
-				printf("Dup | Close failed. Exiting now!\n");
-		}
+			status = dup_and_close(shell->pipefd[WRITE_END], STDOUT_FILENO);
+	}
+	if (status)
+	{
+		ft_putstr_fd("Dup error in run_child |->STDOUT|\n", 2);
+		return ;
 	}
 	if (current_child < cmds_count - 1)
 	{
@@ -96,7 +99,7 @@ void	run_child(t_shell *shell, t_cmd *current_cmd, size_t cmds_count, size_t cur
 		cmd_path = get_cmd_path(shell, current_cmd->args[0]);
 	env_array = create_env_array(shell->env_list);
 	execve(cmd_path, current_cmd->args, env_array);
-	// exit(EXIT_FAILURE); //Print error.
+	exit(EXIT_FAILURE); //Print error.
 }
 
 void	do_parent_duties(t_shell *shell, size_t cmds_count, size_t current_child)

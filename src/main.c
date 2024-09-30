@@ -15,13 +15,13 @@ int main(int argc, char **argv, char **envp)
 	(void)argv;
 	if (argc > 1) 
 	{
-		write(2, "Mini_shared: Error: too many arguments\n", 39);
+		ft_putstr_fd("Mini_shared: Error: too many arguments\n", 2);
 		exit(EXIT_FAILURE);
 	}
 	shell.env_list = NULL;
 	if (init_env_list(&shell.env_list, envp))
 	{
-		write(2, "Mini_shared: Error: Failed to initialize\n", 42);
+		ft_putstr_fd("Mini_shared: Error: Failed to initialize\n", 2);
 		exit(EXIT_FAILURE);
 	}
 	while (1) 
@@ -50,7 +50,6 @@ int main(int argc, char **argv, char **envp)
 			}
 			shell.input = NULL;
 		}
-
 	}
 	exit(EXIT_SUCCESS);
 }
