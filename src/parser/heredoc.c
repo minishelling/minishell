@@ -111,7 +111,7 @@ int read_heredoc_input(const char *file_name, const char *delimiter)
     char *line = NULL;
     ssize_t bytes_read;
 
-    set_signals(HEREDOC);
+    // set_signals(HEREDOC);
     // Open the temporary file for writing
     int fd = open(file_name, O_RDWR | O_CREAT | O_TRUNC, 0644);
     // if (fd == -1) 
@@ -150,7 +150,7 @@ int read_heredoc_input(const char *file_name, const char *delimiter)
         // Free the line after it's written
         free(line);
     }
-	set_signals(NON_INTERACTIVE);
+	// set_signals(NON_INTERACTIVE);
     close(fd);
     fd = open(file_name, O_RDONLY);
     // unlink(file_name);

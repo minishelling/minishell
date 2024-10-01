@@ -65,7 +65,7 @@ void	run_child(t_shell *shell, t_cmd *current_cmd, size_t cmds_count, size_t cur
 	t_ecode	status = SUCCESS;
 
 	if (current_cmd->latest_in == ERROR || current_cmd->latest_in == ERROR)
-		exit(EXIT_FAILURE); //Should it close the pipes?
+		exit(EXIT_FAILURE);
 	if (current_cmd->latest_in != STDIN_FILENO)
 		status = dup_and_close(current_cmd->latest_in, STDIN_FILENO);
 	else

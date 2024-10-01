@@ -110,12 +110,6 @@ void first_child(t_pipex *pipex, t_shell *shell, t_tree *tree_node, char **envp)
 	char **argv;
 	int is_found = 0;
 
-	// pipex->infile_fd = open(argv[1], O_RDONLY);
-	// if (pipex->infile_fd == -1)
-	// {
-	//     //clean_nicely(pipex);
-	//     exit(EXIT_FAILURE);
-	// }
 	argv = make_cmd(shell, tree_node->left->start_token, tree_node->left->end_token)->args;
 	fprintf(stderr, "cmd1[0] %s\n", argv[0]);
 	if (access(argv[0], X_OK | F_OK) == 0)
@@ -124,28 +118,22 @@ void first_child(t_pipex *pipex, t_shell *shell, t_tree *tree_node, char **envp)
 	{
 		is_found = find_correct_path(pipex, argv);
 	}
-	
-   	// if (dup2(pipex->infile_fd, STDIN_FILENO) == -1)
-	// {
-	//     perror("dup2 failed for stdin");
-	//     clean_nicely(pipex);
-	// }
-	close (pipex->fd[0]);
-	//close_fds(pipex->infile_fd, pipex->fd[0]);
+	close (pipex->fd[READ_END]);
 
-	if (dup2(pipex->fd[1], STDOUT_FILENO) == -1)
+	if (dup2(pipex->fd[WRITE_END], STDOUT_FILENO) == -1)
 	{
 		perror("dup2 failed for stdout");
 		clean_nicely(pipex);
 	}
 
-	if (close(pipex->fd[1]) == -1)
+	if (close(pipex->fd[WRITE_END]) == -1)
 		perror("close");
 
 	if (is_found)
 	{
 		fprintf (stderr, "execving cmd1 %s\n", argv[0]);
 		execve(argv[0], argv, envp);
+		exit(EXIT_FAILURE);
 	}
 
 	ft_putstr_fd(pipex->cmd1[0], 2);
@@ -158,12 +146,13 @@ void second_child(t_pipex *pipex, t_shell *shell, t_tree *tree_node, char **envp
 {
 	int status;
 	char **argv;
-	if (dup2(pipex->fd[0], STDIN_FILENO) == -1)
+	if (dup2(pipex->fd[READ_END], STDIN_FILENO) == -1)
 	{
 		fprintf(stderr, "dup2 failed for stdin");
 		clean_nicely(pipex);
+		exit(EXIT_FAILURE);
 	}
-		close_fds(pipex->fd[0], pipex->fd[1]);
+	close_fds(pipex->fd[READ_END], pipex->fd[WRITE_END]);
 	
 	pid_t pid3 = fork();
 	if (pid3 == 0)
@@ -176,6 +165,7 @@ void second_child(t_pipex *pipex, t_shell *shell, t_tree *tree_node, char **envp
 		{
 			fprintf (stderr, "execving cmd2 %s\n", argv[0]);
 			execve(argv[0], argv, envp);
+			exit(EXIT_FAILURE);
 		}
 		else
 		{
@@ -184,7 +174,7 @@ void second_child(t_pipex *pipex, t_shell *shell, t_tree *tree_node, char **envp
 		}
 	}
 	
-		// Wait for the first child process to finish
+	// Wait for the first child process to finish
 	if (waitpid(pid3, &status, 0) == -1)
 	{
 		perror("waitpid failed");
@@ -217,26 +207,7 @@ void second_child(t_pipex *pipex, t_shell *shell, t_tree *tree_node, char **envp
 			exit(EXIT_FAILURE);
 		}
 	}
-	   // Wait for the third command
-	if (waitpid(pid4, &status, 0) == -1)
-	{
-		perror("waitpid failed");
-		exit(EXIT_FAILURE); // Exit if waitpid fails
-	}
-
-	// Check if the third child process terminated normally
-	if (WIFEXITED(status))
-	{
-		fprintf(stderr, "status of cmd3 is %d\n", WEXITSTATUS(status));
-	}
-	else if (WIFSIGNALED(status))
-	{
-		fprintf(stderr, "cmd3 was killed by signal %d\n", WTERMSIG(status));
-	}
-	else
-	{
-		fprintf(stderr, "cmd3 did not terminate normally\n");
-	}
+	wait(NULL);
 	exit(EXIT_SUCCESS);
 }
 
@@ -302,9 +273,7 @@ int create_pipe(t_pipex *pipex, t_shell *shell, t_tree *tree_node, char **envp)
 		exit(EXIT_FAILURE);
 	}
 	else if (pipex->pid1 == 0)
-	{
 		first_child(pipex, shell, tree_node, envp);
-	}
 
 	pipex->pid2 = fork();
 	if (pipex->pid2 == -1)
@@ -315,8 +284,10 @@ int create_pipe(t_pipex *pipex, t_shell *shell, t_tree *tree_node, char **envp)
 	}
 	else if (pipex->pid2 == 0)
 		second_child(pipex, shell, tree_node, envp);
-
-	return (pipex->pid2);
+	close_fds(pipex->fd[0], pipex->fd[1]);
+	while (wait(NULL) != -1)
+		;
+	return (SUCCESS);
 }
 
 int handle_pipe_subtree(t_shell *shell, t_tree *tree_node)
@@ -328,7 +299,6 @@ int handle_pipe_subtree(t_shell *shell, t_tree *tree_node)
 	ft_bzero(&pipex, sizeof(t_pipex));
 	find_possible_paths(&pipex, &shell->env_list);
 	create_pipe(&pipex, shell, tree_node, env_array);
-	wait(NULL);
 	clean_nicely(&pipex);
 	return (0);
 }

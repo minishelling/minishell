@@ -26,11 +26,11 @@ int main(int argc, char **argv, char **envp)
 	}
 	while (1) 
 	{
-		set_signals(INTERACTIVE);
+		// set_signals(INTERACTIVE);
 		shell.input = readline(MINISHARED_PROMPT);
 		if (!shell.input)  // Check for EOF or error
 			break;
-		set_signals(NON_INTERACTIVE);
+		// set_signals(NON_INTERACTIVE);
 		if (ft_strncmp(shell.input, "", 1))
 		{
 			add_history(shell.input);
