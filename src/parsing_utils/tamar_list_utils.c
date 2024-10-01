@@ -29,7 +29,7 @@ t_token *remove_token(t_token *start_token, t_token *token_to_remove)
 				start_token = current->next;
 			else
 				prev->next = current->next;
-			printf ("I'm freeing %p\n", current);
+			//printf ("I'm freeing %p\n", current);
 			free(current->str);
 			free(current);
 			return (start_token);
