@@ -157,8 +157,8 @@ int	syntax(t_shell *shell)
 	
 	tokenize_and_n_or_opr(shell->token);
 
-	if (is_cmds_in_subshell_after_pipe(shell->token))
-		return (ERR_OUT_OF_SCOPE);
+	// if (is_cmds_in_subshell_after_pipe(shell->token))
+	// 	return (ERR_OUT_OF_SCOPE);
 	
 	
 	

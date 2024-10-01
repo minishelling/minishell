@@ -176,7 +176,8 @@ typedef enum e_tree_type
 {
 	T_AND_OPR,
 	T_OR_OPR,
-	CMD
+	CMD,
+	T_PIPE
 } t_tree_type;
 
 typedef struct s_tree
@@ -288,7 +289,7 @@ t_cmd	*make_cmd(t_shell *shell, t_token *start_token, t_token *end_token);
 void print_tree_with_cmds(t_tree *node, int level);
 t_token *get_after_arith_expan_token(t_token *token);
 int parser_arith_expan(t_cmd *cmd_node, t_token *token);
-int execute(t_shell *shell, t_tree *node, t_tree *parent_node, int prev_exit_code);
+int pre_execute(t_shell *shell, t_tree *node, t_tree *parent_node, int prev_exit_code);
 void free_cmd_list(t_cmd *cmd_list);
 
 int parser_env_var(t_cmd *cmd_node, t_token *token);
@@ -300,6 +301,8 @@ t_token *find_previous(t_token *head, t_token *target);
 t_token *handle_arith_expan(t_token **head, t_token **cur_open, t_token **cur_close);
 void handle_heredocs(t_token *token_list) ;
 t_ecode	open_redirs(t_shell *shell, t_cmd *head);
+void print_tree_verbose(t_tree *node, int level);
+int handle_pipe_subtree(t_shell *shell, t_tree *tree_node);
 
 
 //SIGNALS

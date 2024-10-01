@@ -16,14 +16,15 @@ t_token *token_before(t_token *start_token, t_token *before_what)
 }
 
 
-void print_tree(t_tree *node, int level) 
+void print_tree_verbose(t_tree *node, int level)
 {
 	int i;
-	char	*tree_node_name[3] = 
+	char	*tree_node_name[4] = 
 	{
 		[0] = "AND_OPR",
 		[1] = "OR_OPR",
 		[2] = "CMD",
+		[3] = "PIPE"
 	};
 	if (!node)
 	{
@@ -37,9 +38,48 @@ void print_tree(t_tree *node, int level)
 	}
 	
 	if (node->type == CMD)
-		printf("%s |%s| |%s|\n", tree_node_name[node->type], node->start_token->str, node->end_token->str);
-	else if (node->type == T_AND_OPR || node->type == T_OR_OPR)
-		printf("%s\n",  tree_node_name[node->type]);
+		printf(GREY_BACKGROUND"%s"RESET_COLOR" |%s| |%s|  %p\n", tree_node_name[node->type], node->start_token->str, node->end_token->str, node);
+	else if (node->type == T_AND_OPR || node->type == T_OR_OPR || node->type == T_PIPE)
+		printf(MAGENTA_TEXT"%s"RESET_COLOR" %p\n", tree_node_name[node->type], node);
+	else
+		{
+			printf("NULL\n");
+			exit(EXIT_FAILURE);
+		}
+
+	// Print the left subtree
+	print_tree_verbose(node->left, level + 1);
+
+	// Print the right subtree
+	print_tree_verbose(node->right, level + 1);
+}
+
+
+void print_tree(t_tree *node, int level) 
+{
+	int i;
+	char	*tree_node_name[4] = 
+	{
+		[0] = "AND_OPR",
+		[1] = "OR_OPR",
+		[2] = "CMD",
+		[3] = "PIPE"
+	};
+	if (!node)
+	{
+		return;
+	}
+	i = 0;
+	while (i < level)
+	{
+		printf("    ");
+		i++;
+	}
+	
+	if (node->type == CMD)
+		printf(GREY_BACKGROUND"%s"RESET_COLOR" |%s| |%s|\n", tree_node_name[node->type], node->start_token->str, node->end_token->str);
+	else if (node->type == T_AND_OPR || node->type == T_OR_OPR || node->type == T_PIPE)
+		printf(MAGENTA_TEXT"%s"RESET_COLOR"\n", tree_node_name[node->type]);
 	else
 		{
 			printf("NULL\n");
@@ -52,7 +92,6 @@ void print_tree(t_tree *node, int level)
 	// Print the right subtree
 	print_tree(node->right, level + 1);
 }
-
 
 t_token *get_matching_parenthesis(t_token *start_token)
 {
@@ -90,8 +129,8 @@ t_token *get_rid_of_first_parenthesis(t_token *start_token, t_token **middle, t_
 	t_token *iterator;
 	int		parentheses;
 	
-	printf ("Reached get rid of parens\n");
-	printf ("start is %p and end is %p\n", start_token, (*end_token));
+	//printf ("Reached get rid of parens\n");
+	//printf ("start is %p and end is %p\n", start_token, (*end_token));
 	
 	//start_token = get_after_space_token(start_token);
 	iterator = start_token;
@@ -115,12 +154,12 @@ t_token *get_rid_of_first_parenthesis(t_token *start_token, t_token **middle, t_
 				if (iterator->next == *end_token)
 					*end_token = iterator;
 				*middle = iterator;
-				printf ("*middle is %p\n", *middle);
+				//printf ("*middle is %p\n", *middle);
 				//printf ("in get rid start_token is %p, iterator->next is %p\n", start_token, iterator->next);
 				start_token = remove_token (start_token, start_token);
 				start_token = remove_token (start_token, iterator->next);
-				printf ("after getting rid of parens\n");
-				print_token (start_token);
+				//printf ("after getting rid of parens\n");
+				//print_token (start_token);
 				break;
 			}
 		}
@@ -132,28 +171,54 @@ t_token *get_rid_of_first_parenthesis(t_token *start_token, t_token **middle, t_
 
 t_token *find_last_log_op_token_nip(t_token *token_head, t_token *end_token)
 {
-	t_token *token_iterator;
-	t_token *return_token;
-	int parenthesis;
-
-	return_token = NULL;
-	token_iterator = token_head;
-	parenthesis = 0;
-
-	while (token_iterator && token_iterator != end_token)
+    t_token *token_iterator;
+    t_token *return_token = NULL;
+    int parenthesis = 0;
+	t_token *temp = token_head;
+	while (temp)
 	{
-		//printf ("in find last op nip, token is %s and par is %d\n", token_iterator->str, parenthesis);
-		if (token_iterator->id == PAR_OPEN)
-			parenthesis++;
-		else if (token_iterator->id == PAR_CLOSE)
-			parenthesis--;
-		else if ((token_iterator->id == AND_OPR || token_iterator->id == OR_OPR)
-				&& parenthesis == 0)
-			return_token = token_iterator;
-		token_iterator= token_iterator -> next;
+		//printf ("token_iterator->str is %s\n", temp->str);
+		if (temp == end_token)
+			break;
+		temp = temp->next;
 	}
-	return (return_token);
+	
+    token_iterator = token_head;
+
+    while (token_iterator && token_iterator != end_token)
+    {
+        // Adjust parentheses depth
+        if (token_iterator->id == PAR_OPEN)
+        {
+            parenthesis++;
+        }
+        else if (token_iterator->id == PAR_CLOSE)
+        {
+            parenthesis--;
+        }
+        else if (parenthesis == 0)
+        {	
+			//printf ("token_iterator->str is %s\n", token_iterator->str);
+            // Check for AND_OPR and OR_OPR first (higher precedence)
+            if (token_iterator->id == AND_OPR || token_iterator->id == OR_OPR)
+            {
+                return_token = token_iterator; // Set return token to AND/OR
+            }
+            // Check for PIPE only if there was no higher precedence operator set
+            else if (token_iterator->id == PIPE && token_iterator->next && token_iterator->next->id == PAR_OPEN)
+            {
+                // Set pipe as the last logical operator, but only if no AND/OR has been found
+                if (return_token == NULL)
+                {
+                    return_token = token_iterator;
+                }
+            }
+        }
+        token_iterator = token_iterator->next;
+    }
+    return return_token; // Return the last found logical operator
 }
+
 
 void divide_token_list(t_token *token_list, t_token *op_token, t_token **left_head, t_token **right_head)
 {
@@ -176,7 +241,13 @@ void divide_token_list(t_token *token_list, t_token *op_token, t_token **left_he
 		
 		current->next = NULL;
 		// Set the right head to the token after the logical operator
-		*right_head = get_after_space_token(op_token);
+		if (op_token->next)
+		{
+			//printf ("beginning of right is %s\n", op_token->next->str);
+			*right_head = op_token ->next;
+		}
+		else
+			*right_head = NULL;
 	}
 }
 
@@ -227,10 +298,30 @@ t_tree *init_tree_node(t_token *op_token)
 		tree_node->type = T_AND_OPR;
 	else if (op_token->id == OR_OPR)
 		tree_node->type = T_OR_OPR;
+	else if (op_token ->id == PIPE)
+		tree_node->type = T_PIPE;
 	tree_node->left = NULL;
 	tree_node->right = NULL;
 	return tree_node;
 }
+
+
+
+// bool contains_pipe_open_par(t_token *start_token, t_token *end_token) 
+// {
+//     t_token *token_iterator = start_token;
+
+//     while (token_iterator)
+// 	{
+//         if (token_iterator == end_token)
+// 			break;
+
+//         if (token_iterator->id == PIPE && token_iterator->next && token_iterator->next->id == PAR_OPEN)
+//             return (true);
+//         token_iterator = token_iterator->next;
+//     }
+//     return (false);
+// }
 
 
 t_tree *make_tree(t_shell *shell, t_token *start_token, t_token *end_token)
@@ -244,7 +335,8 @@ t_tree *make_tree(t_shell *shell, t_token *start_token, t_token *end_token)
 	if (start_token == NULL || end_token == NULL)
 		return NULL;
 	
-	if (start_token->id == PAR_OPEN && end_token->id == PAR_CLOSE)
+	//if (start_token->id == PAR_OPEN && end_token->id == PAR_CLOSE && !contains_pipe_open_par(start_token, end_token))
+	if (start_token->id == PAR_OPEN && end_token->id == PAR_CLOSE && get_matching_parenthesis(start_token) == end_token)
 	// if (start_token->id == PAR_OPEN)
 	{
 		//printf("Removing parentheses: start = %p, end = %p\n", start_token, end_token);
@@ -270,7 +362,7 @@ t_tree *make_tree(t_shell *shell, t_token *start_token, t_token *end_token)
 	
 	// Find the last logical operator not in parentheses
 	log_op_token = find_last_log_op_token_nip(start_token, end_token);
-	// printf("Found log_op: %s\n", log_op_token ? log_op_token->str : "NULL");
+	printf("Found log_op: %s\n", log_op_token ? log_op_token->str : "NULL");
 	
 	// If no logical operator is found, treat the range of tokens as a command
 	if (!log_op_token)

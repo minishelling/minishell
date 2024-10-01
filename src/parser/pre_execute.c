@@ -1,20 +1,22 @@
 
 #include "../../include/minishell.h"
 
-int execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int prev_exit_code) 
+int pre_execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int prev_exit_code) 
 {
     int exit_code = prev_exit_code; // Start with the previous exit code
 
-    // printf ("   started execute\n");
-    // printf ("current node is %p\n", tree_node);
+    printf ("   started pre_execute\n");
+    printf ("current node is %p\n", tree_node);
 
-    if (tree_node == NULL) 
+    if (tree_node == NULL)
         return exit_code;
 
-    if (tree_node->left != NULL)
+    if (tree_node->type == T_PIPE)
+        return(handle_pipe_subtree(shell, tree_node));
+    else if (tree_node->left != NULL)
     {
         parent_tree_node = tree_node;
-        exit_code = execute(shell, tree_node->left, parent_tree_node, exit_code);
+        exit_code = pre_execute(shell, tree_node->left, parent_tree_node, exit_code);
     }
 
     if (tree_node->type == CMD)
@@ -35,7 +37,7 @@ int execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int pre
         // handle_redirs(shell, tree_node->cmd_list); //Still to implement.
         print_cmd(tree_node->cmd_list);
         //print_tree_with_cmds(shell->tree, 0);
-
+        
         exit_code = executor(shell, tree_node->cmd_list);
         // printf ("exit code is %d\n", exit_code);
     }
@@ -43,14 +45,25 @@ int execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int pre
     {
         // printf ("performing the right side of AND\n");
         if (tree_node->right)
-            return execute(shell, parent_tree_node->right, tree_node, exit_code);
+        {
+            if (tree_node->right->type == T_PIPE)
+                    //return 1;
+                    return(handle_pipe_subtree(shell, tree_node));
+                else     
+                    return pre_execute(shell, parent_tree_node->right, tree_node, exit_code);
+        }
     }
     else if (parent_tree_node && parent_tree_node->type == T_OR_OPR && exit_code != 0) 
     {
         // printf ("performing the right side of OR");
         if (tree_node->right)
-            return execute(shell, parent_tree_node->right, tree_node, exit_code);
+        {
+                if (tree_node->right->type == T_PIPE)
+                    //return 1;
+                    return(handle_pipe_subtree(shell, tree_node));
+                else     
+                    return pre_execute(shell, parent_tree_node->right, tree_node, exit_code);
+        }
     }
-
     return exit_code;
 }
