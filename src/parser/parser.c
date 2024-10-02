@@ -97,9 +97,9 @@ t_cmd	*make_cmd(t_shell *shell, t_token *start_token, t_token *end_token)
 
 		add_cmd_in_back(&shell->cmd_list, current_cmd);
 		//printf ("managed to add in back\n");
-
-		if (token == end_token)
-			break;  // Process the end_token, then break out of the loop
+		(void)end_token;
+		// if (token == end_token)
+		break;  // Process the end_token, then break out of the loop
 
 		//token = get_after_pipe_token(token); // Move to next token after a pipe
 	}
@@ -133,18 +133,18 @@ t_token *remove_subshell_parens(t_token **head)
 					closing_par = word_token->next;
 				if (find_previous(*head, current))
 				{
-					printf ("found previous\n");
+					// printf ("found previous\n");
 					opening_par = find_previous(*head, current);
 				}
 				 // Remove the PAR_OPEN and PAR_CLOSE tokens
-				 printf ("from subshell removing %p and %p\n", current, word_token);
+				//  printf ("from subshell removing %p and %p\n", current, word_token);
                 *head = remove_token(*head, current); // Remove PAR_OPEN
                 *head = remove_token(*head, word_token); // Remove PAR_CLOSE
 				
-				printf ("from subshell checking %p and %p\n", opening_par, closing_par);
+				// printf ("from subshell checking %p and %p\n", opening_par, closing_par);
                 if (opening_par && opening_par->id == PAR_OPEN && closing_par && closing_par->id == PAR_CLOSE)
                 {
-					printf ("subshell arith expan\n");
+					// printf ("subshell arith expan\n");
                     handle_arith_expan(head, &opening_par, &closing_par);
                 }
 				if (closing_par && closing_par->next)
@@ -226,11 +226,11 @@ int	parse(t_shell *shell)
 	//bonus:
 	shell->tree = make_tree(shell, shell->token, last_token(shell->token));
 
-	printf("\n"WHITE_TEXT MAGENTA_BACKGROUND"THE TREE"RESET_COLOR);
-	printf("\n--------------------\n");
+	// printf("\n"WHITE_TEXT MAGENTA_BACKGROUND"THE TREE"RESET_COLOR);
+	// printf("\n--------------------\n");
 	
-	if (shell->tree)
-		print_tree_verbose(shell->tree, 0);
+	// if (shell->tree)
+	// 	print_tree_verbose(shell->tree, 0);
 	
 	// if (shell->tree)
 	// 	print_tree_with_cmds(shell->tree, 0);

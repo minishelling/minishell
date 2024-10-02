@@ -15,7 +15,7 @@ void	add_token_in_back(t_token **token_list_head, t_token *new_token)
 
 t_token *remove_token(t_token *start_token, t_token *token_to_remove)
 {
-	printf ("start token is %s\n", start_token->str);
+	// printf ("start token is %s\n", start_token->str);
 	t_token *current = start_token;
 	t_token *prev = NULL;
 

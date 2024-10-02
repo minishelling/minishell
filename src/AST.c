@@ -112,7 +112,7 @@ t_token *get_matching_parenthesis(t_token *start_token)
 			parentheses--;
 			if (parentheses == 0)
 			{
-				printf ("found close par\n");
+				// printf ("found close par\n");
 				return (iterator->next);
 			}
 		}
@@ -150,7 +150,7 @@ t_token *get_rid_of_first_parenthesis(t_token *start_token, t_token **middle, t_
 			parentheses--;
 			if (parentheses == 0)
 			{
-				printf ("found close par\n");
+				// printf ("found close par\n");
 				if (iterator->next == *end_token)
 					*end_token = iterator;
 				*middle = iterator;
@@ -362,7 +362,7 @@ t_tree *make_tree(t_shell *shell, t_token *start_token, t_token *end_token)
 	
 	// Find the last logical operator not in parentheses
 	log_op_token = find_last_log_op_token_nip(start_token, end_token);
-	printf("Found log_op: %s\n", log_op_token ? log_op_token->str : "NULL");
+	// printf("Found log_op: %s\n", log_op_token ? log_op_token->str : "NULL");
 	
 	// If no logical operator is found, treat the range of tokens as a command
 	if (!log_op_token)
