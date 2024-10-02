@@ -1,119 +1,78 @@
 #include "../../include/minishell.h"
 
-int	executor(t_shell *shell, t_cmd *cmds_list)
+int	executor(t_shell *shell, t_cmd *cmd)
 {
-	int	status;
+	int			status = SUCCESS;
+	t_builtin	is_builtin;
 
-	status = execute_cmd_list(shell, cmds_list);
+	is_builtin = check_builtin(cmd->args[0]);
+	if (is_builtin == NULL_CMD)
+	{
+		fprintf(stderr, "NULL CMD\n");
+		// exit(EXIT_FAILURE) ; //commented so testing wouldn't exit minishared
+	}
+	if (is_builtin == NON_BUILTIN)
+	{
+		handle_non_builtin(shell, cmd);
+	}
+	else
+	{
+		handle_builtin(shell, cmd);
+	}
 	return (status);
 }
 
-int	execute_cmd_list(t_shell *shell, t_cmd *cmds_list)
-{
-	size_t		cmds_count;
-	size_t		i;
-	t_builtin	is_builtin;
-	t_cmd		*current_cmd;
-
-	cmds_count = count_cmds(cmds_list);
-	i = 0;
-	current_cmd = cmds_list;
-	while (i < cmds_count)
-	{
-		if (i < cmds_count - 1)
-		{
-			if (pipe(shell->pipefd) == -1)
-				exit(EXIT_FAILURE); //Print error.
-		}
-		is_builtin = check_builtin(current_cmd->args[0]);
-		if (is_builtin == NULL_CMD)
-		{
-			printf("NULL CMD\n");
-			// exit(EXIT_FAILURE) ; //commented so testing wouldn't exit minishared
-		}	
-		if (is_builtin == NON_BUILTIN)
-		{
-			handle_non_builtin(shell, current_cmd, cmds_count, i);
-		}
-		else
-		{
-			handle_builtin(shell, current_cmd, cmds_count, i);
-		}
-		current_cmd = current_cmd->next;
-		i++;
-	}
-	return (shell->status);
-}
-
-int	handle_non_builtin(t_shell *shell, t_cmd *current_cmd, size_t cmds_count, size_t i)
+int	handle_non_builtin(t_shell *shell, t_cmd *cmd)
 {
 	shell->parent = fork();
 	if (shell->parent == -1)
-		exit(EXIT_FAILURE); // Print error.
+		exit(EXIT_FAILURE);
 	else if (!shell->parent)
 	{
-		run_child(shell, current_cmd, cmds_count, i);
+		run_child(shell, cmd);
 	}
-	do_parent_duties(shell, cmds_count, i);
+	do_parent_duties(shell);
 	return (SUCCESS);
 }
 
-void	run_child(t_shell *shell, t_cmd *current_cmd, size_t cmds_count, size_t current_child)
+void	run_child(t_shell *shell, t_cmd *cmd)
 {
 	char	*cmd_path = NULL;
 	char	**env_array;
 	t_ecode	status = SUCCESS;
 
-	if (current_cmd->latest_in == ERROR || current_cmd->latest_in == ERROR)
+	if (cmd->latest_in == ERROR || cmd->latest_in == ERROR)
 		exit(EXIT_FAILURE);
-	if (current_cmd->latest_in != STDIN_FILENO)
-		status = dup_and_close(current_cmd->latest_in, STDIN_FILENO);
-	else
-	{
-		if (current_child > 0)
-			status = dup_and_close(shell->read_fd, STDIN_FILENO);
-	}
+	if (cmd->latest_in != STDIN_FILENO)
+		status = dup_and_close(cmd->latest_in, STDIN_FILENO);
 	if (status)
 	{
 		ft_putstr_fd("Dup error in run_child |->STDIN|\n", 2);
 		return ;
 	}
-	if (current_cmd->latest_out != STDOUT_FILENO)
-		status = dup_and_close(current_cmd->latest_out, STDOUT_FILENO);
-	else
-	{
-		if (current_child < cmds_count - 1)
-			status = dup_and_close(shell->pipefd[WRITE_END], STDOUT_FILENO);
-	}
+	if (cmd->latest_out != STDOUT_FILENO)
+		status = dup_and_close(cmd->latest_out, STDOUT_FILENO);
 	if (status)
 	{
 		ft_putstr_fd("Dup error in run_child |->STDOUT|\n", 2);
 		return ;
 	}
-	if (current_child < cmds_count - 1)
-	{
-		if (close(shell->pipefd[READ_END]) == -1)
-			return ; //Print error.
-	}
-	if (current_cmd && current_cmd->args)
-		cmd_path = get_cmd_path(shell, current_cmd->args[0]);
+	if (cmd && cmd->args)
+		cmd_path = get_cmd_path(shell, cmd->args[0]);
 	env_array = create_env_array(shell->env_list);
-	execve(cmd_path, current_cmd->args, env_array);
-	exit(EXIT_FAILURE); //Print error.
+	execve(cmd_path, cmd->args, env_array);
+	exit(EXIT_FAILURE);
 }
 
-void	do_parent_duties(t_shell *shell, size_t cmds_count, size_t current_child)
+void	do_parent_duties(t_shell *shell)
 {
 	int	wstatus;
 
 	wstatus = 0;
-	if (current_child > 0)
-		close(shell->read_fd);
-	if (current_child < cmds_count - 1)
-	{
-		close(shell->pipefd[WRITE_END]);
-		shell->read_fd = shell->pipefd[READ_END];
-	}
+	// close(shell->pipefd[WRITE_END]);
+	// shell->read_fd = shell->pipefd[READ_END];
+	// if (dup2(shell->pipefd[READ_END], STDIN_FILENO) == -1)
+	// 	exit(EXIT_FAILURE);
 	waitpid(shell->parent, &wstatus, 0);
 	shell->status = WEXITSTATUS(wstatus);
 }

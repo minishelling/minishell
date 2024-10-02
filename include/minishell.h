@@ -375,7 +375,7 @@ void	ft_print_3d_arr(char ***arr);
 
 /* EXECUTOR */
 
-int	executor(t_shell *shell, t_cmd *cmds_list);
+int	executor(t_shell *shell, t_cmd *cmd);
 
 //EXECUTOR UTILS
 
@@ -384,17 +384,12 @@ size_t		count_cmds(t_cmd *head);
 t_ecode		create_std_backup(int backup[2]);
 t_ecode		dup_and_close(int oldfd, int newfd);
 
-void	redirect_io(t_shell *shell, int io_fd, int io_target);
 char	*get_cmd_path(t_shell *shell, char *cmd_name);
-int		handle_input(t_shell *shell, t_cmd *cmd);
-void	handle_redirections(t_shell *shell, t_cmd *cmd);
-void 	run_child(t_shell *shell, t_cmd *current_cmd, size_t cmds_count, size_t current_child);
-void	do_parent_duties(t_shell *shell, size_t cmds_count, size_t current_child);
-void	execute_single_command(t_shell *shell, t_cmd *cmd);
-int		execute_cmd_list(t_shell *shell, t_cmd *cmds_list);
-int		handle_builtin(t_shell *shell, t_cmd *current_cmd, size_t cmds_count, size_t i);
+void 	run_child(t_shell *shell, t_cmd *cmd);
+void	do_parent_duties(t_shell *shell);
+int		handle_builtin(t_shell *shell, t_cmd *cmd);
 t_ecode	execute_builtin(t_shell *shell, char **cmd_args);
-int		handle_non_builtin(t_shell *shell, t_cmd *current_cmd, size_t cmds_count, size_t i);
+int		handle_non_builtin(t_shell *shell, t_cmd *cmd);
 
 //BUILTINS
 

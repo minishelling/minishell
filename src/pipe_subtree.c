@@ -26,13 +26,15 @@ static void	close_fds(int fd1, int fd2)
 
 static int	handle_pipe_left_node(t_shell *shell, t_tree *tree_node, int fd[2])
 {
+	int	status;
 	if (dup2(fd[WRITE_END], STDOUT_FILENO) == -1)
 	{
-		perror("dup2");
+		perror("dup2");                                                                                         
 		exit(EXIT_FAILURE);
 	}
 	close_fds(fd[READ_END], fd[WRITE_END]);
-	exit(pre_execute(shell, tree_node->left, tree_node, 0)); //Should probably take another variable as arg, and pass the return of pre_execute there.
+	status = pre_execute(shell, tree_node->left, tree_node, 0);
+	exit(status); //Should probably take another variable as arg, and pass the return of pre_execute there.
 }
 
 static int	handle_pipe_right_node(t_shell *shell, t_tree *tree_node, int fd[2])

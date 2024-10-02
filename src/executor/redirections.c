@@ -25,57 +25,61 @@ static t_ecode	close_and_replace(int replacement, int *oldfd)
 	return (FAILURE);
 }
 
-t_ecode	open_redirections(t_shell *shell, t_cmd *head)
+static t_ecode	replace_redir_fd(t_cmd *cmd, t_redir *redir)
 {
-	t_cmd	*current_cmd;
-	t_redir	*current_redir;
-	t_ecode	status = SUCCESS;
+	int	status = SUCCESS;
 
-	if (!shell || !head)
-		return (NULL_ERROR);
-	current_cmd = head;
-	while (current_cmd)
+	if (redir->redir_id == HERE || redir->redir_id == IN)
 	{
-		current_redir = current_cmd->redir;
-		while (current_redir)
+		if (redir->fd == -1)
+			return (close_and_replace(redir->fd, &cmd->latest_in));
+		else if (cmd->latest_in == STDIN_FILENO)
+			cmd->latest_in = redir->fd;
+		else
+			status = dup_and_close(redir->fd, cmd->latest_in);
+	}
+	else if (redir->redir_id == OUT || redir->redir_id == APP)
+	{
+		if (redir->fd == -1)
+			return (close_and_replace(redir->fd, &cmd->latest_out));
+		else if (cmd->latest_out == STDOUT_FILENO)
+			cmd->latest_out = redir->fd;
+		else
+			status = dup_and_close(redir->fd, cmd->latest_out);
+	}
+	if (status)
+	{
+		fprintf(stderr, "DUP|CLOSE Failure in open_redirections.\n");
+		return (FAILURE);
+	}
+	return (SUCCESS);
+}
+
+t_ecode	open_redirections(t_shell *shell, t_cmd *current_cmd)
+{
+	t_redir	*current_redir;
+	// t_ecode	status = SUCCESS;
+
+	if (!shell || !current_cmd)
+		return (NULL_ERROR);
+	current_redir = current_cmd->redir;
+	while (current_redir)
+	{
+		if (open_current_redir(current_redir->redir_id, current_redir->file, &current_redir->fd))
 		{
-			if (open_current_redir(current_redir->redir_id, current_redir->file, &current_redir->fd))
-			{
-				ft_putstr_fd("mini_shared: ", 2);
-				ft_putstr_fd(current_redir->file, 2);
-				perror("");
-			}
-			else
-			{
-				current_redir = current_redir->next;
-				continue ;
-			}
-			if (current_redir->redir_id == HERE || current_redir->redir_id == IN)
-			{
-				if (current_redir->fd == -1)
-					return (close_and_replace(current_redir->fd, &current_cmd->latest_in)); //Should go to next command actually.
-				else if (current_cmd->latest_in == STDIN_FILENO)
-					current_cmd->latest_in = current_redir->fd;
-				else
-					status = dup_and_close(current_redir->fd, current_cmd->latest_in);
-			}
-			else if (current_redir->redir_id == OUT || current_redir->redir_id == APP)
-			{
-				if (current_redir->fd == -1)
-					return (close_and_replace(current_redir->fd, &current_cmd->latest_out)); //Should go to next command actually.
-				else if (current_cmd->latest_out == STDOUT_FILENO)
-					current_cmd->latest_out = current_redir->fd;
-				else
-					status = dup_and_close(current_redir->fd, current_cmd->latest_out);
-			}
-			if (status)
-			{
-				printf("DUP|CLOSE Failure in open_redirections.\n");
-				return (FAILURE);
-			}
-			current_redir = current_redir->next;
+			ft_putstr_fd("mini_shared: ", 2);
+			ft_putstr_fd(current_redir->file, 2);
+			perror("");
+			return (FAILURE);
 		}
-		current_cmd = current_cmd->next;
+		else
+		{
+			current_redir = current_redir->next;
+			continue;
+		}
+		if (replace_redir_fd(current_cmd, current_redir))
+			return (FAILURE);
+		current_redir = current_redir->next;
 	}
 	return (SUCCESS);
 }

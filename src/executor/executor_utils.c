@@ -58,8 +58,8 @@ t_ecode	dup_and_close(int oldfd, int newfd)
 {
 	int	status;
 
-	printf("in dup_n_close oldfd: |%d|\n", oldfd);
-	printf("in dup_n_close newfd: |%d|\n", newfd);
+	fprintf(stderr, "in dup_n_close oldfd: |%d|\n", oldfd);
+	fprintf(stderr, "in dup_n_close newfd: |%d|\n", newfd);
 	status = dup2(oldfd, newfd);
 	if (status == -1)
 	{
@@ -74,8 +74,6 @@ t_ecode	dup_and_close(int oldfd, int newfd)
 	}
 	return (SUCCESS);
 }
-
-
 
 
 
