@@ -25,12 +25,12 @@ int pre_execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int
     if (tree_node->type == CMD)
     {
         // t_cmd *cmd = (t_cmd *)tree_node->cmd_list;
-        // printf ("cmd is %p\n", cmd);
-        // printf("Command args:\n");
+        // fprintf (stderr, "cmd is %p\n", cmd);
+        // fprintf(stderr, "Command args:\n");
         // int i = 0;
         // while (cmd->args && cmd->args[i] != NULL)
         // {
-        //     printf("Arg[%d] = %s\n", i, cmd->args[i]);
+        //     fprintf(stderr, "Arg[%d] = %s\n", i, cmd->args[i]);
         //     i++;
         // }
 
@@ -38,6 +38,15 @@ int pre_execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int
 	    tree_node->cmd_list = make_cmd(shell, tree_node->start_token, tree_node->end_token);
         open_redirections(shell, shell->cmd_list);
         // handle_redirs(shell, tree_node->cmd_list); //Still to implement.
+        t_cmd *cmd = (t_cmd *)tree_node->cmd_list;
+        fprintf (stderr, "cmd is %p\n", cmd);
+        fprintf(stderr, "Command args:\n");
+        int i = 0;
+        while (cmd->args && cmd->args[i] != NULL)
+        {
+            fprintf(stderr, "Arg[%d] = %s\n", i, cmd->args[i]);
+            i++;
+        }
         print_cmd(tree_node->cmd_list);
         //print_tree_with_cmds(shell->tree, 0);
         

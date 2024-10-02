@@ -205,16 +205,16 @@ int	parse(t_shell *shell)
 	// print_token(shell->token);
 	
 	remove_space_tokens(&shell->token);
-	printf ("after removing space tokens\n");
-	print_token(shell->token);
+	// printf ("after removing space tokens\n");
+	// print_token(shell->token);
 
 	remove_subshell_parens(&(shell->token));
-	printf ("after removing subshell_parens\n");
-	print_token(shell->token);
+	// printf ("after removing subshell_parens\n");
+	// print_token(shell->token);
 
 	handle_heredocs(shell->token);
-	printf ("after heredocs handling\n");
-	print_token(shell->token);
+	// printf ("after heredocs handling\n");
+	// print_token(shell->token);
 	//mandatory:
 	// status = make_cmd(shell, shell->token);
 	// if (shell->cmd_list == NULL)

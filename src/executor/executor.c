@@ -5,6 +5,7 @@ int	executor(t_shell *shell, t_cmd *cmd)
 	int			status = SUCCESS;
 	t_builtin	is_builtin;
 
+	fprintf(stderr, "Executing cmd: %s, address: %p\n", cmd->args[0], cmd);
 	is_builtin = check_builtin(cmd->args[0]);
 	if (is_builtin == NULL_CMD)
 	{
@@ -69,10 +70,6 @@ void	do_parent_duties(t_shell *shell)
 	int	wstatus;
 
 	wstatus = 0;
-	// close(shell->pipefd[WRITE_END]);
-	// shell->read_fd = shell->pipefd[READ_END];
-	// if (dup2(shell->pipefd[READ_END], STDIN_FILENO) == -1)
-	// 	exit(EXIT_FAILURE);
 	waitpid(shell->parent, &wstatus, 0);
 	shell->status = WEXITSTATUS(wstatus);
 }
