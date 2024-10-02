@@ -44,13 +44,9 @@ int	handle_pipe_subtree(t_shell *shell, t_tree *tree_node)
 			exit(EXIT_FAILURE);
 		close(fd[WRITE_END]);
 		node_status = pre_execute(shell, tree_node->left, tree_node, 0);
-		while (wait(NULL) != -1)
-			;
 		exit(node_status);
 	}
 	waitpid(left_node_pid, &status, 0);
-	while (wait(NULL) != -1)
-		;
 	fprintf(stderr, "Wait done on the first child\n");
 	fprintf(stderr, "it should print stuff into the pipe, not output.\n");
 	right_node_pid = fork();
@@ -63,8 +59,6 @@ int	handle_pipe_subtree(t_shell *shell, t_tree *tree_node)
 			exit(EXIT_FAILURE);
 		close(fd[READ_END]);
 		node_status = pre_execute(shell, tree_node->right, tree_node, status);
-		while (wait(NULL) != -1)
-			;
 		exit(node_status);
 	}
 	waitpid(left_node_pid, &status, 0);
