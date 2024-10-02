@@ -26,7 +26,8 @@ static void	close_fds(int fd1, int fd2)
 
 static int	handle_pipe_left_node(t_shell *shell, t_tree *tree_node, int fd[2])
 {
-	fprintf(stderr, "Went into handle case left: %p\n", tree_node->left);
+	// fprintf(stderr, "Went into handle case left: %p\n", tree_node->left);
+	// fprintf(stderr, "Went into handle case left: %s\n", tree_node->left->cmd_list->args[0]);
 	int	status;
 	if (dup2(fd[WRITE_END], STDOUT_FILENO) == -1)
 	{
@@ -40,7 +41,8 @@ static int	handle_pipe_left_node(t_shell *shell, t_tree *tree_node, int fd[2])
 
 static int	handle_pipe_right_node(t_shell *shell, t_tree *tree_node, int fd[2])
 {
-	fprintf(stderr, "Went into handle case right: %p\n", tree_node->right);
+	// fprintf(stderr, "Went into handle case right: %p\n", tree_node->right);
+	// fprintf(stderr, "Went into handle case right: %s\n", tree_node->right->cmd_list->args[0]);
 	int	status;
 	if (dup2(fd[READ_END], STDIN_FILENO) == -1)
 	{
@@ -67,15 +69,17 @@ int	handle_pipe_subtree(t_shell *shell, t_tree *tree_node)
 	else if (left_node_pid == 0)
 		handle_pipe_left_node(shell, tree_node, fd);
 	waitpid(left_node_pid, &status, 0);
-	fprintf(stderr, "Finished waiting for %p\n", tree_node->left);
+	// while (wait(NULL) != -1)
+	// 	;
+	// fprintf(stderr, "Finished waiting for %p\n", tree_node->left);
 	right_node_pid = fork();
 	if (right_node_pid == -1)
 		exit(EXIT_FAILURE);
 	else if (right_node_pid == 0)
 		handle_pipe_right_node(shell, tree_node, fd);
-	waitpid(left_node_pid, &status, 0);
-	fprintf(stderr, "Finished waiting for %p\n", tree_node->right);
 	close_fds(fd[READ_END], fd[WRITE_END]);
+	waitpid(right_node_pid, &status, 0);
+	// fprintf(stderr, "Finished waiting for %p\n", tree_node->right);
 	while (wait(NULL) != -1)
 		;
 	return (status);

@@ -2,10 +2,9 @@
 
 int	executor(t_shell *shell, t_cmd *cmd)
 {
-	int			status = SUCCESS;
 	t_builtin	is_builtin;
 
-	fprintf(stderr, "Executing cmd: %s, address: %p\n", cmd->args[0], cmd);
+	// fprintf(stderr, "Executing cmd: %s, address: %p\n", cmd->args[0], cmd);
 	is_builtin = check_builtin(cmd->args[0]);
 	if (is_builtin == NULL_CMD)
 	{
@@ -20,10 +19,10 @@ int	executor(t_shell *shell, t_cmd *cmd)
 	{
 		handle_builtin(shell, cmd);
 	}
-	return (status);
+	return (shell->status);
 }
 
-int	handle_non_builtin(t_shell *shell, t_cmd *cmd)
+void	handle_non_builtin(t_shell *shell, t_cmd *cmd)
 {
 	shell->parent = fork();
 	if (shell->parent == -1)
@@ -33,7 +32,6 @@ int	handle_non_builtin(t_shell *shell, t_cmd *cmd)
 		run_child(shell, cmd);
 	}
 	do_parent_duties(shell);
-	return (SUCCESS);
 }
 
 void	run_child(t_shell *shell, t_cmd *cmd)

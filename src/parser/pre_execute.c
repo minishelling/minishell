@@ -5,15 +5,15 @@ int pre_execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int
 {
     int exit_code = prev_exit_code; // Start with the previous exit code
 
-    fprintf (stderr, "   started pre_execute\n");
-    fprintf (stderr, "current node is %p\n", tree_node);
+    // fprintf (stderr, "   started pre_execute\n");
+    // fprintf (stderr, "current node is %p\n", tree_node);
 
 	if (tree_node == NULL)
 		return exit_code;
 
 	if (tree_node->type == T_PIPE)
 	{
-		fprintf(stderr, "We're going in T_PIPE handling case\n");
+		// fprintf(stderr, "We're going in T_PIPE handling case\n");
 		return (handle_pipe_subtree(shell, tree_node));
 	}
 	if (tree_node->left != NULL)
@@ -34,20 +34,23 @@ int pre_execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int
         //     i++;
         // }
 
+        // fprintf(stderr, "STARTING MAKING EXPANSIONS\n");
         tree_node->start_token = expand(tree_node->start_token, tree_node->end_token, shell->env_list);
+        // fprintf(stderr, "FINISHED MAKING EXPANSIONS\n");
 	    tree_node->cmd_list = make_cmd(shell, tree_node->start_token, tree_node->end_token);
+        // fprintf(stderr, "FINISHED MAKING CMDS\n");
         open_redirections(shell, shell->cmd_list);
         // handle_redirs(shell, tree_node->cmd_list); //Still to implement.
-        t_cmd *cmd = (t_cmd *)tree_node->cmd_list;
-        fprintf (stderr, "cmd is %p\n", cmd);
-        fprintf(stderr, "Command args:\n");
-        int i = 0;
-        while (cmd->args && cmd->args[i] != NULL)
-        {
-            fprintf(stderr, "Arg[%d] = %s\n", i, cmd->args[i]);
-            i++;
-        }
-        print_cmd(tree_node->cmd_list);
+        // t_cmd *cmd = (t_cmd *)tree_node->cmd_list;
+        // fprintf (stderr, "cmd is %p\n", cmd);
+        // fprintf(stderr, "Command args:\n");
+        // int i = 0;
+        // while (cmd->args && cmd->args[i] != NULL)
+        // {
+        //     fprintf(stderr, "Arg[%d] = %s\n", i, cmd->args[i]);
+        //     i++;
+        // }
+        // print_cmd(tree_node->cmd_list);
         //print_tree_with_cmds(shell->tree, 0);
         
         exit_code = executor(shell, tree_node->cmd_list);
@@ -55,7 +58,7 @@ int pre_execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int
     }
     if (parent_tree_node && parent_tree_node->type == T_AND_OPR && exit_code == 0) 
     {
-		fprintf (stderr, "performing the right side of AND\n");
+		// fprintf (stderr, "performing the right side of AND\n");
 		if (tree_node->right)
 		{
 			if (tree_node->right->type == T_PIPE)
@@ -72,7 +75,7 @@ int pre_execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int
 	}
     else if (parent_tree_node && parent_tree_node->type == T_OR_OPR && exit_code != 0)
     {
-        fprintf (stderr, "performing the right side of OR");
+        // fprintf (stderr, "performing the right side of OR");
         if (tree_node->right)
         {
 			if (tree_node->right->type == T_PIPE)

@@ -387,9 +387,9 @@ t_ecode		dup_and_close(int oldfd, int newfd);
 char	*get_cmd_path(t_shell *shell, char *cmd_name);
 void 	run_child(t_shell *shell, t_cmd *cmd);
 void	do_parent_duties(t_shell *shell);
-int		handle_builtin(t_shell *shell, t_cmd *cmd);
+void	handle_builtin(t_shell *shell, t_cmd *cmd);
 t_ecode	execute_builtin(t_shell *shell, char **cmd_args);
-int		handle_non_builtin(t_shell *shell, t_cmd *cmd);
+void	handle_non_builtin(t_shell *shell, t_cmd *cmd);
 
 //BUILTINS
 
