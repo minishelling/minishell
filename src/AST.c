@@ -72,17 +72,17 @@ void print_tree(t_tree *node, int level)
 	i = 0;
 	while (i < level)
 	{
-		printf("    ");
+		fprintf(stderr, "    ");
 		i++;
 	}
 	
 	if (node->type == CMD)
-		printf(GREY_BACKGROUND"%s"RESET_COLOR" |%s| |%s|\n", tree_node_name[node->type], node->start_token->str, node->end_token->str);
+		fprintf(stderr, GREY_BACKGROUND"%s"RESET_COLOR" |%s| |%s|\n", tree_node_name[node->type], node->start_token->str, node->end_token->str);
 	else if (node->type == T_AND_OPR || node->type == T_OR_OPR || node->type == T_PIPE)
-		printf(MAGENTA_TEXT"%s"RESET_COLOR"\n", tree_node_name[node->type]);
+		fprintf(stderr, MAGENTA_TEXT"%s"RESET_COLOR"\n", tree_node_name[node->type]);
 	else
 		{
-			printf("NULL\n");
+			fprintf(stderr, "NULL\n");
 			exit(EXIT_FAILURE);
 		}
 

@@ -86,10 +86,10 @@ void	print_cmd_args(char **arg)
 	size_t	i;
 
 	i = 0;
-	printf(MAGENTA_TEXT WHITE_BACKGROUND"ARGUMENTS" RESET_COLOR"\n");
+	fprintf(stderr, MAGENTA_TEXT WHITE_BACKGROUND"ARGUMENTS" RESET_COLOR"\n");
 	while (arg[i] != NULL)
 	{
-		printf("arg [%02zu]:\t|%s|\n", i, arg[i]);
+		fprintf(stderr, "arg [%02zu]:\t|%s|\n", i, arg[i]);
 		i++;
 	}
 }
@@ -107,15 +107,15 @@ void	print_redir(t_redir *redir_list_head)
 
 	if (redir_list_head == NULL)
 	{
-		ft_printf("\n"MAGENTA_TEXT WHITE_BACKGROUND"NO REDIRECTIONS"RESET_COLOR"\n");
+		fprintf(stderr, "\n"MAGENTA_TEXT WHITE_BACKGROUND"NO REDIRECTIONS"RESET_COLOR"\n");
 		return ;
 	}
 	current_redir = redir_list_head;
-	ft_printf("\n"MAGENTA_TEXT WHITE_BACKGROUND"REDIRECTIONS"RESET_COLOR"\n");
+	fprintf(stderr, "\n"MAGENTA_TEXT WHITE_BACKGROUND"REDIRECTIONS"RESET_COLOR"\n");
 	while (current_redir != NULL)
 	{
-		ft_printf("TYPE [%d]\t%s\n", current_redir->redir_id, redir_name[current_redir->redir_id]);
-		ft_printf("FILE\t\t%s\n", current_redir->file);
+		fprintf(stderr, "TYPE [%d]\t%s\n", current_redir->redir_id, redir_name[current_redir->redir_id]);
+		fprintf(stderr, "FILE\t\t%s\n", current_redir->file);
 		current_redir = current_redir->next;
 	}
 }
@@ -127,17 +127,17 @@ void	print_cmd(t_cmd *cmd_list_head)
 	int	con = cmd_size(cmd_list_head);
 
 	size = cmd_size(cmd_list_head);
-	printf("\n"WHITE_TEXT MAGENTA_BACKGROUND"LIST OF CMDS"RESET_COLOR"\t [%02d]\n", size);
-	printf("---------------------\n");
+	fprintf(stderr, "\n"WHITE_TEXT MAGENTA_BACKGROUND"LIST OF CMDS"RESET_COLOR"\t [%02d]\n", size);
+	fprintf(stderr, "---------------------\n");
 	current_cmd = cmd_list_head;
 	while (current_cmd != NULL)
 	{
-		ft_printf(MAGENTA_TEXT"CMD [%d]"RESET_COLOR"\n\n", (con - --size));
+		fprintf(stderr, MAGENTA_TEXT"CMD [%d]"RESET_COLOR"\n\n", (con - --size));
 		print_cmd_args((char **)current_cmd->args);
 		print_redir(current_cmd->redir);
-		printf ("latest_in is %d and latest_out %d\n", current_cmd->latest_in, current_cmd->latest_out);
+		fprintf (stderr, "latest_in is %d and latest_out %d\n", current_cmd->latest_in, current_cmd->latest_out);
 		current_cmd = current_cmd->next;
-		ft_printf("______________________\n\n");
+		fprintf(stderr, "______________________\n\n");
 	}
 }
 

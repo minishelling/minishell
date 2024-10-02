@@ -14,6 +14,67 @@ typedef struct s_pipex
 	char	*path;
 }	t_pipex;
 
+int	handle_pipe_subtree(t_shell *shell, t_tree *tree_node)
+{
+	//create pipe
+	//fork once
+	//run pre-execute in the first child ->deals with the left branch of the pipe.
+	//wait for the processes to finish and exit if needed.
+	//fork again
+	//run pre-execute on the 2nd child ->deals with the right branch of the pipe.
+	//wait for the processes to end and exit if needed.
+	//close both fds (am I at the right place or should this be in the line above?)
+	//return
+
+	int		fd[2];
+	int		status;
+	pid_t	left_node_pid;
+	pid_t	right_node_pid;
+	int		node_status;
+
+	if (pipe(fd) == -1)
+		exit(EXIT_FAILURE);
+	left_node_pid = fork();
+	if (left_node_pid == -1)
+		exit(EXIT_FAILURE);
+	else if (left_node_pid == 0)
+	{
+		close(fd[READ_END]);
+		if (dup2(fd[WRITE_END], STDOUT_FILENO) == -1)
+			exit(EXIT_FAILURE);
+		close(fd[WRITE_END]);
+		node_status = pre_execute(shell, tree_node->left, tree_node, 0);
+		while (wait(NULL) != -1)
+			;
+		exit(node_status);
+	}
+	waitpid(left_node_pid, &status, 0);
+	while (wait(NULL) != -1)
+		;
+	fprintf(stderr, "Wait done on the first child\n");
+	fprintf(stderr, "it should print stuff into the pipe, not output.\n");
+	right_node_pid = fork();
+	if (right_node_pid == -1)
+		exit(EXIT_FAILURE);
+	else if (right_node_pid == 0)
+	{
+		close(fd[WRITE_END]);
+		if (dup2(fd[READ_END], STDIN_FILENO) == -1)
+			exit(EXIT_FAILURE);
+		close(fd[READ_END]);
+		node_status = pre_execute(shell, tree_node->right, tree_node, status);
+		while (wait(NULL) != -1)
+			;
+		exit(node_status);
+	}
+	waitpid(left_node_pid, &status, 0);
+	close(fd[READ_END]);
+	close(fd[WRITE_END]);
+	while (wait(NULL) != -1)
+		;
+	return (status);
+}
+
 void	free_array_pipex(char **arr)
 {
 	int	i;
@@ -290,15 +351,15 @@ int create_pipe(t_pipex *pipex, t_shell *shell, t_tree *tree_node, char **envp)
 	return (SUCCESS);
 }
 
-int handle_pipe_subtree(t_shell *shell, t_tree *tree_node)
-{
-	t_pipex pipex;
-	char **env_array;
+// int handle_pipe_subtree(t_shell *shell, t_tree *tree_node)
+// {
+// 	t_pipex pipex;
+// 	char **env_array;
 	
-	env_array = create_env_array(shell->env_list);
-	ft_bzero(&pipex, sizeof(t_pipex));
-	find_possible_paths(&pipex, &shell->env_list);
-	create_pipe(&pipex, shell, tree_node, env_array);
-	clean_nicely(&pipex);
-	return (0);
-}
+// 	env_array = create_env_array(shell->env_list);
+// 	ft_bzero(&pipex, sizeof(t_pipex));
+// 	find_possible_paths(&pipex, &shell->env_list);
+// 	create_pipe(&pipex, shell, tree_node, env_array);
+// 	clean_nicely(&pipex);
+// 	return (0);
+// }

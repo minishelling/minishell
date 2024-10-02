@@ -124,12 +124,12 @@ int read_heredoc_input(const char *file_name, const char *delimiter)
         // Prompt user for input and read a line
         line = readline("heredoc> ");
 
-        if (g_exitcode == EXIT_SIGINT)
-        {
-            free(line);
-			print_heredoc_newline(); //Not working as intended.
-            break ;
-        }
+        // if (g_exitcode == EXIT_SIGINT)
+        // {
+        //     free(line);
+		// 	print_heredoc_newline(); //Not working as intended.
+        //     break ;
+        // }
         
         // If line is NULL (EOF or error), break
         if (line == NULL)
