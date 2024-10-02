@@ -53,7 +53,8 @@ int pre_execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int
 				// return 1;
 				return (handle_pipe_subtree(shell, tree_node));
 			else
-				return pre_execute(shell, parent_tree_node->right, tree_node, exit_code);
+				return pre_execute(shell, parent_tree_node->right, parent_tree_node, exit_code);
+                // return pre_execute(shell, parent_tree_node->right, tree_node, exit_code);
 		}
 
 		//Old version
@@ -69,7 +70,8 @@ int pre_execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int
 				// return 1;
 				return (handle_pipe_subtree(shell, tree_node));
 			else
-				return pre_execute(shell, parent_tree_node->right, tree_node, exit_code);
+				return pre_execute(shell, parent_tree_node->right, parent_tree_node, exit_code);
+                // return pre_execute(shell, parent_tree_node->right, tree_node, exit_code);
 		}
 
 		//Old version

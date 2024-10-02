@@ -205,7 +205,7 @@ t_token *find_last_log_op_token_nip(t_token *token_head, t_token *end_token)
                 return_token = token_iterator; // Set return token to AND/OR
             }
             // Check for PIPE only if there was no higher precedence operator set
-            else if (token_iterator->id == PIPE && token_iterator->next && token_iterator->next->id == PAR_OPEN)
+            else if (token_iterator->id == PIPE)
             {
                 // Set pipe as the last logical operator, but only if no AND/OR has been found
                 if (return_token == NULL)

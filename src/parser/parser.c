@@ -9,7 +9,9 @@ size_t	get_arg_num(t_token *token)
 	arg_num = 0;
 	if (token == NULL)
 		return (0);
-	while (token && token->id != PIPE)
+	//while (token && token->id != PIPE)
+	while (token)
+	while (token)
 	{
 		if (token->id == WORD || token->id == SQUOTE || token->id == DQUOTE || token->id == ENV_VAR)
 			arg_num++;
@@ -33,7 +35,7 @@ bool	init_cmd(t_shell *shell, t_cmd **current_cmd, t_token *token)
 		[0] = parser_space,
 		[1] = parser_space,
 		[2] = parser_space,
-		[3] = parser_pipe,
+		//[3] = parser_pipe, //no more
 		[4] = parser_and_opr,
 		[5] = parser_semicol,
 		[6] = parser_par_open,
@@ -50,7 +52,8 @@ bool	init_cmd(t_shell *shell, t_cmd **current_cmd, t_token *token)
 	(*current_cmd)->args = ft_calloc((arg_num + 1), sizeof(char *));
 	if (!(*current_cmd)->args)
 		return (false);
-	while (token && token->id !=PIPE)
+	//while (token && token->id !=PIPE)
+	while (token)
 	{
 		status = func[token->id](*current_cmd, token);
 		// printf ("status now is %d\n", status);
@@ -98,7 +101,7 @@ t_cmd	*make_cmd(t_shell *shell, t_token *start_token, t_token *end_token)
 		if (token == end_token)
 			break;  // Process the end_token, then break out of the loop
 
-		token = get_after_pipe_token(token); // Move to next token after a pipe
+		//token = get_after_pipe_token(token); // Move to next token after a pipe
 	}
 
 	return (shell->cmd_list);
@@ -227,7 +230,7 @@ int	parse(t_shell *shell)
 	printf("\n--------------------\n");
 	
 	if (shell->tree)
-		print_tree(shell->tree, 0);
+		print_tree_verbose(shell->tree, 0);
 	
 	// if (shell->tree)
 	// 	print_tree_with_cmds(shell->tree, 0);
