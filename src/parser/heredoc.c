@@ -122,7 +122,9 @@ int read_heredoc_input(const char *file_name, const char *delimiter)
     while (1) 
     {
         // Prompt user for input and read a line
-        line = readline("heredoc> ");
+        printf("heredoc [%s%s%s] ", MAGENTA_TEXT, delimiter, RESET_COLOR);
+        line = readline("");
+        //line = readline("heredoc> ");
 
         // if (g_exitcode == EXIT_SIGINT)
         // {
