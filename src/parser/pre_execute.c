@@ -39,7 +39,10 @@ int pre_execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int
         // fprintf(stderr, "FINISHED MAKING EXPANSIONS\n");
 	    tree_node->cmd_list = make_cmd(shell, tree_node->start_token, tree_node->end_token);
         // fprintf(stderr, "FINISHED MAKING CMDS\n");
-        open_redirections(shell, shell->cmd_list);
+        if (!open_redirections(shell, shell->cmd_list))
+            exit_code = executor(shell, tree_node->cmd_list);
+        else
+            exit_code = 1;
         // handle_redirs(shell, tree_node->cmd_list); //Still to implement.
         // t_cmd *cmd = (t_cmd *)tree_node->cmd_list;
         // fprintf (stderr, "cmd is %p\n", cmd);
@@ -53,7 +56,7 @@ int pre_execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int
         // print_cmd(tree_node->cmd_list);
         //print_tree_with_cmds(shell->tree, 0);
         
-        exit_code = executor(shell, tree_node->cmd_list);
+        
         // printf ("exit code is %d\n", exit_code);
     }
     if (parent_tree_node && parent_tree_node->type == T_AND_OPR && exit_code == 0) 
