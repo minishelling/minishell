@@ -451,3 +451,694 @@ t_ecode	copy_keyvalue_into_env_node(t_env **new_node, char *keyvalue)
 // 	}
 // }
 
+// t_ecode	curpath_trim(char **curpath) //Is this the format of the old version or the new?
+// {
+// 	t_curpath	*final_dirs;
+// 	char 		**dirs;
+// 	t_ecode		status;
+
+// 	// printf("In curpath_trim, curpath: %s\n", *curpath);
+// 	final_dirs = NULL;
+// 	dirs = NULL;
+// 	status = init_and_populate_curpath_list(curpath, &dirs, &final_dirs);
+// 	if (status != SUCCESS)
+// 		return (status);
+// 	status = parse_curpath_dirs(&final_dirs);
+
+// 	curpath_print(final_dirs);
+
+// 	*curpath = curpath_concat(final_dirs);
+// 	ft_free_2d((void ***) &dirs);
+// 	if (final_dirs)
+// 		curpath_del_list(&final_dirs);
+// 	return (SUCCESS);
+// }
+
+// //Fix the segfault here.
+// t_ecode	init_and_populate_curpath_list(char **curpath, char ***dirs, t_curpath **final_dirs)
+// {
+// 	t_ecode	status;
+// 	int		i;
+	
+// 	*dirs = ft_split(*curpath, '/');
+// 	if (!dirs)
+// 		return (NULL_ARRAY);
+// 	create_and_add_back_curpath_node(final_dirs, "/");
+// 	i = 0;
+// 	while ((*dirs)[i])
+// 	{
+// 		// printf("In init_and_populate_curpath: dir[%d] is: %s\n", i, (*dirs)[i]);
+// 		status = create_and_add_back_curpath_node(final_dirs, (*dirs)[i]);
+// 		if (status)
+// 			return (status);
+// 		i++;
+// 	}
+// 	// printf("In init_and_populate_curpath:\n");
+// 	// curpath_print(*final_dirs);
+// 	// ft_free((void **) curpath); //Note that there are 2 returns before this, that don't free curpath. Check if it is handled.
+// 	return (SUCCESS);
+// }
+
+
+// //STOPPED HERE...
+// t_ecode	parse_curpath_dirs(t_curpath **final_dirs)
+// {
+// 	t_curpath	*iterator;
+// 	t_curpath	*current;
+// 	t_ecode		status;
+// 	size_t		dir_len;
+
+// 	status = SUCCESS;
+// 	iterator = *final_dirs;
+// 	while (iterator)
+// 	{
+// 		if (!iterator->dir)
+// 			printf("While parsing curpath, no dir was found in this node.\n");
+// 		dir_len = ft_strlen(iterator->dir);
+// 		if (iterator->dir && !ft_strncmp(iterator->dir, ".", dir_len))
+// 		{
+// 			printf("Removing . from curpath\n");
+// 			current = iterator;
+// 			iterator = iterator->next;
+// 			remove_curpath_node(final_dirs, &current);
+// 			continue ;
+// 		}
+// 		else if (iterator->dir && !ft_strncmp(iterator->dir, "..", dir_len))
+// 		{
+// 			printf("Removing .. from curpath\n");
+// 			if (iterator->previous && !ft_strncmp(iterator->previous->dir, "/", ft_strlen(iterator->previous->dir)))
+// 			{
+// 				current = iterator->previous;
+// 				remove_curpath_node(final_dirs, &current);
+// 				current = iterator;
+// 			}
+// 			else
+// 				current = iterator;
+// 			iterator = iterator->next;
+// 			remove_curpath_node(final_dirs, &current);
+// 			// remove_curpath_node(final_dirs, &current); //Check if the path is actually valid.
+// 			continue ;
+// 		}
+// 		iterator = iterator->next;
+// 	}
+// 	curpath_print(*final_dirs);
+// 	return (SUCCESS);
+// }
+
+// char	*curpath_concat(t_curpath *head)
+// {
+// 	char	*temp_curpath;
+// 	t_ecode	status;
+	
+// 	if (!head || !head->dir)
+// 		return (NULL);
+// 	// printf("head->dir in curpath_concat: %s\n", head->dir);
+// 	temp_curpath = ft_strdup(head->dir);
+// 	if (!temp_curpath)
+// 		return (NULL);
+// 	head = head->next;
+// 	// printf("temp_curpath in curpath_concat: %s\n", temp_curpath);
+// 	while (head && head->dir)
+// 	{
+		
+// 		temp_curpath = ft_strjoin_fs1(&temp_curpath, head->dir);
+// 		if (!temp_curpath)
+// 			return (NULL);
+// 		status = append_suffix(&temp_curpath, "/", false);
+// 		if (status)
+// 			return (NULL);
+// 		head = head->next;
+// 		// printf("temp_curpath in curpath_concat: %s\n", temp_curpath);
+// 	}
+// 	// printf("Returning temp_curpath in curpath_concat: %s\n", temp_curpath);
+// 	return (temp_curpath);
+// }
+
+// t_ecode	curpath_prepare(char **curpath, char *directory, char *cwd)
+// {
+// 	int		status;
+	
+// 	status = append_suffix(&cwd, "/", false); //This affects the local cwd variable, right?
+// 	// printf("In curpath_prepare: cwd: %s\n", cwd);
+// 	if (status == MALLOC_ERROR)
+// 		return (MALLOC_ERROR);
+// 	if (directory[0] != '/')
+// 		*curpath = ft_strjoin(cwd, directory);
+// 	else
+// 		*curpath = ft_strdup(directory);
+// 	if (!curpath)
+// 		return (MALLOC_ERROR);
+// 	else
+// 		return (SUCCESS);
+// }
+
+
+// t_ecode	remove_previous_dir(t_curpath **final_dirs, char ***dirs, int *i)
+// {
+// 	char	*temp_curpath;
+// 	t_ecode	status;
+
+// 	temp_curpath = curpath_concat(*final_dirs);
+// 	if (!temp_curpath)
+// 		return (MALLOC_ERROR);
+// 	printf("temp_curpath in remove_prev_dir: %s\n", temp_curpath);
+// 	status = curpath_check_access(temp_curpath);
+// 	ft_free((void **) &temp_curpath);
+// 	if (status)
+// 	{
+// 		ft_free_2d((void ***) dirs);
+// 		if (*final_dirs)
+// 			curpath_del_list(final_dirs);
+// 		return (status);
+// 	}
+// 	curpath_del_last(final_dirs);
+// 	*i += 1;
+// 	return (SUCCESS);
+// }
+
+// t_ecode	check_access_and_add_back(t_curpath **final_dirs, char ***dirs, int *i)
+// {
+// 	char	*curpath;
+// 	t_ecode	status;
+	
+// 	// curpath = NULL;
+// 	// if (final_dirs && *final_dirs && (*final_dirs)->dir)
+// 	curpath = curpath_concat(*final_dirs);
+// 	status = curpath_check_access(curpath);
+// 	ft_free((void **) &curpath);
+// 	if (status)
+// 	{
+// 		ft_free_2d((void ***) dirs);
+// 		if (*final_dirs)
+// 			curpath_del_list(final_dirs);
+// 		return (status);
+// 	}
+// 	else
+// 	{
+// 		if (!*final_dirs)
+// 		{
+// 			status = create_and_add_back_curpath_node(final_dirs, "/");
+// 			if (status)
+// 				return (status);
+// 		}
+// 		status = create_and_add_back_curpath_node(final_dirs, (*dirs)[*i]);
+// 		if (status)
+// 			return (status);
+// 	}
+// 	*i += 1;
+// 	return (SUCCESS);
+// }
+
+
+
+
+
+// /** NOTE TO SELF
+//  * I need to take a look at all the functions and distinguish or discriminate between
+//  * those that take arguments for freeing everything (basically error handling within the function)
+//  * and those that don't.
+//  * In the end I have to decide for one way of writing functions or the other.
+// */
+
+
+
+
+// // t_ecode	curpath_trim(char **curpath)
+// // {
+// // 	t_curpath	*final_dirs;
+// // 	char 		**dirs;
+// // 	int			i;
+// // 	int			status;
+
+// // 	status = init_curpath_dirs(curpath, &dirs, &final_dirs);
+// // 	if (status != SUCCESS)
+// // 		return (status);
+// // 	i = 0;
+// // 	while (dirs[i])
+// // 	{
+// // 		if (dirs[i][0] == '.' && dirs[i][1] == '/0')
+// // 		{
+// // 			i++;
+// // 			continue ;
+// // 		}
+// // 		else if (dirs[i][0] == '.' && dirs[i][1] == '.' && dirs[i][2] == '/0')
+// // 		{
+// // 			*curpath = curpath_concat(final_dirs);
+// // 			status = curpath_check_access(*curpath);
+// // 			ft_free((void **) curpath);
+// // 			if (status)
+// // 			{
+// // 				ft_free_2d((void ***) &dirs);
+// // 				if (final_dirs)
+// // 					curpath_del_list(&final_dirs);
+// // 				return (status);
+// // 			}
+// // 			curpath_del_last(&final_dirs);
+// // 			i++;
+// // 			continue ;
+// // 		}
+// // 		*curpath = curpath_concat(final_dirs);
+// // 		status = curpath_check_access(*curpath);
+// // 		ft_free((void **) curpath);
+// // 		if (status)
+// // 		{
+// // 			ft_free_2d((void ***) &dirs);
+// // 			if (final_dirs)
+// // 				curpath_del_list(&final_dirs);
+// // 			return (status);
+// // 		}
+// // 		else
+// // 		{
+// // 			if (!final_dirs)
+// // 			{
+// // 				status = create_and_add_back_curpath_node(&final_dirs, &dirs, "/");
+// // 				if (status)
+// // 					return (status);
+// // 			}
+// // 			status = create_and_add_back_curpath_node(&final_dirs, &dirs, dirs[i]);
+// // 			if (status)
+// // 				return (status);
+// // 		}
+// // 		i++;
+// // 	}
+// // 	*curpath = curpath_concat(final_dirs);
+// // 	ft_free_2d((void ***) &dirs);
+// // 	if (final_dirs)
+// // 		curpath_del_list(&final_dirs);
+// // 	return (*curpath);
+// // }
+
+// t_ecode	create_and_add_back_curpath_node(t_curpath **head, char *directory)
+// {
+// 	t_curpath	*new;
+
+// 	new = curpath_new_node(directory);
+// 	if (!new)
+// 		return (MALLOC_ERROR);
+// 	curpath_add_back(head, new);
+// 	return (SUCCESS);
+// }
+
+// t_curpath	*curpath_new_node(char *dir)
+// {
+// 	t_curpath	*new_node;
+
+// 	new_node = (t_curpath *) malloc(sizeof(t_curpath));
+// 	if (!new_node)
+// 		return (NULL);
+// 	new_node->dir = ft_strdup(dir);
+// 	if (!new_node->dir)
+// 	{
+// 		ft_free((void **) &new_node);
+// 		return (NULL);
+// 	}
+// 	new_node->previous = NULL;
+// 	new_node->next = NULL;
+// 	return (new_node);
+// }
+
+// void	curpath_add_back(t_curpath **head, t_curpath *new)
+// {
+// 	t_curpath	*iterator;
+
+// 	if (!new)
+// 		return ;
+// 	if (!*head)
+// 	{
+// 		*head = new;
+// 		(*head)->previous = NULL;
+// 	}
+// 	else
+// 	{
+// 		iterator = get_last_curpath_node(*head);
+// 		iterator->next = new;
+// 		iterator->next->previous = iterator;
+// 	}
+// }
+
+// t_ecode	remove_curpath_node(t_curpath **head, t_curpath **node)
+// {
+// 	t_curpath	*previous_node;
+// 	// t_curpath	*next_node;
+
+// 	if (!*node || !*head)
+// 		return (NULL_NODE);
+// 	previous_node = (*node)->previous;
+// 	curpath_del_node(node);
+// 	// *node = previous_node;
+// 	return (SUCCESS);
+// }
+
+// void	curpath_del_node(t_curpath **node)
+// {
+// 	if (!*node)
+// 		return ;
+// 	if (*node && (*node)->dir)
+// 		ft_free((void **) &(*node)->dir);
+// 	if ((*node)->previous)
+// 	{
+// 		// printf("removing previous node in curpath_del_node\n");
+// 		(*node)->previous->next = (*node)->next;
+// 	}
+// 	if ((*node)->next)
+// 	{
+// 		// printf("removing next node in curpath_del_node\n");
+// 		(*node)->next->previous = (*node)->previous;
+// 	}
+// 	free(*node);
+// 	*node = NULL;
+// 	return ;
+// }
+
+// void	curpath_del_node_definitely(t_curpath **node)
+// {
+// 	if (!*node)
+// 		return ;
+// 	if (*node && (*node)->dir)
+// 		ft_free((void **) &(*node)->dir);
+// 	free(*node);
+// 	*node = NULL;
+// 	return ;
+// }
+
+// void	curpath_del_list(t_curpath **head) //Maybe reimplement taking a function ptr as arg, a function that handles the freeing of the nodes.
+// {
+// 	t_curpath	*iterator;
+// 	t_curpath	*current;
+
+// 	if (!*head)
+// 		return ;
+// 	current = *head;
+// 	iterator = *head;
+// 	while (iterator)
+// 	{
+// 		iterator = iterator->next;
+// 		curpath_del_node_definitely(&current);
+// 		current = iterator;
+// 	}
+// }
+
+// t_curpath	*get_last_curpath_node(t_curpath *head)
+// {
+// 	t_curpath	*iterator;
+
+// 	if (!head)
+// 		return (NULL);
+// 	iterator = head;
+// 	while (iterator && iterator->next)
+// 		iterator = iterator->next;
+// 	return (iterator);
+// }
+
+// void	curpath_del_last(t_curpath **head)
+// {
+// 	t_curpath	*iterator;
+
+// 	if (!*head)
+// 		return ;
+// 	iterator = get_last_curpath_node(*head)->previous;
+// 	if (!iterator)
+// 		return ;
+// 	curpath_del_node_definitely(&iterator->next);
+// 	iterator->next = NULL;
+// 	return ;	
+// }
+
+// int	curpath_check_access(char *curpath)
+// {
+// 	int	e_status;
+
+// 	if (!curpath)
+// 		return (1);
+// 	e_status = access(curpath, F_OK);
+// 	if (e_status)
+// 		return (e_status);
+// 	e_status = access(curpath, X_OK);
+// 	if (e_status)
+// 		return (e_status);
+// 	return (0);
+// }
+
+// t_ecode	curpath_check_access_and_chdir(char *curpath)
+// {
+// 	t_ecode	e_status;
+
+// 	e_status = curpath_check_access(curpath);
+// 	if (e_status)
+// 		return (ACCESS_ERROR);
+// 	e_status = chdir(curpath);
+// 	if (e_status)
+// 		return (CHDIR_ERROR);
+// 	return (SUCCESS);
+// }
+
+// void	curpath_print(t_curpath *curpath)
+// {
+// 	int	counter;
+
+// 	if (!curpath)
+// 	{
+// 		printf("The curpath struct is null, can't print it.\n");
+// 		return ;
+// 	}
+// 	counter = 0;
+// 	while (curpath)
+// 	{
+// 		if (curpath->dir)
+// 			printf("Curpath dir[%d]: %s\n", counter, curpath->dir);
+// 		else
+// 			printf("Curpath dir[%d] is NULL!\n", counter);
+// 		curpath = curpath->next;
+// 		counter++;
+// 	}
+// 	return ;
+// }
+
+// typedef enum flags
+// {
+// 	NULL_FLAG = 0,
+// 	STATUS_FLAG
+// }	t_flags;
+
+// t_ecode	chdir_cwd(char *directory, int *null_flag)
+// {
+// 	char	*curpath;
+
+// 	*null_flag = 1;
+// 	curpath = ft_strjoin("./", directory);
+// 	if (!curpath)
+// 		return (ft_free((void **) &curpath), MALLOC_ERROR);
+// 	if (curpath_check_access(curpath))
+// 		return (ft_free((void **) &curpath), PROCEED);
+// 	if (chdir(curpath))
+// 		return (ft_free((void **) &curpath), PROCEED);
+// 	else
+// 		return (ft_free((void **) &curpath), SUCCESS);
+// }
+
+// t_ecode chdir_cdpath_value(char **curpath, char *directory)
+// {
+// 	t_ecode	status;
+
+// 	status = append_suffix(curpath, "/", false);
+// 	if (status)
+// 		return (MALLOC_ERROR);
+// 	*curpath = ft_strjoin_fs1(curpath, directory);
+// 	if (!*curpath)
+// 		return (MALLOC_ERROR);
+// 	status = curpath_check_access(*curpath);
+// 	if (status)
+// 		return (ft_free((void **) curpath), PROCEED);
+// 	status = chdir(*curpath);
+// 	if (status)
+// 		return (ft_free((void **) curpath), PROCEED);
+// 	else
+// 		return (ft_free((void **) curpath), SUCCESS);
+// }
+
+// t_ecode	loop_cdpath_values(char ***values, char *directory)
+// {
+// 	char	*curpath;
+// 	int		i;
+// 	int		flag[2];
+
+// 	i = 0;
+// 	flag[NULL_FLAG] = 0;
+// 	flag[STATUS_FLAG] = 0;
+// 	while ((*values)[i])
+// 	{
+// 		curpath = ft_strdup((*values)[i]);
+// 		if (!curpath && flag[NULL_FLAG])
+// 		{
+// 			flag[STATUS_FLAG] = chdir_cwd(directory, &flag[NULL_FLAG]);
+// 			if (flag[STATUS_FLAG] == PROCEED)
+// 			{
+// 				i++;
+// 				continue ;
+// 			}
+// 			else
+// 				return (ft_free_2d((void ***) values), flag[STATUS_FLAG]);
+// 		}
+// 		else if (!curpath && flag[NULL_FLAG])
+// 		{
+// 			i++;
+// 			continue;
+// 		}
+// 		flag[STATUS_FLAG] = chdir_cdpath_value(&curpath, directory);
+// 		if (flag[STATUS_FLAG] == PROCEED)
+// 		{
+// 			ft_free((void **) &curpath);
+// 			i++;
+// 			continue ;
+// 		}
+// 		else
+// 			return (ft_free((void **) &curpath),
+// 				ft_free_2d((void ***) &values), flag[STATUS_FLAG]);
+// 	}
+// 	return (ft_free_2d((void ***) &values), PROCEED);
+// }
+
+// typedef	struct s_cd_struct
+// {
+
+// }	t_cd_struct;
+
+// t_ecode	chdir_curpath(t_shell **shell, char **curpath, char **cwd)
+// {
+// 	int	status;
+
+// 	(void) shell;
+// 	status = chdir(*curpath);
+// 	ft_free((void **) curpath);
+// 	ft_free((void **) cwd);
+// 	printf("chdir status: %d\n", status);
+// 	return (0);
+// }
+
+// t_ecode	chdir_tilde(t_env *env_list, char **cwd)
+// {
+// 	t_env	*home_node;
+// 	char	*home_path;
+// 	int		status;
+
+// 	home_node = find_env_node(env_list, "HOME");
+// 	if (home_node)
+// 		return (chdir_home(env_list, cwd));
+// 	home_path = get_home();
+// 	if (!home_path)
+// 	{
+// 		//PRINT mini_shared: cd: HOME not set.
+// 		return (FAILURE);
+// 	}
+// 	status = chdir(home_path);
+// 	ft_free((void **) &home_path);
+// 	//CALL FUNCTION TO UPDATE PWD, OLDPWD and free cwd.
+// 	return (status);
+// }
+
+// t_ecode	chdir_dash(t_env *env_list, char **cwd)
+// {
+// 	t_env	*oldpwd_node;
+// 	int		status;
+
+// 	oldpwd_node = find_env_node(env_list, "OLDPWD");
+// 	if (!oldpwd_node)
+// 	{
+// 		//PRINT mini_shared: cd: OLDPWD not set.
+// 		return (FAILURE);
+// 	}
+// 	status = chdir(oldpwd_node->value);
+// 	(void) cwd;
+// 	//CALL FUNCTION TO UPDATE PWD, OLDPWD and free cwd.
+// 	return (status);
+// }
+
+// //For ~ use getenv("HOME");
+// t_ecode	builtin_cd(t_shell **shell, char *directory)
+// {
+// 	char		*curpath;
+// 	char		*cwd;
+// 	t_ecode		status;
+
+// 	curpath = NULL;
+// 	cwd = getcwd(NULL, PATH_MAX);
+// 	if (!cwd)
+// 		return (CWD_ERROR);
+// 	if (!directory || !ft_strncmp(directory, "--", ft_strlen(directory)))
+// 		return (chdir_home((*shell)->env_list, &cwd));
+// 	else if (!ft_strncmp(directory, "~", ft_strlen(directory)))
+// 	{
+// 		status = chdir_tilde((*shell)->env_list, &cwd);
+// 		return (status);
+// 	}
+// 	else if (!ft_strncmp(directory, "-", ft_strlen(directory)))
+// 	{
+// 		status = chdir_dash((*shell)->env_list, &cwd);
+// 		return (status);
+// 	}
+// 	else if (is_dir_prefix_valid_for_cdpath(directory))
+// 	{
+// 		status = chdir_cdpath(shell, directory);
+// 		if (!status)
+// 			return (SUCCESS);
+// 		else if (status == MALLOC_ERROR)
+// 			return (FAILURE); //And free everything... Rather 'exit' than return.
+// 	}
+// 	// curpath = ft_strdup(directory);
+// 	// if (!curpath)
+// 	// 	return (MALLOC_ERROR);
+// 	// if (ft_strncmp(curpath, "/", ft_strlen(curpath)))
+// 	// {
+
+// 	// }
+// 	status = curpath_prepare(&curpath, directory, cwd);
+// 	if (status)
+// 		return (status);
+// 	status = curpath_trim(&curpath); // I think I have to append cwd to curpath, otherwise .. doesn't work.
+// 	if (status)
+// 		return (status); //Free everything.
+// 	printf("Curpath in builtin_cd: %s\n", curpath);
+// 	return (chdir_curpath(shell, &curpath, &cwd));
+// }
+
+// t_ecode	chdir_home(t_env *env_head, char **cwd)
+// {
+// 	t_env	*home_node;
+// 	t_ecode	exit_status;
+
+// 	home_node = find_env_node(env_head, "HOME");
+// 	if (!home_node || !home_node->value)
+// 	{
+// 		// PRINT ERROR
+// 		ft_free((void **) cwd);
+// 		return (HOME_ERROR);
+// 	}
+// 	else
+// 	{
+// 		exit_status = chdir(home_node->value);
+// 		if (exit_status)
+// 			return (CHDIR_ERROR);
+// 		update_env_node(env_head, "PWD", getcwd(NULL, PATH_MAX), true);
+// 		update_env_node(env_head, "OLDPWD", *cwd, true);
+// 		ft_free((void **) cwd);
+// 		return (SUCCESS);
+// 	}
+// }
+
+// t_ecode	chdir_cdpath(t_shell **shell, char *directory)
+// {
+// 	t_env	*cdpath_node;
+// 	char	**values;
+// 	t_ecode	status;
+
+// 	cdpath_node = find_env_node((*shell)->env_list, "CDPATH");
+// 	if (!cdpath_node || !cdpath_node->value)
+// 		return (CDPATH_NULL);
+// 	values = ft_split(cdpath_node->value, ':');
+// 	if (!values)
+// 		return (MALLOC_ERROR);
+// 	status = loop_cdpath_values(&values, directory);
+// 	return (status);
+// }
+
+

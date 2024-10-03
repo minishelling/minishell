@@ -29,7 +29,7 @@ char	*get_home(void)
 bool	has_cdpath_prefix(char *directory)
 {
 	if (!directory || directory[0] == '/' || directory[0] == '.'
-		|| (directory[0] == '.' && directory[1] == '.'))
+		|| (directory[0] == '.' && directory[1] == '.') || directory[0] == '~')
 		return (false);
 	return (true);
 }

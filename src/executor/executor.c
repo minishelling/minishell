@@ -60,6 +60,7 @@ void	run_child(t_shell *shell, t_cmd *cmd)
 		cmd_path = get_cmd_path(shell, cmd->args[0]);
 	env_array = create_env_array(shell->env_list);
 	execve(cmd_path, cmd->args, env_array);
+	fprintf(stderr, "Failed to execute. Exiting child.\n");
 	exit(EXIT_FAILURE);
 }
 

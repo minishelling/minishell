@@ -25,10 +25,10 @@ void	handle_builtin(t_shell *shell, t_cmd *cmd)
 	// Bring back the STD_REDIRECTIONS.
 	if (dup2(std_backup[STDIN_FILENO], STDIN_FILENO) == -1)
 		exit(EXIT_FAILURE); // Print error.
-	// close(std_backup[STDIN_FILENO]); //Protect
+	close(std_backup[STDIN_FILENO]); //Protect
 	if (dup2(std_backup[STDOUT_FILENO], STDOUT_FILENO) == -1)
 		exit(EXIT_FAILURE); // Print error. Should it return or exit?
-	// close(std_backup[STDOUT_FILENO]); //Protect
+	close(std_backup[STDOUT_FILENO]); //Protect
 }
 
 t_ecode	execute_builtin(t_shell *shell, char **cmd_args)
