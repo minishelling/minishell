@@ -21,7 +21,7 @@ void	free_env_list(t_env	**head)
 //Done
 void	free_env_node(t_env **node)
 {
-	if (!*node)
+	if (!(*node))
 		return ;
 	if ((*node)->keyvalue)
 		ft_free((void **) &(*node)->keyvalue);

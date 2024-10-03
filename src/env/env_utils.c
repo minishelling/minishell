@@ -58,10 +58,14 @@ t_env	*find_env_node(t_env *env, char *key)
 	t_env	*node;
 	int		isnt_key;
 
+	if (!env || !key)
+		return (NULL);
 	node = env;
+	isnt_key = 0;
 	while (node)
 	{
-		isnt_key = ft_strncmp(node->key, key, __SIZE_MAX__);
+		if (node && node->key)
+			isnt_key = ft_strncmp(node->key, key, __SIZE_MAX__);
 		if (isnt_key)
 		{
 			node = node->next;
@@ -83,4 +87,18 @@ t_env	*get_last_env_node(t_env *head)
 	while (last && last->next)
 		last = last->next;
 	return (last);
+}
+
+char *get_env_value_from_key(t_env *env_head, char *token_key)
+{
+	t_env *node;
+
+	if (!env_head || !token_key || !token_key[0])
+		return (NULL);
+	node = find_env_node(env_head, token_key);
+	if (!node || (node && !node->value))
+		return (NULL);
+	else
+		return (node->value);
+	return (NULL);
 }
