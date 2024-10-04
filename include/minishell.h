@@ -208,9 +208,7 @@ typedef struct s_tree
 
 typedef struct s_shell 
 {
-	int			pipefd[2];
 	pid_t		parent;
-	int			read_fd;
 	int			status;
     char 		*input;
     t_token 	*token;

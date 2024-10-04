@@ -12,13 +12,9 @@ int	executor(t_shell *shell, t_cmd *cmd)
 		// exit(EXIT_FAILURE) ; //commented so testing wouldn't exit minishared
 	}
 	if (is_builtin == NON_BUILTIN)
-	{
 		handle_non_builtin(shell, cmd);
-	}
 	else
-	{
 		handle_builtin(shell, cmd);
-	}
 	return (shell->status);
 }
 
