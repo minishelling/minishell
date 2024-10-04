@@ -64,3 +64,5 @@ src/.vscode/settings.json
 tester/run.sh
 tester/test.sh
 tester/utils.sh
+
+minishell_tester

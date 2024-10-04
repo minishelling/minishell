@@ -29,12 +29,26 @@ char	*get_cmd_path(t_shell *shell, char *cmd_name)
 	int		i;
 	int		status;
 
-	path_node = find_env_node(shell->env_list, "PATH");
-	if (!path_node || !path_node->value || !cmd_name)
-		return (NULL); //Idea to set ft_errno.
-	paths = ft_split(path_node->value, ':');
-	if (!paths)
+	if (!cmd_name)
 		return (NULL);
+	paths = NULL;
+	path_node = find_env_node(shell->env_list, "PATH");
+	if (path_node)
+		paths = ft_split(path_node->value, ':');
+	if (!paths)
+	{ //Checks if the cmd_name is already executable.
+		status = access(cmd_name, X_OK);
+		if (!status)
+			return (cmd_name);
+		cmd_path = ft_strjoin("./", cmd_name);
+		if (!cmd_path)
+			return (NULL);
+		fprintf(stderr, "Cmd_path for rel path is: %s\n", cmd_path);
+		status = access(cmd_path, X_OK);
+		if (!status)
+			return (cmd_path);
+		return (ft_free((void **) &cmd_path), NULL);
+	}
 	i = 0;
 	while (paths[i])
 	{
@@ -44,17 +58,6 @@ char	*get_cmd_path(t_shell *shell, char *cmd_name)
 			i++;
 			continue ;
 		}
-		// printf("CMD_PATH in get_cmd_path: %s\n", cmd_path);
-
-		//NOT NECCESSARY.
-		// status = access(cmd_path, F_OK);
-		// if (status)
-		// {
-		// 	i++;
-		// 	continue ; //Set ft_errno to file not found.
-		// }
-		
-		//In this case ERRNO should be set to "EACCES | 13" but it doesn't stop finding a possible path.
 		status = access(cmd_path, X_OK);
 		if (!status)
 		{
@@ -64,6 +67,16 @@ char	*get_cmd_path(t_shell *shell, char *cmd_name)
 		ft_free((void **) &cmd_path);
 		i++;
 	}
+	status = access(cmd_name, X_OK);
+	if (!status)
+		return (cmd_name);
+	cmd_path = ft_strjoin("./", cmd_name);
+	if (!cmd_path)
+		return (NULL);
+	fprintf(stderr, "Cmd_path for rel path is: %s\n", cmd_path);
+	status = access(cmd_path, X_OK);
+	if (!status)
+		return (cmd_path);
 	//Set FT_ERRNO to file not found and return NULL.
-	return (NULL);
+	return (ft_free((void **) &cmd_path), NULL);
 }
