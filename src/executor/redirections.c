@@ -70,8 +70,7 @@ t_ecode	open_redirections(t_shell *shell, t_cmd *current_cmd)
 		if (open_current_redir(current_redir->redir_id, current_redir->file, &current_redir->fd) != SUCCESS)
 		{
 			ft_putstr_fd("mini_shared: ", 2);
-			ft_putstr_fd(current_redir->file, 2);
-			perror("");
+			perror(current_redir->file);
 			return (FAILURE);
 		}
 		if (replace_redir_fd(current_cmd, current_redir) != SUCCESS)

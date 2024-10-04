@@ -1,6 +1,5 @@
 #include "../../include/minishell.h"
 
-// // TEST This function. Idea: make test directory equipped with libft.
 t_ecode	append_suffix(char **str, char *suffix, bool duplicate)
 {
 	size_t	suffix_len;
