@@ -39,7 +39,7 @@ int pre_execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int
         // fprintf(stderr, "FINISHED MAKING EXPANSIONS\n");
 	    tree_node->cmd_list = make_cmd(shell, tree_node->start_token, tree_node->end_token);
         // fprintf(stderr, "FINISHED MAKING CMDS\n");
-        if (!open_redirections(shell, shell->cmd_list))
+        if (open_redirections(shell, tree_node->cmd_list) == SUCCESS)
             exit_code = executor(shell, tree_node->cmd_list);
         else
             exit_code = 1;
