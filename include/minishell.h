@@ -17,6 +17,7 @@
 # include <readline/history.h>
 # include <string.h>
 # include <stddef.h>
+# include <dirent.h>
 # include "../libft/libft.h"
 
 //# define MINISHARED_PROMPT "\001\033[1;32m\002Mini_shared<🤜 🤛> \001\033[0m\002"
@@ -360,6 +361,8 @@ t_ecode	update_oldpwd(t_env	*oldpwd_node, char *cwd);
 char	*ft_strjoin_fs1(char **s1, const char *s2);
 char	*ft_strjoin_fs2(const char *s1, char **s2);
 t_ecode	append_suffix(char **str, char *suffix, bool duplicate);
+void	close_all_fds_in_process(void);
+void	close_all_fds_in_cmd(t_cmd *cmd);
 
 //FREE
 
@@ -386,7 +389,7 @@ t_ecode		dup_and_close(int oldfd, int newfd);
 
 char	*get_cmd_path(t_shell *shell, char *cmd_name);
 void 	run_child(t_shell *shell, t_cmd *cmd);
-void	do_parent_duties(t_shell *shell);
+void	do_parent_duties(t_shell *shell, t_cmd *cmd);
 void	handle_builtin(t_shell *shell, t_cmd *cmd);
 t_ecode	execute_builtin(t_shell *shell, char **cmd_args);
 void	handle_non_builtin(t_shell *shell, t_cmd *cmd);
@@ -416,42 +419,6 @@ t_ecode	check_curpath_access(char *curpath);
 t_ecode	chdir_null_cdpath(char *directory, ssize_t *i, int8_t *null_flag);
 t_ecode chdir_cdpath_value(char *cdpath_value, char *directory, ssize_t *i);
 t_ecode	chdir_default(t_env **env_list, char *directory, char **cwd);
-
-
-
-// t_ecode	builtin_cd(t_shell **shell, char *directory);
-// t_ecode	chdir_home(t_env *env_head, char **cwd);
-// t_ecode	chdir_cdpath(t_env *env_list, char *directory, char **cwd);
-// t_ecode	append_suffix(char **str, char *suffix, bool duplicate);
-
-// t_ecode	chdir_cwd(char *directory, int *null_flag);
-// t_ecode chdir_cdpath_value(char **curpath, char *directory);
-// t_ecode	loop_cdpath_values(char ***values, char *directory);
-
-
-
-//	CURPATH
-
-// t_curpath	*curpath_new_node(char *dir);
-// void		curpath_del_node(t_curpath **node);
-// void		curpath_del_list(t_curpath **head);
-// t_curpath	*get_last_curpath_node(t_curpath *head);
-// void		curpath_add_back(t_curpath **head, t_curpath *new);
-// t_ecode	create_and_add_back_curpath_node(t_curpath **head, char *directory);
-// void		curpath_del_last(t_curpath **head);
-// char		*curpath_concat(t_curpath *head);
-// void		curpath_print(t_curpath *head);
-// int			curpath_check_access(char *curpath);
-// t_ecode		curpath_check_access_and_chdir(char *curpath);
-// t_ecode		curpath_prepare(char **curpath, char *directory, char *cwd);
-// t_ecode		curpath_trim(char **curpath);
-// t_ecode		init_and_populate_curpath_list(char **curpath, char ***dirs, t_curpath **final_dirs);
-// t_ecode		parse_curpath_dirs(t_curpath **final_dirs);
-// t_ecode		remove_previous_dir(t_curpath **final_dirs, char ***dirs, int *i);
-// t_ecode		check_access_and_add_back(t_curpath **final_dirs, char ***dirs, int *i);
-// t_ecode		remove_curpath_node(t_curpath **head, t_curpath **node);
-// void		curpath_del_node_definitely(t_curpath **node);
-
 
 bool		has_cdpath_prefix(char *directory);
 // t_ecode		check_for_special_cd_cases(t_env *env, char *directory, char **curpath);

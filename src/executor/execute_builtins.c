@@ -12,23 +12,21 @@ void	handle_builtin(t_shell *shell, t_cmd *cmd)
 	//REDIRECT INPUT: FROM LATEST_IN IF AVAILABLE, OTHERWISE FROM PIPE IF WE ARE NOT AT THE FIRST COMMAND.
 	if (cmd->latest_in != STDIN_FILENO)
 	{
-		dup2(cmd->latest_in, STDIN_FILENO);
-		close(cmd->latest_in);
+		if (dup_and_close(cmd->latest_in, STDIN_FILENO))
+			exit(EXIT_FAILURE);
 	}
 	//REDIRECT OUTPUT: TO LATEST_OUT IF AVAILABLE,
 	if (cmd->latest_out != STDOUT_FILENO)
 	{
-		dup2(cmd->latest_out, STDOUT_FILENO);
-		close(cmd->latest_out);
+		if (dup_and_close(cmd->latest_out, STDOUT_FILENO))
+			exit(EXIT_FAILURE);
 	}
 	shell->status = execute_builtin(shell, cmd->args);
 	// Bring back the STD_REDIRECTIONS.
-	if (dup2(std_backup[STDIN_FILENO], STDIN_FILENO) == -1)
+	if (dup_and_close(std_backup[STDIN_FILENO], STDIN_FILENO))
 		exit(EXIT_FAILURE); // Print error.
-	close(std_backup[STDIN_FILENO]); //Protect
-	if (dup2(std_backup[STDOUT_FILENO], STDOUT_FILENO) == -1)
+	if (dup_and_close(std_backup[STDOUT_FILENO], STDOUT_FILENO))
 		exit(EXIT_FAILURE); // Print error. Should it return or exit?
-	close(std_backup[STDOUT_FILENO]); //Protect
 }
 
 t_ecode	execute_builtin(t_shell *shell, char **cmd_args)

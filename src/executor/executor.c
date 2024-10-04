@@ -31,7 +31,7 @@ void	handle_non_builtin(t_shell *shell, t_cmd *cmd)
 	{
 		run_child(shell, cmd);
 	}
-	do_parent_duties(shell);
+	do_parent_duties(shell, cmd);
 }
 
 void	run_child(t_shell *shell, t_cmd *cmd)
@@ -64,11 +64,12 @@ void	run_child(t_shell *shell, t_cmd *cmd)
 	exit(EXIT_FAILURE);
 }
 
-void	do_parent_duties(t_shell *shell)
+void	do_parent_duties(t_shell *shell, t_cmd *cmd)
 {
 	int	wstatus;
 
 	wstatus = 0;
 	waitpid(shell->parent, &wstatus, 0);
 	shell->status = WEXITSTATUS(wstatus);
+	close_all_fds_in_cmd(cmd);
 }

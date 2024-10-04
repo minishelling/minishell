@@ -62,36 +62,36 @@ int pre_execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int
     if (parent_tree_node && parent_tree_node->type == T_AND_OPR && exit_code == 0) 
     {
 		// fprintf (stderr, "performing the right side of AND\n");
-		if (tree_node->right)
-		{
-			if (tree_node->right->type == T_PIPE)
-				// return 1;
-				return (handle_pipe_subtree(shell, tree_node));
-			else
-				return pre_execute(shell, parent_tree_node->right, parent_tree_node, exit_code);
-                // return pre_execute(shell, parent_tree_node->right, tree_node, exit_code);
-		}
+		// if (tree_node->right)
+		// {
+		// 	if (tree_node->right->type == T_PIPE)
+		// 		// return 1;
+		// 		return (handle_pipe_subtree(shell, tree_node));
+		// 	else
+		// 		return pre_execute(shell, parent_tree_node->right, parent_tree_node, exit_code);
+        //         // return pre_execute(shell, parent_tree_node->right, tree_node, exit_code);
+		// }
 
 		//Old version
-		// if (tree_node->right)
-		// 	return pre_execute(shell, parent_tree_node->right, parent_tree_node, exit_code);
+		if (tree_node->right)
+			return pre_execute(shell, parent_tree_node->right, parent_tree_node, exit_code);
 	}
     else if (parent_tree_node && parent_tree_node->type == T_OR_OPR && exit_code != 0)
     {
         // fprintf (stderr, "performing the right side of OR");
-        if (tree_node->right)
-        {
-			if (tree_node->right->type == T_PIPE)
-				// return 1;
-				return (handle_pipe_subtree(shell, tree_node));
-			else
-				return pre_execute(shell, parent_tree_node->right, parent_tree_node, exit_code);
-                // return pre_execute(shell, parent_tree_node->right, tree_node, exit_code);
-		}
+        // if (tree_node->right)
+        // {
+		// 	if (tree_node->right->type == T_PIPE)
+		// 		// return 1;
+		// 		return (handle_pipe_subtree(shell, tree_node));
+		// 	else
+		// 		return pre_execute(shell, parent_tree_node->right, parent_tree_node, exit_code);
+        //         // return pre_execute(shell, parent_tree_node->right, tree_node, exit_code);
+		// }
 
 		//Old version
-		// if (tree_node->right)
-		// 	return pre_execute(shell, parent_tree_node->right, parent_tree_node, exit_code);
+		if (tree_node->right)
+			return pre_execute(shell, parent_tree_node->right, parent_tree_node, exit_code);
 	}
     return exit_code;
 }

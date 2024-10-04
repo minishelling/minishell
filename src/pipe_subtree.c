@@ -14,14 +14,18 @@ typedef struct s_pipex
 	char	*path;
 }	t_pipex;
 
-static void	close_fds(int fd1, int fd2)
+static void close_fds(int fd1, int fd2)
 {
 	if (fd1 != -1)
+	{
 		if (close(fd1) == -1)
 			perror("close fd1");
+	}
 	if (fd2 != -1)
+	{
 		if (close(fd2) == -1)
 			perror("close fd2");
+	}
 }
 
 static int	handle_pipe_left_node(t_shell *shell, t_tree *tree_node, int fd[2])
@@ -69,9 +73,6 @@ int	handle_pipe_subtree(t_shell *shell, t_tree *tree_node)
 	else if (left_node_pid == 0)
 		handle_pipe_left_node(shell, tree_node, fd);
 	waitpid(left_node_pid, &status, 0);
-	// while (wait(NULL) != -1)
-	// 	;
-	// fprintf(stderr, "Finished waiting for %p\n", tree_node->left);
 	right_node_pid = fork();
 	if (right_node_pid == -1)
 		exit(EXIT_FAILURE);
@@ -79,7 +80,6 @@ int	handle_pipe_subtree(t_shell *shell, t_tree *tree_node)
 		handle_pipe_right_node(shell, tree_node, fd);
 	close_fds(fd[READ_END], fd[WRITE_END]);
 	waitpid(right_node_pid, &status, 0);
-	// fprintf(stderr, "Finished waiting for %p\n", tree_node->right);
 	while (wait(NULL) != -1)
 		;
 	return (status);
