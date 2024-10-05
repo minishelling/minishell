@@ -16,8 +16,8 @@ t_ecode	pwd_builtin(t_shell *shell, char **cmd_args)
 		else
 			return (INVALID_OPTION);
 	}
-	ft_putstr_fd(pwd, 1);
-	ft_putchar_fd('\n', 1);
+	ft_putstr_fd(pwd, STDOUT_FILENO);
+	ft_putchar_fd('\n', STDOUT_FILENO);
 	ft_free((void **) &pwd);
 	return (SUCCESS);
 }

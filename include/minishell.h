@@ -49,6 +49,9 @@ typedef enum	signal_mode
 
 typedef enum exit_code
 {
+	EXIT_SUCCESSFULLY = 0,
+	EXIT_FAIL = 1,
+	EXIT_MANY_ARGS = 2,
 	EXIT_CMD_NOT_EXECUTABLE = 126,
 	EXIT_CMD_NOT_FOUND = 127,
 	EXIT_SIGINT = 130,
@@ -361,6 +364,8 @@ char	*ft_strjoin_fs2(const char *s1, char **s2);
 t_ecode	append_suffix(char **str, char *suffix, bool duplicate);
 void	close_all_fds_in_process(void);
 void	close_all_fds_in_cmd(t_cmd *cmd);
+size_t	ft_str_count(char **cmd_args);
+bool	ft_is_natural(char *arg);
 
 //FREE
 
