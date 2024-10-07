@@ -26,6 +26,7 @@ int main(int argc, char **argv, char **envp)
 	}
 	while (1) 
 	{
+		init_signals(INTERACTIVE);
 		// set_signals(INTERACTIVE);
 		shell.input = readline(MINISHARED_PROMPT);
 		if (!shell.input)  // Check for EOF or error
@@ -40,6 +41,7 @@ int main(int argc, char **argv, char **envp)
 				handle_error(&shell, status, NULL);
 			else
 			{
+				init_signals(PARENT_NON_INTERACTIVE);
 				free(shell.input);
 				int exit_code = pre_execute(&shell, shell.tree, NULL, 0);
 				//printf ("final exit code %d\n", exit_code);

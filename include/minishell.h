@@ -43,8 +43,10 @@ extern int	g_exitcode;
 typedef enum	signal_mode
 {
 	INTERACTIVE,
-	NON_INTERACTIVE,
-	HEREDOC
+	PARENT_NON_INTERACTIVE,
+	CHILD_NON_INTERACTIVE,
+	PARENT_HEREDOC,
+	CHILD_HEREDOC,
 }	t_signal_mode;
 
 typedef enum exit_code
@@ -323,6 +325,8 @@ int handle_pipe_subtree(t_shell *shell, t_tree *tree_node);
 
 
 //SIGNALS
+
+void	init_signals(t_signal_mode signal_mode);
 
 void	set_signals(t_signal_mode signal_mode);
 void 	print_heredoc_newline(void);

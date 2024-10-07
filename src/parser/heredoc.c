@@ -108,8 +108,9 @@ char *create_temp_file_for_heredoc(int counter)
 
 int read_heredoc_input(const char *file_name, const char *delimiter) 
 {
-    char *line = NULL;
+    char    *line = NULL;
     ssize_t bytes_read;
+    pid_t   heredoc_parent;
 
     // set_signals(HEREDOC);
     // Open the temporary file for writing
@@ -118,42 +119,46 @@ int read_heredoc_input(const char *file_name, const char *delimiter)
     // {
     //     return (ERROR_OPENING_FILE);
     // }
-
-    while (1) 
+    heredoc_parent = fork();
+    init_signals(PARENT_HEREDOC);
+    if (!heredoc_parent)
     {
-        // Prompt user for input and read a line
-        printf("heredoc [%s%s%s] ", MAGENTA_TEXT, delimiter, RESET_COLOR);
-        line = readline("");
-        //line = readline("heredoc> ");
-
-        // if (g_exitcode == EXIT_SIGINT)
-        // {
-        //     free(line);
-		// 	print_heredoc_newline(); //Not working as intended.
-        //     break ;
-        // }
-        
-        // If line is NULL (EOF or error), break
-        if (line == NULL)
-            break;
-
-        // If the line matches the delimiter, stop reading
-        if ((!ft_strncmp(line, delimiter, ft_strlen(delimiter))) && (line[ft_strlen(delimiter)] == '\0'))
+        init_signals(CHILD_HEREDOC);
+        while (1)
         {
-            free(line); // Free the line before breaking
-            break;
+            // Prompt user for input and read a line
+            printf("heredoc [%s%s%s] ", MAGENTA_TEXT, delimiter, RESET_COLOR);
+            line = readline("");
+            // line = readline("heredoc> ");
+
+            // If line is NULL (EOF or error), break
+            if (line == NULL)
+                break;
+
+            // If the line matches the delimiter, stop reading
+            if ((!ft_strncmp(line, delimiter, ft_strlen(delimiter))) && (line[ft_strlen(delimiter)] == '\0'))
+            {
+                free(line); // Free the line before breaking
+                break;
+            }
+
+            // Write the line to the file followed by a newline
+            bytes_read = strlen(line);
+            write(fd, line, bytes_read);
+            write(fd, "\n", 1); // Manually add the newline character
+
+            // Free the line after it's written
+            free(line);
         }
-
-        // Write the line to the file followed by a newline
-        bytes_read = strlen(line);
-        write(fd, line, bytes_read);
-        write(fd, "\n", 1);  // Manually add the newline character
-
-        // Free the line after it's written
-        free(line);
     }
-	// set_signals(NON_INTERACTIVE);
+    waitpid(heredoc_parent, NULL, 0);
     close(fd);
+    if (g_exitcode == 130)
+    {
+        //clean nicely
+        return (-1);
+    }
+    init_signals(INTERACTIVE);
     fd = open(file_name, O_RDONLY);
     // unlink(file_name);
     return (fd);

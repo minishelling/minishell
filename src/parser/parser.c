@@ -229,8 +229,8 @@ int	parse(t_shell *shell)
 	// printf("\n"WHITE_TEXT MAGENTA_BACKGROUND"THE TREE"RESET_COLOR);
 	// printf("\n--------------------\n");
 	
-	// if (shell->tree)
-	// 	print_tree_verbose(shell->tree, 0);
+	if (shell->tree)
+		print_tree_verbose(shell->tree, 0);
 	
 	// if (shell->tree)
 	// 	print_tree_with_cmds(shell->tree, 0);

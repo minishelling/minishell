@@ -36,6 +36,7 @@ void	run_child(t_shell *shell, t_cmd *cmd)
 	char	**env_array;
 	t_ecode	status = SUCCESS;
 
+	init_signals(CHILD_NON_INTERACTIVE);
 	if (cmd->latest_in == ERROR || cmd->latest_in == ERROR)
 		exit(EXIT_FAILURE);
 	if (cmd->latest_in != STDIN_FILENO)
