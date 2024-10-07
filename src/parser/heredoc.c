@@ -149,7 +149,7 @@ int read_heredoc_input(const char *file_name, const char *delimiter)
 			fprintf(stderr, "Ugly thingy?\n");
 			// If line is NULL (EOF or error), break
 			if (line == NULL)
-				break;
+				exit(EXIT_SUCCESS);
 			// if (g_exitcode == 130)
 			// {
 			// 	fprintf(stderr, "Nice thingy?\n");
@@ -160,7 +160,7 @@ int read_heredoc_input(const char *file_name, const char *delimiter)
 			if ((!ft_strncmp(line, delimiter, ft_strlen(delimiter))) && (line[ft_strlen(delimiter)] == '\0'))
 			{
 				free(line); // Free the line before breaking
-				break;
+				exit(EXIT_SUCCESS);
 			}
 
 			// Write the line to the file followed by a newline

@@ -15,7 +15,7 @@ int	executor(t_shell *shell, t_cmd *cmd)
 		handle_non_builtin(shell, cmd);
 	else
 		handle_builtin(shell, cmd);
-	return (shell->status);
+	return (g_exitcode);
 }
 
 void	handle_non_builtin(t_shell *shell, t_cmd *cmd)
@@ -53,8 +53,14 @@ void	run_child(t_shell *shell, t_cmd *cmd)
 		ft_putstr_fd("Dup error in run_child |->STDOUT|\n", 2);
 		return ;
 	}
+	// fprintf(stderr, "How come it prints this?\n");
 	if (cmd && cmd->args)
+	{
+		// fprintf(stderr, "And this?\n");
 		cmd_path = get_cmd_path(shell, cmd->args[0]);
+		// fprintf(stderr, "But it doesnt print this???\n");
+	}
+	// fprintf(stderr, "cmd_path: %s\n", cmd->args[0]);
 	env_array = create_env_array(shell->env_list);
 	execve(cmd_path, cmd->args, env_array);
 	handle_cmd_err(cmd, "command not found");
@@ -67,6 +73,6 @@ void	do_parent_duties(t_shell *shell, t_cmd *cmd)
 
 	wstatus = 0;
 	waitpid(shell->parent, &wstatus, 0);
-	shell->status = WEXITSTATUS(wstatus);
+	g_exitcode = WEXITSTATUS(wstatus);
 	close_all_fds_in_cmd(cmd);
 }
