@@ -1,192 +1,207 @@
 #include "../../include/minishell.h"
 
-bool	is_squote(t_token *token)
+
+// t_token	*remove_empty_token(t_token *token)
+// {
+// 	t_token	*current_token;
+// 	t_token	*previous_token;
+
+// 	if (token == NULL)
+// 		return (NULL);
+// 	current_token = token;
+// 	previous_token = NULL;
+// 	while (current_token)
+// 	{
+// 		if (current_token->str)
+// 		{
+// 			previous_token = current_token;
+// 			current_token = current_token->next;
+// 			continue ;
+// 		}
+// 		current_token = free_token_node(current_token);
+// 		if (previous_token == NULL)
+// 			token = current_token;
+// 		else
+// 			previous_token->next = current_token;
+// 	}
+// 	return (token);
+// }
+
+// t_token *free_token(t_token **token)
+// {
+//     t_token *next_token;
+
+//     if (*token == NULL)
+//         return (NULL);
+
+//     next_token = (*token)->next;
+//     free(*token);
+// 	*token = NULL;
+//     return (next_token);
+// }
+
+
+/**
+ * @brief Joins two tokens based on their quote types (single or double).
+ *
+ * This function allocates a new string that combines the strings of the
+ * previous token and the current token. It frees the current token after
+ * joining.
+ *
+ * @param previous_token Pointer to a pointer of the previous token.
+ * @param current_token Pointer to a pointer of the current token.
+ * @return Pointer to the newly allocated string if successful; NULL otherwise.
+ */
+static char *join_quotes(t_token **previous_token, t_token **current_token)
 {
-	if (token == NULL)
-		return (false);
-	if (token->id == SQUOTE)
-		return (true);
-	return (false);
+    size_t len_prev;
+    size_t len_curr;
+
+    len_prev = strlen((*previous_token)->str);
+    len_curr = strlen((*current_token)->str);
+
+    char *new_str = malloc(len_prev + len_curr + 1);
+    if (!new_str)
+        return NULL; // Handle allocation failure
+    ft_strlcpy(new_str, (*previous_token)->str, len_prev + 1);  //check
+    ft_strlcat(new_str, (*current_token)->str, len_prev + len_curr + 1);  //check
+    free(*current_token);
+    return new_str;
 }
 
-bool	is_dquote(t_token *token)
-{
-	if (token == NULL)
-		return (false);
-	if (token->id == DQUOTE)
-		return (true);
-	return (false);
-}
-
-bool	is_word(t_token *token)
-{
-	if (token == NULL)
-		return (false);
-	if (token->id == WORD)
-		return (true);
-	return (false);
-}
-
-bool	is_env_var(t_token *token)
-{
-	if (token == NULL)
-		return (false);
-	if (token->id == ENV_VAR)
-		return (true);
-	return (false);
-}
-
-t_token	*remove_empty_token(t_token *token)
-{
-	t_token	*current_token;
-	t_token	*previous_token;
-
-	if (token == NULL)
-		return (NULL);
-	current_token = token;
-	previous_token = NULL;
-	while (current_token)
-	{
-		if (current_token->str)
-		{
-			previous_token = current_token;
-			current_token = current_token->next;
-			continue ;
-		}
-		current_token = free_token_node(current_token);
-		if (previous_token == NULL)
-			token = current_token;
-		else
-			previous_token->next = current_token;
-	}
-	return (token);
-}
-
-t_token *free_token(t_token *token)
-{
-	t_token *next_token;
-
-	if (token == NULL)
-		return (NULL);
-
-	next_token = token->next;
-	if (token)
-		free(token);
-	return (next_token);
-}
-
-
+/**
+ * @brief Joins tokens that are enclosed in quotes.
+ *
+ * This function iterates through the token list in the shell structure,
+ * checking if consecutive tokens are quoted. If they are, it joins them
+ * using the join_quotes function.
+ *
+ * @param shell Pointer to the shell structure containing the token list.
+ * @return true if all operations succeeded; false otherwise.
+ */
 bool join_quotes_tokens(t_shell *shell)
 {
-	t_token *current_token = shell->token;
-	t_token *previous_token = NULL;
+    t_token *current_token;
+    t_token *previous_token;
+	char *new_str;
 
-	shell->token = remove_empty_token(shell->token);  // Remove any empty tokens
+    previous_token = NULL;
+    current_token = shell->token;
 
-	while (current_token != NULL)
-	{
-		// Case 1: Previous and current tokens are double quotes
-		if (is_dquote(previous_token) && is_dquote(current_token))
-		{
-			// Remove the inner quotes: closing quote from previous and opening quote from current
-			size_t prev_len = ft_strlen(previous_token->str);
-			if (prev_len > 0 && previous_token->str[prev_len - 1] == '"')
-				previous_token->str[prev_len - 1] = '\0'; // Null-terminate to remove
-
-			// Skip the first quote of current_token
-			if (current_token->str[0] == '"')
-				current_token->str++; // Skip the first quote
-
-			// Concatenate the two token strings
-			char *new_str = ft_strjoin_fs1(&previous_token->str, current_token->str);
-			if (!new_str)
-				return (false);
-			previous_token->str = new_str;
-
-			// Free the current token
-			t_token *temp = current_token;
-			current_token = current_token->next; // Move to the next token
-			free_token(temp); // Free the current token
-			previous_token->next = current_token; // Link previous token to the next
-			continue;
-		}
-
-		// Case 2: Previous token is single quote and current is single quote
-		if (is_squote(previous_token) && is_squote(current_token))
-		{
-			// Remove the inner quotes: closing quote from previous and opening quote from current
-			size_t prev_len = ft_strlen(previous_token->str);
-			if (prev_len > 0 && previous_token->str[prev_len - 1] == '\'')
-				previous_token->str[prev_len - 1] = '\0'; // Null-terminate to remove
-
-			// Skip the first quote of current_token
-			if (current_token->str[0] == '\'')
-				current_token->str++; // Skip the first quote
-
-			// Concatenate the two token strings
-			char *new_str = ft_strjoin_fs1(&previous_token->str, current_token->str);
-			if (!new_str)
-				return (false);
-			previous_token->str = new_str;
-
-			// Free the current token
-			t_token *temp = current_token;
-			current_token = current_token->next; // Move to the next token
-			free_token(temp); // Free the current token
-			previous_token->next = current_token; // Link previous token to the next
-			continue;
-		}
-
-		// Case 3: Previous is double quote and current is single quote (or vice versa)
-		if ((is_dquote(previous_token) && is_squote(current_token)) || 
-			(is_squote(previous_token) && is_dquote(current_token)))
-		{
-			// Concatenate without removing any quotes
-			char *new_str = ft_strjoin_fs1(&previous_token->str, current_token->str);
-			if (!new_str)
-				return (false);
-			previous_token->str = new_str;
-
-			// Free the current token
-			t_token *temp = current_token;
-			current_token = current_token->next; // Move to the next token
-			free_token(temp); // Free the current token
-			previous_token->next = current_token; // Link previous token to the next
-			continue;
-		}
-
-		// Update previous and current tokens
-		previous_token = current_token;
-		current_token = current_token->next;
-	}
-	return (true);
+    while (current_token != NULL)
+    {
+       	new_str = NULL;
+        if (is_dquote(previous_token) && is_dquote(current_token))
+            new_str = join_quotes(&previous_token, &current_token);
+        else if (is_squote(previous_token) && is_squote(current_token))
+            new_str = join_quotes(&previous_token, &current_token);
+        else if ((is_dquote(previous_token) && is_squote(current_token)) ||
+                 (is_squote(previous_token) && is_dquote(current_token)))
+            		new_str = join_quotes(&previous_token, &current_token);
+        if (new_str)
+            previous_token->str = new_str;
+        else
+            return false;
+        previous_token = current_token;
+        current_token = current_token->next;
+    }
+    return true;
 }
 
-bool	join_word_and_env_var_tokens(t_shell *shell)
+void process_and_remove_parens(t_shell *shell, t_token *current, t_token *word_token)
 {
-	t_token	*current_token;
-	t_token	*previous_token;
+    t_token *token_after_par = word_token->next;
+    t_token *token_before_par = previous_token_if_exists(shell->token, current);
 
-	shell->token = remove_empty_token(shell->token);
-	current_token = shell->token;
-	previous_token = NULL;
-	while (current_token != NULL)
-	{
-		if ((is_word(previous_token) || is_env_var(previous_token) || is_squote(previous_token) || is_dquote(previous_token)) 
-			&& (is_word(current_token) || is_env_var(current_token) || is_squote(current_token) || is_dquote(current_token)))
-		{
-			previous_token->str = ft_strjoin_fs1(&previous_token->str, current_token->str);
-			if (previous_token->str == NULL)
-				return (false);
-			// if (is_env_var(previous_token) || is_env_var(current_token))
-			// 	previous_token->id = ENV_VAR;
-			current_token = free_token_str(current_token);
-			previous_token->next = current_token;
-			continue ;
-		}
-		previous_token = current_token;
-		current_token = current_token->next;
-	}
-	return (true);
+    // Remove both opening and closing parentheses
+    shell->token = remove_token(shell->token, current);   // Remove PAR_OPEN
+    shell->token = remove_token(shell->token, word_token);  // Remove PAR_CLOSE
+
+    // Handle arithmetic expansion if both parentheses are balanced
+    if (token_before_par && token_before_par->id == PAR_OPEN &&
+        token_after_par && token_after_par->id == PAR_CLOSE)
+    {
+        handle_arith_expan(&shell->token, &token_before_par, &token_after_par);
+    }
 }
 
+void check_and_process_parens(t_shell *shell, t_token **current_token)
+{
+    t_token *next_token = (*current_token)->next;
+
+    while (next_token && next_token->id == WORD && next_token->next)
+        next_token = next_token->next;
+
+    if (next_token && next_token->id == PAR_CLOSE)
+    {
+        process_and_remove_parens(shell, *current_token, next_token);
+        t_token *token_after_par = next_token->next;
+        if (token_after_par)
+            *current_token = token_after_par;
+        else
+            return; // End processing if there's no more tokens
+    }
+    else
+    {
+        *current_token = (*current_token)->next;
+    }
+}
+
+void remove_subshell_parens(t_shell *shell)
+{
+    t_token *current_token = shell->token;
+
+    while (current_token && current_token->next)
+    {
+        if (current_token->id == PAR_OPEN)
+        {
+            check_and_process_parens(shell, &current_token);
+            if (!current_token) // Check if current_token was set to NULL
+                break; // End loop if there's no more tokens
+        }
+        else
+        {
+            current_token = current_token->next;
+        }
+    }
+}
+
+
+/**
+ * @brief Joins consecutive word or environment variable tokens.
+ *
+ * This function iterates through the token list in the shell structure,
+ * joining consecutive tokens of type word or environment variable. It frees
+ * the current token after joining.
+ *
+ * @param shell Pointer to the shell structure containing the token list.
+ * @return true if all operations succeeded; false otherwise.
+ */
+bool join_word_and_env_var_tokens(t_shell *shell)
+{
+    t_token *current_token;
+    t_token *previous_token;
+	char *joined_str;
+
+    current_token = shell->token;
+    previous_token = NULL;
+    while (current_token != NULL)
+    {
+        if ((is_word(previous_token) || is_env_var(previous_token) ||
+             is_squote(previous_token) || is_dquote(previous_token)) &&
+            (is_word(current_token) || is_env_var(current_token) ||
+             is_squote(current_token) || is_dquote(current_token)))
+        {
+            joined_str = ft_strjoin_fs1(&previous_token->str, current_token->str); // Join strings
+            if (joined_str == NULL)
+                return (ERR_MEM);
+            previous_token->str = joined_str;
+            current_token = free_token_str(current_token);
+            previous_token->next = current_token;
+            continue;
+        }
+        previous_token = current_token;
+        current_token = current_token->next;
+    }
+    return (PARSING_OK);
+}

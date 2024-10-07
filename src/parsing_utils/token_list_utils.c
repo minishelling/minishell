@@ -21,7 +21,7 @@ t_token	*last_token(t_token *token_list_head)
 		return (NULL);
 
 	token = token_list_head;
-	while (token->next != NULL)
+	while (token->next)
 		token = token->next;
 	return (token);
 }

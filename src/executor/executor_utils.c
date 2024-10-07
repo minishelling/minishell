@@ -63,13 +63,15 @@ t_ecode	dup_and_close(int oldfd, int newfd)
 	status = dup2(oldfd, newfd);
 	if (status == -1)
 	{
-		perror("dup2");
+		// perror("dup2");
+		handle_perror("dup2");
 		return (FAILURE);
 	}
 	status = close(oldfd);
 	if (status == -1)
 	{
-		perror("close");
+		// perror("close");
+		handle_perror("close");
 		return (FAILURE);
 	}
 	return (SUCCESS);

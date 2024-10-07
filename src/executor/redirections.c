@@ -20,7 +20,8 @@ static t_ecode	open_current_redir(t_redir_id redir_id, char *redir_file, int *fd
 static t_ecode	close_and_replace(int replacement, int *oldfd)
 {
 	if (close(*oldfd) == -1)
-		perror("close");
+		// perror("close");
+		handle_perror("close");
 	*oldfd = replacement;
 	return (FAILURE);
 }
@@ -69,8 +70,10 @@ t_ecode	open_redirections(t_shell *shell, t_cmd *current_cmd)
 	{
 		if (open_current_redir(current_redir->redir_id, current_redir->file, &current_redir->fd) != SUCCESS)
 		{
-			ft_putstr_fd("mini_shared: ", 2);
-			perror(current_redir->file);
+			// ft_putstr_fd("mini_shared: ", 2);
+			// ft_putstr_fd(current_redir->file, 2);
+			// perror("");
+			handle_perror((char *)current_redir->file);
 			return (FAILURE);
 		}
 		if (replace_redir_fd(current_cmd, current_redir) != SUCCESS)

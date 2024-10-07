@@ -1,15 +1,15 @@
 #include "../../../include/minishell.h"
 
-void	set_pos_end_quote(char *str, size_t *pos, t_token_id token_id)
+void	set_pos_end_quote(char *str, size_t *pos, t_token_id *token_id)
 {
 	(*pos)++;
-	while (str[*pos] && token_id != get_token_id(str[*pos]))
+	while (str[*pos] && *token_id != get_token_id(str[*pos]))
 		(*pos)++;
 	if (str[*pos])
 		(*pos)++;
 }
 
-void	set_pos_end_pipe(char *str, size_t *pos, t_token_id token_id)
+void	set_pos_end_pipe(char *str, size_t *pos, t_token_id *token_id)
 {
 	int	i;
 
@@ -22,7 +22,7 @@ void	set_pos_end_pipe(char *str, size_t *pos, t_token_id token_id)
 	}
 }
 
-void	set_pos_end_redir(char *str, size_t *pos, t_token_id token_id)
+void	set_pos_end_redir(char *str, size_t *pos, t_token_id *token_id)
 {
 	char	c = str[*pos];
 	int			i;
@@ -36,18 +36,22 @@ void	set_pos_end_redir(char *str, size_t *pos, t_token_id token_id)
 	}
 }
 
-void	set_pos_end_env_var(char *str, size_t *pos, t_token_id token_id)
+void	set_pos_end_env_var(char *str, size_t *pos, t_token_id *token_id)
 {
 	(void) token_id;
 	(*pos)++;
 
-	//printf ("str is %s\n", str);
 	if (str[*pos] == '?')
 	{
 		(*pos)++;
 		return ;
 	}
-	if (str[*pos] && !ft_isalpha(str[*pos]) && str[*pos] != '_')
+	if (!str[*pos])
+	{
+		*token_id = WORD;
+		return ;
+	}
+	if ((str[*pos] && !ft_isalpha(str[*pos]) && str[*pos] != '_'))
 		return ;
 	(*pos)++;
 	while (str[*pos] && (ft_isalnum(str[*pos]) || str[*pos] == '_'))
@@ -55,13 +59,13 @@ void	set_pos_end_env_var(char *str, size_t *pos, t_token_id token_id)
 	//printf ("pos is now %zu\n", *pos);
 }
 
-void	set_pos_end_space_or_word(char *str, size_t *pos, t_token_id token_id)
+void	set_pos_end_space_or_word(char *str, size_t *pos, t_token_id *token_id)
 {
-	while (str[*pos] && token_id == get_token_id(str[*pos]))
+	while (str[*pos] && *token_id == get_token_id(str[*pos]))
 		(*pos)++;
 }
 
-void	set_pos_end_and_opr(char *str, size_t *pos, t_token_id token_id)
+void	set_pos_end_and_opr(char *str, size_t *pos, t_token_id *token_id)
 {
 	(void) token_id;
 
@@ -71,7 +75,7 @@ void	set_pos_end_and_opr(char *str, size_t *pos, t_token_id token_id)
 }
 
 
-void	set_pos_end_semicol(char *str, size_t *pos, t_token_id token_id)
+void	set_pos_end_semicol(char *str, size_t *pos, t_token_id *token_id)
 {
 	(void) token_id;
 
@@ -81,7 +85,7 @@ void	set_pos_end_semicol(char *str, size_t *pos, t_token_id token_id)
 	}
 }
 
-void	set_pos_end_parentheses(char *str, size_t *pos, t_token_id token_id)
+void	set_pos_end_parentheses(char *str, size_t *pos, t_token_id *token_id)
 {
 	const char	c = str[*pos];
 	(void) token_id;
