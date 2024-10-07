@@ -4,7 +4,7 @@
 // Ctrl-D = EOF		-> exits the shell.
 // Ctrl-\ = SIGQUIT	-> does nothing.
 
-int	g_exitcode = SUCCESS;
+int	g_exitcode;
 
 void	sigint_handler_interactive(int signal)
 {
@@ -53,6 +53,7 @@ void	init_signals(t_signal_mode signal_mode)
 	struct sigaction	sigquit_struct;
 	struct sigaction	sigint_struct;
 
+	g_exitcode = 0;
 	sigquit_struct.sa_handler = SIG_IGN;
 	if (signal_mode == INTERACTIVE)
 		sigint_struct.sa_handler = sigint_handler_interactive;
@@ -314,7 +315,7 @@ void	init_signals(t_signal_mode signal_mode)
 // 	else if (signal_mode == NON_INTERACTIVE)
 // 	{
 // 		sa_sigint.sa_handler = &sig_non_interactive_handler;
-// 		sa_sigquit.sa_handler = &sig_non_interactive_handler;
+// 		sa_sigquit.sa_handler = SIG_IGN;
 // 	}
 // 	else if (signal_mode == HEREDOC)
 // 	{

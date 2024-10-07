@@ -34,14 +34,17 @@ void handle_parsing_err(t_shell *shell, int err_no, void *param)
 	(void)shell;
 	(void)param;
 
-	err_prompt = ERR_PROMPT;
-	err_msg = get_err_msg(err_no);
-	full_msg = ft_strjoin(err_prompt, err_msg);
-	if (!full_msg)
-		return; // handle malloc failure
-	full_msg_len = ft_strlen(full_msg);
-	write(2, full_msg, full_msg_len);
-	free(full_msg);
+	if (err_no != SIGINT_HDOC)
+	{
+		err_prompt = ERR_PROMPT;
+		err_msg = get_err_msg(err_no);
+		full_msg = ft_strjoin(err_prompt, err_msg);
+		if (!full_msg)
+			return; // handle malloc failure
+		full_msg_len = ft_strlen(full_msg);
+		write(2, full_msg, full_msg_len);
+		free(full_msg);
+	}
 	// clean_nicely(shell, param);
 }
 

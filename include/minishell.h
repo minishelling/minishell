@@ -99,7 +99,8 @@ enum e_parsing_error
 	ERR_SYNTAX_REDIR,
 	ERR_SYNTAX_SEMICOL,
 	ERR_SYNTAX_ERROR,
-	ERR_MEM
+	ERR_MEM,
+	SIGINT_HDOC,
 };
 
 typedef enum e_token_id 

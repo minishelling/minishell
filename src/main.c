@@ -43,8 +43,8 @@ int main(int argc, char **argv, char **envp)
 			{
 				init_signals(PARENT_NON_INTERACTIVE);
 				free(shell.input);
-				int exit_code = pre_execute(&shell, shell.tree, NULL, 0);
-				(void)exit_code;
+				int g_exitcode = pre_execute(&shell, shell.tree, NULL, 0);
+				(void)g_exitcode;
 				free_tree(shell.tree);
 				shell.tree = NULL;
 			}

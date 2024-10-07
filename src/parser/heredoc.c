@@ -114,6 +114,7 @@ int read_heredoc_input(const char *file_name, const char *delimiter)
 
     // set_signals(HEREDOC);
     // Open the temporary file for writing
+	
     int fd = open(file_name, O_RDWR | O_CREAT | O_TRUNC, 0644);
     // if (fd == -1) 
     // {
@@ -122,40 +123,63 @@ int read_heredoc_input(const char *file_name, const char *delimiter)
     heredoc_parent = fork();
     init_signals(PARENT_HEREDOC);
     if (!heredoc_parent)
-    {
-        init_signals(CHILD_HEREDOC);
-        while (1)
-        {
-            // Prompt user for input and read a line
-            printf("heredoc [%s%s%s] ", MAGENTA_TEXT, delimiter, RESET_COLOR);
-            line = readline("");
-            // line = readline("heredoc> ");
+	{
+		init_signals(CHILD_HEREDOC);
+		while (1)
+		{
+			// Prompt user for input and read a line
+			printf("heredoc [%s%s%s] ", MAGENTA_TEXT, delimiter, RESET_COLOR);
+			// if (g_exitcode != 130)
+			line = readline("");
 
-            // If line is NULL (EOF or error), break
-            if (line == NULL)
-                break;
 
-            // If the line matches the delimiter, stop reading
-            if ((!ft_strncmp(line, delimiter, ft_strlen(delimiter))) && (line[ft_strlen(delimiter)] == '\0'))
-            {
-                free(line); // Free the line before breaking
-                break;
-            }
+			// if (g_exitcode == 130)
+			// {
+			// 	fprintf(stderr, "Nice thingy?\n");
+			// 	close(STDIN_FILENO);
+			// 	free(line);
+			// 	dup2(stdin_backup, STDIN_FILENO);
 
-            // Write the line to the file followed by a newline
-            bytes_read = strlen(line);
-            write(fd, line, bytes_read);
-            write(fd, "\n", 1); // Manually add the newline character
+			// 	close(fd);
+			// 	return (-1);
+			// }
 
-            // Free the line after it's written
-            free(line);
-        }
-    }
-    waitpid(heredoc_parent, NULL, 0);
+
+			// line = readline("heredoc> ");
+			fprintf(stderr, "Ugly thingy?\n");
+			// If line is NULL (EOF or error), break
+			if (line == NULL)
+				break;
+			// if (g_exitcode == 130)
+			// {
+			// 	fprintf(stderr, "Nice thingy?\n");
+			// 	free(line);
+			// 	break ;
+			// }
+			// If the line matches the delimiter, stop reading
+			if ((!ft_strncmp(line, delimiter, ft_strlen(delimiter))) && (line[ft_strlen(delimiter)] == '\0'))
+			{
+				free(line); // Free the line before breaking
+				break;
+			}
+
+			// Write the line to the file followed by a newline
+			bytes_read = strlen(line);
+			write(fd, line, bytes_read);
+			write(fd, "\n", 1); // Manually add the newline character
+
+			// Free the line after it's written
+			free(line);
+			// }
+		}
+	}
+	waitpid(heredoc_parent, NULL, 0);
+	// dup2(stdin_backup, STDIN_FILENO);
+	// close(stdin_backup);
     close(fd);
     if (g_exitcode == 130)
     {
-        //clean nicely
+        //clean nicely //or maybe not even yet.
         return (-1);
     }
     init_signals(INTERACTIVE);

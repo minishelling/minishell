@@ -252,6 +252,10 @@ int	parse(t_shell *shell)
 	handle_heredocs(shell->token);
 	printf ("after heredocs handling\n");
 	print_token(shell->token);
+	if (g_exitcode == 130)
+	{
+		return (SIGINT_HDOC);
+	}
 
 	shell->tree = make_tree(shell, shell->token, last_token(shell->token));
 
