@@ -60,6 +60,7 @@ void	run_child(t_shell *shell, t_cmd *cmd)
 		cmd_path = get_cmd_path(shell, cmd->args[0]);
 	env_array = create_env_array(shell->env_list);
 	execve(cmd_path, cmd->args, env_array);
+	handle_cmd_err(cmd, "command not found");
 	exit(EXIT_FAILURE);
 }
 

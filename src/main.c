@@ -37,14 +37,12 @@ int main(int argc, char **argv, char **envp)
 			status = parse(&shell);
 			//printf ("status is %d\n", status);
 			if (status != PARSING_OK)
-				handle_error(&shell, status, NULL);
+				handle_parsing_err(&shell, status, NULL);
 			else
 			{
 				free(shell.input);
 				int exit_code = pre_execute(&shell, shell.tree, NULL, 0);
-				//printf ("final exit code %d\n", exit_code);
 				(void)exit_code;
-				//free_token_list(shell.token);
 				free_tree(shell.tree);
 				shell.tree = NULL;
 			}

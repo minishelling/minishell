@@ -1,7 +1,6 @@
 #include "../include/minishell.h"
 
-
-t_token *token_before(t_token *start_token, t_token *before_what)
+t_token *non_null_previous(t_token *start_token, t_token *before_what)
 {
 	t_token		*return_token;
 
@@ -11,7 +10,7 @@ t_token *token_before(t_token *start_token, t_token *before_what)
 		return_token = return_token->next;
 		//printf ("return_token is |%s|\n", return_token->str);
 	}
-	// printf("the \"token_before\" we are returning is: |%s|\n", return_token->str);
+	// printf("the \"non_null_previous\" we are returning is: |%s|\n", return_token->str);
 	return (return_token);
 }
 
@@ -265,7 +264,7 @@ t_tree *init_leaf_node(t_shell *shell, t_token *start_token, t_token *end_token)
 	leaf_node->type = CMD;
 	leaf_node->start_token = start_token;
 	while (end_token->id == SPACE_CHAR)
-		end_token = token_before (start_token, end_token);
+		end_token = non_null_previous (start_token, end_token);
 	leaf_node->end_token = end_token;
 	
 	//shell->token = expand(start_token, end_token, shell->env_list);
@@ -304,25 +303,6 @@ t_tree *init_tree_node(t_token *op_token)
 	tree_node->right = NULL;
 	return tree_node;
 }
-
-
-
-// bool contains_pipe_open_par(t_token *start_token, t_token *end_token) 
-// {
-//     t_token *token_iterator = start_token;
-
-//     while (token_iterator)
-// 	{
-//         if (token_iterator == end_token)
-// 			break;
-
-//         if (token_iterator->id == PIPE && token_iterator->next && token_iterator->next->id == PAR_OPEN)
-//             return (true);
-//         token_iterator = token_iterator->next;
-//     }
-//     return (false);
-// }
-
 
 t_tree *make_tree(t_shell *shell, t_token *start_token, t_token *end_token)
 {
@@ -380,7 +360,7 @@ t_tree *make_tree(t_shell *shell, t_token *start_token, t_token *end_token)
 	divide_token_list(start_token, log_op_token, &left_head, &right_head);
 	// Recursively create left and right subtrees
 	//printf ("doing LEFT, left_head is %s\n", left_head->str);
-	subtree->left = make_tree(shell, left_head, token_before(start_token, log_op_token));
+	subtree->left = make_tree(shell, left_head, non_null_previous(start_token, log_op_token));
 	//printf ("now right\n");
 	subtree->right = make_tree(shell, right_head, end_token);
 
