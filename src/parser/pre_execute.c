@@ -37,12 +37,14 @@ int pre_execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int
         // fprintf(stderr, "STARTING MAKING EXPANSIONS\n");
         tree_node->start_token = expand(tree_node->start_token, tree_node->end_token, shell->env_list);
         // fprintf(stderr, "FINISHED MAKING EXPANSIONS\n");
-	    tree_node->cmd_list = make_cmd(shell, tree_node->start_token, tree_node->end_token);
+	    make_cmd(shell, tree_node->start_token, tree_node->end_token);
+        tree_node->cmd = shell->cmd;
         // fprintf(stderr, "FINISHED MAKING CMDS\n");
-        if (open_redirections(shell, tree_node->cmd_list) == SUCCESS)
-            exit_code = executor(shell, tree_node->cmd_list);
+        if (open_redirections(shell, tree_node->cmd) == SUCCESS)
+            exit_code = executor(shell, tree_node->cmd);
         else
             exit_code = 1;
+        //print_cmd(tree_node->cmd);
         // handle_redirs(shell, tree_node->cmd_list); //Still to implement.
         // t_cmd *cmd = (t_cmd *)tree_node->cmd_list;
         // fprintf (stderr, "cmd is %p\n", cmd);

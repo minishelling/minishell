@@ -53,7 +53,6 @@ void	init_signals(t_signal_mode signal_mode)
 	struct sigaction	sigquit_struct;
 	struct sigaction	sigint_struct;
 
-	g_exitcode = 0;
 	sigquit_struct.sa_handler = SIG_IGN;
 	if (signal_mode == INTERACTIVE)
 		sigint_struct.sa_handler = sigint_handler_interactive;

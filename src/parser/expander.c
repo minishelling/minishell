@@ -46,21 +46,34 @@ char *expand_variable(char **str, char *expanded_str, t_env *env_list)
 	char *env_value;
 	char *var_start;
 	char *temp_str;
-
-	var_start = *str;
-	var_end = var_start + 1; 
-	while (ft_isalnum(*var_end) || *var_end == '_')
-		var_end++;
-	var_name = ft_substr(var_start + 1, 0, var_end - var_start - 1);
-	env_value = get_env_value_from_key(env_list, var_name); 
-	free(var_name); 
-	if (env_value)
+	
+	if (ft_strncmp(*str, "$", 1) == 0 && ft_strlen(*str) == 1)
 	{
-		temp_str = ft_strjoin(expanded_str, env_value);
-		free(expanded_str);
-		expanded_str = temp_str;
+		expanded_str = ft_strdup ("$");
+		(*str)++;
 	}
-	*str = var_end;
+	else if (ft_strncmp(*str, "$?", 2) == 0 && ft_strlen(*str) == 2)
+	{
+		expanded_str = ft_itoa(g_exitcode);
+		(*str) += 2;
+	}
+	else
+	{
+		var_start = *str;
+		var_end = var_start + 1; 
+		while (ft_isalnum(*var_end) || *var_end == '_')
+			var_end++;
+		var_name = ft_substr(var_start + 1, 0, var_end - var_start - 1);  //check
+		env_value = get_env_value_from_key(env_list, var_name); 
+		free(var_name); 
+		if (env_value)
+		{
+			temp_str = ft_strjoin(expanded_str, env_value);  //check
+			free(expanded_str);
+			expanded_str = temp_str;
+		}
+		*str = var_end;
+	}
 	return (expanded_str);
 }
 
@@ -155,10 +168,12 @@ char *copy_chars(char *token_str, char *expanded_str)
 	char *new_expanded_str;
 
 	len = ft_strcspn(token_str, "\'\"$ ");
-	temp_str = ft_substr(token_str, 0, len);
-	new_expanded_str = ft_strjoin(expanded_str, temp_str);
+	temp_str = ft_substr(token_str, 0, len);   //check
+	new_expanded_str = ft_strjoin(expanded_str, temp_str);  //check
 	free(temp_str);
 	free(expanded_str);
+	
+	//check 
 	return (new_expanded_str);
 }
 
@@ -179,19 +194,19 @@ void expand_str(t_token *token, t_env *env_list)
 {
 	char *expanded_str = ft_strdup("");
 
-	while (*token->str)
+	while (*(token->str))
 	{
-		if (*token->str == '\'')
+		if (*(token->str) == '\'')
 		{
 			token->str++;
 			expanded_str = process_single_quotes(&(token->str), expanded_str);
 		}
-		else if (*token->str == '\"')
+		else if (*(token->str) == '\"')
 		{
 			token->str++;
 			expanded_str = process_double_quotes(&(token->str), expanded_str, env_list);
 		}
-		else if (*token->str == '$')
+		else if (*(token->str) == '$')
 			expanded_str = expand_variable(&(token->str), expanded_str, env_list);
 		else
 		{

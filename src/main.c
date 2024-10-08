@@ -12,6 +12,7 @@ int main(int argc, char **argv, char **envp)
 		exit(EXIT_FAILURE);
 	}
 	shell.env_list = NULL;
+	g_exitcode = 0;
 	if (init_env_list(&shell.env_list, envp))
 	{
 		ft_putstr_fd("Mini_shared: Error: Failed to initialize\n", 2);
@@ -36,7 +37,7 @@ int main(int argc, char **argv, char **envp)
 			{
 				init_signals(PARENT_NON_INTERACTIVE);
 				free(shell.input);
-				int g_exitcode = pre_execute(&shell, shell.tree, NULL, 0);
+				g_exitcode = pre_execute(&shell, shell.tree, NULL, 0);
 				(void)g_exitcode;
 				free_tree(shell.tree);
 				shell.tree = NULL;
