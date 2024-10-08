@@ -3,40 +3,33 @@
 static char	*ft_strjoin_cmd_path(char *path, char *cmd_name)
 {
 	char	*cmd_path;
-	size_t	path_len;
 
-	// fprintf(stderr, "Checkpoint 1 in ft_strjoin_cmd_path\n");
 	if (!path || !cmd_name)
 		return (NULL);
 
-	path_len = ft_strlen(path);
-	if (path[path_len - 1] == '/')
-	{
-		// printf("Ending in slash.\n");
-		return (ft_strjoin(path, cmd_name));
-	}
-	else
-	{
-		// printf("Not ending in slash.\n");
-		cmd_path = ft_strjoin(path, "/");
-		return (ft_strjoin_fs1(&cmd_path, cmd_name));
-	}
+	// path_len = ft_strlen(path);
+	// if (path[path_len - 1] == '/')
+	// {
+	// 	// printf("Ending in slash.\n");
+	// 	return (ft_strjoin(path, cmd_name));
+	// }
+	// else
+	// {
+	// 	// printf("Not ending in slash.\n");
+	// 	cmd_path = ft_strjoin(path, "/");
+	// 	return (ft_strjoin_fs1(&cmd_path, cmd_name));
+	// }
 
 
-	// fprintf(stderr, "Checkpoint 2 in ft_strjoin_cmd_path\n");
-	// cmd_path = ft_strdup(path);
-	// fprintf(stderr, "Checkpoint 3 in ft_strjoin_cmd_path\n");
-	// if (!cmd_path)
-	// 	return (NULL);
-	// fprintf(stderr, "Checkpoint 4 in ft_strjoin_cmd_path\n");
-	// if (append_suffix(&cmd_path, "/", false))
-	// 	return (NULL);
-	// fprintf(stderr, "Checkpoint 5 in ft_strjoin_cmd_path\n");
-	// cmd_path = ft_strjoin_fs1(&cmd_path, cmd_name);
-	// if (!cmd_path)
-	// 	return (NULL);
-	// fprintf(stderr, "Checkpoint 6 in ft_strjoin_cmd_path\n");
-	// return (cmd_path);
+	cmd_path = ft_strdup(path);
+	if (!cmd_path)
+		return (NULL);
+	if (append_suffix(&cmd_path, "/", false))
+		return (NULL);
+	cmd_path = ft_strjoin_fs1(&cmd_path, cmd_name);
+	if (!cmd_path)
+		return (NULL);
+	return (cmd_path);
 }
 
 static char	*check_name_as_relative_path(char *cmd_name)

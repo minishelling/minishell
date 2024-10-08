@@ -1,12 +1,5 @@
 #include "../include/minishell.h"
 
-// static void	test_handle(t_shell *shell)
-// {
-// 	print_env_node(find_env_node(shell->env_list, "PWD"));
-// 	update_env_node(shell->env_list, "PWD", "NEW_VALUE", true);
-// 	print_env_node(find_env_node(shell->env_list, "PWD"));
-// }
-
 int main(int argc, char **argv, char **envp)
 {
 	t_shell shell;

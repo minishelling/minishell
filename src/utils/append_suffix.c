@@ -2,24 +2,27 @@
 
 t_ecode	append_suffix(char **str, char *suffix, bool duplicate)
 {
+	char	*new_str;
 	size_t	suffix_len;
 	size_t	str_len;
 
-	fprintf(stderr, "Checkpoint 1 in append_suffix\n");
 	if (!*str)
 		return (NULL_STRING);
-	fprintf(stderr, "Checkpoint 2 in append_suffix\n");
 	if (!suffix)
 		return (SUCCESS);
-	fprintf(stderr, "Checkpoint 3 in append_suffix\n");
 	suffix_len = ft_strlen(suffix);
 	str_len = ft_strlen(*str);
-	fprintf(stderr, "Compared str: %s\n", str[str_len - suffix_len]);
-	if (!ft_strncmp(str[str_len - suffix_len], suffix, suffix_len) && !duplicate) // Is the string even properly compared?
+	new_str = ft_strdup(*str);
+	if (!new_str)
+		return (MALLOC_ERROR);
+	if (!ft_strncmp(&new_str[str_len - suffix_len], suffix, suffix_len) && !duplicate)
 		return (SUCCESS);
-	fprintf(stderr, "Checkpoint 4 in append_suffix\n");
-	*str = ft_strjoin_fs1(str, suffix);
-	fprintf(stderr, "Checkpoint 5 in append_suffix\n");
+	ft_free((void **) str);
+	new_str = ft_strjoin_fs1(&new_str, suffix);
+	if (!new_str)
+		return (MALLOC_ERROR);
+	*str = ft_strdup(new_str);
+	ft_free((void **) &new_str);
 	if (!*str)
 		return (MALLOC_ERROR);
 	return (SUCCESS);
