@@ -111,6 +111,7 @@ int read_heredoc_input(const char *file_name, const char *delimiter)
     char    *line = NULL;
     ssize_t bytes_read;
     pid_t   heredoc_parent;
+    char    *colourful_delimiter;
 
     // set_signals(HEREDOC);
     // Open the temporary file for writing
@@ -125,24 +126,32 @@ int read_heredoc_input(const char *file_name, const char *delimiter)
     if (!heredoc_parent)
 	{
 		init_signals(CHILD_HEREDOC);
+        colourful_delimiter = ft_strjoin("heredoc [", MAGENTA_TEXT);
+        colourful_delimiter = ft_strjoin_fs1(&colourful_delimiter, delimiter);
+        colourful_delimiter = ft_strjoin_fs1(&colourful_delimiter, RESET_COLOR);
+        colourful_delimiter = ft_strjoin_fs1(&colourful_delimiter, "]: ");
 		while (1)
 		{
 			// Prompt user for input and read a line
-			printf("heredoc [%s%s%s] ", MAGENTA_TEXT, delimiter, RESET_COLOR);
+			// printf("heredoc [%s%s%s] ", MAGENTA_TEXT, delimiter, RESET_COLOR);
 			// if (g_signalcode != 130)
             // write(2, "HEREDOC: ", 10);
-			line = readline("");
+			line = readline(colourful_delimiter);
 
 
 			// line = readline("heredoc> ");
 			// If line is NULL (EOF or error), break
 			if (line == NULL)
-				exit(EXIT_SUCCESS);
+			{
+                ft_free((void **) &colourful_delimiter);
+                exit(EXIT_SUCCESS);
+            }
 
 			// If the line matches the delimiter, stop reading
 			if ((!ft_strncmp(line, delimiter, ft_strlen(delimiter))) && (line[ft_strlen(delimiter)] == '\0'))
 			{
 				free(line); // Free the line before breaking
+                ft_free((void **) &colourful_delimiter);
 				exit(EXIT_SUCCESS);
 			}
 
@@ -152,6 +161,7 @@ int read_heredoc_input(const char *file_name, const char *delimiter)
 			write(fd, "\n", 1); // Manually add the newline character
 
 			// Free the line after it's written
+            ft_free((void **) &colourful_delimiter);
 			free(line);
 			// }
 		}
