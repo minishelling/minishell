@@ -35,7 +35,7 @@ int pre_execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int
         // }
 
         // fprintf(stderr, "STARTING MAKING EXPANSIONS\n");
-        tree_node->start_token = expand(tree_node->start_token, tree_node->end_token, shell->env_list);
+        tree_node->start_token = expand(shell, tree_node->start_token, tree_node->end_token, shell->env_list);
         // fprintf(stderr, "FINISHED MAKING EXPANSIONS\n");
 	    make_cmd(shell, tree_node->start_token, tree_node->end_token);
         tree_node->cmd = shell->cmd;

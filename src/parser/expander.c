@@ -39,7 +39,7 @@ size_t ft_strcspn(const char *str, const char *reject)
  * @param env_list A pointer to the list of environment variables.
  * @return A pointer to the newly expanded string.
  */
-char *expand_variable(char **str, char *expanded_str, t_env *env_list)
+char *expand_variable(t_shell *shell, char **str, char *expanded_str, t_env *env_list)
 {
 	char *var_end;
 	char *var_name;
@@ -54,7 +54,7 @@ char *expand_variable(char **str, char *expanded_str, t_env *env_list)
 	}
 	else if (ft_strncmp(*str, "$?", 2) == 0 && ft_strlen(*str) == 2)
 	{
-		expanded_str = ft_itoa(g_signalcode);
+		expanded_str = ft_itoa(shell->exit_code);
 		(*str) += 2;
 	}
 	else
@@ -91,7 +91,7 @@ char *expand_variable(char **str, char *expanded_str, t_env *env_list)
  * @param env_list A pointer to the list of environment variables.
  * @return A pointer to the newly expanded string.
  */
-char *process_double_quotes(char **str, char *expanded_str, t_env *env_list)
+char *process_double_quotes(t_shell *shell, char **str, char *expanded_str, t_env *env_list)
 {
 	char temp[2];
 	char *new_expanded_str;
@@ -99,7 +99,7 @@ char *process_double_quotes(char **str, char *expanded_str, t_env *env_list)
 	while (**str && **str != '"')
 	{
 		if (**str == '$')
-			expanded_str = expand_variable(str, expanded_str, env_list);
+			expanded_str = expand_variable(shell, str, expanded_str, env_list);
 		else
 		{
 			temp[0] = **str;
@@ -190,7 +190,7 @@ char *copy_chars(char *token_str, char *expanded_str)
  * @param env_list A pointer to the environment variable list for variable 
  *        expansion.
  */
-void expand_str(t_token *token, t_env *env_list)
+void expand_str(t_shell *shell, t_token *token, t_env *env_list)
 {
 	char *expanded_str = ft_strdup("");
 
@@ -204,10 +204,10 @@ void expand_str(t_token *token, t_env *env_list)
 		else if (*(token->str) == '\"')
 		{
 			token->str++;
-			expanded_str = process_double_quotes(&(token->str), expanded_str, env_list);
+			expanded_str = process_double_quotes(shell, &(token->str), expanded_str, env_list);
 		}
 		else if (*(token->str) == '$')
-			expanded_str = expand_variable(&(token->str), expanded_str, env_list);
+			expanded_str = expand_variable(shell, &(token->str), expanded_str, env_list);
 		else
 		{
 			expanded_str = copy_chars(token->str, expanded_str);
@@ -231,14 +231,14 @@ void expand_str(t_token *token, t_env *env_list)
  *        expansion.
  * @return A pointer to the starting token after expansion.
  */
-t_token *expand(t_token *start_token, t_token *end_token, t_env *env_list)
+t_token *expand(t_shell *shell, t_token *start_token, t_token *end_token, t_env *env_list)
 {
 	t_token *current_token;
 
 	current_token = start_token;
 	while (current_token)
 	{
-		expand_str(current_token, env_list);
+		expand_str(shell, current_token, env_list);
 
 		if (current_token == end_token)
 			break;

@@ -37,7 +37,7 @@ void print_tree_verbose(t_tree *node, int level)
 	}
 	
 	if (node->type == CMD)
-		printf(GREY_BACKGROUND"%s"RESET_COLOR" |%s| |%s|  %p\n", tree_node_name[node->type], node->start_token->str, node->end_token->str, node);
+		printf(GREY_BACKGROUND"%s"RESET_COLOR" start token:|%s|, end token:|%s|, tree address: %p\n", tree_node_name[node->type], node->start_token->str, node->end_token->str, node);
 	else if (node->type == T_AND_OPR || node->type == T_OR_OPR || node->type == T_PIPE)
 		printf(MAGENTA_TEXT"%s"RESET_COLOR" %p\n", tree_node_name[node->type], node);
 	else

@@ -246,7 +246,8 @@ int	parse(t_shell *shell)
 	handle_heredocs(shell, shell->token);
 	// printf ("after heredocs handling\n");
 	// print_token(shell->token);
-	fprintf(stderr, "Signal code: %d\n", g_signalcode);
+	fprintf(stderr, "Parser:\nSignal code: %d\n", g_signalcode);
+	fprintf(stderr, "Exit code: %d\n", shell->exit_code);
 	if (g_signalcode == SIGINT)
 	{
 		return (SIGINT_HDOC);

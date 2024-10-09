@@ -78,6 +78,7 @@ void	do_parent_duties(t_shell *shell, t_cmd *cmd)
 	//wstatus = 0;
 	waitpid(shell->parent, &wstatus, 0);
 	shell->exit_code = WEXITSTATUS(wstatus);
-	printf ("shell->exit_code is %d\n", shell->exit_code);
+	fprintf(stderr, "Parent duties:\nSignal code: %d\n", g_signalcode);
+	printf ("Exit code: %d\n", shell->exit_code);
 	close_all_fds_in_cmd(cmd);
 }

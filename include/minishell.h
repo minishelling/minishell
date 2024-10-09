@@ -233,7 +233,7 @@ typedef struct s_shell
 int		init_shell(char **envp, t_shell *shell);
 int		tokenize(t_shell *shell, char *input);
 int		syntax(t_shell *shell);
-t_token	*expand(t_token *start_token, t_token *end_token, t_env *env_list);
+t_token	*expand(t_shell *shell, t_token *start_token, t_token *end_token, t_env *env_list);
 bool	join_word_and_env_var_tokens(t_shell *shell);
 int		parse(t_shell *shell);
 
@@ -318,7 +318,7 @@ void free_cmd_list(t_cmd *cmd_list);
 
 int parser_env_var(t_cmd *cmd_node, t_token *token);
 bool	join_quotes_tokens(t_shell *shell);
-char *process_double_quotes(char **str_ptr, char *expanded_str, t_env *env_list);
+char *process_double_quotes(t_shell *shell, char **str_ptr, char *expanded_str, t_env *env_list);
 char *process_single_quotes(char **str_ptr, char *expanded_str);
 char *process_unquoted(char **str_ptr, char *expanded_str, t_env *env_list);
 t_token *previous_token_if_exists(t_token *head, t_token *target);
