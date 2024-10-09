@@ -182,36 +182,30 @@ bool init_cmd(t_shell *shell, t_cmd **current_cmd, t_token *token)
 }
 
 
-t_cmd	*make_cmd(t_shell *shell, t_token *start_token, t_token *end_token)
+int	make_cmd(t_shell *shell, t_token *start_token, t_token *end_token)
 {
 	t_token	*token;
-	t_cmd	*current_cmd;
 
-	shell->cmd_list = NULL;
+	shell->cmd = NULL;
 	token = start_token;
 
 	while (token)
 	{
-		current_cmd = new_cmd();
+		shell->cmd = new_cmd();
 		//printf ("made a new cmd \n");
-
-		if (!init_cmd(shell, &current_cmd, token))
+		if (!init_cmd(shell, &shell->cmd, token))
 		{
 			free_token_list(shell->token);
-			free_cmd_list(shell->cmd_list);  //including args and redirs
-			return (NULL);
+			return (ERR_MEM);
 		}
 
-		add_cmd_in_back(&shell->cmd_list, current_cmd);
-		//printf ("managed to add in back\n");
+		// add_cmd_in_back(&shell->cmd, cmd);
 		(void)end_token;
 		// if (token == end_token)
-		break;  // Process the end_token, then break out of the loop
-
-		//token = get_after_pipe_token(token); // Move to next token after a pipe
+		break;
 	}
-
-	return (shell->cmd_list);
+	//return (shell->cmd);
+	return (PARSING_OK);
 }
 
 int	parse(t_shell *shell)
@@ -238,20 +232,20 @@ int	parse(t_shell *shell)
 	err_no = join_word_and_env_var_tokens(shell);
 	if (err_no)
 	return (free_token_list(shell->token), err_no);
-	printf ("after concat words and env_vars tokens\n");
-	print_token(shell->token);
+	// printf ("after concat words and env_vars tokens\n");
+	// print_token(shell->token);
 	
 	remove_space_tokens(&shell->token);
-	printf ("after removing space tokens\n");
-	print_token(shell->token);
+	// printf ("after removing space tokens\n");
+	// print_token(shell->token);
 
 	remove_subshell_parens(shell);
-	printf ("after removing subshell_parens\n");
-	print_token(shell->token);
+	// printf ("after removing subshell_parens\n");
+	// print_token(shell->token);
 
 	handle_heredocs(shell->token);
-	printf ("after heredocs handling\n");
-	print_token(shell->token);
+	// printf ("after heredocs handling\n");
+	// print_token(shell->token);
 	if (g_exitcode == 130)
 	{
 		return (SIGINT_HDOC);

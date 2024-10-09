@@ -311,10 +311,11 @@ t_tree *make_tree(t_shell *shell, t_token *start_token, t_token *end_token)
 	t_token *right_head;
 	t_tree *subtree;
 	t_token *middle = NULL;
-	//printf ("making tree\n");
+	// printf ("making tree\n");
 	if (start_token == NULL || end_token == NULL)
 		return NULL;
 	
+	// printf ("start_token is %s and end_token is %s\n", start_token->str, end_token->str);
 	//if (start_token->id == PAR_OPEN && end_token->id == PAR_CLOSE && !contains_pipe_open_par(start_token, end_token))
 	if (start_token->id == PAR_OPEN && end_token->id == PAR_CLOSE && get_matching_parenthesis(start_token) == end_token)
 	// if (start_token->id == PAR_OPEN)
@@ -362,6 +363,7 @@ t_tree *make_tree(t_shell *shell, t_token *start_token, t_token *end_token)
 	//printf ("doing LEFT, left_head is %s\n", left_head->str);
 	subtree->left = make_tree(shell, left_head, non_null_previous(start_token, log_op_token));
 	//printf ("now right\n");
+	//printf ("right head is %s and end_token is %s\n", right_head->str, end_token->str);
 	subtree->right = make_tree(shell, right_head, end_token);
 
 	return subtree;

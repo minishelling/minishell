@@ -68,15 +68,16 @@ void	run_child(t_shell *shell, t_cmd *cmd)
 	env_array = create_env_array(shell->env_list);
 	execve(cmd_path, cmd->args, env_array);
 	handle_cmd_err(cmd, "command not found");
-	exit(EXIT_FAILURE);
+	exit(127);
 }
 
 void	do_parent_duties(t_shell *shell, t_cmd *cmd)
 {
 	int	wstatus;
 
-	wstatus = 0;
+	//wstatus = 0;
 	waitpid(shell->parent, &wstatus, 0);
 	g_exitcode = WEXITSTATUS(wstatus);
+	printf ("g_exitcode is %d\n", g_exitcode);
 	close_all_fds_in_cmd(cmd);
 }

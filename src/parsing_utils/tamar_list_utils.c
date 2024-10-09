@@ -51,7 +51,7 @@ void remove_space_tokens(t_token **head)
 
 	while (current != NULL)
 
-		if (current->id == SPACE_CHAR )
+		if (current->id == SPACE_CHAR || current->id == TAB_CHAR || current->id == NL)
 		{
 			if (prev == NULL)
 				*head = current->next;

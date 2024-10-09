@@ -120,23 +120,16 @@ void	print_redir(t_redir *redir_list_head)
 	}
 }
 
-void	print_cmd(t_cmd *cmd_list_head)
+void	print_cmd(t_cmd *cmd)
 {
-	int			size;
-	t_cmd		*current_cmd;
-	int	con = cmd_size(cmd_list_head);
-
-	size = cmd_size(cmd_list_head);
-	fprintf(stderr, "\n"WHITE_TEXT MAGENTA_BACKGROUND"LIST OF CMDS"RESET_COLOR"\t [%02d]\n", size);
+	fprintf(stderr, "\n"WHITE_TEXT MAGENTA_BACKGROUND"CMD"RESET_COLOR"\n");
 	fprintf(stderr, "---------------------\n");
-	current_cmd = cmd_list_head;
-	while (current_cmd != NULL)
+	if (cmd)
 	{
-		fprintf(stderr, MAGENTA_TEXT"CMD [%d]"RESET_COLOR"\n\n", (con - --size));
-		print_cmd_args((char **)current_cmd->args);
-		print_redir(current_cmd->redir);
-		fprintf (stderr, "latest_in is %d and latest_out %d\n", current_cmd->latest_in, current_cmd->latest_out);
-		current_cmd = current_cmd->next;
+		print_cmd_args((char **)cmd->args);
+		print_redir(cmd->redir);
+		fprintf (stderr, "latest_in is %d and latest_out %d\n", cmd->latest_in, cmd->latest_out);
+		cmd = cmd->next;
 		fprintf(stderr, "______________________\n\n");
 	}
 }

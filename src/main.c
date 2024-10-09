@@ -1,5 +1,6 @@
 #include "../include/minishell.h"
 
+
 int main(int argc, char **argv, char **envp)
 {
 	t_shell shell;
@@ -12,6 +13,7 @@ int main(int argc, char **argv, char **envp)
 		exit(EXIT_FAILURE);
 	}
 	shell.env_list = NULL;
+	g_exitcode = 0;
 	if (init_env_list(&shell.env_list, envp))
 	{
 		ft_putstr_fd("Mini_shared: Error: Failed to initialize\n", 2);
@@ -20,11 +22,11 @@ int main(int argc, char **argv, char **envp)
 	while (1) 
 	{
 		init_signals(INTERACTIVE);
-		// set_signals(INTERACTIVE);
+		//set_signals(INTERACTIVE);
 		shell.input = readline(MINISHARED_PROMPT);
 		if (!shell.input)  // Check for EOF or error
 			break;
-		// set_signals(NON_INTERACTIVE);
+		//set_signals(NON_INTERACTIVE);
 		if (ft_strncmp(shell.input, "", 1))
 		{
 			add_history(shell.input);
@@ -36,7 +38,7 @@ int main(int argc, char **argv, char **envp)
 			{
 				init_signals(PARENT_NON_INTERACTIVE);
 				free(shell.input);
-				int g_exitcode = pre_execute(&shell, shell.tree, NULL, 0);
+				g_exitcode = pre_execute(&shell, shell.tree, NULL, 0);
 				(void)g_exitcode;
 				free_tree(shell.tree);
 				shell.tree = NULL;

@@ -1,6 +1,6 @@
 #include "../../include/minishell.h"
 
-void print_tree_with_cmds(t_tree *node, int level) 
+void print_tree_with_cmd(t_tree *node, int level) 
 {
     int i;
 	int j;
@@ -30,7 +30,7 @@ void print_tree_with_cmds(t_tree *node, int level)
     {
         printf(MAGENTA_TEXT"%s "RESET_COLOR"|%s| |%s|\n", tree_node_name[node->type], node->start_token->str, node->end_token->str);
         
-        cmd = (t_cmd *)node->cmd_list;
+        cmd = (t_cmd *)node->cmd;
 		while (cmd)
         {
             if (cmd->args)
@@ -73,10 +73,10 @@ void print_tree_with_cmds(t_tree *node, int level)
     }
     //printf ("        "GREY_BACKGROUND"&node is"RESET_COLOR": %p\n", node);
     // Print the left subtree
-    print_tree_with_cmds(node->left, level + 1);
+    print_tree_with_cmd(node->left, level + 1);
 
     // Print the right subtree
-    print_tree_with_cmds(node->right, level + 1);
+    print_tree_with_cmd(node->right, level + 1);
 }
 
 void free_redir_list(t_redir *redir)

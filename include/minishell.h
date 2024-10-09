@@ -20,8 +20,23 @@
 # include <dirent.h>
 # include "../libft/libft.h"
 
-//# define MINISHARED_PROMPT "\001\033[1;32m\002Mini_shared<🤜 🤛> \001\033[0m\002"
-#define MINISHARED_PROMPT "\001\033[38;5;196m\002M\001\033[38;5;202m\002i\001\033[38;5;208m\002n\001\033[38;5;214m\002i\001\033[38;5;220m\002_\001\033[38;5;226m\002s\001\033[38;5;190m\002h\001\033[38;5;154m\002a\001\033[38;5;118m\002r\001\033[38;5;82m\002e\001\033[38;5;120m\002d\001\033[0m\002<🤜 🤛> \001\033[0m\002"
+
+#define MINISHARED_PROMPT "\001\033[38;5;93m\002M\001\033[38;5;99m\002i\001\033[38;5;111m\002n\001\033[38;5;63m\002i\001\033[38;5;75m\002_\001\033[38;5;81m\002s\001\033[38;5;118m\002h\001\033[38;5;154m\002a\001\033[38;5;190m\002r\001\033[38;5;226m\002e\001\033[38;5;214m\002d\001\033[0m\002: \001\033[0m\002"
+// #define MINISHARED_PROMPT "\001\033[38;5;93m\002\033[48;5;214mM\001\033[0m\002 \001\033[38;5;99m\002\033[48;5;226mi\001\033[0m\002 \001\033[38;5;111m\002\033[48;5;190mn\001\033[0m\002 \001\033[38;5;63m\002\033[48;5;154mi\001\033[0m\002 \001\033[38;5;75m\002\033[48;5;118m_\001\033[0m\002 \001\033[38;5;81m\002\033[48;5;154ms\001\033[0m\002 \001\033[38;5;118m\002\033[48;5;75mh\001\033[0m\002 \001\033[38;5;154m\002\033[48;5;63ma\001\033[0m\002 \001\033[38;5;190m\002\033[48;5;111mr\001\033[0m\002 \001\033[38;5;226m\002\033[48;5;99me\001\033[0m\002 \001\033[38;5;214m\002\033[48;5;93md\001\033[0m\002: \001\033[0m\002"
+// #define MINISHARED_PROMPT "\033[0;37m\033[45mM\033[0;37m\033[45mI\033[0;37m\033[45mN\033[0;37m\033[45mI\033[0;37m\033[45m_\033[0;37m\033[45mS\033[0;37m\033[45mH\033[0;37m\033[45mA\033[0;37m\033[45mR\033[0;37m\033[45mE\033[0;37m\033[45mD\033[0m: "
+// #define MINISHARED_PROMPT "\033[1;33m\033[48;5;24mM\033[1;33m\033[48;5;24mI\033[1;33m\033[48;5;24mN\033[1;33m\033[48;5;24mI\033[1;33m\033[48;5;24m_\033[1;33m\033[48;5;24mS\033[1;33m\033[48;5;24mH\033[1;33m\033[48;5;24mA\033[1;33m\033[48;5;24mR\033[1;33m\033[48;5;24mE\033[1;33m\033[48;5;24mD\033[0m: "
+
+// #define MINISHARED_PROMPT "\001\033[38;5;196m\002M\001\033[38;5;202m\002i\001\033[38;5;208m\002n\001\033[38;5;214m\002i\001\033[38;5;220m\002_\001\033[38;5;226m\002s\001\033[38;5;190m\002h\001\033[38;5;154m\002a\001\033[38;5;118m\002r\001\033[38;5;82m\002e\001\033[38;5;120m\002d\001\033[0m\002<🤜 🤛> \001\033[0m\002"
+// #define MINISHARED_PROMPT "\001\033[38;5;93m\002M\001\033[38;5;99m\002i\001\033[38;5;111m\002n\001\033[38;5;63m\002i\001\033[38;5;75m\002_\001\033[38;5;81m\002s\001\033[38;5;118m\002h\001\033[38;5;154m\002a\001\033[38;5;190m\002r\001\033[38;5;226m\002e\001\033[38;5;214m\002d\001\033[0m\002<🤜 🤛> \001\033[0m\002"
+
+
+
+
+
+
+
+
+
 #define ERR_PROMPT "Mini_shared: \001\033[0m\002"
 
 # define META_CHARS_PLUS_SET " \t\n|&;()><\'\"$"
@@ -200,20 +215,18 @@ typedef struct s_tree
 	t_tree_type		type;
 	t_token 		*start_token;
     t_token 		*end_token;
-	t_cmd			*cmd_list;
+	t_cmd			*cmd;
 } t_tree;
 
 typedef struct s_shell 
 {
 	pid_t		parent;
-	int			status;
     char 		*input;
     t_token 	*token;
 	t_tree		*tree;
 	t_env		*env_list;
-	t_cmd		*cmd_list;
+	t_cmd		*cmd;
 } t_shell;
-
 
 int		init_shell(char **envp, t_shell *shell);
 int		tokenize(t_shell *shell, char *input);
@@ -280,15 +293,13 @@ void	free_redir_list(t_redir *redir_list_head);
 t_redir	*last_redir(t_redir *redir_list_head);
 t_redir_id	redir_ident(char *str);
 
-size_t	cmd_size(t_cmd *t_list);
 void	print_env(t_env *env_list);
 void	print_redir(t_redir *redir_list_head);
 void	print_token(t_token *head);
-void	print_cmd(t_cmd *cmd_list_head);
+void	print_cmd(t_cmd *cmd);
 void 	handle_parsing_err(t_shell *shell, int err_no, void *param);
 
 t_token	*get_after_word_token(t_token *token);
-
 t_token *find_last_log_op_token_nip(t_token *token_head, t_token *end_token);
 t_tree 	*make_tree(t_shell *shell, t_token *start_token, t_token *end_token);
 void	print_tree(t_tree *node, int level);
@@ -296,7 +307,7 @@ void 	remove_space_tokens(t_token **head);
 t_token *remove_token(t_token *start_token, t_token *token_to_remove);
 void 	free_tree(t_tree *node);
 void 	remove_subshell_parens(t_shell *shell);
-t_cmd	*make_cmd(t_shell *shell, t_token *start_token, t_token *end_token);
+int	make_cmd(t_shell *shell, t_token *start_token, t_token *end_token);
 void print_tree_with_cmds(t_tree *node, int level);
 t_token *get_after_arith_expan_token(t_token *token);
 int parser_arith_expan(t_cmd *cmd_node, t_token *token);

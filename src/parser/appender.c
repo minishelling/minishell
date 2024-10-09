@@ -1,32 +1,6 @@
 #include "../../include/minishell.h"
 
 
-// t_token	*remove_empty_token(t_token *token)
-// {
-// 	t_token	*current_token;
-// 	t_token	*previous_token;
-
-// 	if (token == NULL)
-// 		return (NULL);
-// 	current_token = token;
-// 	previous_token = NULL;
-// 	while (current_token)
-// 	{
-// 		if (current_token->str)
-// 		{
-// 			previous_token = current_token;
-// 			current_token = current_token->next;
-// 			continue ;
-// 		}
-// 		current_token = free_token_node(current_token);
-// 		if (previous_token == NULL)
-// 			token = current_token;
-// 		else
-// 			previous_token->next = current_token;
-// 	}
-// 	return (token);
-// }
-
 // t_token *free_token(t_token **token)
 // {
 //     t_token *next_token;
