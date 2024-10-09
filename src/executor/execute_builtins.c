@@ -21,7 +21,7 @@ void	handle_builtin(t_shell *shell, t_cmd *cmd)
 		if (dup_and_close(cmd->latest_out, STDOUT_FILENO))
 			exit(EXIT_FAILURE);
 	}
-	shell->status = execute_builtin(shell, cmd->args);
+	g_exitcode = execute_builtin(shell, cmd->args);
 	// Bring back the STD_REDIRECTIONS.
 	if (dup_and_close(std_backup[STDIN_FILENO], STDIN_FILENO))
 		exit(EXIT_FAILURE); // Print error.

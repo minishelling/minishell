@@ -9,7 +9,7 @@ int	g_exitcode;
 void	sigint_handler_interactive(int signal)
 {
 	write(STDOUT_FILENO, "\n", 1);
-	rl_on_new_line();	
+	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();
 	if (signal == SIGINT)

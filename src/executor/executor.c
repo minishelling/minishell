@@ -4,7 +4,7 @@ int	executor(t_shell *shell, t_cmd *cmd)
 {
 	t_builtin	is_builtin;
 
-	// fprintf(stderr, "Executing cmd: %s, address: %p\n", cmd->args[0], cmd);
+	fprintf(stderr, "Executing cmd: %s, address: %p\n", cmd->args[0], cmd);
 	is_builtin = check_builtin(cmd->args[0]);
 	if (is_builtin == NULL_CMD)
 	{
@@ -12,9 +12,13 @@ int	executor(t_shell *shell, t_cmd *cmd)
 		// exit(EXIT_FAILURE) ; //commented so testing wouldn't exit minishared
 	}
 	if (is_builtin == NON_BUILTIN)
+	{
 		handle_non_builtin(shell, cmd);
+	}
 	else
+	{
 		handle_builtin(shell, cmd);
+	}
 	return (g_exitcode);
 }
 

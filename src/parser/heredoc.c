@@ -146,7 +146,6 @@ int read_heredoc_input(const char *file_name, const char *delimiter)
 
 
 			// line = readline("heredoc> ");
-			fprintf(stderr, "Ugly thingy?\n");
 			// If line is NULL (EOF or error), break
 			if (line == NULL)
 				exit(EXIT_SUCCESS);
