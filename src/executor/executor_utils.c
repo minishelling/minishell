@@ -2,31 +2,52 @@
 
 t_builtin	check_builtin(char *cmd_name)
 {
-	size_t	cmd_name_len;
-
+	size_t		cmd_name_len;
+	char		*builtins[] = {"echo", "cd", "pwd", "export",
+						"declare", "unset", "env", "exit", NULL};
+	t_builtin	builtin_code;
+	
 	if (!cmd_name)
 		return (NULL_CMD);
-	// printf("CMD_NAME in check_builtin: %s\n", cmd_name);
 	cmd_name_len = ft_strlen(cmd_name);
-	if (!ft_strncmp(cmd_name, "echo", cmd_name_len))
-		return (ECHO);
-	else if (!ft_strncmp(cmd_name, "cd", cmd_name_len))
-		return (CD);
-	else if (!ft_strncmp(cmd_name, "pwd", cmd_name_len))
-		return (PWD);
-	else if (!ft_strncmp(cmd_name, "export", cmd_name_len))
-		return (EXPORT);
-	else if (!ft_strncmp(cmd_name, "declare", cmd_name_len))
-		return (DECLARE);
-	else if (!ft_strncmp(cmd_name, "unset", cmd_name_len))
-		return (UNSET);
-	else if (!ft_strncmp(cmd_name, "env", cmd_name_len))
-		return (ENV);
-	else if (!ft_strncmp(cmd_name, "exit", cmd_name_len))
-		return (EXIT);
-	else
-		return (NON_BUILTIN);
+	builtin_code = ECHO;
+	while (builtins[builtin_code])
+	{
+		if (!ft_strncmp(cmd_name, builtins[builtin_code], cmd_name_len))
+			return (builtin_code);
+		builtin_code++;
+	}
+	return (NON_BUILTIN);
 }
+
+
+// t_builtin	check_builtin(char *cmd_name)
+// {
+// 	size_t	cmd_name_len;
+
+// 	if (!cmd_name)
+// 		return (NULL_CMD);
+// 	// printf("CMD_NAME in check_builtin: %s\n", cmd_name);
+// 	cmd_name_len = ft_strlen(cmd_name);
+// 	if (!ft_strncmp(cmd_name, "echo", cmd_name_len))
+// 		return (ECHO);
+// 	else if (!ft_strncmp(cmd_name, "cd", cmd_name_len))
+// 		return (CD);
+// 	else if (!ft_strncmp(cmd_name, "pwd", cmd_name_len))
+// 		return (PWD);
+// 	else if (!ft_strncmp(cmd_name, "export", cmd_name_len))
+// 		return (EXPORT);
+// 	else if (!ft_strncmp(cmd_name, "declare", cmd_name_len))
+// 		return (DECLARE);
+// 	else if (!ft_strncmp(cmd_name, "unset", cmd_name_len))
+// 		return (UNSET);
+// 	else if (!ft_strncmp(cmd_name, "env", cmd_name_len))
+// 		return (ENV);
+// 	else if (!ft_strncmp(cmd_name, "exit", cmd_name_len))
+// 		return (EXIT);
+// 	else
+// 		return (NON_BUILTIN);
+// }
 
 size_t	count_cmds(t_cmd *head)
 {
