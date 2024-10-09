@@ -13,7 +13,7 @@ int main(int argc, char **argv, char **envp)
 		exit(EXIT_FAILURE);
 	}
 	shell.env_list = NULL;
-	g_exitcode = 0;
+	shell.exit_code = 0;
 	if (init_env_list(&shell.env_list, envp))
 	{
 		ft_putstr_fd("Mini_shared: Error: Failed to initialize\n", 2);
@@ -21,12 +21,16 @@ int main(int argc, char **argv, char **envp)
 	}
 	while (1) 
 	{
+		g_signalcode = 0;
 		init_signals(INTERACTIVE);
-		//set_signals(INTERACTIVE);
 		shell.input = readline(MINISHARED_PROMPT);
+		if (g_signalcode == SIGINT)
+		{
+			shell.exit_code = 130;
+			g_signalcode = 0;
+		}
 		if (!shell.input)  // Check for EOF or error
 			break;
-		//set_signals(NON_INTERACTIVE);
 		if (ft_strncmp(shell.input, "", 1))
 		{
 			add_history(shell.input);
@@ -38,8 +42,7 @@ int main(int argc, char **argv, char **envp)
 			{
 				init_signals(PARENT_NON_INTERACTIVE);
 				free(shell.input);
-				g_exitcode = pre_execute(&shell, shell.tree, NULL, 0);
-				(void)g_exitcode;
+				shell.exit_code = pre_execute(&shell, shell.tree, NULL, 0);
 				free_tree(shell.tree);
 				shell.tree = NULL;
 			}

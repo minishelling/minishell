@@ -3,6 +3,7 @@
 
 # define _GNU_SOURCE // FOR SIGACTION...
 
+# include <stdint.h>
 # include <unistd.h>
 # include <stdio.h>
 # include <stdlib.h>
@@ -52,7 +53,7 @@
 # define READ_END 0
 # define WRITE_END 1
 
-extern int	g_exitcode;
+extern int	g_signalcode;
 
 typedef enum	signal_mode
 {
@@ -221,6 +222,7 @@ typedef struct s_tree
 typedef struct s_shell 
 {
 	pid_t		parent;
+	uint8_t		exit_code;
     char 		*input;
     t_token 	*token;
 	t_tree		*tree;
@@ -321,7 +323,7 @@ char *process_single_quotes(char **str_ptr, char *expanded_str);
 char *process_unquoted(char **str_ptr, char *expanded_str, t_env *env_list);
 t_token *previous_token_if_exists(t_token *head, t_token *target);
 t_token *handle_arith_expan(t_token **head, t_token **cur_open, t_token **cur_close);
-void handle_heredocs(t_token *token_list) ;
+void handle_heredocs(t_shell *shell, t_token *token_list);
 t_ecode	open_redirections(t_shell *shell, t_cmd *head);
 void print_tree_verbose(t_tree *node, int level);
 int handle_pipe_subtree(t_shell *shell, t_tree *tree_node);

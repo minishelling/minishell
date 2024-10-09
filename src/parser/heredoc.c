@@ -111,6 +111,7 @@ int read_heredoc_input(const char *file_name, const char *delimiter)
     char    *line = NULL;
     ssize_t bytes_read;
     pid_t   heredoc_parent;
+    char    *colourful_delimiter;
 
     // set_signals(HEREDOC);
     // Open the temporary file for writing
@@ -125,41 +126,32 @@ int read_heredoc_input(const char *file_name, const char *delimiter)
     if (!heredoc_parent)
 	{
 		init_signals(CHILD_HEREDOC);
+        colourful_delimiter = ft_strjoin("heredoc [", MAGENTA_TEXT);
+        colourful_delimiter = ft_strjoin_fs1(&colourful_delimiter, delimiter);
+        colourful_delimiter = ft_strjoin_fs1(&colourful_delimiter, RESET_COLOR);
+        colourful_delimiter = ft_strjoin_fs1(&colourful_delimiter, "]: ");
 		while (1)
 		{
 			// Prompt user for input and read a line
-			printf("heredoc [%s%s%s] ", MAGENTA_TEXT, delimiter, RESET_COLOR);
-			// if (g_exitcode != 130)
-			line = readline("");
-
-
-			// if (g_exitcode == 130)
-			// {
-			// 	fprintf(stderr, "Nice thingy?\n");
-			// 	close(STDIN_FILENO);
-			// 	free(line);
-			// 	dup2(stdin_backup, STDIN_FILENO);
-
-			// 	close(fd);
-			// 	return (-1);
-			// }
+			// printf("heredoc [%s%s%s] ", MAGENTA_TEXT, delimiter, RESET_COLOR);
+			// if (g_signalcode != 130)
+            // write(2, "HEREDOC: ", 10);
+			line = readline(colourful_delimiter);
 
 
 			// line = readline("heredoc> ");
-			fprintf(stderr, "Ugly thingy?\n");
 			// If line is NULL (EOF or error), break
 			if (line == NULL)
-				exit(EXIT_SUCCESS);
-			// if (g_exitcode == 130)
-			// {
-			// 	fprintf(stderr, "Nice thingy?\n");
-			// 	free(line);
-			// 	break ;
-			// }
+			{
+                ft_free((void **) &colourful_delimiter);
+                exit(EXIT_SUCCESS);
+            }
+
 			// If the line matches the delimiter, stop reading
 			if ((!ft_strncmp(line, delimiter, ft_strlen(delimiter))) && (line[ft_strlen(delimiter)] == '\0'))
 			{
 				free(line); // Free the line before breaking
+                ft_free((void **) &colourful_delimiter);
 				exit(EXIT_SUCCESS);
 			}
 
@@ -169,6 +161,7 @@ int read_heredoc_input(const char *file_name, const char *delimiter)
 			write(fd, "\n", 1); // Manually add the newline character
 
 			// Free the line after it's written
+            ft_free((void **) &colourful_delimiter);
 			free(line);
 			// }
 		}
@@ -177,9 +170,10 @@ int read_heredoc_input(const char *file_name, const char *delimiter)
 	// dup2(stdin_backup, STDIN_FILENO);
 	// close(stdin_backup);
     close(fd);
-    if (g_exitcode == 130)
+    if (g_signalcode == SIGINT)
     {
         //clean nicely //or maybe not even yet.
+        init_signals(INTERACTIVE);
         return (-1);
     }
     init_signals(INTERACTIVE);
@@ -189,7 +183,7 @@ int read_heredoc_input(const char *file_name, const char *delimiter)
 }
 
 // Function to handle heredocs in a token list
-void handle_heredocs(t_token *token_list) 
+void handle_heredocs(t_shell *shell, t_token *token_list) 
 {
     t_token *current = token_list;
     t_token *next_token;
@@ -219,7 +213,12 @@ void handle_heredocs(t_token *token_list)
 
                     // Read the heredoc input and write it to the file
                     int fd = read_heredoc_input(next_token->str, delimiter);
-                    if (fd)
+                    if (g_signalcode == SIGINT)
+                    {
+                        shell->exit_code = EXIT_SIGINT;
+                        return ;
+                    }
+                    else if (fd)
                     {
                         free(file_name);
                         next_token->str = ft_itoa(fd);

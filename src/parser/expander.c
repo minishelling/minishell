@@ -54,7 +54,7 @@ char *expand_variable(char **str, char *expanded_str, t_env *env_list)
 	}
 	else if (ft_strncmp(*str, "$?", 2) == 0 && ft_strlen(*str) == 2)
 	{
-		expanded_str = ft_itoa(g_exitcode);
+		expanded_str = ft_itoa(g_signalcode);
 		(*str) += 2;
 	}
 	else
