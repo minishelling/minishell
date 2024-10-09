@@ -24,7 +24,7 @@ static char	*check_name_as_relative_path(char *cmd_name)
 	return (cmd_name);
 }
 
-static char	*check_path_access(char *current_path, char *cmd_name)
+static char	*check_path_access(t_shell *shell, char *current_path, char *cmd_name)
 {
 	char	*cmd_path;
 
@@ -35,7 +35,7 @@ static char	*check_path_access(char *current_path, char *cmd_name)
 	{
 		if (access(cmd_path, X_OK) == 0)
 			return (cmd_path);
-		// shell->exit_code = 126;
+		shell->exit_code = 126;
 	}
 	ft_free((void **) &cmd_path);
 	return (NULL);
@@ -59,7 +59,7 @@ char	*get_cmd_path(t_shell *shell, char *cmd_name)
 	i = 0;
 	while (paths[i])
 	{
-		cmd_path = check_path_access(paths[i], cmd_name);
+		cmd_path = check_path_access(shell, paths[i], cmd_name);
 		if (cmd_path)
 			return(cmd_path);
 		i++;

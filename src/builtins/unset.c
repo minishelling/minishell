@@ -1,5 +1,13 @@
 #include "../../include/minishell.h"
 
+/**
+ * @brief Removes an environment node from the environment list.
+ * 
+ * @param shell A pointer to the shell structure.
+ * @param cmd_args The array of arguments of the given command.
+ * @return On success it returns 0.
+ * Failure only happens when a parameter is given as NULL.
+ */
 t_ecode	unset_builtin(t_shell *shell, char **cmd_args)
 {
 	char	*key;
@@ -13,7 +21,7 @@ t_ecode	unset_builtin(t_shell *shell, char **cmd_args)
 	key = cmd_args[1];
 	env_node = find_env_node(shell->env_list, key);
 	if (!env_node)
-		return (NULL_NODE);
+		return (SUCCESS);
 	previous_node = shell->env_list;
 	while (previous_node && previous_node->next != env_node)
 		previous_node = previous_node->next;
