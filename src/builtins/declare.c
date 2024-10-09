@@ -41,6 +41,7 @@ static char	**create_full_env_array(t_env *env_head)
 	char	**env_array;
 	ssize_t	nodes_count;
 	ssize_t	i;
+	char	*temp;
 
 	if (!env_head)
 		return (NULL);
@@ -51,8 +52,15 @@ static char	**create_full_env_array(t_env *env_head)
 	i = 0;
 	while (i < nodes_count)
 	{
-		if (env_head->keyvalue)
-			env_array[i] = ft_strdup(env_head->keyvalue);
+		if (env_head->value)
+		{
+			temp = ft_strdup(env_head->key);
+			temp = ft_strjoin_fs1(&temp, "=\"");
+			temp = ft_strjoin_fs1(&temp, env_head->value);
+			temp = ft_strjoin_fs1(&temp, "\"");
+			env_array[i] = ft_strdup(temp);
+			ft_free ((void **) &temp);
+		}
 		else
 			env_array[i] = ft_strdup(env_head->key);
 		if (!env_array[i])
@@ -64,6 +72,13 @@ static char	**create_full_env_array(t_env *env_head)
 	return (env_array);
 }
 
+/**
+ * @brief Sorts a given array using the bubblesort algorithm.
+ * 
+ * @param arr The array to sort.
+ * @param count The number of elements in the array.
+ * @return void: The elements are sorted within the given array.
+ */
 static void	bubblesort_array(char **arr, ssize_t count)
 {
 	char	*temp;
@@ -88,6 +103,14 @@ static void	bubblesort_array(char **arr, ssize_t count)
 	}
 }
 
+/**
+ * @brief Concatenates str to every element of the array.
+ * 
+ * @param arr An array of strings.
+ * @param str A string to concatenate to every element of the array.
+ * @return A new array where each element has str concatenated to it,
+ * or NULL on failure.
+ */
 static char	**ft_strjoin_arr(char **arr, char *str)
 {
 	char	**new;
