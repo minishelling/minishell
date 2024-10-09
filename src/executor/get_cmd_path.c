@@ -31,9 +31,13 @@ static char	*check_path_access(char *current_path, char *cmd_name)
 	cmd_path = ft_strjoin_cmd_path(current_path, cmd_name);
 	if (!cmd_path)
 		return (NULL);
-	if (!access(cmd_path, X_OK))
-		return (cmd_path);
-	ft_free((void **) &cmd_path);  // g_exitcode = 126 ?
+	if (access(cmd_path, F_OK) == 0)
+	{
+		if (access(cmd_path, X_OK) == 0)
+			return (cmd_path);
+		// shell->exit_code = 126;
+	}
+	ft_free((void **) &cmd_path);
 	return (NULL);
 }
 

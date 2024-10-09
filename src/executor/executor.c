@@ -19,7 +19,7 @@ int	executor(t_shell *shell, t_cmd *cmd)
 	{
 		handle_builtin(shell, cmd);
 	}
-	return (g_exitcode);
+	return (shell->exit_code);
 }
 
 void	handle_non_builtin(t_shell *shell, t_cmd *cmd)
@@ -77,7 +77,7 @@ void	do_parent_duties(t_shell *shell, t_cmd *cmd)
 
 	//wstatus = 0;
 	waitpid(shell->parent, &wstatus, 0);
-	g_exitcode = WEXITSTATUS(wstatus);
-	printf ("g_exitcode is %d\n", g_exitcode);
+	shell->exit_code = WEXITSTATUS(wstatus);
+	printf ("shell->exit_code is %d\n", shell->exit_code);
 	close_all_fds_in_cmd(cmd);
 }

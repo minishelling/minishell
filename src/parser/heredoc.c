@@ -129,32 +129,16 @@ int read_heredoc_input(const char *file_name, const char *delimiter)
 		{
 			// Prompt user for input and read a line
 			printf("heredoc [%s%s%s] ", MAGENTA_TEXT, delimiter, RESET_COLOR);
-			// if (g_exitcode != 130)
+			// if (g_signalcode != 130)
+            // write(2, "HEREDOC: ", 10);
 			line = readline("");
-
-
-			// if (g_exitcode == 130)
-			// {
-			// 	fprintf(stderr, "Nice thingy?\n");
-			// 	close(STDIN_FILENO);
-			// 	free(line);
-			// 	dup2(stdin_backup, STDIN_FILENO);
-
-			// 	close(fd);
-			// 	return (-1);
-			// }
 
 
 			// line = readline("heredoc> ");
 			// If line is NULL (EOF or error), break
 			if (line == NULL)
 				exit(EXIT_SUCCESS);
-			// if (g_exitcode == 130)
-			// {
-			// 	fprintf(stderr, "Nice thingy?\n");
-			// 	free(line);
-			// 	break ;
-			// }
+
 			// If the line matches the delimiter, stop reading
 			if ((!ft_strncmp(line, delimiter, ft_strlen(delimiter))) && (line[ft_strlen(delimiter)] == '\0'))
 			{
@@ -176,9 +160,10 @@ int read_heredoc_input(const char *file_name, const char *delimiter)
 	// dup2(stdin_backup, STDIN_FILENO);
 	// close(stdin_backup);
     close(fd);
-    if (g_exitcode == 130)
+    if (g_signalcode == SIGINT)
     {
         //clean nicely //or maybe not even yet.
+        init_signals(INTERACTIVE);
         return (-1);
     }
     init_signals(INTERACTIVE);
@@ -188,7 +173,7 @@ int read_heredoc_input(const char *file_name, const char *delimiter)
 }
 
 // Function to handle heredocs in a token list
-void handle_heredocs(t_token *token_list) 
+void handle_heredocs(t_shell *shell, t_token *token_list) 
 {
     t_token *current = token_list;
     t_token *next_token;
@@ -218,7 +203,12 @@ void handle_heredocs(t_token *token_list)
 
                     // Read the heredoc input and write it to the file
                     int fd = read_heredoc_input(next_token->str, delimiter);
-                    if (fd)
+                    if (g_signalcode == SIGINT)
+                    {
+                        shell->exit_code = EXIT_SIGINT;
+                        return ;
+                    }
+                    else if (fd)
                     {
                         free(file_name);
                         next_token->str = ft_itoa(fd);

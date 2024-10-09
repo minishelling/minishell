@@ -243,10 +243,11 @@ int	parse(t_shell *shell)
 	// printf ("after removing subshell_parens\n");
 	// print_token(shell->token);
 
-	handle_heredocs(shell->token);
+	handle_heredocs(shell, shell->token);
 	// printf ("after heredocs handling\n");
 	// print_token(shell->token);
-	if (g_exitcode == 130)
+	fprintf(stderr, "Signal code: %d\n", g_signalcode);
+	if (g_signalcode == SIGINT)
 	{
 		return (SIGINT_HDOC);
 	}
