@@ -253,11 +253,11 @@ int	parse(t_shell *shell)
 
 	shell->tree = make_tree(shell, shell->token, last_token(shell->token));
 
-	// printf("\n"WHITE_TEXT MAGENTA_BACKGROUND"THE TREE"RESET_COLOR);
-	// printf("\n--------------------\n");
+	printf("\n"WHITE_TEXT MAGENTA_BACKGROUND"THE TREE"RESET_COLOR);
+	printf("\n--------------------\n");
 	
-	// if (shell->tree)
-	// 	print_tree_verbose(shell->tree, 0);
+	if (shell->tree)
+		print_tree_verbose(shell->tree, 0);
 	
 	// if (shell->tree)
 	// 	print_tree_with_cmds(shell->tree, 0);
