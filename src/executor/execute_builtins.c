@@ -38,9 +38,7 @@ t_ecode	execute_builtin(t_shell *shell, char **cmd_args)
 	if (!shell || !cmd_args)
 		return (NULL_ERROR);
 	builtin_code = check_builtin(cmd_args[0]);
-	if (builtin_code == NULL_CMD)
-		return (NULL_ERROR);
-	else if (builtin_code == NON_BUILTIN)
+	if (builtin_code == NON_BUILTIN)
 		return (PROCEED);
 	else
 		return (builtins_jumptable[builtin_code](shell, cmd_args));

@@ -60,6 +60,7 @@ typedef enum	signal_mode
 	INTERACTIVE,
 	PARENT_NON_INTERACTIVE,
 	CHILD_NON_INTERACTIVE,
+	PARENT_IGNORE,
 	PARENT_HEREDOC,
 	CHILD_HEREDOC,
 }	t_signal_mode;
@@ -334,7 +335,7 @@ bool is_squote(t_token *token);
 bool is_word(t_token *token);
 bool is_env_var(t_token *token);
 
-
+void handle_builtin_err(char *cmd_name, char *err_msg);
 
 //SIGNALS
 

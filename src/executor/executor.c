@@ -3,38 +3,28 @@
 int	executor(t_shell *shell, t_cmd *cmd)
 {
 	t_builtin	is_builtin;
-
-	fprintf(stderr, "Executing cmd: %s, address: %p\n", cmd->args[0], cmd);
-	printf ("in executor: exit_code is %d\n", shell->exit_code);
 	
 	if (!cmd->args[0])
 	{
-		fprintf(stderr, "NULL CMD\n");
 		shell->exit_code = SUCCESS;
 		return (shell->exit_code);
 	}
 	is_builtin = check_builtin(cmd->args[0]);
 	if (is_builtin == NON_BUILTIN)
-	{
 		handle_non_builtin(shell, cmd);
-	}
 	else
-	{
 		handle_builtin(shell, cmd);
-	}
-	printf ("in executor: exit_code is %d\n", shell->exit_code);
 	return (shell->exit_code);
 }
 
 void	handle_non_builtin(t_shell *shell, t_cmd *cmd)
 {
 	shell->parent = fork();
+	init_signals(PARENT_IGNORE);
 	if (shell->parent == -1)
 		exit(EXIT_FAILURE);
 	else if (!shell->parent)
-	{
 		run_child(shell, cmd);
-	}
 	do_parent_duties(shell, cmd);
 }
 
@@ -79,7 +69,7 @@ void	do_parent_duties(t_shell *shell, t_cmd *cmd)
 {
 	int	wstatus;
 
-	//wstatus = 0;
+	init_signals(PARENT_NON_INTERACTIVE);
 	waitpid(shell->parent, &wstatus, 0);
 	if (WIFEXITED(wstatus) == true)
 	{
@@ -91,12 +81,7 @@ void	do_parent_duties(t_shell *shell, t_cmd *cmd)
 	else if (WIFSIGNALED(wstatus) == true)
 	{
 		shell->exit_code = EXIT_SIGQUIT;
-		// if (g_signalcode == SIGINT)
-		// 	shell->exit_code = EXIT_SIGINT;
-		// else if (g_signalcode == SIGQUIT)
-		// 	shell->exit_code = EXIT_SIGQUIT;	
 	}
-	
 	fprintf(stderr, "Parent duties:\nSignal code: %d\n", g_signalcode);
 	printf ("Exit code: %d\n", shell->exit_code);
 	close_all_fds_in_cmd(cmd);
