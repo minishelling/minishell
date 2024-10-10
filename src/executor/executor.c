@@ -20,7 +20,6 @@ int	executor(t_shell *shell, t_cmd *cmd)
 void	handle_non_builtin(t_shell *shell, t_cmd *cmd)
 {
 	shell->parent = fork();
-	init_signals(PARENT_IGNORE);
 	if (shell->parent == -1)
 		exit(EXIT_FAILURE);
 	else if (!shell->parent)
@@ -28,48 +27,55 @@ void	handle_non_builtin(t_shell *shell, t_cmd *cmd)
 	do_parent_duties(shell, cmd);
 }
 
-void	run_child(t_shell *shell, t_cmd *cmd)
+t_ecode	handle_redirs_in_child(t_cmd *cmd)
 {
-	char	*cmd_path = NULL;
-	char	**env_array;
-	t_ecode	status = SUCCESS;
+	t_ecode	status;
 
-	init_signals(CHILD_NON_INTERACTIVE);
+	status = SUCCESS;
+
 	if (cmd->latest_in == ERROR || cmd->latest_in == ERROR)
 		exit(EXIT_FAILURE);
 	if (cmd->latest_in != STDIN_FILENO)
 		status = dup_and_close(cmd->latest_in, STDIN_FILENO);
 	if (status)
 	{
-		ft_putstr_fd("Dup error in run_child |->STDIN|\n", 2);
-		return ;
+		handle_perror("dup_and_close");
+		exit(EXIT_FAILURE);
 	}
 	if (cmd->latest_out != STDOUT_FILENO)
 		status = dup_and_close(cmd->latest_out, STDOUT_FILENO);
 	if (status)
 	{
-		ft_putstr_fd("Dup error in run_child |->STDOUT|\n", 2);
-		return ;
+		handle_perror("dup_and_close");
+		exit(EXIT_FAILURE);
 	}
-	// fprintf(stderr, "How come it prints this?\n");
+	return (SUCCESS);
+}
+
+void	run_child(t_shell *shell, t_cmd *cmd)
+{
+	char	*cmd_path = NULL;
+	char	**env_array;
+
+	init_signals(CHILD_NON_INTERACTIVE);
+	handle_redirs_in_child(cmd);
 	if (cmd && cmd->args)
-	{
-		// fprintf(stderr, "And this?\n");
 		cmd_path = get_cmd_path(shell, cmd->args[0]);
-		// fprintf(stderr, "But it doesnt print this???\n");
+	if (!cmd_path && shell->exit_code == 126)
+	{
+		handle_cmd_err(cmd, strerror(EACCES));
+		exit(EXIT_CMD_NOT_EXECUTABLE);
 	}
-	// fprintf(stderr, "cmd_path: %s\n", cmd->args[0]);
 	env_array = create_env_array(shell->env_list);
 	execve(cmd_path, cmd->args, env_array);
-	handle_cmd_err(cmd, "command not found");
-	exit(127);
+	handle_cmd_err(cmd, strerror(ENOENT));
+	exit(EXIT_CMD_NOT_FOUND);
 }
 
 void	do_parent_duties(t_shell *shell, t_cmd *cmd)
 {
 	int	wstatus;
 
-	init_signals(PARENT_NON_INTERACTIVE);
 	waitpid(shell->parent, &wstatus, 0);
 	if (WIFEXITED(wstatus) == true)
 	{

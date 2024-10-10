@@ -7,7 +7,6 @@ t_ecode	chdir_cdpath(t_env **env_list, char *directory, char **cwd)
 	ssize_t	values_count;
 	t_ecode	status;
 
-	fprintf(stderr, "We're in chdir_cdpath\n");
 	if (!*env_list)
 		return (NULL_ENV);
 	cdpath_node = find_env_node(*env_list, "CDPATH");
@@ -62,7 +61,6 @@ t_ecode	chdir_null_cdpath(char *directory, ssize_t *i, int8_t *null_flag)
 	char	*curpath;
 	t_ecode	status;
 
-	fprintf(stderr, "We're in chdir_null_cdpath\n");
 	*i += 1;
 	if (*null_flag == 1)
 		return (PROCEED);
@@ -88,18 +86,15 @@ t_ecode chdir_cdpath_value(char *cdpath_value, char *directory, ssize_t *i)
 	char	*curpath;
 	t_ecode	status;
 
-	fprintf(stderr, "We're in chdir_cdpath_value\n");
 	*i += 1;
 	curpath = ft_strdup(cdpath_value);
 	if (!curpath)
 		return (MALLOC_ERROR);
 	if (append_suffix(&curpath, "/", false))
 		return (MALLOC_ERROR);
-	printf("curpath in chdir_cdpath_value: %s\n", curpath);
 	curpath = ft_strjoin_fs1(&curpath, directory);
 	if (!curpath)
 		return (MALLOC_ERROR);
-	printf("curpath in chdir_cdpath_value: %s\n", curpath);
 		// status = check_curpath_access(curpath);
 		// if (status)
 		// {
