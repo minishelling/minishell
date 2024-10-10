@@ -159,7 +159,6 @@ typedef enum e_builtin
 	ENV,
 	EXIT,
 	NON_BUILTIN, //8
-	NULL_CMD,
 }	t_builtin;
 
 typedef struct s_curpath

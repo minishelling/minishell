@@ -106,25 +106,19 @@ char *create_temp_file_for_heredoc(int counter)
     #include <readline/readline.h>  // Make sure the readline library is included
 #include <readline/history.h>   // Optional, if you want to use history features
 
-int read_heredoc_input(const char *file_name, const char *delimiter) 
+int read_heredoc_input(t_shell *shell, const char *file_name, const char *delimiter) 
 {
     char    *line = NULL;
     ssize_t bytes_read;
     pid_t   heredoc_parent;
     char    *colourful_delimiter;
+    int     wstatus = 0;
 
-    // set_signals(HEREDOC);
-    // Open the temporary file for writing
-	
-    int fd = open(file_name, O_RDWR | O_CREAT | O_TRUNC, 0644);
-    // if (fd == -1) 
-    // {
-    //     return (ERROR_OPENING_FILE);
-    // }
     heredoc_parent = fork();
     init_signals(PARENT_HEREDOC);
     if (!heredoc_parent)
 	{
+        int fd = open(file_name, O_RDWR | O_CREAT | O_TRUNC, 0644);
 		init_signals(CHILD_HEREDOC);
         colourful_delimiter = ft_strjoin("heredoc [", MAGENTA_TEXT);
         colourful_delimiter = ft_strjoin_fs1(&colourful_delimiter, delimiter);
@@ -132,53 +126,39 @@ int read_heredoc_input(const char *file_name, const char *delimiter)
         colourful_delimiter = ft_strjoin_fs1(&colourful_delimiter, "]: ");
 		while (1)
 		{
-			// Prompt user for input and read a line
-			// printf("heredoc [%s%s%s] ", MAGENTA_TEXT, delimiter, RESET_COLOR);
-			// if (g_signalcode != 130)
-            // write(2, "HEREDOC: ", 10);
+            rl_clear_history();
 			line = readline(colourful_delimiter);
-
-
-			// line = readline("heredoc> ");
-			// If line is NULL (EOF or error), break
 			if (line == NULL)
 			{
                 ft_free((void **) &colourful_delimiter);
+                close (fd);
                 exit(EXIT_SUCCESS);
             }
-
-			// If the line matches the delimiter, stop reading
 			if ((!ft_strncmp(line, delimiter, ft_strlen(delimiter))) && (line[ft_strlen(delimiter)] == '\0'))
 			{
-				free(line); // Free the line before breaking
+				free(line);
                 ft_free((void **) &colourful_delimiter);
+                close (fd);
 				exit(EXIT_SUCCESS);
 			}
-
-			// Write the line to the file followed by a newline
 			bytes_read = strlen(line);
 			write(fd, line, bytes_read);
-			write(fd, "\n", 1); // Manually add the newline character
-
-			// Free the line after it's written
-            ft_free((void **) &colourful_delimiter);
+			write(fd, "\n", 1);
 			free(line);
-			// }
 		}
+        ft_free((void **) &colourful_delimiter);
 	}
-	waitpid(heredoc_parent, NULL, 0);
-	// dup2(stdin_backup, STDIN_FILENO);
-	// close(stdin_backup);
-    close(fd);
+	waitpid(heredoc_parent, &wstatus, 0);
+    if (WIFEXITED(wstatus) && WEXITSTATUS(wstatus) == 130)
+        shell->exit_code = 130;
     if (g_signalcode == SIGINT)
     {
-        //clean nicely //or maybe not even yet.
-        init_signals(INTERACTIVE);
+        init_signals(PARENT_NON_INTERACTIVE);
         return (-1);
     }
-    init_signals(INTERACTIVE);
-    fd = open(file_name, O_RDONLY);
-    // unlink(file_name);
+    init_signals(PARENT_NON_INTERACTIVE);
+    int fd = open(file_name, O_RDONLY);
+    unlink(file_name);
     return (fd);
 }
 
@@ -212,7 +192,7 @@ void handle_heredocs(t_shell *shell, t_token *token_list)
                     next_token->str = file_name; // Assign the file name
 
                     // Read the heredoc input and write it to the file
-                    int fd = read_heredoc_input(next_token->str, delimiter);
+                    int fd = read_heredoc_input(shell, next_token->str, delimiter);
                     if (g_signalcode == SIGINT)
                     {
                         shell->exit_code = EXIT_SIGINT;

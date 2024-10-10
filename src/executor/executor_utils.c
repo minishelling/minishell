@@ -7,8 +7,8 @@ t_builtin	check_builtin(char *cmd_name)
 						"declare", "unset", "env", "exit", NULL};
 	t_builtin	builtin_code;
 	
-	if (!cmd_name)
-		return (NULL_CMD);
+	// if (!cmd_name)
+	// 	return (NON_BUILTIN);
 	cmd_name_len = ft_strlen(cmd_name);
 	builtin_code = ECHO;
 	while (builtins[builtin_code])

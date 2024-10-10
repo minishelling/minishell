@@ -46,6 +46,7 @@ int main(int argc, char **argv, char **envp)
 				free_tree(shell.tree);
 				shell.tree = NULL;
 			}
+			//close_all_fds_in_process();
 			shell.input = NULL;
 		}
 	}
