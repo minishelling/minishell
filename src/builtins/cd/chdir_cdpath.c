@@ -68,12 +68,6 @@ t_ecode	chdir_null_cdpath(char *directory, ssize_t *i, int8_t *null_flag)
 	curpath = ft_strjoin("./", directory);
 	if (!curpath)
 		return (MALLOC_ERROR);
-	// status = check_curpath_access(curpath);
-	// if (status)
-	// {
-	// 	ft_free((void **)curpath);
-	// 	return (status);
-	// }
 	status = chdir(curpath);
 	ft_free((void **)curpath);
 	if (status)
@@ -95,12 +89,6 @@ t_ecode chdir_cdpath_value(char *cdpath_value, char *directory, ssize_t *i)
 	curpath = ft_strjoin_fs1(&curpath, directory);
 	if (!curpath)
 		return (MALLOC_ERROR);
-		// status = check_curpath_access(curpath);
-		// if (status)
-		// {
-		// 	ft_free((void **) curpath);
-		// 	continue ;
-		// }
 	status = chdir(curpath);
 	ft_free((void **) &curpath);
 	if (status)

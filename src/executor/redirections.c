@@ -13,14 +13,16 @@ static t_ecode	open_current_redir(t_redir_id redir_id, char *redir_file, int *fd
 	else if (redir_id == APP)
 		*fd = open(redir_file, O_WRONLY | O_APPEND | O_CREAT, 0644);
 	if (*fd == -1)
-		return (FAILURE); //Print errno.
+	{
+		handle_perror(redir_file);
+		return (FAILURE);
+	}
 	return (SUCCESS);
 }
 
 static t_ecode	close_and_replace(int replacement, int *oldfd)
 {
 	if (close(*oldfd) == -1)
-		// perror("close");
 		handle_perror("close");
 	*oldfd = replacement;
 	return (FAILURE);
@@ -49,10 +51,7 @@ static t_ecode	replace_redir_fd(t_cmd *cmd, t_redir *redir)
 			status = dup_and_close(redir->fd, cmd->latest_out);
 	}
 	if (status)
-	{
-		fprintf(stderr, "DUP|CLOSE Failure in open_redirections.\n");
 		return (FAILURE);
-	}
 	return (SUCCESS);
 }
 
@@ -61,22 +60,15 @@ t_ecode	open_redirections(t_shell *shell, t_cmd *current_cmd)
 	t_redir	*current_redir;
 
 	if (!shell || !current_cmd)
-	{
-		fprintf(stderr, "Failed to open redirections\n");
 		return (NULL_ERROR);
-	}
 	current_redir = current_cmd->redir;
 	while (current_redir)
 	{
 		if (open_current_redir(current_redir->redir_id, current_redir->file, &current_redir->fd) != SUCCESS)
-		{
-			handle_perror((char *)current_redir->file);
 			return (FAILURE);
-		}
 		if (replace_redir_fd(current_cmd, current_redir) != SUCCESS)
 			return (FAILURE);
 		current_redir = current_redir->next;
 	}
-	// fprintf(stderr, "Latest in: %d, Latest out: %d\n", current_cmd->latest_in, current_cmd->latest_out);
 	return (SUCCESS);
 }

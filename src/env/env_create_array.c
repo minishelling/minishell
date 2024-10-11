@@ -60,6 +60,5 @@ char	**create_export_array(t_env *env)
 		i++;
 		env = env->next;
 	}
-	env_array[nodes_count] = NULL;
-	return (env_array);
+	return (env_array[nodes_count] = NULL, env_array);
 }

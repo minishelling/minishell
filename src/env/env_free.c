@@ -1,6 +1,11 @@
 #include "../../include/minishell.h"
 
-//Done
+/**
+ * @brief Frees all environment nodes with its variables.
+ * It sets all nodes addresses to NULL.
+ * @param head A pointer to the address of the head node.
+ * @return void
+ */
 void	free_env_list(t_env	**head)
 {
 	t_env	*current;
@@ -18,7 +23,12 @@ void	free_env_list(t_env	**head)
 	return ;
 }
 
-//Done
+/**
+ * @brief Frees the variables in an environment node, sets the to NULL
+ * and frees the node itself while also setting it to NULL afterwards.
+ * @param node The environment node to be freed.
+ * @return void
+ */
 void	free_env_node(t_env **node)
 {
 	if (!(*node))

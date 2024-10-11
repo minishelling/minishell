@@ -14,7 +14,7 @@ int main(int argc, char **argv, char **envp)
 	}
 	shell.env_list = NULL;
 	shell.exit_code = 0;
-	if (init_env_list(&shell.env_list, envp))
+	if (create_env_list(&shell.env_list, envp))
 	{
 		ft_putstr_fd("Mini_shared: Error: Failed to initialize\n", 2);
 		exit(EXIT_FAILURE);

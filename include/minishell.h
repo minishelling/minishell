@@ -335,7 +335,7 @@ bool is_squote(t_token *token);
 bool is_word(t_token *token);
 bool is_env_var(t_token *token);
 
-void handle_builtin_err(char *cmd_name, char *err_msg);
+void handle_builtin_err(char *cmd_name, char *arg, char *err_msg);
 
 //SIGNALS
 
@@ -357,7 +357,7 @@ void	free_env_node(t_env **node);
 t_env	*new_env_node(void);
 t_ecode	populate_env_node(t_env **node, char *keyval);
 t_env	*create_populated_env_node(char *keyval);
-t_ecode	init_env_list(t_env **head, char **envp);
+t_ecode	create_env_list(t_env **head, char **envp);
 void	print_env_node(t_env *node);
 void	print_env_list(t_env *head);
 t_ecode	add_last_env_node(t_env **head, t_env *env);

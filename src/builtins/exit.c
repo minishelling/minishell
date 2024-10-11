@@ -14,10 +14,7 @@ static t_ecode handle_argc_2(char **cmd_args)
 	}
 	else
 	{
-		ft_putstr_fd("exit\n", 2);
-		ft_putstr_fd("minishared: exit: ", 2);
-		ft_putstr_fd(cmd_args[1], 2);
-		ft_putstr_fd(": numeric argument required\n", 2);
+		handle_builtin_err(cmd_args[0], cmd_args[1], "numeric argument required");
 		exit(2);
 	}
 }
@@ -33,31 +30,25 @@ static t_ecode handle_argc_gt_2(char **cmd_args, size_t argc)
 		}
 		else if (!ft_is_natural(cmd_args[2]))
 		{
-			ft_putstr_fd("exit\n", 2);
-			ft_putstr_fd("minishared: exit: ", 2);
-			ft_putstr_fd(cmd_args[1], 2);
-			ft_putstr_fd(": numeric argument required\n", 2);
+			handle_builtin_err(cmd_args[0], cmd_args[1], "numeric argument required");
 			exit(2);
 		}
 		else
 		{
 			ft_putstr_fd("exit\n", 2);
-			ft_putstr_fd("minishared: exit: too many arguments\n", 2);
+			handle_builtin_err(cmd_args[0], cmd_args[1], "too many arguments");
 			return (FAILURE);
 		}
 	}
 	else if (!ft_is_natural(cmd_args[1]))
 	{
-		ft_putstr_fd("exit\n", 2);
-		ft_putstr_fd("minishared: exit: ", 2);
-		ft_putstr_fd(cmd_args[1], 2);
-		ft_putstr_fd(": numeric argument required\n", 2);
+		handle_builtin_err(cmd_args[0], cmd_args[1], "numeric argument required");
 		exit(2); //Return 2
 	}
 	else
 	{
 		ft_putstr_fd("exit\n", 2);
-		ft_putstr_fd("minishared: exit: too many arguments\n", 2);
+		handle_builtin_err(cmd_args[0], cmd_args[1], "too many arguments");
 		return (FAILURE); //Return ERROR == -1, so the main prints exit and whatever...
 	}
 }
