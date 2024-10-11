@@ -383,6 +383,7 @@ void	close_all_fds_in_process(void);
 void	close_all_fds_in_cmd(t_cmd *cmd);
 size_t	ft_str_count(char **cmd_args);
 bool	ft_is_natural(char *arg);
+size_t	max_len(char *s1, char *s2);
 
 //FREE
 

@@ -29,32 +29,24 @@ void	handle_non_builtin(t_shell *shell, t_cmd *cmd)
 
 t_ecode	handle_redirs_in_child(t_cmd *cmd)
 {
-	t_ecode	status;
-
-	status = SUCCESS;
-
 	if (cmd->latest_in == ERROR || cmd->latest_in == ERROR)
 		exit(EXIT_FAILURE);
 	if (cmd->latest_in != STDIN_FILENO)
-		status = dup_and_close(cmd->latest_in, STDIN_FILENO);
-	if (status)
 	{
-		handle_perror("dup_and_close");
-		exit(EXIT_FAILURE);
+		if (dup_and_close(cmd->latest_in, STDIN_FILENO))
+			exit(EXIT_FAILURE);
 	}
 	if (cmd->latest_out != STDOUT_FILENO)
-		status = dup_and_close(cmd->latest_out, STDOUT_FILENO);
-	if (status)
 	{
-		handle_perror("dup_and_close");
-		exit(EXIT_FAILURE);
+		if (dup_and_close(cmd->latest_out, STDOUT_FILENO))
+			exit(EXIT_FAILURE);
 	}
 	return (SUCCESS);
 }
 
 void	run_child(t_shell *shell, t_cmd *cmd)
 {
-	char	*cmd_path = NULL;
+	char	*cmd_path;
 	char	**env_array;
 
 	init_signals(CHILD_NON_INTERACTIVE);
@@ -85,10 +77,6 @@ void	do_parent_duties(t_shell *shell, t_cmd *cmd)
 		shell->exit_code = WEXITSTATUS(wstatus);
 	}
 	else if (WIFSIGNALED(wstatus) == true)
-	{
 		shell->exit_code = EXIT_SIGQUIT;
-	}
-	fprintf(stderr, "Parent duties:\nSignal code: %d\n", g_signalcode);
-	printf ("Exit code: %d\n", shell->exit_code);
 	close_all_fds_in_cmd(cmd);
 }
