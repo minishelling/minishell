@@ -1,29 +1,52 @@
 #include "../../include/minishell.h"
 
-//Done
-t_ecode	add_last_env_node(t_env **head, t_env *env)
+/**
+ * @brief Appends a node to the environment list.
+ * 
+ * @param head The head node of the environment list.
+ * @param node The node to add to the list.
+ * @return It returns SUCCESS if the node is added to the end of the list,
+ * or if the head is NULL and it puts the node first on the list,
+ * or if there's no node to add.
+ */
+t_ecode	add_last_env_node(t_env **head, t_env *node)
 {
 	t_env	*last;
 
-	if (!*head || !env)
-		return (NULL_NODE);
+	if (!node)
+		return (SUCCESS);
+	if (!*head)
+	{
+		*head = node;
+		return (SUCCESS);
+	}
 	last = get_last_env_node(*head);
-	last->next = env;
+	last->next = node;
 	return (SUCCESS);
 }
 
-//Done
+/**
+ * @brief Updates an environment's node value and keyvalue with the new value.
+ * 
+ * @param head The head node of the environment list.
+ * @param key The key to find the target node, or to use when creating a new one.
+ * @param value The new value that's going to update the value and keyvalue strings.
+ * @param create_node If true it creates a new node if it fails to find it
+ * in the environment list, and appends it to the end of the list.
+ * @return SUCCESS if the value and keyvalue strings were updated successfully.
+ * An ERROR code if memory allocation fails.
+ */
 t_ecode	update_env_node(t_env **head, char *key, char *value, bool create_node)
 {
 	t_env	*node;
 	char	*keyval;
 
-	if (!*head || !key)
+	if (!key)
 		return (NULL_ERROR);
 	node = find_env_node(*head, key);
 	if (!node && create_node == false)
 		return (NULL_NODE);
-	else if (!node && create_node == true) // I would also have to add it to the list.
+	else if (!node && create_node == true)
 	{
 		if (key && !value)
 			node = create_populated_env_node(key);
@@ -31,22 +54,31 @@ t_ecode	update_env_node(t_env **head, char *key, char *value, bool create_node)
 		{
 			keyval = ft_strjoin(key, "=");
 			if (!keyval)
-				return (MALLOC_ERROR);
+				return (handle_perror("update_env_node"), MALLOC_ERROR);
 			keyval = ft_strjoin_fs1(&keyval, value);
 			if (!keyval)
-				return (MALLOC_ERROR);
+				return (handle_perror("update_env_node"), MALLOC_ERROR);
 			node = create_populated_env_node(keyval);
 		}
 		if (!node)
-			return (MALLOC_ERROR);
+			return (handle_perror("update_env_node"), MALLOC_ERROR);
 		return (add_last_env_node(head, node));
 	}
 	if (update_value_in_env_node(node, value))
-		return (MALLOC_ERROR);
+		return (handle_perror("update_env_node"), MALLOC_ERROR);
 	return (SUCCESS);
 }
 
-//Done
+/**
+ * @brief Updates the value string in an environment node with the new value.
+ * 
+ * @param node The target node whose value needs updating.
+ * @param value The new value.
+ * @return SUCCESS if the value is successfully replaced,
+ * or if the new value is NULL and there was no value,
+ * or if the new value is NULL and there was a value the latter is freed.
+ * It returns an ERROR code otherwise.
+ */
 t_ecode	update_value_in_env_node(t_env *node, char *value)
 {
 	if (!node)
@@ -62,11 +94,18 @@ t_ecode	update_value_in_env_node(t_env *node, char *value)
 		ft_free((void **) &node->value);
 	node->value = ft_strdup(value);
 	if (!node->value)
-		return (MALLOC_ERROR);
+		return (handle_perror("update_value_in_env_node"), MALLOC_ERROR);
 	return (update_keyvalue_in_env_node(node));
 }
 
-//Done
+/**
+ * @brief Takes an environment node and updates the keyvalue string
+ * based on the key and value strings.
+ * @param node The node whose keyvalue string is to be modified.
+ * @return It returns SUCCESS in the event that there is no value string,
+ * or if it successfully created a new string out of the key and value strings.
+ * It returns ERROR codes in case of failure.
+ */
 t_ecode	update_keyvalue_in_env_node(t_env *node)
 {
 	char	*temp;
@@ -79,40 +118,15 @@ t_ecode	update_keyvalue_in_env_node(t_env *node)
 		return (ft_free((void **) &node->keyvalue), SUCCESS);
 	temp = ft_strjoin(node->key, "=");
 	if (!temp)
-		return (MALLOC_ERROR);
+		return (handle_perror("update_keyvalue_in_env_node"), MALLOC_ERROR);
 	temp = ft_strjoin_fs1(&temp, node->value);
 	if (!temp)
-		return (MALLOC_ERROR);
+		return (handle_perror("update_keyvalue_in_env_node"), MALLOC_ERROR);
 	if (node->keyvalue)
 		ft_free((void **) &node->keyvalue);
 	node->keyvalue = ft_strdup(temp);
 	ft_free((void **) &temp);
 	if (!node->keyvalue)
-		return (MALLOC_ERROR);
+		return (handle_perror("update_keyvalue_in_env_node"), MALLOC_ERROR);
 	return (SUCCESS);
-}
-
-//Done
-t_ecode	update_pwd(t_env *env_head)
-{
-	t_env	*pwd_node;
-	char	*keyval;
-
-	if (!env_head)
-		return (NULL_ERROR);
-	pwd_node = find_env_node(env_head, "PWD");
-	if (!pwd_node)
-	{
-		keyval = ft_strjoin("PWD", "=");
-		if (!keyval)
-			return (MALLOC_ERROR);
-		keyval = ft_strjoin_fs1(&keyval, getcwd(NULL, PATH_MAX));
-		if (!keyval)
-			return (MALLOC_ERROR);
-		pwd_node = create_populated_env_node(keyval);
-		if (!pwd_node)
-			return (ft_free((void **) &keyval), MALLOC_ERROR);
-		return (ft_free((void **) &keyval), SUCCESS);
-	}
-	return (update_value_in_env_node(pwd_node, getcwd(NULL, PATH_MAX)));
 }
