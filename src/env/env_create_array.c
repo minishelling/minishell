@@ -1,6 +1,11 @@
 #include "../../include/minishell.h"
 
-//Done
+/**
+ * @brief Creates an array of keyvalue strings
+ * from an environment list.
+ * @param env The head of the environment list.
+ * @return The array of keyvalues strings.
+ */
 char	**create_env_array(t_env *env)
 {
 	char	**env_array;
@@ -14,7 +19,7 @@ char	**create_env_array(t_env *env)
 		return (NULL);
 	env_array = ft_calloc (nodes_count + 1, sizeof(char *));
 	if (!env_array)
-		return (NULL);
+		return (handle_perror("create_env_array"), NULL);
 	i = 0;
 	while (env && i < nodes_count)
 	{
@@ -25,7 +30,7 @@ char	**create_env_array(t_env *env)
 		}
 		env_array[i] = ft_strdup(env->keyvalue);
 		if (!env_array[i])
-			return (ft_free_2d((void ***) &env_array), NULL);
+			return (ft_free_2d((void ***) &env_array), handle_perror("create_env_array"), NULL);
 		i++;
 		env = env->next;
 	}
@@ -33,7 +38,12 @@ char	**create_env_array(t_env *env)
 	return (env_array);
 }
 
-//Done
+/**
+ * @brief Creates an array of keyvalue or key strings
+ * from an environment list.
+ * @param env The head of the environment list.
+ * @return The array of keyvalues or keys strings.
+ */
 char	**create_export_array(t_env *env)
 {
 	char	**env_array;
@@ -47,7 +57,7 @@ char	**create_export_array(t_env *env)
 		return (NULL);
 	env_array = ft_calloc (nodes_count + 1, sizeof(char *));
 	if (!env_array)
-		return (NULL);
+		return (handle_perror("create_export_array"), NULL);
 	i = 0;
 	while (i < nodes_count)
 	{
@@ -56,7 +66,7 @@ char	**create_export_array(t_env *env)
 		else
 			env_array[i] = ft_strdup(env->key);
 		if (!env_array[i])
-			return (ft_free_2d((void ***) &env_array), NULL);
+			return (ft_free_2d((void ***) &env_array), handle_perror("create_export_array"), NULL);
 		i++;
 		env = env->next;
 	}
