@@ -72,20 +72,12 @@ int add_new_arg(t_cmd *cmd, t_token *token)
 	arr[i] = token->str;
 	
 	return (0);
-	
 }
 
 int	parser_space(t_cmd *cmd, t_token *token)
 {
 	(void) cmd;
 	(void)token;
-	return (0);
-}
-
-int	parser_semicol(t_cmd *cmd_node, t_token *token)
-{
-	(void) cmd_node;
-	(void) token;
 	return (0);
 }
 

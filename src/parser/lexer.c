@@ -47,21 +47,20 @@ int assign_token_id_and_string(char *str, size_t *pos, t_token *token)
     int start_pos;
 
     start_pos = *pos;
-    t_delimiter_func func[14] = {
+    t_delimiter_func func[13] = {
         [0] = &set_pos_end_space_or_word,
         [1] = &set_pos_end_space_or_word,
         [2] = &set_pos_end_space_or_word,
         [3] = &set_pos_end_pipe,
         [4] = &set_pos_end_and_opr,
-        [5] = &set_pos_end_semicol,
+        [5] = &set_pos_end_parentheses,
         [6] = &set_pos_end_parentheses,
-        [7] = &set_pos_end_parentheses,
+        [7] = &set_pos_end_redir,
         [8] = &set_pos_end_redir,
-        [9] = &set_pos_end_redir,
+        [9] = &set_pos_end_quote,
         [10] = &set_pos_end_quote,
-        [11] = &set_pos_end_quote,
-        [12] = &set_pos_end_env_var,
-        [13] = &set_pos_end_space_or_word,
+        [11] = &set_pos_end_env_var,
+        [12] = &set_pos_end_space_or_word,
     };
     token->id = get_token_id(str[(*pos)]);
     func[token->id](str, pos, &token->id);
