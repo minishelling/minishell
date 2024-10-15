@@ -1,7 +1,7 @@
 #include "../../include/minishell.h"
 
 static void print_echo_chars(char **strs_arr, bool no_newline);
-static t_ecode newline_option(char *option_arg);
+static int newline_option(char *option_arg);
 
 /**
  * @brief Prints the arguments provided, with the option

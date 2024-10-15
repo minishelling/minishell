@@ -4,19 +4,28 @@
  * @brief Updates the PWD and OLDPWD environment nodes
  * with the new values.
  * @param env_list A double pointer to the environment list.
- * @param cwd A double pointer to cwd.
+ * @param cwd The cwd string that holds the value of OLDPWD,
+ * and that's going to be updated with the value of PWD.
+ * @return It returns an error code in the case of a NULL env list,
+ * or in the case that it fails to update OLDPWD or PWD,
+ * while also printing an error message.
+ * Returns SUCCESS if it succeeds in updating both OLDPWD and PWD.
  */
-t_ecode	update_oldpwd_pwd(t_env **env_list, char **cwd)
+t_ecode	update_oldpwd_pwd(t_env **env_list, char *cwd)
 {
 	if (!*env_list)
 		return (NULL_ERROR);
-	update_env_node(env_list, "OLDPWD", *cwd, true);
-	ft_free((void **) cwd);
-	*cwd = getcwd(NULL, PATH_MAX);
-	if (!*cwd)
-		return (MALLOC_ERROR);
-	update_env_node(env_list, "PWD", *cwd, true);
-	ft_free((void **) cwd);
+	if (update_env_node(env_list, "OLDPWD", cwd, true))
+	{
+		handle_builtin_err("cd", NULL, "failed to update OLDPWD.");
+		return (FAILURE);
+	}
+	getcwd(cwd, PATH_MAX);
+	if (update_env_node(env_list, "PWD", cwd, true))
+	{
+		handle_builtin_err("cd", NULL, "failed to update PWD.");
+		return (FAILURE);
+	}
 	return (SUCCESS);
 }
 
@@ -73,9 +82,7 @@ bool	has_cdpath_prefix(char *directory)
 	return (true);
 }
 
-/**
- * @brief 
- */
+
 t_ecode	check_for_special_cd_cases(t_env *env, char *directory, char **curpath)
 {
 	t_env	*env_node;
@@ -85,7 +92,6 @@ t_ecode	check_for_special_cd_cases(t_env *env, char *directory, char **curpath)
 		return (SUCCESS);
 	if (!ft_strncmp(directory, "~", 1))
 	{
-		printf("~ is home\n");
 		env_node = find_env_node(env, "HOME");
 		if (!env_node)
 			return (ENV_ERROR);
@@ -95,7 +101,6 @@ t_ecode	check_for_special_cd_cases(t_env *env, char *directory, char **curpath)
 	}
 	else if (!ft_strncmp(*curpath, "-", 1))
 	{
-		printf("~ is home\n");
 		env_node = find_env_node(env, "OLDPWD");
 		if (!env_node)
 			return (ENV_ERROR);

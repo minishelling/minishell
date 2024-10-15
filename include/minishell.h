@@ -403,16 +403,16 @@ t_ecode	exit_builtin(t_shell *shell, char **cmd_args);
 //	CD
 
 t_ecode	cd_builtin(t_shell *shell, char **cmd_args);
-t_ecode	chdir_home(t_env **env_list, char **cwd);
-t_ecode	update_oldpwd_pwd(t_env **env_list, char **cwd);
-t_ecode	chdir_tilde(t_env **env_list, char **cwd);
-t_ecode	chdir_dash(t_env **env_list, char **cwd);
-t_ecode	chdir_cdpath(t_env **env_list, char *directory, char **cwd);
+t_ecode	chdir_home(t_env **env_list, char *cwd);
+t_ecode	update_oldpwd_pwd(t_env **env_list, char *cwd);
+t_ecode	chdir_tilde(t_env **env_list, char *cwd);
+t_ecode	chdir_dash(t_env **env_list, char *cwd);
+t_ecode	chdir_cdpath(t_env **env_list, char *directory, char *cwd);
 t_ecode	traverse_and_chdir_cdpath(char **cdpath_values, ssize_t values_count, char *directory);
 t_ecode	check_curpath_access(char *curpath);
 t_ecode	chdir_null_cdpath(char *directory, ssize_t *i, int8_t *null_flag);
 t_ecode chdir_cdpath_value(char *cdpath_value, char *directory, ssize_t *i);
-t_ecode	chdir_default(t_env **env_list, char *directory, char **cwd);
+t_ecode	chdir_default(t_env **env_list, char *directory, char *cwd);
 
 bool		has_cdpath_prefix(char *directory);
 // t_ecode		check_for_special_cd_cases(t_env *env, char *directory, char **curpath);

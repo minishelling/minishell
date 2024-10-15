@@ -1,6 +1,6 @@
 #include "../../../include/minishell.h"
 
-t_ecode	chdir_cdpath(t_env **env_list, char *directory, char **cwd)
+t_ecode	chdir_cdpath(t_env **env_list, char *directory, char *cwd)
 {
 	t_env	*cdpath_node;
 	char	**cdpath_values;
@@ -21,7 +21,7 @@ t_ecode	chdir_cdpath(t_env **env_list, char *directory, char **cwd)
 	status = traverse_and_chdir_cdpath(cdpath_values, values_count, directory);
 	ft_free_2d((void ***) &cdpath_values);
 	if (status == MALLOC_ERROR)
-		return (ft_free((void **) cwd), MALLOC_ERROR);
+		return (MALLOC_ERROR);
 	else if (status)
 		return (PROCEED);
 	return (update_oldpwd_pwd(env_list, cwd));
