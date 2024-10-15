@@ -7,6 +7,32 @@
 // #define MINISHARED_PROMPT "\001\033[38;5;196m\002M\001\033[38;5;202m\002i\001\033[38;5;208m\002n\001\033[38;5;214m\002i\001\033[38;5;220m\002_\001\033[38;5;226m\002s\001\033[38;5;190m\002h\001\033[38;5;154m\002a\001\033[38;5;118m\002r\001\033[38;5;82m\002e\001\033[38;5;120m\002d\001\033[0m\002<🤜 🤛> \001\033[0m\002"
 // #define MINISHARED_PROMPT "\001\033[38;5;93m\002M\001\033[38;5;99m\002i\001\033[38;5;111m\002n\001\033[38;5;63m\002i\001\033[38;5;75m\002_\001\033[38;5;81m\002s\001\033[38;5;118m\002h\001\033[38;5;154m\002a\001\033[38;5;190m\002r\001\033[38;5;226m\002e\001\033[38;5;214m\002d\001\033[0m\002<🤜 🤛> \001\033[0m\002"
 
+// char	*get_home(void)
+// {
+// 	char	*home_path;
+// 	char	**home_breakdown;
+
+// 	home_breakdown = NULL;
+// 	home_path = getenv("HOME");
+// 	if (home_path)
+// 	{
+// 		home_breakdown = ft_split(home_path, '/');
+// 		if (!home_breakdown)
+// 			return (NULL);
+// 	}
+// 	home_path = ft_strjoin("/", home_breakdown[0]);
+// 	if (!home_path)
+// 		return (ft_free_2d((void ***) &home_breakdown), NULL);
+// 	home_path = ft_strjoin_fs1(&home_path, "/");
+// 	if (!home_path)
+// 		return (ft_free_2d((void ***) &home_breakdown), NULL);
+// 	home_path = ft_strjoin_fs1(&home_path, home_breakdown[1]);
+// 	if (!home_path)
+// 		return (ft_free_2d((void ***) &home_breakdown), NULL);
+// 	ft_free_2d((void ***) &home_breakdown);
+// 	return (home_path);
+// }
+
 
 /**
  * @brief Updates the PWD node,

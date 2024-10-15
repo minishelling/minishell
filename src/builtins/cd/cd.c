@@ -28,20 +28,7 @@ t_ecode	cd_builtin(t_shell *shell, char **cmd_args)
 	return (SUCCESS); //Handle exit codes and errors and return success.
 }
 
-//Cd util functions
-t_ecode	update_oldpwd_pwd(t_env **env_list, char **cwd)
-{
-	if (!*env_list)
-		return (NULL_ERROR);
-	update_env_node(env_list, "OLDPWD", *cwd, true);
-	ft_free((void **) cwd);
-	*cwd = getcwd(NULL, PATH_MAX);
-	if (!*cwd)
-		return (MALLOC_ERROR);
-	update_env_node(env_list, "PWD", *cwd, true);
-	ft_free((void **) cwd);
-	return (SUCCESS);
-}
+
 
 t_ecode	check_curpath_access(char *curpath)
 {
