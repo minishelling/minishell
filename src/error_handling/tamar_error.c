@@ -8,11 +8,11 @@ char *get_err_msg(int e)
 		"Syntax error: unclosed quotes\n",
 		"syntax error near unexpected token `(`\n",
 		"syntax error near unexpected token `)`\n",
-		"Syntax error near unexpected token `|` or `||`\n", 
-		"Syntax error near unexpected token `&` or `&&`\n", 
-		"Syntax error near unexpected token `<` or `>`\n", 
-		"Syntax error near unexpected token `;`\n", 
-		"Syntax error\n", 
+		"Syntax error near unexpected token `|` \n",
+		"Syntax error near unexpected token `||`\n",
+		"Syntax error near unexpected token `&&`\n",
+		"Syntax error near unexpected token `<` or `>`\n",
+		"Syntax error\n",
 		"Error: unable to allocate dynamic memory\n",
 		"SIGINT_HDOC"
 	};

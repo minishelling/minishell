@@ -26,7 +26,7 @@
 
 #define ERR_PROMPT "Mini_shared: \001\033[0m\002"
 
-# define META_CHARS_PLUS_SET " \t\n|&;()><\'\"$"
+# define META_CHARS_PLUS_SET " \t\n|&()><\'\"$"
 # define ERROR -1
 
 #define RESET_COLOR "\033[0m"
@@ -98,9 +98,9 @@ enum e_parsing_error
 	ERR_SYNTAX_UNEXPECT_OPEN,
 	ERR_SYNTAX_UNEXPECT_CLOSE,
 	ERR_SYNTAX_PIPE,
+	ERR_SYNTAX_OR,
 	ERR_SYNTAX_AND,
 	ERR_SYNTAX_REDIR,
-	ERR_SYNTAX_SEMICOL,
 	ERR_SYNTAX_ERROR,
 	ERR_MEM,
 	SIGINT_HDOC,
@@ -113,7 +113,6 @@ typedef enum e_token_id
 	NL,
 	PIPE,
 	AND_OPR,
-	SEMICOL,
 	PAR_OPEN,
 	PAR_CLOSE,
 	LT,
@@ -146,6 +145,7 @@ typedef enum e_builtin
 	ENV,
 	EXIT,
 	NON_BUILTIN, //8
+	NULL_CMD  //Tamar added, did Lisandro intended?
 }	t_builtin;
 
 typedef struct s_curpath
@@ -226,7 +226,6 @@ int		parse(t_shell *shell);
 void	set_pos_end_space_or_word(char *str, size_t *pos, t_token_id *token_id);
 void	set_pos_end_quote(char *str, size_t *pos, t_token_id *token_id);
 void	set_pos_end_and_opr(char *str, size_t *pos, t_token_id *token_id);
-void	set_pos_end_semicol(char *str, size_t *pos, t_token_id *token_id);
 void	set_pos_end_parentheses(char *str, size_t *pos, t_token_id *token_id);
 void	set_pos_end_redir(char *str, size_t *pos, t_token_id *token_id);
 void	set_pos_end_env_var(char *str, size_t *pos, t_token_id *token_id);
@@ -234,20 +233,14 @@ void	set_pos_end_pipe(char *str, size_t *pos, t_token_id *token_id);
 
 int	syntax_pipe(t_token *t_prev, t_token *t_cur, t_env *env_list);
 int	syntax_and_opr(t_token *t_prev, t_token *t_cur, t_env *env_list);
-int	syntax_semicol(t_token *t_prev, t_token *t_cur, t_env *env_list);
 int	syntax_parens(t_token *t_prev, t_token *t_cur, t_env *env_list);
 int	syntax_redir(t_token *t_prev, t_token *t_cur, t_env *env_list);
-int	syntax_misc(t_token *t_prev, t_token *t_cur, t_env *env_list);
+int	syntax_noop(t_token *t_prev, t_token *t_cur, t_env *env_list);
 int	syntax_word(t_token *t_prev, t_token *t_cur, t_env *env_list);
 
-int	parser_space(t_cmd *cmd, t_token *token);
-int	parser_pipe(t_cmd *cmd_node, t_token *token);
-int	parser_and_opr(t_cmd *cmd, t_token *token);
-int	parser_semicol(t_cmd *cmd, t_token *token);
-int	parser_par_open(t_cmd *cmd, t_token *token);
-int	parser_par_close(t_cmd *cmd, t_token *token);
+int parser_noop(t_cmd *cmd_node, t_token *token);
 int	parser_redir(t_cmd *cmd, t_token *token);
-int	parser_or_opr(t_cmd *cmd, t_token *token);
+int parser_arith_expan(t_cmd *cmd_node, t_token *token);
 int	add_new_arg(t_cmd *cmd, t_token *token);
 
 t_token	*new_token(void);
@@ -255,25 +248,22 @@ void	add_token_in_back(t_token **t_list, t_token *new);
 t_token_id	get_token_id(char c);
 t_token	*get_after_space_token(t_token *token);
 t_token	*get_after_pipe_token(t_token *token);
-char	*get_expanded_value(char *str, size_t pos,size_t *len_env_var, t_env *env_list);
-t_token	*free_token_node(t_token *t_node);
-void	free_last_token(t_token *t_list, t_token *(*f) (t_token *));
+t_token	*get_after_word_token(t_token *token);
+t_token *get_after_arith_expan_token(t_token *token);
+void 	remove_space_tokens(t_token **head);
+t_token *remove_token_by_reference(t_token *start_token, t_token *token_to_remove);
+
 t_token	*copy_token(t_token *t_node);
 t_token	*last_token(t_token *token_list_head);
 void 	free_token_list(t_token *token_list);
-t_token	*free_token_str(t_token *token);
 
+char	*get_expanded_value(char *str, size_t pos,size_t *len_env_var, t_env *env_list);
 t_env	*new_env_var(char *env_var_str);
 void	add_env_var_in_back(t_env **env_var, t_env *new_env_var);
 char	*get_env_value_from_key(t_env *env_head, char *key);
-// void	free_env_node(t_env *env_var_node);
-// void	free_env_list(t_env *env_list);
 
 t_cmd	*new_cmd(void);
-t_cmd	*cmd_last(t_cmd *cmd);
-void	add_cmd_in_back(t_cmd **cmd_list_head, t_cmd *new_cmd);
 t_cmd	*free_cmd(t_cmd *cmd);
-void	free_cmd_list(t_cmd *cmd_list_head);
 
 t_redir	*new_redir(void);
 void	add_redir_in_back(t_redir **redir_list_head, t_redir *new_redir);
@@ -285,31 +275,29 @@ void	print_env(t_env *env_list);
 void	print_redir(t_redir *redir_list_head);
 void	print_token(t_token *head);
 void	print_cmd(t_cmd *cmd);
+void	print_tree(t_tree *node, int level);
+
 void 	handle_parsing_err(t_shell *shell, int err_no, void *param);
 
-t_token	*get_after_word_token(t_token *token);
-t_token *find_last_log_op_token_nip(t_token *token_head, t_token *end_token);
 t_tree 	*make_tree(t_shell *shell, t_token *start_token, t_token *end_token);
-void	print_tree(t_tree *node, int level);
-void 	remove_space_tokens(t_token **head);
-t_token *remove_token(t_token *start_token, t_token *token_to_remove);
+
+
 void 	free_tree(t_tree *node);
 void 	remove_subshell_parens(t_shell *shell);
 int	make_cmd(t_shell *shell, t_token *start_token, t_token *end_token);
 void print_tree_with_cmds(t_tree *node, int level);
-t_token *get_after_arith_expan_token(t_token *token);
-int parser_arith_expan(t_cmd *cmd_node, t_token *token);
-int pre_execute(t_shell *shell, t_tree *node, t_tree *parent_node, int prev_exit_code);
-void free_cmd_list(t_cmd *cmd_list);
 
-int parser_env_var(t_cmd *cmd_node, t_token *token);
+
+
+int pre_execute(t_shell *shell, t_tree *node, t_tree *parent_node, int prev_exit_code);
+
 bool	join_quotes_tokens(t_shell *shell);
 char *process_double_quotes(t_shell *shell, char **str_ptr, char *expanded_str, t_env *env_list);
 char *process_single_quotes(char **str_ptr, char *expanded_str);
 char *process_unquoted(char **str_ptr, char *expanded_str, t_env *env_list);
 t_token *previous_token_if_exists(t_token *head, t_token *target);
 t_token *handle_arith_expan(t_token **head, t_token **cur_open, t_token **cur_close);
-void handle_heredocs(t_shell *shell, t_token *token_list);
+int handle_heredocs(t_shell *shell, t_token *token_list);
 t_ecode	open_redirections(t_shell *shell, t_cmd *head);
 void print_tree_verbose(t_tree *node, int level);
 int handle_pipe_subtree(t_shell *shell, t_tree *tree_node);
@@ -320,6 +308,7 @@ bool is_dquote(t_token *token);
 bool is_squote(t_token *token);
 bool is_word(t_token *token);
 bool is_env_var(t_token *token);
+void free_token(t_token *token);
 
 void handle_builtin_err(char *cmd_name, char *arg, char *err_msg);
 

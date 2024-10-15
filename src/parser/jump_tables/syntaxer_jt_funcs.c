@@ -4,7 +4,6 @@ int	syntax_pipe(t_token *prev_token, t_token *current, t_env *env_list)
 {
 	t_token	*next_token;
 	
-	
 	(void) env_list;
 	next_token = get_after_space_token(current);
 	if (prev_token == NULL || next_token == NULL)
@@ -16,7 +15,7 @@ int	syntax_pipe(t_token *prev_token, t_token *current, t_env *env_list)
 	if ((current->id == OR_OPR && (next_token->id == OR_OPR || next_token->id == PIPE)) ||
 		(current->id == PIPE && next_token->id == OR_OPR))
 			return (ERR_SYNTAX_PIPE);
-	return (0);
+	return (PARSING_OK);
 }
 
 int	syntax_redir(t_token *prev_token, t_token *current, t_env *env_list)
@@ -25,8 +24,6 @@ int	syntax_redir(t_token *prev_token, t_token *current, t_env *env_list)
 	(void)env_list;
 	(void) prev_token;
 	next_token = get_after_space_token(current);
-	//printf ("next token is %s\n", next_token->str);
-	
 	if (!next_token)
 		return (ERR_SYNTAX_NL);
 	if (next_token->id == PAR_OPEN)
@@ -41,15 +38,15 @@ int	syntax_redir(t_token *prev_token, t_token *current, t_env *env_list)
 		return (ERR_SYNTAX_REDIR);
 	if (next_token->id != WORD)
 		return (ERR_SYNTAX_ERROR);
-	return (0);
+	return (PARSING_OK);
 }
 
-int	syntax_misc(t_token *t_prev, t_token *t_cur, t_env *env_list)
+int	syntax_noop(t_token *t_prev, t_token *t_cur, t_env *env_list)
 {
 	(void) t_prev;
 	(void) t_cur;
 	(void) env_list;
-	return (0);
+	return (PARSING_OK);
 }
 
 int	syntax_parens(t_token *prev_token, t_token *current, t_env *env_list)
@@ -63,11 +60,12 @@ int	syntax_parens(t_token *prev_token, t_token *current, t_env *env_list)
 	{
 		if (current->id == PAR_OPEN && next_token->id == AND_OPR)
 			return (ERR_SYNTAX_AND);
-		if ((current->id == PAR_OPEN && next_token->id == OR_OPR)
-			|| (current->id == PAR_OPEN && next_token->id == PIPE))
-				return (ERR_SYNTAX_PIPE);
+		if (current->id == PAR_OPEN && next_token->id == OR_OPR)
+			return (ERR_SYNTAX_OR);
+		if (current->id == PAR_OPEN && next_token->id == PIPE)
+			return (ERR_SYNTAX_PIPE);
 	}
-	return (0);
+	return (PARSING_OK);
 }
 
 int	syntax_word(t_token *prev_token, t_token *current, t_env *env_list)
@@ -87,7 +85,7 @@ int	syntax_word(t_token *prev_token, t_token *current, t_env *env_list)
 				return (ERR_SYNTAX_UNEXPECT_OPEN);
 		}
 	}
-	return (0);
+	return (PARSING_OK);
 }
 		
 
@@ -105,16 +103,5 @@ int	syntax_and_opr(t_token *prev, t_token *current, t_env *env_list)
 		return (ERR_SYNTAX_AND);
 	if (current->id == AND_OPR && next_token->id == PAR_CLOSE)
 		return (ERR_SYNTAX_AND);
-	return(0);
-}
-
-int	syntax_semicol(t_token *t_prev, t_token *t_cur, t_env *env_list)
-{
-	(void) env_list;
-	(void) t_cur;
-	if (t_prev == NULL || t_prev->id == PIPE)
-		return (ERR_SYNTAX_SEMICOL);
-	if (t_cur->id == SEMICOL && (t_prev->id == GT || t_prev->id == LT))
-		return (ERR_SYNTAX_SEMICOL);
-	return(0);
+	return(PARSING_OK);
 }

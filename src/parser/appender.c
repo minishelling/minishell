@@ -1,20 +1,5 @@
 #include "../../include/minishell.h"
 
-
-// t_token *free_token(t_token **token)
-// {
-//     t_token *next_token;
-
-//     if (*token == NULL)
-//         return (NULL);
-
-//     next_token = (*token)->next;
-//     free(*token);
-// 	*token = NULL;
-//     return (next_token);
-// }
-
-
 /**
  * @brief Joins two tokens based on their quote types (single or double).
  *
@@ -88,15 +73,13 @@ void process_and_remove_parens(t_shell *shell, t_token *current, t_token *word_t
     t_token *token_before_par = previous_token_if_exists(shell->token, current);
 
     // Remove both opening and closing parentheses
-    shell->token = remove_token(shell->token, current);   // Remove PAR_OPEN
-    shell->token = remove_token(shell->token, word_token);  // Remove PAR_CLOSE
+    shell->token = remove_token_by_reference(shell->token, current);   // Remove PAR_OPEN
+    shell->token = remove_token_by_reference(shell->token, word_token);  // Remove PAR_CLOSE
 
     // Handle arithmetic expansion if both parentheses are balanced
     if (token_before_par && token_before_par->id == PAR_OPEN &&
         token_after_par && token_after_par->id == PAR_CLOSE)
-    {
-        handle_arith_expan(&shell->token, &token_before_par, &token_after_par);
-    }
+            handle_arith_expan(&shell->token, &token_before_par, &token_after_par);
 }
 
 void check_and_process_parens(t_shell *shell, t_token **current_token)
@@ -155,7 +138,8 @@ bool join_word_and_env_var_tokens(t_shell *shell)
 {
     t_token *current_token;
     t_token *previous_token;
-	char *joined_str;
+    t_token *temp_token;
+    char *joined_str;
 
     current_token = shell->token;
     previous_token = NULL;
@@ -167,15 +151,18 @@ bool join_word_and_env_var_tokens(t_shell *shell)
              is_squote(current_token) || is_dquote(current_token)))
         {
             joined_str = ft_strjoin_fs1(&previous_token->str, current_token->str); // Join strings
-            if (joined_str == NULL)
+            if (!joined_str)
                 return (ERR_MEM);
             previous_token->str = joined_str;
-            current_token = free_token_str(current_token);
-            previous_token->next = current_token;
+            temp_token = current_token->next;  // Save the next token reference
+            free_token(current_token);
+            previous_token->next = temp_token;  // Link previous_token to the next token
+            current_token = temp_token;  // Move to the next token in the list
             continue;
         }
-        previous_token = current_token;
-        current_token = current_token->next;
+        previous_token = current_token;  // Move the previous_token forward
+        current_token = current_token->next;  // Move to the next token
     }
     return (PARSING_OK);
 }
+

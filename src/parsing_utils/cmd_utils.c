@@ -15,33 +15,21 @@ t_cmd	*new_cmd(void)
 	return (current_cmd);
 }
 
-t_cmd	*last_cmd(t_cmd *cmd)
+void free_args(char ***args)
 {
-	t_cmd	*current_cmd;
-	
-	if (cmd == NULL)
-		return (NULL);
-		
-	current_cmd = cmd;	
-	while (current_cmd->next != NULL)
-		current_cmd = current_cmd->next;
-	return (current_cmd);
-}
+    int i;
 
-void	add_cmd_in_back(t_cmd **cmd_list_head, t_cmd *new_cmd)
-{
-	t_cmd	*current_cmd;
+    if (*args == NULL)
+        return;
 
-	if (!new_cmd)
-		return ;
-	else if (!(*cmd_list_head))
-	{
-		*cmd_list_head = new_cmd;
-		return ;
-	}
-	current_cmd = last_cmd(*cmd_list_head);
-	current_cmd->next = new_cmd;
-	return ;
+    i = 0;
+    while ((*args)[i])
+    {
+        free((*args)[i]);
+        i++;
+    }
+    free(*args);
+	*args = NULL;
 }
 
 t_cmd	*free_cmd(t_cmd *cmd)
@@ -49,8 +37,8 @@ t_cmd	*free_cmd(t_cmd *cmd)
 	t_cmd	*current_cmd;
 
 	current_cmd = cmd->next;
-	// if (cmd->args != NULL)
-	// 	ft_free_split(cmd->args);
+	if (cmd->args)
+		free_args(&cmd->args);
 	cmd->args = NULL;
 	if (cmd->redir != NULL)
 		free_redir_list(cmd->redir);

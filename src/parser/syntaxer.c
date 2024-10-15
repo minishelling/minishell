@@ -115,6 +115,9 @@ void tokenize_and_n_or_opr(t_token *token_list_head)
 /**
  * @brief Processes syntax checks for the token list.
  *
+ * This function iterates through the token list and applies the appropriate syntax checks.
+ * A new token for the OR operator (`||`) has been added to the jump table.
+ *
  * @param shell A pointer to the shell structure containing token list and environment.
  * @param previous_token A pointer to the pointer of the previous token for reference.
  * @return Returns an error code if a syntax error is detected, otherwise returns PARSING_OK.
@@ -125,22 +128,21 @@ int process_syntax_checks(t_shell *shell, t_token **previous_token)
     int err_no;
 
     current_token = skip_whitespace(shell->token);
-    t_syntax_func func[15] = {
-        [0] = syntax_misc,
-        [1] = syntax_misc,
-        [2] = syntax_misc,
+    t_syntax_func func[14] = {
+        [0] = syntax_noop,
+        [1] = syntax_noop,
+        [2] = syntax_noop,
         [3] = syntax_pipe,
         [4] = syntax_and_opr,
-        [5] = syntax_semicol,
+        [5] = syntax_parens,
         [6] = syntax_parens,
-        [7] = syntax_parens,
+        [7] = syntax_redir,
         [8] = syntax_redir,
-        [9] = syntax_redir,
-        [10] = syntax_misc,
-        [11] = syntax_misc,
-        [12] = syntax_misc,
-        [13] = syntax_word, // word
-        [14] = syntax_pipe // or_opr
+        [9] = syntax_noop,
+        [10] = syntax_noop,
+        [11] = syntax_noop,
+        [12] = syntax_word,
+        [13] = syntax_pipe
     };
     while (current_token != NULL)
     {

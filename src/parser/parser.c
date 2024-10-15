@@ -95,6 +95,9 @@ typedef int (*t_parser_func)(t_cmd *current_cmd, t_token *token);
 /**
  * @brief Processes a token with the appropriate parser function.
  *
+ * For single quotes, double quotes, environment variables, and word tokens,
+ * this function adds a new argument to the command structure.
+ *
  * @param shell Pointer to the shell structure.
  * @param current_cmd Pointer to the current command structure.
  * @param token Pointer to the current token.
@@ -102,25 +105,24 @@ typedef int (*t_parser_func)(t_cmd *current_cmd, t_token *token);
  */
 static bool process_token(t_shell *shell, t_cmd *current_cmd, t_token *token)
 {
-    int status;
-    t_parser_func parser_functions[16] = {
-        [0] = parser_space,
-        [1] = parser_space,
-        [2] = parser_space,
-        [3] = NULL,
-        [4] = parser_and_opr,
-        [5] = parser_semicol,
-        [6] = parser_par_open,
-        [7] = parser_par_close,
-        [8] = parser_redir,
-        [9] = parser_redir,
-        [10] = add_new_arg, // for single quotes
-        [11] = add_new_arg, // for double quotes
-        [12] = add_new_arg, // for environment variable
-        [13] = add_new_arg, // for general cases
-        [14] = parser_or_opr,
-        [15] = parser_arith_expan
-    };
+int status;
+t_parser_func parser_functions[15] = {
+    [0] = parser_noop,
+    [1] = parser_noop,
+    [2] = parser_noop,
+    [3] = NULL,
+    [4] = parser_noop,
+    [5] = parser_noop,
+    [6] = parser_noop,
+    [7] = parser_redir,
+    [8] = parser_redir,
+    [9] = add_new_arg,
+    [10] = add_new_arg,
+    [11] = add_new_arg,
+    [12] = add_new_arg,
+    [13] = parser_noop,
+    [14] = parser_arith_expan
+	};
     if (parser_functions[token->id] != NULL) 
 	{
         status = parser_functions[token->id](current_cmd, token);
@@ -243,7 +245,9 @@ int	parse(t_shell *shell)
 	// printf ("after removing subshell_parens\n");
 	// print_token(shell->token);
 
-	handle_heredocs(shell, shell->token);
+	err_no = handle_heredocs(shell, shell->token);
+	if (err_no)
+	return (free_token_list(shell->token), err_no);
 	// printf ("after heredocs handling\n");
 	// print_token(shell->token);
 	fprintf(stderr, "Parser:\nSignal code: %d\n", g_signalcode);
