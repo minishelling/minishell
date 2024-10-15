@@ -9,6 +9,12 @@ int	executor(t_shell *shell, t_cmd *cmd)
 		shell->exit_code = SUCCESS;
 		return (shell->exit_code);
 	}
+	if (!ft_strncmp(cmd->args[0], "((", 3))
+	{
+		ft_putstr_fd("This is an arithmetic expansion. We currently don't handle those.\n", 2);
+		shell->exit_code = FAILURE;
+		return (shell->exit_code);
+	}
 	is_builtin = check_builtin(cmd->args[0]);
 	if (is_builtin == NON_BUILTIN)
 		handle_non_builtin(shell, cmd);
