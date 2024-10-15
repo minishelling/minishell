@@ -360,6 +360,7 @@ t_env	*get_last_env_node(t_env *head);
 
 // UTILS
 
+char	**ft_strjoin_arr(char **arr, char *str);
 char	*ft_strjoin_fs1(char **s1, const char *s2);
 char	*ft_strjoin_fs2(const char *s1, char **s2);
 t_ecode	append_suffix(char **str, char *suffix, bool duplicate);

@@ -54,7 +54,6 @@ static t_ecode handle_argc_gt_2(char **cmd_args, size_t argc)
 }
 
 
-
 t_ecode	exit_builtin(t_shell *shell, char **cmd_args)
 {
 	size_t	arg_count;
