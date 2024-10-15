@@ -1,4 +1,27 @@
 #include "../../include/minishell.h"
+
+t_ecode	exit_builtin(t_shell *shell, char **cmd_args)
+{
+	size_t	arg_count;
+	int		exit_code;
+
+	(void) shell;
+	arg_count = ft_str_count(cmd_args);
+	if (arg_count == 2)
+	{
+		exit_code = handle_argc_2(cmd_args);
+	}
+	else if (arg_count > 2)
+	{
+		exit_code = handle_argc_gt_2(cmd_args, arg_count);
+	}
+	else
+	{
+		ft_putstr_fd("exit\n", 2);
+		exit(SUCCESS);
+	}
+	return (exit_code);
+}
  
 static t_ecode handle_argc_2(char **cmd_args)
 {
@@ -51,28 +74,4 @@ static t_ecode handle_argc_gt_2(char **cmd_args, size_t argc)
 		handle_builtin_err(cmd_args[0], cmd_args[1], "too many arguments");
 		return (FAILURE); //Return ERROR == -1, so the main prints exit and whatever...
 	}
-}
-
-
-t_ecode	exit_builtin(t_shell *shell, char **cmd_args)
-{
-	size_t	arg_count;
-	int		exit_code;
-
-	(void) shell;
-	arg_count = ft_str_count(cmd_args);
-	if (arg_count == 2)
-	{
-		exit_code = handle_argc_2(cmd_args);
-	}
-	else if (arg_count > 2)
-	{
-		exit_code = handle_argc_gt_2(cmd_args, arg_count);
-	}
-	else
-	{
-		ft_putstr_fd("exit\n", 2);
-		exit(SUCCESS);
-	}
-	return (exit_code);
 }

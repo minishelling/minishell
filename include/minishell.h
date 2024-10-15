@@ -145,7 +145,6 @@ typedef enum e_builtin
 	ENV,
 	EXIT,
 	NON_BUILTIN, //8
-	NULL_CMD  //Tamar added, did Lisandro intended?
 }	t_builtin;
 
 typedef struct s_curpath
