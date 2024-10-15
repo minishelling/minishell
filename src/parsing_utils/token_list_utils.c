@@ -43,143 +43,129 @@ t_token	*copy_token(t_token *token)
 	return (dup_token);
 }
 
-t_token	*get_after_space_token(t_token *token)
+void	add_token_in_back(t_token **token_list_head, t_token *new_token)
 {
-	t_token	*return_token;
-
-	if (token == NULL)
-		return (NULL);
-	return_token = token->next;
-	if (return_token == NULL)
-		return (NULL);
-	if (return_token->id == SPACE_CHAR || return_token->id == TAB_CHAR || return_token->id == NL)
-		return_token = return_token->next;
-	return (return_token);
-}
-
-t_token	*get_after_pipe_token(t_token *token)
-{
-	t_token	*t_previous;
-
-	if (token == NULL)
-		return (NULL);
-	while (token != NULL)
-	{
-		t_previous = token;
-		token = token->next;
-		// if (t_previous->id == PIPE || t_previous->id == AND_OPR || t_previous->id == OR_OPR)
-		if (t_previous->id == PIPE)
-			break ;
-	}
-	return (token);
-}
-
-t_token	*get_after_word_token(t_token *token)
-{
-	t_token	*t_previous;
-
-	if (token == NULL)
-		return (NULL);
-	while (token != NULL)
-	{
-		t_previous = token;
-		token = token->next;
-		if (t_previous->id == WORD)
-			break ;
-	}
-	return (token);
-}
-
-t_token	*free_token_node(t_token *t_node)
-{
-	t_token	*t_tmp;
-
-	t_tmp = t_node->next;
-	if (t_node == NULL)
-		return (NULL);
-	free(t_node);
-	return (t_tmp);
-}
-
-void	free_last_token(t_token *token, t_token *(*f) (t_token *))
-{
-	t_token	*previous_token;
-
-	if (token == NULL)
+	if (!new_token)
 		return ;
-	while (token->next != NULL)
+	if (!(*token_list_head))
 	{
-		previous_token = token;
-		token = token->next;
+		*token_list_head = new_token;
+		return ;
 	}
-	previous_token->next = f(token);
+	last_token(*token_list_head)->next = new_token;
+	return ;
 }
 
-// void	free_token_list(t_token *t_list, t_token *(*f) (t_token *))
-// {
-// 	if (t_list == NULL)
-// 		return ;
-// 	while (t_list != NULL)
-// 		t_list = f(t_list);
-// 	return ;
-// }
-t_token	*free_token_str(t_token *token)
+t_token *remove_token_by_reference(t_token *start_token, t_token *token_to_remove)
 {
-	t_token	*next_token;
+	t_token *current;
+	t_token *prev;
 
-	next_token = token->next;
-	if (token == NULL)
-		return (NULL);
-	if (token->str != NULL)
-		free(token->str);
-	token->str = NULL;
-	free(token);
-	return (next_token);
-}
-t_token	*free_token_non_word(t_token *token)
-{
-	t_token	*current_token;
-
-	current_token = token->next;
-	if (token == NULL)
-		return (NULL);
-	if (token->id != WORD)
-		free(token->str);
-	free(token);
-	return (current_token);
+	current = start_token;
+	prev = NULL;
+	while (current)
+	{
+		if (current == token_to_remove)
+		{
+			if (prev == NULL)  // Removing the first token
+				start_token = current->next;
+			else               // Removing a token in the middle or end
+				prev->next = current->next;
+			if (current->str)
+			{
+				free(current->str);
+				current->str = NULL;
+			}
+			free(current);       // Free the token itself
+			return start_token;  // Return the updated list head
+		}
+		prev = current;
+		current = current->next;
+	}
+	return start_token;
 }
 
-void free_token_list(t_token *token_list)
+/**
+ * remove_space_tokens - Removes all spacing tokens from the token list.
+ * 
+ * This function traverses the list of tokens and removes the space, tab, 
+ * and newline tokens that serve only to separate tokens. Now that the necessary 
+ * strings are concatenated, there is no need for spacing tokens anymore. For 
+ * example, `"hello""world"` and `"hello" "world"` will be treated differently. 
+ * The memory used by the removed tokens is properly freed.
+ *
+ * @head: Pointer to the head of the token list.
+ */
+void remove_space_tokens(t_token **head)
 {
+	t_token *current;
+	t_token *prev;
 	t_token *temp;
 
-	while (token_list)
-	{
-		temp = token_list;
-		token_list = (token_list)->next;
-		if (temp->str)
-			free(temp->str);
-		free(temp);
-	}
-	token_list = NULL;
-}
+	current = *head;
+	prev = NULL;
 
-t_token *get_after_arith_expan_token(t_token *token)
-{
-
-	if (token == NULL)
-		return (NULL);
-	if (token->next)
-		token = token->next;
-	while (token)
+	while (current != NULL)
 	{
-		//printf ("	in the arith_expan thingie, token is %s\n", token->str);
-		if (token->id == ARITH_EXPAN)
+		if (current->id == SPACE_CHAR || current->id == TAB_CHAR || current->id == NL)
 		{
-			return (token->next);
-			break ;
+			if (prev == NULL)
+				*head = current->next;
+			else
+				prev->next = current->next;
+			temp = current;
+			current = current->next;
+			free_token(temp);
 		}
-		token = token->next;
+		else
+		{
+			prev = current;
+			current = current->next;
+		}
 	}
-	return (token);
 }
+
+
+
+t_token *previous_token_if_exists(t_token *head, t_token *target)
+{
+	t_token *current;
+
+	if (head == target)
+		return (NULL);
+  	current = head;
+	while (current && current->next != target)
+		current = current->next;
+	return current;
+}
+
+
+t_token *handle_arith_expan(t_token **head, t_token **cur_open, t_token **cur_close)
+{
+	t_token *outer_open;
+	t_token *outer_close;
+	//printf ("in arith expan\n");
+	//printf (">cur_open is %s , cur_close is %s\n", (*cur_open)->str, (*cur_close)->str);
+	while (*cur_open && cur_close && (*cur_open)->id == PAR_OPEN && (*cur_close)->id == PAR_CLOSE)
+	{
+		//printf ("I'm in the while loop\n");
+	
+		outer_open = (*cur_open);
+		outer_close = *cur_close;
+		//printf (">outer_open is %s , outer_close is %s\n", outer_open->str, outer_close->str);
+		(*cur_open) = previous_token_if_exists(*head, (*cur_open));
+		(*cur_close) = (*cur_close)->next;
+		// if (cur_open && cur_close)
+			//printf (">cur_open is %s , cur_close is %s\n", cur_open->str, cur_close->str);
+	}
+	//printf ("outer open is %s , outer close %s\n", outer_open->str, outer_close->str);
+	outer_open->id = ARITH_EXPAN;
+	outer_open->str = "((";
+	outer_close->id = ARITH_EXPAN;
+	outer_close->str = "))";
+	// printf("after handling arith expan:\n");
+	// print_token(*head);
+	return (*head);
+}
+
+

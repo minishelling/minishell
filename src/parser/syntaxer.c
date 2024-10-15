@@ -129,18 +129,18 @@ int process_syntax_checks(t_shell *shell, t_token **previous_token)
 
     current_token = skip_whitespace(shell->token);
     t_syntax_func func[14] = {
-        [0] = syntax_misc,
-        [1] = syntax_misc,
-        [2] = syntax_misc,
+        [0] = syntax_noop,
+        [1] = syntax_noop,
+        [2] = syntax_noop,
         [3] = syntax_pipe,
         [4] = syntax_and_opr,
         [5] = syntax_parens,
         [6] = syntax_parens,
         [7] = syntax_redir,
         [8] = syntax_redir,
-        [9] = syntax_misc,
-        [10] = syntax_misc,
-        [11] = syntax_misc,
+        [9] = syntax_noop,
+        [10] = syntax_noop,
+        [11] = syntax_noop,
         [12] = syntax_word,
         [13] = syntax_pipe
     };

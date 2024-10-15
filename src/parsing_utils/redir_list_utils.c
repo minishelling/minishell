@@ -42,25 +42,20 @@ void	add_redir_in_back(t_redir **redir_list_head, t_redir *new_redir)
 	return ;
 }
 
-// t_redir	*free_redir(t_redir *redir)
-// {
-// 	t_redir	*current_redir;
+void free_redir_list(t_redir *redir)
+{
+    t_redir *temp_redir;
 
-// 	current_redir = redir->next;
-// 	if (redir->file != NULL)
-// 		free(current_redir->file);
-// 	free(redir);
-// 	return (current_redir);
-// }
+    while (redir != NULL)
+    {
+        temp_redir = redir;
+        redir = redir->next;
 
-// void	free_redir_list(t_redir *redir_list_head)
-// {
-// 	t_redir	*current_redir;
+        // Free the file associated with the redirection
+        if (temp_redir->file)
+            free(temp_redir->file);
 
-// 	if (redir_list_head == NULL)
-// 		return ;
-// 	current_redir = redir_list_head;
-// 	while (current_redir != NULL)
-// 		current_redir = free_redir(current_redir);
-// 	return ;
-// }
+        // Free the redir node itself
+        free(temp_redir);
+    }
+}

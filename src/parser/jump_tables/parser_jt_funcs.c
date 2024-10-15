@@ -1,17 +1,10 @@
 #include "../../../include/minishell.h"
 
-int parser_env_var(t_cmd *cmd_node, t_token *token)
+int parser_noop(t_cmd *cmd_node, t_token *token)
 {
-	(void) cmd_node;
-	(void) token;
-	return (0);
-}
-
-int parser_pipe(t_cmd *cmd_node, t_token *token)
-{
-	(void) cmd_node;
-	(void) token;
-	return (0);
+	(void)cmd_node;
+	(void)token;
+	return (PARSING_OK);
 }
 
 t_redir_id	redir_ident(char *str)
@@ -38,24 +31,21 @@ int parser_redir(t_cmd *cmd, t_token *token)
 	t_token	*file_token;
 	t_redir	*redir_list;
 
-	// file_token = get_after_space_token(token);
+	file_token = get_after_space_token(token);
 	if (token->next)
 		file_token = token->next;
 	else
 		file_token = NULL;
 	redir_list = new_redir();
 	if (!redir_list)
-	{
-		//error
 		return (ERR_MEM);
-	}
 	redir_list->redir_id = redir_ident(token->str);
 	redir_list->file = file_token->str;
 	if (redir_list->file[0] == '|' || redir_list->file[0] == '&' || redir_list->file[0] == ';'
 		|| redir_list->file[0] == '(' || redir_list->file[0] == ')')
 			return (ERR_SYNTAX_ERROR);
 	add_redir_in_back(&(cmd->redir), redir_list);
-	return (0);
+	return (PARSING_OK);
 }
 
 int add_new_arg(t_cmd *cmd, t_token *token)
@@ -66,46 +56,9 @@ int add_new_arg(t_cmd *cmd, t_token *token)
 	arr = cmd->args;
 	i = 0;
 	while (arr[i])
-	{
 		i++;
-	}
 	arr[i] = token->str;
 	
-	return (0);
-}
-
-int	parser_space(t_cmd *cmd, t_token *token)
-{
-	(void) cmd;
-	(void)token;
-	return (0);
-}
-
-int	parser_and_opr(t_cmd *cmd_node, t_token *token)
-{
-	(void) cmd_node;
-	(void) token;
-	return (0);
-}
-
-int parser_par_close(t_cmd *cmd_node, t_token *token)
-{
-	(void) cmd_node;
-	(void) token;
-	return (0);
-}
-
-int parser_par_open(t_cmd *cmd_node, t_token *token)
-{
-	(void) cmd_node;
-	(void) token;
-	return (0L);
-}
-
-int parser_or_opr(t_cmd *cmd_node, t_token *token)
-{
-	(void) cmd_node;
-	(void) token;
 	return (0);
 }
 

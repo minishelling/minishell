@@ -4,7 +4,6 @@ int	syntax_pipe(t_token *prev_token, t_token *current, t_env *env_list)
 {
 	t_token	*next_token;
 	
-	
 	(void) env_list;
 	next_token = get_after_space_token(current);
 	if (prev_token == NULL || next_token == NULL)
@@ -42,7 +41,7 @@ int	syntax_redir(t_token *prev_token, t_token *current, t_env *env_list)
 	return (PARSING_OK);
 }
 
-int	syntax_misc(t_token *t_prev, t_token *t_cur, t_env *env_list)
+int	syntax_noop(t_token *t_prev, t_token *t_cur, t_env *env_list)
 {
 	(void) t_prev;
 	(void) t_cur;
