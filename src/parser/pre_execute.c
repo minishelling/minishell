@@ -80,7 +80,7 @@ int pre_execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int
 	}
     else if (parent_tree_node && parent_tree_node->type == T_OR_OPR && exit_code != 0)
     {
-        // fprintf (stderr, "performing the right side of OR");
+        // fprintf (stderr, "performing the right side of OR\n");
         // if (tree_node->right)
         // {
 		// 	if (tree_node->right->type == T_PIPE)

@@ -1,6 +1,7 @@
 #include "../../../include/minishell.h"
 
 static t_ecode	handle_tilde_absolute_path(t_env **env_list, char *directory);
+static char		*get_tilde_absolute_path(t_env *env_list, char *directory);
 static t_ecode	handle_absolute_path(char *directory);
 static t_ecode	handle_relative_path(char *directory, char *cwd);
 
@@ -64,7 +65,7 @@ static t_ecode	handle_tilde_absolute_path(t_env **env_list, char *directory)
  * with the home directory.
  * On failure it returns NULL and prints an error message.
  */
-char	*get_tilde_absolute_path(t_env *env_list, char *directory)
+static char	*get_tilde_absolute_path(t_env *env_list, char *directory)
 {
 	char	*curpath;
 	t_env	*home_node;

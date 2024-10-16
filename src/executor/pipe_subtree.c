@@ -1,19 +1,5 @@
 #include "../../include/minishell.h"
 
-typedef struct s_pipex
-{
-	pid_t	pid1;
-	pid_t	pid2;
-	int		fd[2];
-	int		infile_fd;
-	int		outfile_fd;
-	char	**cmd1;
-	char	**cmd2;
-	char	**cmd3;
-	char	**possible_paths;
-	char	*path;
-}	t_pipex;
-
 static void close_fds(int fd1, int fd2)
 {
 	if (fd1 != -1)
