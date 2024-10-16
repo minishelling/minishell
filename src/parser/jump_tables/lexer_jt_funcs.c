@@ -10,7 +10,7 @@
  * @param pos Pointer to the current position in the string.
  * @param token_id Pointer to the current token identifier.
  */
-void	set_pos_end_quote(char *str, size_t *pos, t_token_id *token_id)
+void	advance_pos_quote(char *str, size_t *pos, t_token_id *token_id)
 {
 	(*pos)++;
 	while (str[*pos] && *token_id != get_token_id(str[*pos]))
@@ -29,7 +29,7 @@ void	set_pos_end_quote(char *str, size_t *pos, t_token_id *token_id)
  * @param pos Pointer to the current position in the string.
  * @param token_id Unused parameter.
  */
-void	set_pos_end_pipe(char *str, size_t *pos, t_token_id *token_id)
+void	advance_pos_pipe(char *str, size_t *pos, t_token_id *token_id)
 {
 	(void)token_id;
 	int pipe_count = 0;
@@ -50,7 +50,7 @@ void	set_pos_end_pipe(char *str, size_t *pos, t_token_id *token_id)
  * @param pos Pointer to the current position in the string.
  * @param token_id Unused parameter.
  */
-void set_pos_end_redir(char *str, size_t *pos, t_token_id *token_id)
+void advance_pos_redir(char *str, size_t *pos, t_token_id *token_id)
 {
 	(void)token_id;
     char c = str[*pos];  // store the redirection character ('<' or '>')
@@ -61,7 +61,7 @@ void set_pos_end_redir(char *str, size_t *pos, t_token_id *token_id)
         redir_count++;
     }
 }
-
+//check this one more:
 /**
  * @brief Advances the position past an environment variable ($VAR).
  * 
@@ -72,7 +72,7 @@ void set_pos_end_redir(char *str, size_t *pos, t_token_id *token_id)
  * @param pos Pointer to the current position in the string.
  * @param token_id Pointer to the current token identifier.
  */
-void	set_pos_end_env_var(char *str, size_t *pos, t_token_id *token_id)
+void	advance_pos_env_var(char *str, size_t *pos, t_token_id *token_id)
 {
 	(void) token_id;
 	(*pos)++;
@@ -82,7 +82,7 @@ void	set_pos_end_env_var(char *str, size_t *pos, t_token_id *token_id)
 		(*pos)++;
 		return ;
 	}
-	if (!str[*pos])
+	if (str[*pos] == '\0')
 	{
 		*token_id = WORD;
 		return ;
@@ -104,7 +104,7 @@ void	set_pos_end_env_var(char *str, size_t *pos, t_token_id *token_id)
  * @param pos Pointer to the current position in the string.
  * @param token_id Pointer to the current token identifier.
  */
-void	set_pos_end_space_or_word(char *str, size_t *pos, t_token_id *token_id)
+void	advance_pos_space_or_word(char *str, size_t *pos, t_token_id *token_id)
 {
 	while (str[*pos] && *token_id == get_token_id(str[*pos]))
 		(*pos)++;
@@ -120,7 +120,7 @@ void	set_pos_end_space_or_word(char *str, size_t *pos, t_token_id *token_id)
  * @param pos Pointer to the current position in the string.
  * @param token_id Unused parameter.
  */
-void	set_pos_end_and_opr(char *str, size_t *pos, t_token_id *token_id)
+void	advance_pos_and_operator(char *str, size_t *pos, t_token_id *token_id)
 {
 	(void) token_id;
 
@@ -140,7 +140,7 @@ void	set_pos_end_and_opr(char *str, size_t *pos, t_token_id *token_id)
  * @param pos Pointer to the current position in the string.
  * @param token_id Unused parameter.
  */
-void	set_pos_end_parentheses(char *str, size_t *pos, t_token_id *token_id)
+void	advance_pos_parens(char *str, size_t *pos, t_token_id *token_id)
 {
 	const char	c = str[*pos];
 	(void) token_id;
