@@ -29,7 +29,7 @@ int main(int argc, char **argv, char **envp)
 			shell.exit_code = 130;
 			g_signalcode = 0;
 		}
-		if (!shell.input)  // Check for EOF or error
+		if (!shell.input)
 			break;
 		if (ft_strncmp(shell.input, "", 1))
 		{
@@ -43,7 +43,8 @@ int main(int argc, char **argv, char **envp)
 				init_signals(PARENT_NON_INTERACTIVE);
 				free(shell.input);
 				shell.exit_code = pre_execute(&shell, shell.tree, NULL, 0);
-				free_tree(shell.tree);
+				//printf ("last exit_code %d\n", shell.exit_code);
+				free_tree(&shell.tree);
 				shell.tree = NULL;
 			}
 			//close_all_fds_in_process();

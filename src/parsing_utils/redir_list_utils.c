@@ -42,20 +42,32 @@ void	add_redir_in_back(t_redir **redir_list_head, t_redir *new_redir)
 	return ;
 }
 
-void free_redir_list(t_redir *redir)
+/**
+ * @brief Frees a list of redirections and sets the pointer to NULL.
+ * 
+ * This function frees all nodes in a redirection list, including the file strings
+ * associated with each redirection. After freeing, it sets the pointer to NULL to 
+ * avoid dangling pointers.
+ * 
+ * @param redir A pointer to the t_redir list pointer that will be freed.
+ */
+void free_redir_list(t_redir **redir)
 {
-    t_redir *temp_redir;
+	t_redir *temp_redir;
 
-    while (redir != NULL)
-    {
-        temp_redir = redir;
-        redir = redir->next;
+	if (!redir || !(*redir))
+		return;
 
-        // Free the file associated with the redirection
-        if (temp_redir->file)
-            free(temp_redir->file);
-
-        // Free the redir node itself
-        free(temp_redir);
-    }
+	while (*redir)
+	{
+		temp_redir = *redir;
+		*redir = (*redir)->next;
+		if (temp_redir->file)
+		{
+			free(temp_redir->file);
+			temp_redir->file = NULL;
+		}
+		free(temp_redir);
+	}
+	*redir = NULL;
 }

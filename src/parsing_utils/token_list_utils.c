@@ -96,7 +96,7 @@ t_token *remove_token_by_reference(t_token *start_token, t_token *token_to_remov
  *
  * @head: Pointer to the head of the token list.
  */
-void remove_space_tokens(t_token **head)
+void	remove_space_tokens(t_token **head)
 {
 	t_token *current;
 	t_token *prev;
@@ -139,7 +139,6 @@ t_token *previous_token_if_exists(t_token *head, t_token *target)
 	return current;
 }
 
-
 t_token *handle_arith_expan(t_token **head, t_token **cur_open, t_token **cur_close)
 {
 	t_token *outer_open;
@@ -167,5 +166,3 @@ t_token *handle_arith_expan(t_token **head, t_token **cur_open, t_token **cur_cl
 	// print_token(*head);
 	return (*head);
 }
-
-

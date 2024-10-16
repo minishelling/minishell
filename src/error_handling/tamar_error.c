@@ -20,10 +20,11 @@ char *get_err_msg(int e)
 	return (error_messages[e]);
 }
 
-// void clean_nicely(t_shell *shell, void *param)
-// {
-//     // nothing yet
-// }
+void clean_nicely(t_shell *shell, void *param)
+{
+	(void)param;
+	free_token_list(shell->token);
+}
 
 void handle_parsing_err(t_shell *shell, int err_no, void *param)
 {
@@ -46,7 +47,7 @@ void handle_parsing_err(t_shell *shell, int err_no, void *param)
 		write(2, full_msg, full_msg_len);
 		free(full_msg);
 	}
-	// clean_nicely(shell, param);
+	clean_nicely(shell, param);
 }
 
 void handle_cmd_err(t_cmd *cmd, char *err_msg)

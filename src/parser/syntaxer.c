@@ -15,21 +15,6 @@
 typedef int (*t_syntax_func)(t_token *t_prev, t_token *t_cur, t_env *env_list);
 
 /**
- * @brief Skips whitespace tokens in the linked list of tokens.
- *
- * @param list A pointer to the head of the token list.
- * @return A pointer to the next token that is not whitespace, or NULL if none exists.
- */
-t_token *skip_whitespace(t_token *list)
-{
-    if (list == NULL)
-        return (NULL);
-    if (list->id == SPACE_CHAR || list->id == TAB_CHAR || list->id == NL)
-        return (list->next);
-    return (list);
-}
-
-/**
  * @brief Checks for balanced parentheses in the token list.
  *
  * @param head A pointer to the head of the token list.
@@ -127,7 +112,7 @@ int process_syntax_checks(t_shell *shell, t_token **previous_token)
     t_token *current_token;
     int err_no;
 
-    current_token = skip_whitespace(shell->token);
+    current_token = shell->token;
     t_syntax_func func[14] = {
         [0] = syntax_noop,
         [1] = syntax_noop,

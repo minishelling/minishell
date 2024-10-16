@@ -19,7 +19,7 @@ size_t ft_strcspn(const char *str, const char *reject)
 	count = 0;
 	while (str[count] != '\0')
 	{
-		if (strchr(reject, str[count]))
+		if (ft_strchr(reject, str[count]))
 			break;
 		count++;
 	}
