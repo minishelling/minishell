@@ -94,6 +94,7 @@ static int newline_option(char *option_arg)
 			}
 			i++;
 		}
+		return (1);
 	}
-	return (1);
+	return (0);
 }
