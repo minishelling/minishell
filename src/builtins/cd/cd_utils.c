@@ -81,38 +81,3 @@ bool	has_cdpath_prefix(char *directory)
 		return (false);
 	return (true);
 }
-
-
-t_ecode	check_for_special_cd_cases(t_env *env, char *directory, char **curpath)
-{
-	t_env	*env_node;
-
-	env_node = NULL;
-	if (!directory)
-		return (SUCCESS);
-	if (!ft_strncmp(directory, "~", 1))
-	{
-		env_node = find_env_node(env, "HOME");
-		if (!env_node)
-			return (ENV_ERROR);
-		*curpath = ft_strdup(env_node->value);
-		if (!curpath)
-			return (MALLOC_ERROR);
-	}
-	else if (!ft_strncmp(*curpath, "-", 1))
-	{
-		env_node = find_env_node(env, "OLDPWD");
-		if (!env_node)
-			return (ENV_ERROR);
-		*curpath = ft_strdup(env_node->value);
-		if (!curpath)
-			return (MALLOC_ERROR);
-	}
-	else
-	{
-		*curpath = ft_strdup(directory);
-		if (!curpath)
-			return (MALLOC_ERROR);
-	}
-	return (SUCCESS);
-}

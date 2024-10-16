@@ -19,9 +19,9 @@ t_ecode	cd_builtin(t_shell *shell, char **cmd_args)
 		e_status = chdir_dash(&shell->env_list, cwd);
 	else if (has_cdpath_prefix(directory))
 		e_status = chdir_cdpath(&shell->env_list, directory, cwd);
-	if (e_status == INIT || e_status == PROCEED) //Maybe include if e_status != CDPATH_SUCCESS || e_status == PROCEED. Or maybe initialize e_status differently.
+	if (e_status == INIT || e_status == PROCEED)
 		e_status = chdir_default(&shell->env_list, directory, cwd);
-	if (e_status && e_status != PROCEED)
+	if (e_status)
 		return (e_status);
 	return (SUCCESS);
 }

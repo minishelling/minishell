@@ -67,7 +67,7 @@ t_ecode	chdir_null_cdpath(char *directory, ssize_t *i, int8_t *null_flag)
 	*null_flag = 1;
 	curpath = ft_strjoin("./", directory);
 	if (!curpath)
-		return (MALLOC_ERROR);
+		return (handle_perror("chdir_null_cdpath"), MALLOC_ERROR);
 	status = chdir(curpath);
 	ft_free((void **)curpath);
 	if (status)
@@ -83,12 +83,12 @@ t_ecode chdir_cdpath_value(char *cdpath_value, char *directory, ssize_t *i)
 	*i += 1;
 	curpath = ft_strdup(cdpath_value);
 	if (!curpath)
-		return (MALLOC_ERROR);
+		return (handle_perror("chdir_cdpath_value"), MALLOC_ERROR);
 	if (append_suffix(&curpath, "/", false))
-		return (MALLOC_ERROR);
+		return (handle_perror("chdir_cdpath_value"), MALLOC_ERROR);
 	curpath = ft_strjoin_fs1(&curpath, directory);
 	if (!curpath)
-		return (MALLOC_ERROR);
+		return (handle_perror("chdir_cdpath_value"), MALLOC_ERROR);
 	status = chdir(curpath);
 	ft_free((void **) &curpath);
 	if (status)

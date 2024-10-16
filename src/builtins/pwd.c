@@ -22,7 +22,8 @@ t_ecode	pwd_builtin(t_shell *shell, char **cmd_args)
 		if (!ft_strncmp(cmd_args[1], "-", option_len) || !ft_strncmp(cmd_args[1], "--", option_len));
 		else
 		{
-			//handle_error("invalid option");
+			handle_builtin_err(cmd_args[0], cmd_args[1], "invalid option");
+			handle_builtin_err(cmd_args[0], "usage", "pwd");
 			return (FAILURE);
 		}
 	}
