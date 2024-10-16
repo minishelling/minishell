@@ -131,6 +131,7 @@ static void	bubblesort_array(char **arr, ssize_t count)
 	char	*temp;
 	ssize_t	i;
 	ssize_t	j;
+	size_t	len;
 
 	i = 0;
 	while (i < count - 1)
@@ -138,7 +139,8 @@ static void	bubblesort_array(char **arr, ssize_t count)
 		j = 0;
 		while (j < count - i - 1)
 		{
-			if (ft_strncmp(arr[j], arr[j + 1], __SIZE_MAX__) > 0)
+			len = max_len(arr[j], arr[j + 1]);
+			if (ft_strncmp(arr[j], arr[j + 1], len) > 0)
 			{
 				temp = arr[j];
 				arr[j] = arr[j + 1];
