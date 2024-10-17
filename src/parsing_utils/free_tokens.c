@@ -1,56 +1,36 @@
 #include "../../include/minishell.h"
 
-void free_token2(t_token **token)
+void free_token(t_token **token)
 {
-    if (token && *token)
-    {
-        if ((*token)->str)
-        {
-            //printf("Freeing token string at %p: '%s'\n", (void*)((*token)->str), (*token)->str);
-            free((*token)->str);
-            (*token)->str = NULL;
-        }
-        else
-            //printf("Token string at %p is already freed or NULL\n", (void*)((*token)->str));
-        //printf("Freeing token struct at %p\n", (void*)(*token));
-        free(*token);
-        *token = NULL;
-    }
-    else
-        printf("Token or token pointer is NULL or already freed, nothing to free.\n");
+	if (token && *token)
+	{
+		if ((*token)->str)
+		{
+			free((*token)->str);
+			(*token)->str = NULL;
+		}
+		else
+		free(*token);
+		*token = NULL;
+	}
 }
 
-
-void	free_token_list2(t_token **token_list)
+void	free_token_list(t_token **token_list)
 {
-    t_token *current;
-    t_token *next;
+	t_token *current;
+	t_token *next;
 
-    if (!token_list || !(*token_list))
-    {
-        //printf("Token list is NULL or already freed, nothing to free.\n");
-        return;
-    }
-
-    //printf("Freeing token list at %p\n", (void*)*token_list);
-    current = *token_list;
-    while (current)
-    {
-        next = current->next;
-        //printf("Freeing token at %p\n", (void*)current);
-        free_token2(&current);
-        current = next;
-    }
-    *token_list = NULL;
-    //printf("Token list has been freed and set to NULL.\n");
+	if (!token_list || !(*token_list))
+		return;
+	current = *token_list;
+	while (current)
+	{
+		next = current->next;
+		free_token(&current);
+		current = next;
+	}
+	*token_list = NULL;
 }
-
-
-
-
-
-
-
 
 /**
  * @brief Removes a specific token from the linked list.
@@ -80,7 +60,7 @@ t_token *remove_token(t_token *start_token, t_token *token_to_remove)
 				start_token = current->next;
 			else
 				prev->next = current->next;
-			free_token2(&current);
+			free_token(&current);
 			return start_token;
 		}
 		prev = current;

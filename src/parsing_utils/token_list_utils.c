@@ -67,17 +67,17 @@ t_token *remove_token_by_reference(t_token *start_token, t_token *token_to_remov
 	{
 		if (current == token_to_remove)
 		{
-			if (prev == NULL)  // Removing the first token
+			if (prev == NULL)
 				start_token = current->next;
-			else               // Removing a token in the middle or end
+			else
 				prev->next = current->next;
 			if (current->str)
 			{
 				free(current->str);
 				current->str = NULL;
 			}
-			free(current);       // Free the token itself
-			return start_token;  // Return the updated list head
+			free(current);
+			return start_token;
 		}
 		prev = current;
 		current = current->next;
@@ -115,7 +115,7 @@ void	remove_space_tokens(t_token **head)
 				prev->next = current->next;
 			temp = current;
 			current = current->next;
-			free_token2(&temp);
+			free_token(&temp);
 		}
 		else
 		{

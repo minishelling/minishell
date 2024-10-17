@@ -152,7 +152,7 @@ bool join_env_var_quote_n_word_str(t_shell *shell)
 				return (ERR_MEM);
 			safe_assign_str(&prev_token->str, joined_str);  //protect better
 			temp_token = cur_token->next;
-			free_token2(&cur_token);
+			free_token(&cur_token);
 			prev_token->next = temp_token;
 			cur_token = temp_token;
 			continue;
@@ -169,13 +169,13 @@ int append (t_shell *shell)
 	
 	err_no = join_quotes_tokens(shell);
 	if (err_no)
-		return (free_token_list2(&shell->token), err_no);
+		return (free_token_list(&shell->token), err_no);
 	// printf ("after joining quotes tokens:\n");
 	// print_token(shell->token);
 	
 	err_no = join_env_var_quote_n_word_str(shell);
 	if (err_no)
-	return (free_token_list2(&shell->token), err_no);
+	return (free_token_list(&shell->token), err_no);
 	// printf ("after concat words and env_vars tokens\n");
 	// print_token(shell->token);
 	
