@@ -70,7 +70,10 @@ void handle_parsing_err(t_shell *shell, int err_no, void *param)
 		err_msg = get_err_msg(err_no);
 		full_msg = ft_strjoin(err_prompt, err_msg);
 		if (!full_msg)
-			return; // handle malloc failure
+		{
+			perror("handle_parsing_err");
+			return ; // handle malloc failure
+		}
 		full_msg_len = ft_strlen(full_msg);
 		write(2, full_msg, full_msg_len);
 		free(full_msg);
@@ -93,7 +96,10 @@ void handle_cmd_err(t_cmd *cmd, char *err_msg)
 	total_len = cmd_len + ft_strlen(colon) + err_len + ft_strlen(newline);
 	full_msg = (char *)malloc(total_len + 1);
 	if (!full_msg)
-		return; // handle malloc failure, I am not sure how - there is a problem already
+	{
+		perror("handle_cmd_err");
+		return ; // handle malloc failure, I am not sure how - there is a problem already
+	}
 	ft_strlcpy(full_msg, cmd->args[0], cmd_len + 1);
 	ft_strlcat(full_msg, colon, total_len + 1);
 	ft_strlcat(full_msg, err_msg, total_len + 1);
@@ -117,7 +123,10 @@ void handle_perror(char *str)
 	total_len = cmd_len + prompt_len;
 	full_err_msg = (char *)malloc(total_len + 1);
 	if (!full_err_msg)
-		return; // ???
+	{
+		perror("handle_perror");
+		return ;
+	}
 	ft_strlcpy(full_err_msg, err_prompt, total_len + 1);
 	ft_strlcat(full_err_msg, str, total_len + 1);
 	perror(full_err_msg);
