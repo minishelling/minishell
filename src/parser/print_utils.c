@@ -47,23 +47,22 @@ void	print_token(t_token *head)
 	int			size;
 	t_token		*ptr;
 	int	con = token_size(head);
-	char	*token_name[16] = {
+	char	*token_name[15] = {
 	[0] = "SPACE_CHAR",
 	[1] = "TAB_CHAR",
 	[2] = "NL",
 	[3] = "PIPE",
 	[4] = "AND_OPR",
-	[5] = "SEMI_COL",
-	[6] = "PAR_OPEN",
-	[7] = "PAR_CLOSE",
-	[8] = "GT",
-	[9] = "LT",
-	[10] = "SQUOTE",
-	[11] = "DQUOTE",
-	[12] = "ENV_VAR",
-	[13] = "WORD",
-	[14] = "OR_OPR",
-	[15] = "ARITH_EXPAN"
+	[5] = "PAR_OPEN",
+	[6] = "PAR_CLOSE",
+	[7] = "GT",
+	[8] = "LT",
+	[9] = "SQUOTE",
+	[10] = "DQUOTE",
+	[11] = "ENV_VAR",
+	[12] = "WORD",
+	[13] = "OR_OPR",
+	[14] = "ARITH_EXPAN"
 	};
 	ptr = head;
 
@@ -74,7 +73,7 @@ void	print_token(t_token *head)
 	{
 		if (ptr && ptr->str)
 		{
-			printf(MAGENTA_TEXT"%pTOKEN [%02d]"RESET_COLOR"\tid: %s [%d]\n\t\tstr: |%s|\n",ptr, (con - size), token_name[ptr->id], ptr->id, ptr->str);
+			printf(MAGENTA_TEXT"%pTOKEN [%02d]"RESET_COLOR"\tid: %s [%d]\n\t\tstr: |%s|\tstr address: %p\n",ptr, (con - size), token_name[ptr->id], ptr->id, ptr->str, ptr->str);
 			ptr = ptr->next;
 		}
 	}
@@ -89,7 +88,7 @@ void	print_cmd_args(char **arg)
 	fprintf(stderr, MAGENTA_TEXT WHITE_BACKGROUND"ARGUMENTS" RESET_COLOR"\n");
 	while (arg[i] != NULL)
 	{
-		fprintf(stderr, "arg [%02zu]:\t|%s|\n", i, arg[i]);
+		fprintf(stderr, "arg [%02zu]:\t|%s| arg adress: %p\n", i, arg[i], &arg[i]);
 		i++;
 	}
 }
@@ -134,78 +133,10 @@ void	print_cmd(t_cmd *cmd)
 	}
 }
 
-void print_tree_with_cmd(t_tree *node, int level) 
-{
-    int i;
-	int j;
-	t_cmd *cmd;
-    char *tree_node_name[3] = 
-    {
-        [0] = "AND_OPR",
-        [1] = "OR_OPR",
-        [2] = "CMD",
-    };
-	char *redir_name[4] = 
-    {
-        [0] = "INFILE",
-        [1] = "HEREDOC",
-        [2] = "OUTFILE",
-		[3] = "APPEND",
-    };
-
-    if (!node)
-		return;
-
-	i = 0;
-    while (i++ < level)
-        printf("    ");
-    if (node->type == CMD)
-    {
-        printf(MAGENTA_TEXT"%s "RESET_COLOR"|%s| |%s|\n", tree_node_name[node->type], node->start_token->str, node->end_token->str);
-        
-        cmd = (t_cmd *)node->cmd;
-		while (cmd)
-        {
-            if (cmd->args)
-            {
-                i = 0;
-                 while (i++ < level)
-                    printf("    ");
-                printf("    "GREY_BACKGROUND"Command"RESET_COLOR": ");
-                j = 0;
-                while (cmd->args[j] != NULL)
-                {
-                    if (j > 0) printf(" ");
-                    printf("%s", cmd->args[j]);
-                    j++;
-                }
-                printf("\n");
-            }
-            if (cmd->redir)
-            {
-                t_redir *redir = cmd->redir;
-                while (redir)
-                {   
-                    i = 0;
-                    while (i++ < level)
-                        printf("    ");
-                    printf ("    "GREY_BACKGROUND"Redirection"RESET_COLOR": %s (%s)\n", redir->file, redir_name[redir->redir_id - 1]);
-                    redir = redir->next;
-                }
-            }
-            cmd = cmd->next;
-        }
-    }
-    else if (node->type == T_AND_OPR || node->type == T_OR_OPR)
-        printf(MAGENTA_TEXT"%s"RESET_COLOR"\n", tree_node_name[node->type]);
-    print_tree_with_cmd(node->left, level + 1);
-    print_tree_with_cmd(node->right, level + 1);
-}
-
 void print_tree_verbose(t_tree *node, int level)
 {
 	int i;
-	char	*tree_node_name[4] = 
+	char	*tree_node_name[4] =
 	{
 		[0] = "AND_OPR",
 		[1] = "OR_OPR",
@@ -213,18 +144,12 @@ void print_tree_verbose(t_tree *node, int level)
 		[3] = "PIPE"
 	};
 	if (!node)
-	{
 		return;
-	}
 	i = 0;
-	while (i < level)
-	{
+	while (i++ < level)
 		printf("    ");
-		i++;
-	}
-	
 	if (node->type == CMD)
-		printf(GREY_BACKGROUND"%s"RESET_COLOR" start token:|%s|, end token:|%s|, tree address: %p\n", tree_node_name[node->type], node->start_token->str, node->end_token->str, node);
+		printf(WHITE_TEXT MAGENTA_BACKGROUND"%s"RESET_COLOR" start token:|%s|, end token:|%s|, tree address: %p\n", tree_node_name[node->type], node->start_token->str, node->end_token->str, node);
 	else if (node->type == T_AND_OPR || node->type == T_OR_OPR || node->type == T_PIPE)
 		printf(MAGENTA_TEXT"%s"RESET_COLOR" %p\n", tree_node_name[node->type], node);
 	else
@@ -232,11 +157,7 @@ void print_tree_verbose(t_tree *node, int level)
 			printf("NULL\n");
 			exit(EXIT_FAILURE);
 		}
-
-	// Print the left subtree
 	print_tree_verbose(node->left, level + 1);
-
-	// Print the right subtree
 	print_tree_verbose(node->right, level + 1);
 }
 
@@ -252,16 +173,13 @@ void print_tree(t_tree *node, int level)
 		[3] = "PIPE"
 	};
 	if (!node)
-	{
 		return;
-	}
 	i = 0;
 	while (i < level)
 	{
 		fprintf(stderr, "    ");
 		i++;
 	}
-	
 	if (node->type == CMD)
 		fprintf(stderr, GREY_BACKGROUND"%s"RESET_COLOR" |%s| |%s|\n", tree_node_name[node->type], node->start_token->str, node->end_token->str);
 	else if (node->type == T_AND_OPR || node->type == T_OR_OPR || node->type == T_PIPE)
@@ -271,10 +189,6 @@ void print_tree(t_tree *node, int level)
 			fprintf(stderr, "NULL\n");
 			exit(EXIT_FAILURE);
 		}
-
-	// Print the left subtree
 	print_tree(node->left, level + 1);
-
-	// Print the right subtree
 	print_tree(node->right, level + 1);
 }

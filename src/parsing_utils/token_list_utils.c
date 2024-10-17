@@ -96,7 +96,7 @@ t_token *remove_token_by_reference(t_token *start_token, t_token *token_to_remov
  *
  * @head: Pointer to the head of the token list.
  */
-void remove_space_tokens(t_token **head)
+void	remove_space_tokens(t_token **head)
 {
 	t_token *current;
 	t_token *prev;
@@ -115,7 +115,7 @@ void remove_space_tokens(t_token **head)
 				prev->next = current->next;
 			temp = current;
 			current = current->next;
-			free_token(temp);
+			free_token2(&temp);
 		}
 		else
 		{
@@ -139,7 +139,6 @@ t_token *previous_token_if_exists(t_token *head, t_token *target)
 	return current;
 }
 
-
 t_token *handle_arith_expan(t_token **head, t_token **cur_open, t_token **cur_close)
 {
 	t_token *outer_open;
@@ -159,13 +158,11 @@ t_token *handle_arith_expan(t_token **head, t_token **cur_open, t_token **cur_cl
 			//printf (">cur_open is %s , cur_close is %s\n", cur_open->str, cur_close->str);
 	}
 	//printf ("outer open is %s , outer close %s\n", outer_open->str, outer_close->str);
+	if(!safe_assign_str(&outer_open->str, "((") || !safe_assign_str(&outer_close->str, "))"))
+		exit (FAILURE); //protect better
 	outer_open->id = ARITH_EXPAN;
-	outer_open->str = "((";
 	outer_close->id = ARITH_EXPAN;
-	outer_close->str = "))";
 	// printf("after handling arith expan:\n");
 	// print_token(*head);
 	return (*head);
 }
-
-

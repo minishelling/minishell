@@ -42,20 +42,29 @@ void	add_redir_in_back(t_redir **redir_list_head, t_redir *new_redir)
 	return ;
 }
 
-void free_redir_list(t_redir *redir)
+
+void free_redir_list(t_redir **redir)
 {
-    t_redir *temp_redir;
+	t_redir *temp_redir;
 
-    while (redir != NULL)
-    {
-        temp_redir = redir;
-        redir = redir->next;
+	if (!redir || !(*redir))
+		return;
 
-        // Free the file associated with the redirection
-        if (temp_redir->file)
-            free(temp_redir->file);
+	printf("Freeing redirection list at %p\n", (void*)*redir);
+	while (*redir)
+	{
+		temp_redir = *redir;
+		*redir = (*redir)->next;
 
-        // Free the redir node itself
-        free(temp_redir);
-    }
+		if (temp_redir->file)
+		{
+			printf("Freeing file in redir at %p\n", (void*)temp_redir->file);
+			free(temp_redir->file);
+			temp_redir->file = NULL;
+		}
+		printf("Freeing redir struct at %p\n", (void*)temp_redir);
+		free(temp_redir);
+	}
+	*redir = NULL;
+	printf("Redirection list freed and set to NULL\n");
 }

@@ -20,6 +20,7 @@
 # include <stddef.h>
 # include <dirent.h>
 # include "../libft/libft.h"
+#include <assert.h>
 
 
 #define MINISHARED_PROMPT "\001\033[38;5;93m\002M\001\033[38;5;99m\002i\001\033[38;5;111m\002n\001\033[38;5;63m\002i\001\033[38;5;75m\002_\001\033[38;5;81m\002s\001\033[38;5;118m\002h\001\033[38;5;154m\002a\001\033[38;5;190m\002r\001\033[38;5;226m\002e\001\033[38;5;214m\002d\001\033[0m\002: \001\033[0m\002"
@@ -38,6 +39,8 @@
 
 # define READ_END 0
 # define WRITE_END 1
+
+#define FREED_MAGIC ((void*)0xDEADBEEF)  //remove
 
 extern int	g_signalcode;
 
@@ -212,104 +215,100 @@ typedef struct s_shell
     t_token 	*token;
 	t_tree		*tree;
 	t_env		*env_list;
-	t_cmd		*cmd;
 } t_shell;
 
-int		init_shell(char **envp, t_shell *shell);
-int		tokenize(t_shell *shell, char *input);
-int		syntax(t_shell *shell);
-t_token	*expand(t_shell *shell, t_token *start_token, t_token *end_token, t_env *env_list);
-bool	join_word_and_env_var_tokens(t_shell *shell);
-int		parse(t_shell *shell);
+//INIT
+int			init_shell(char **envp, t_shell *shell);
 
-void	set_pos_end_space_or_word(char *str, size_t *pos, t_token_id *token_id);
-void	set_pos_end_quote(char *str, size_t *pos, t_token_id *token_id);
-void	set_pos_end_and_opr(char *str, size_t *pos, t_token_id *token_id);
-void	set_pos_end_parentheses(char *str, size_t *pos, t_token_id *token_id);
-void	set_pos_end_redir(char *str, size_t *pos, t_token_id *token_id);
-void	set_pos_end_env_var(char *str, size_t *pos, t_token_id *token_id);
-void	set_pos_end_pipe(char *str, size_t *pos, t_token_id *token_id);
-
-int	syntax_pipe(t_token *t_prev, t_token *t_cur, t_env *env_list);
-int	syntax_and_opr(t_token *t_prev, t_token *t_cur, t_env *env_list);
-int	syntax_parens(t_token *t_prev, t_token *t_cur, t_env *env_list);
-int	syntax_redir(t_token *t_prev, t_token *t_cur, t_env *env_list);
-int	syntax_noop(t_token *t_prev, t_token *t_cur, t_env *env_list);
-int	syntax_word(t_token *t_prev, t_token *t_cur, t_env *env_list);
-
-int parser_noop(t_cmd *cmd_node, t_token *token);
-int	parser_redir(t_cmd *cmd, t_token *token);
-int parser_arith_expan(t_cmd *cmd_node, t_token *token);
-int	add_new_arg(t_cmd *cmd, t_token *token);
-
-t_token	*new_token(void);
-void	add_token_in_back(t_token **t_list, t_token *new);
+//TOKENIZATION
+int			tokenize(t_shell *shell, char *input);
+t_token		*new_token(void);
 t_token_id	get_token_id(char c);
-t_token	*get_after_space_token(t_token *token);
-t_token	*get_after_pipe_token(t_token *token);
-t_token	*get_after_word_token(t_token *token);
-t_token *get_after_arith_expan_token(t_token *token);
-void 	remove_space_tokens(t_token **head);
-t_token *remove_token_by_reference(t_token *start_token, t_token *token_to_remove);
+void		add_token_in_back(t_token **t_list, t_token *new);
+t_token		*copy_token(t_token *t_node);
+t_token		*last_token(t_token *token_list_head);
+void		advance_pos_space_or_word(char *str, size_t *pos, t_token_id *token_id);
+void		advance_pos_quote(char *str, size_t *pos, t_token_id *token_id);
+void		advance_pos_and_operator(char *str, size_t *pos, t_token_id *token_id);
+void		advance_pos_parens(char *str, size_t *pos, t_token_id *token_id);
+void		advance_pos_redir(char *str, size_t *pos, t_token_id *token_id);
+void		advance_pos_env_var(char *str, size_t *pos, t_token_id *token_id);
+void		advance_pos_pipe(char *str, size_t *pos, t_token_id *token_id);
+t_token		*get_after_space_token(t_token *token);
+t_token		*get_after_pipe_token(t_token *token);
+t_token		*get_after_word_token(t_token *token);
+t_token		*get_after_arith_expan_token(t_token *token);
+t_token		*handle_arith_expan(t_token **head, t_token **cur_open, t_token **cur_close);
+void		remove_space_tokens(t_token **head);
+t_token		*remove_token_by_reference(t_token *start_token, t_token *token_to_remove);
+t_token		*previous_token_if_exists(t_token *head, t_token *target);
+t_token		*non_null_previous(t_token *start_token, t_token *before_what);
+bool		is_dquote(t_token *token);
+bool		is_squote(t_token *token);
+bool		is_word(t_token *token);
+bool		is_env_var(t_token *token);
 
-t_token	*copy_token(t_token *t_node);
-t_token	*last_token(t_token *token_list_head);
-void 	free_token_list(t_token *token_list);
+//SYNTAX
+int			syntax(t_shell *shell);
+int			syntax_pipe(t_token *t_prev, t_token *t_cur, t_env *env_list);
+int			syntax_and_opr(t_token *t_prev, t_token *t_cur, t_env *env_list);
+int			syntax_parens(t_token *t_prev, t_token *t_cur, t_env *env_list);
+int			syntax_redir(t_token *t_prev, t_token *t_cur, t_env *env_list);
+int			syntax_noop(t_token *t_prev, t_token *t_cur, t_env *env_list);
+int			syntax_word(t_token *t_prev, t_token *t_cur, t_env *env_list);
 
-char	*get_expanded_value(char *str, size_t pos,size_t *len_env_var, t_env *env_list);
-t_env	*new_env_var(char *env_var_str);
-void	add_env_var_in_back(t_env **env_var, t_env *new_env_var);
-char	*get_env_value_from_key(t_env *env_head, char *key);
+//APPEND
+int			append (t_shell *shell);
 
-t_cmd	*new_cmd(void);
-t_cmd	*free_cmd(t_cmd *cmd);
+//AST
+t_tree		*make_tree(t_shell *shell, t_token *start_token, t_token *end_token);
 
-t_redir	*new_redir(void);
-void	add_redir_in_back(t_redir **redir_list_head, t_redir *new_redir);
-void	free_redir_list(t_redir *redir_list_head);
-t_redir	*last_redir(t_redir *redir_list_head);
-t_redir_id	redir_ident(char *str);
+//CMD
+int			make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token);
+t_cmd		*new_cmd(void);
+int			parse(t_shell *shell);
+int			parser_noop(t_cmd *cmd_node, t_token *token);
+int			parser_redir(t_cmd *cmd, t_token *token);
+int			parser_arith_expan(t_cmd *cmd_node, t_token *token);
+int			parser_add_new_arg(t_cmd *cmd, t_token *token);
+t_token		*expand(t_shell *shell, t_token *start_token, t_token *end_token, t_env *env_list);
+char		*get_env_value_from_key(t_env *env_head, char *key);
+t_redir		*new_redir(void);
+void		add_redir_in_back(t_redir **redir_list_head, t_redir *new_redir);
+void		free_redir_list(t_redir **redir_list_head);
+int			handle_heredocs(t_shell *shell, t_token *token_list);
+t_ecode		open_redirections(t_shell *shell, t_cmd *head);
 
-void	print_env(t_env *env_list);
-void	print_redir(t_redir *redir_list_head);
-void	print_token(t_token *head);
-void	print_cmd(t_cmd *cmd);
-void	print_tree(t_tree *node, int level);
+//PARSING SIDE OF EXECUTION
+int			pre_execute(t_shell *shell, t_tree *node, t_tree *parent_node, int prev_exit_code);
+int			handle_pipe_subtree(t_shell *shell, t_tree *tree_node);
 
-void 	handle_parsing_err(t_shell *shell, int err_no, void *param);
+//FREE
+void		free_token(t_token *token);
+void		free_token_list(t_token *token_list);
+void		free_token_list2(t_token **token_list);
+void		free_cmd(t_cmd **cmd);
+void		free_tree(t_tree **node);
 
-t_tree 	*make_tree(t_shell *shell, t_token *start_token, t_token *end_token);
+//PRINT
+void		print_env(t_env *env_list);
+void		print_token(t_token *head);
+void		print_cmd(t_cmd *cmd);
+void		print_tree(t_tree *node, int level);  //to keep?
+void		print_tree_verbose(t_tree *node, int level);
 
+//ERROR
+void		handle_parsing_err(t_shell *shell, int err_no, void *param);
+void		handle_cmd_err(t_cmd *cmd, char *err_msg);
+void		handle_perror(char *str);
+void		handle_builtin_err(char *cmd_name, char *arg, char *err_msg);
 
-void 	free_tree(t_tree *node);
-void 	remove_subshell_parens(t_shell *shell);
-int	make_cmd(t_shell *shell, t_token *start_token, t_token *end_token);
-void print_tree_with_cmds(t_tree *node, int level);
+//CLEAN
+void	clean_nicely(t_shell *shell, void *param);
 
-
-
-int pre_execute(t_shell *shell, t_tree *node, t_tree *parent_node, int prev_exit_code);
-
-bool	join_quotes_tokens(t_shell *shell);
-char *process_double_quotes(t_shell *shell, char **str_ptr, char *expanded_str, t_env *env_list);
-char *process_single_quotes(char **str_ptr, char *expanded_str);
-char *process_unquoted(char **str_ptr, char *expanded_str, t_env *env_list);
-t_token *previous_token_if_exists(t_token *head, t_token *target);
-t_token *handle_arith_expan(t_token **head, t_token **cur_open, t_token **cur_close);
-int handle_heredocs(t_shell *shell, t_token *token_list);
-t_ecode	open_redirections(t_shell *shell, t_cmd *head);
-void print_tree_verbose(t_tree *node, int level);
-int handle_pipe_subtree(t_shell *shell, t_tree *tree_node);
-void handle_cmd_err(t_cmd *cmd, char *err_msg);
-void handle_perror(char *str);
-t_token *non_null_previous(t_token *start_token, t_token *before_what);
-bool is_dquote(t_token *token);
-bool is_squote(t_token *token);
-bool is_word(t_token *token);
-bool is_env_var(t_token *token);
-void free_token(t_token *token);
-
-void handle_builtin_err(char *cmd_name, char *arg, char *err_msg);
+int		safe_assign_str(char **dest, const char *src);
+void	free_token2(t_token **token);
+void	free_args(char ***args);
 
 //SIGNALS
 

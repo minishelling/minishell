@@ -21,54 +21,66 @@ typedef void (*t_delimiter_func)(char *str, size_t *pos, t_token_id *token_id);
  */
 t_token_id get_token_id(char c)
 {
-    t_token_id token_id;
+	t_token_id token_id;
 
-    token_id = SPACE_CHAR;
-    while (token_id != WORD)
-    {
-        if (c == META_CHARS_PLUS_SET[token_id])
-            break;
-        token_id++;
-    }
-    return token_id;
+	token_id = SPACE_CHAR;
+	while (token_id != WORD)
+	{
+		if (c == META_CHARS_PLUS_SET[token_id])
+			break;
+		token_id++;
+	}
+	return token_id;
 }
 
-/** 
- * @brief Assigns the token ID and extracts the token string from the input.
- *
- * @param shell Pointer to the shell structure.
- * @param str The input string to parse.
- * @param pos Pointer to the current position in the string.
- * @param token Pointer to the token structure to fill.
- * @return PARSING_OK on success, ERR_MEM if memory allocation fails.
+/**
+ * @brief Assigns a token ID and extracts the token string from the input string.
+ * 
+ * This function identifies the token at the current position in the input string,
+ * moves the position pointer to the appropriate location based on the token type,
+ * and extracts the token's string from the input string. It uses an array of 
+ * functions to handle different token types (e.g., spaces, pipes, redirections, etc.).
+ * The extracted token string is allocated dynamically and returned to the caller.
+ * 
+ * @param str A pointer to the input string.
+ * @param pos A pointer to the current position in the input string, which will
+ *            be updated as the function advances through the string.
+ * @param token A pointer to the token structure that will hold the token ID and
+ *              the extracted token string.
+ * 
+ * @return An integer representing the success or failure of the operation:
+ *         - PARSING_OK on success,
+ *         - ERR_MEM if memory allocation fails.
  */
 int assign_token_id_and_string(char *str, size_t *pos, t_token *token)
 {
-    int start_pos;
-
-    start_pos = *pos;
-    t_delimiter_func func[13] = {
-        [0] = &set_pos_end_space_or_word,
-        [1] = &set_pos_end_space_or_word,
-        [2] = &set_pos_end_space_or_word,
-        [3] = &set_pos_end_pipe,
-        [4] = &set_pos_end_and_opr,
-        [5] = &set_pos_end_parentheses,
-        [6] = &set_pos_end_parentheses,
-        [7] = &set_pos_end_redir,
-        [8] = &set_pos_end_redir,
-        [9] = &set_pos_end_quote,
-        [10] = &set_pos_end_quote,
-        [11] = &set_pos_end_env_var,
-        [12] = &set_pos_end_space_or_word,
-    };
-    token->id = get_token_id(str[(*pos)]);
-    func[token->id](str, pos, &token->id);
-    token->str = ft_substr(str, start_pos, (*pos - start_pos));  //malloc
-    if (!token->str)
-        return (ERR_MEM);
-    return (PARSING_OK);
+	int start_pos;
+	
+	start_pos = *pos;
+	t_delimiter_func func[13] = {
+		[0] = &advance_pos_space_or_word,
+		[1] = &advance_pos_space_or_word,
+		[2] = &advance_pos_space_or_word,
+		[3] = &advance_pos_pipe,
+		[4] = &advance_pos_and_operator,
+		[5] = &advance_pos_parens,
+		[6] = &advance_pos_parens,
+		[7] = &advance_pos_redir,
+		[8] = &advance_pos_redir,
+		[9] = &advance_pos_quote,
+		[10] = &advance_pos_quote,
+		[11] = &advance_pos_env_var,
+		[12] = &advance_pos_space_or_word,
+	};
+	token->id = get_token_id(str[(*pos)]);
+	func[token->id](str, pos, &token->id);
+	token->str = ft_substr(str, start_pos, (*pos - start_pos));
+	//printf ("token->str is at %p\n", token->str);
+	if (!token->str)
+		return (ERR_MEM);
+	return (PARSING_OK);
 }
+
 
 /** 
  * @brief Tokenizes the input string into a linked list of tokens.
@@ -79,21 +91,21 @@ int assign_token_id_and_string(char *str, size_t *pos, t_token *token)
  */
 int tokenize(t_shell *shell, char *input)
 {
-    size_t current_pos;
-    t_token *token;
+	size_t current_pos;
+	t_token *token;
 
-    shell->token = NULL;
-    current_pos = 0;
+	shell->token = NULL;
+	current_pos = 0;
 
-    while (input[current_pos])
-    {
-        token = new_token();
-        if (!token)
-            return (ERR_MEM);
-        assign_token_id_and_string(input, &current_pos, token);
-        if (!token->str)
-            return (ERR_MEM);
-        add_token_in_back(&shell->token, token);
-    }
-    return (PARSING_OK);
+	while (input[current_pos])
+	{
+		token = new_token();
+		if (!token)
+			return (ERR_MEM);
+		assign_token_id_and_string(input, &current_pos, token);
+		if (!token->str)
+			return (ERR_MEM);
+		add_token_in_back(&shell->token, token);
+	}
+	return (PARSING_OK);
 }
