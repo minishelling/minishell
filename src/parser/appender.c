@@ -58,7 +58,7 @@ bool join_quotes_tokens(t_shell *shell)
 				 (is_squote(previous_token) && is_dquote(current_token)))
 			new_str = join_quotes(&previous_token, &current_token);
 		if (new_str)
-			previous_token->str = new_str;
+			safe_assign_str(&previous_token->str, new_str); // protect better
 		else
 			return false;
 		previous_token = current_token;
@@ -133,10 +133,10 @@ void remove_subshell_parens(t_shell *shell)
  */
 bool join_env_var_quote_n_word_str(t_shell *shell)
 {
-	t_token *cur_token;
-	t_token *prev_token;
-	t_token *temp_token;
-	char *joined_str;
+	t_token	*cur_token;
+	t_token	*prev_token;
+	t_token	*temp_token;
+	char	*joined_str;
 
 	cur_token = shell->token;
 	prev_token = NULL;
@@ -150,15 +150,15 @@ bool join_env_var_quote_n_word_str(t_shell *shell)
 			joined_str = ft_strjoin_fs1(&prev_token->str, cur_token->str);
 			if (!joined_str)
 				return (ERR_MEM);
-			prev_token->str = joined_str;
-			temp_token = cur_token->next;  // Save the next token reference
-			free_token(cur_token);
-			prev_token->next = temp_token;  // Link previous_token to the next token
-			cur_token = temp_token;  // Move to the next token in the list
+			safe_assign_str(&prev_token->str, joined_str);  //protect better
+			temp_token = cur_token->next;
+			free_token2(&cur_token);
+			prev_token->next = temp_token;
+			cur_token = temp_token;
 			continue;
 		}
-		prev_token = cur_token;  // Move the previous_token forward
-		cur_token = cur_token->next;  // Move to the next token
+		prev_token = cur_token;
+		cur_token = cur_token->next;
 	}
 	return (PARSING_OK);
 }
@@ -169,23 +169,23 @@ int append (t_shell *shell)
 	
 	err_no = join_quotes_tokens(shell);
 	if (err_no)
-		return (free_token_list(shell->token), err_no);
-	printf ("after joining quotes tokens:\n");
-	print_token(shell->token);
+		return (free_token_list2(&shell->token), err_no);
+	// printf ("after joining quotes tokens:\n");
+	// print_token(shell->token);
 	
 	err_no = join_env_var_quote_n_word_str(shell);
 	if (err_no)
-	return (free_token_list(shell->token), err_no);
-	printf ("after concat words and env_vars tokens\n");
-	print_token(shell->token);
+	return (free_token_list2(&shell->token), err_no);
+	// printf ("after concat words and env_vars tokens\n");
+	// print_token(shell->token);
 	
 	remove_space_tokens(&shell->token);
-	printf ("after removing space tokens\n");
-	print_token(shell->token);
+	// printf ("after removing space tokens\n");
+	// print_token(shell->token);
 
 	remove_subshell_parens(shell);
-	printf ("after removing subshell_parens\n");
-	print_token(shell->token);
+	// printf ("after removing subshell_parens\n");
+	// print_token(shell->token);
 	
 	return (PARSING_OK);
 }

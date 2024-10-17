@@ -94,16 +94,20 @@ size_t get_arg_num(t_token *token)
 typedef int (*t_parser_func)(t_cmd *current_cmd, t_token *token);
 
 /**
- * @brief Processes a token with the appropriate parser function.
- *
- * For single quotes, double quotes, environment variables, and word tokens,
- * this function adds a new argument to the command structure.
- *
- * @param current_cmd Pointer to the current command structure.
- * @param token Pointer to the current token.
- * @return true if processing is successful, false otherwise.
+ * @brief Processes a token and applies the appropriate parsing function.
+ * 
+ * This function takes a token and passes it to the corresponding parser function 
+ * based on its ID. The function array `parser_functions` handles different token 
+ * types like redirections, arguments, and arithmetic expansions. By this point, 
+ * pipe tokens have already been processed, and a new arithmetic expansion token 
+ * (`arith_expan`) is supported.
+ * 
+ * @param current_cmd The current command being built.
+ * @param token The token to process.
+ * 
+ * @return PARSING_OK if successful, or an error code if an error occurs.
  */
-int	process_token(t_cmd *current_cmd, t_token *token)
+int	build_command_from_token(t_cmd *current_cmd, t_token *token)
 {
 int err_no;
 t_parser_func parser_functions[15] = {
@@ -133,13 +137,13 @@ t_parser_func parser_functions[15] = {
 }
 
 
-static int	process_tokens(t_cmd *current_cmd, t_token *token)
+static int	assemble_command_tokens(t_cmd *current_cmd, t_token *token)
 {
 	int err_no;
 	
 	while (token)
 	{
-		err_no = process_token(current_cmd, token);
+		err_no = build_command_from_token(current_cmd, token);
 		if (err_no)
 			return (err_no);
 		if (token->id == LT || token->id == GT)
@@ -151,7 +155,18 @@ static int	process_tokens(t_cmd *current_cmd, t_token *token)
 	}
 	return (PARSING_OK);
 }
-
+/**
+ * @brief Initializes a command structure by allocating memory for arguments 
+ * and processing tokens.
+ *
+ * This function takes a list of tokens, calculates the number of arguments,
+ * allocates memory for the arguments, and processes the tokens to build the command.
+ * 
+ * @param current_cmd A pointer to the current command structure being initialized.
+ * @param token The starting token from which the command will be built.
+ * @return int Returns PARSING_OK (0) if successful, or an error code if memory 
+ * allocation fails or token processing encounters an error.
+ */
 int	init_cmd(t_cmd **current_cmd, t_token *token)
 {
 	int err_no;
@@ -161,27 +176,28 @@ int	init_cmd(t_cmd **current_cmd, t_token *token)
 	(*current_cmd)->args = ft_calloc((arg_num + 1), sizeof(char *));
 	if (!(*current_cmd)->args)
 		return (ERR_MEM);
-	err_no = process_tokens(*current_cmd, token);
+	err_no = assemble_command_tokens(*current_cmd, token);
 	if (err_no)
 		return (err_no);
 	return (PARSING_OK);
 }
 
-int	make_cmd(t_shell *shell, t_token *start_token)
+
+int	make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token)
 {
 	t_token	*token;
 	int		err_no;
 
-	shell->cmd = NULL;
+	*cmd = NULL;
 	token = start_token;
 	while (token)
 	{
-		shell->cmd = new_cmd();
-		err_no = init_cmd(&shell->cmd, token);
+		*cmd = new_cmd();
+		err_no = init_cmd(cmd, token);
 		if (err_no)
 		{
-			free_cmd(&shell->cmd);
-			free_token_list(shell->token);
+			free_cmd(cmd);
+			free_token_list2(&shell->token);
 			return (err_no);
 		}
 		break;
@@ -189,29 +205,30 @@ int	make_cmd(t_shell *shell, t_token *start_token)
     return (PARSING_OK);
 }
 
+
 int	parse(t_shell *shell)
 {
 	int err_no;
 
 	err_no = tokenize(shell, shell->input);
 	if (err_no)
-		return (free_token_list(shell->token), err_no);
+		return (free_token_list2(&shell->token), err_no);
 	printf ("After tokenization:\n");
 	print_token(shell->token);
 	
 	err_no = syntax(shell);
 	if (err_no)
-		return (free_token_list(shell->token), err_no);
+		return (free_token_list2(&shell->token), err_no);
 	printf ("After syntax:\n");
 	print_token(shell->token);
 	
 	err_no = append (shell);
 	if (err_no)
-	return (free_token_list(shell->token), err_no);
+	return (free_token_list2(&shell->token), err_no);
 
 	err_no = handle_heredocs(shell, shell->token);
 	if (err_no)
-	return (free_token_list(shell->token), err_no);
+	return (free_token_list2(&shell->token), err_no);
 	printf ("after heredocs handling\n");
 	
 	print_token(shell->token);
@@ -223,15 +240,18 @@ int	parse(t_shell *shell)
 	}
 
 	shell->tree = make_tree(shell, shell->token, last_token(shell->token));
-
+	if (!shell->tree)
+		free_token_list2(&shell->token);   //protect more
 	printf("\n"WHITE_TEXT MAGENTA_BACKGROUND"THE TREE"RESET_COLOR);
 	printf("\n--------------------\n");
+	
+	printf ("token->str is at %p\n", shell->token->str);
 	
 	if (shell->tree)
 		print_tree_verbose(shell->tree, 0);
 	printf ("\n");
-	// if (shell->tree)
-	// 	free_token_list(shell->token); //???
+	
+	
 	return (PARSING_OK);
 }
 

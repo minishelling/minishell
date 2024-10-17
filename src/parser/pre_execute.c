@@ -18,19 +18,20 @@ int pre_execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int
 	}
 	if (tree_node->type == CMD)
 	{
-		// fprintf(stderr, "STARTING MAKING EXPANSIONS\n");
+		fprintf(stderr, "STARTING MAKING EXPANSIONS\n");
 		tree_node->start_token = expand(shell, tree_node->start_token, tree_node->end_token, shell->env_list);
-		// fprintf(stderr, "FINISHED MAKING EXPANSIONS\n");
-		make_cmd(shell, tree_node->start_token);   //what shall we do if make_cmd fails? 
-		tree_node->cmd = shell->cmd;
-		// fprintf(stderr, "FINISHED MAKING CMDS\n");
+		fprintf(stderr, "FINISHED MAKING EXPANSIONS\n");
+		make_cmd(shell, &tree_node->cmd, tree_node->start_token);
+        // tree_node->cmd = shell->cmd;
+        // fprintf(stderr, "FINISHED MAKING CMDS\n");
 		if (open_redirections(shell, tree_node->cmd) == SUCCESS)
 			exit_code = executor(shell, tree_node->cmd);
 		else
 			exit_code = 1;
-
+		printf ("in pre_execute:\n");
+		print_token(shell->token);
 		print_cmd(tree_node->cmd);
-		printf ("exit code is %d\n", exit_code);
+		//printf ("exit code is %d\n", exit_code);
 	}
 	if (parent_tree_node && parent_tree_node->type == T_AND_OPR && exit_code == 0) 
 	{

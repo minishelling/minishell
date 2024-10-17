@@ -73,7 +73,7 @@ void	print_token(t_token *head)
 	{
 		if (ptr && ptr->str)
 		{
-			printf(MAGENTA_TEXT"%pTOKEN [%02d]"RESET_COLOR"\tid: %s [%d]\n\t\tstr: |%s|\n",ptr, (con - size), token_name[ptr->id], ptr->id, ptr->str);
+			printf(MAGENTA_TEXT"%pTOKEN [%02d]"RESET_COLOR"\tid: %s [%d]\n\t\tstr: |%s|\tstr address: %p\n",ptr, (con - size), token_name[ptr->id], ptr->id, ptr->str, ptr->str);
 			ptr = ptr->next;
 		}
 	}
@@ -88,7 +88,7 @@ void	print_cmd_args(char **arg)
 	fprintf(stderr, MAGENTA_TEXT WHITE_BACKGROUND"ARGUMENTS" RESET_COLOR"\n");
 	while (arg[i] != NULL)
 	{
-		fprintf(stderr, "arg [%02zu]:\t|%s|\n", i, arg[i]);
+		fprintf(stderr, "arg [%02zu]:\t|%s| arg adress: %p\n", i, arg[i], &arg[i]);
 		i++;
 	}
 }

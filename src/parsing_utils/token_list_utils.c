@@ -115,7 +115,7 @@ void	remove_space_tokens(t_token **head)
 				prev->next = current->next;
 			temp = current;
 			current = current->next;
-			free_token(temp);
+			free_token2(&temp);
 		}
 		else
 		{
@@ -158,10 +158,10 @@ t_token *handle_arith_expan(t_token **head, t_token **cur_open, t_token **cur_cl
 			//printf (">cur_open is %s , cur_close is %s\n", cur_open->str, cur_close->str);
 	}
 	//printf ("outer open is %s , outer close %s\n", outer_open->str, outer_close->str);
+	if(!safe_assign_str(&outer_open->str, "((") || !safe_assign_str(&outer_close->str, "))"))
+		exit (FAILURE); //protect better
 	outer_open->id = ARITH_EXPAN;
-	outer_open->str = "((";
 	outer_close->id = ARITH_EXPAN;
-	outer_close->str = "))";
 	// printf("after handling arith expan:\n");
 	// print_token(*head);
 	return (*head);

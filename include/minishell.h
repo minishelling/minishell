@@ -40,6 +40,8 @@
 # define READ_END 0
 # define WRITE_END 1
 
+#define FREED_MAGIC ((void*)0xDEADBEEF)  //remove
+
 extern int	g_signalcode;
 
 typedef enum	signal_mode
@@ -213,7 +215,6 @@ typedef struct s_shell
     t_token 	*token;
 	t_tree		*tree;
 	t_env		*env_list;
-	t_cmd		*cmd;
 } t_shell;
 
 //INIT
@@ -263,7 +264,7 @@ int			append (t_shell *shell);
 t_tree		*make_tree(t_shell *shell, t_token *start_token, t_token *end_token);
 
 //CMD
-int			make_cmd(t_shell *shell, t_token *start_token);
+int			make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token);
 t_cmd		*new_cmd(void);
 int			parse(t_shell *shell);
 int			parser_noop(t_cmd *cmd_node, t_token *token);
@@ -285,6 +286,7 @@ int			handle_pipe_subtree(t_shell *shell, t_tree *tree_node);
 //FREE
 void		free_token(t_token *token);
 void		free_token_list(t_token *token_list);
+void		free_token_list2(t_token **token_list);
 void		free_cmd(t_cmd **cmd);
 void		free_tree(t_tree **node);
 
@@ -301,6 +303,12 @@ void		handle_cmd_err(t_cmd *cmd, char *err_msg);
 void		handle_perror(char *str);
 void		handle_builtin_err(char *cmd_name, char *arg, char *err_msg);
 
+//CLEAN
+void	clean_nicely(t_shell *shell, void *param);
+
+int		safe_assign_str(char **dest, const char *src);
+void	free_token2(t_token **token);
+void	free_args(char ***args);
 
 //SIGNALS
 

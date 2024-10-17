@@ -21,31 +21,21 @@ char	*ft_strjoin_fs1(char **s1, char const *s2)
 	return (dst);
 }
 
-// char	*ft_strjoin_fs1(char *s1, const char *s2)
-// {
-// 	char	*dst;
-// 	size_t	len;
-// 	int		i;
-// 	int		j;
-
-// 	if (!s1)
-// 		return (NULL);
-// 	len = ft_strlen(s1) + ft_strlen(s2);
-// 	dst = malloc (sizeof(char) * (len + 1));
-// 	if (!dst)
-// 		return (ft_free((void **) &s1), NULL);
-// 	i = 0;
-// 	while (s1 && s1[i])
-// 	{
-// 		dst[i] = s1[i];
-// 		i++;
-// 	}
-// 	j = 0;
-// 	while (s2 && s2[j])
-// 	{
-// 		dst[i + j] = s2[j];
-// 		j++;
-// 	}
-// 	dst[i + j] = '\0';
-// 	return (ft_free((void **) &s1), dst);
-// }
+int	safe_assign_str(char **dest, const char *src)
+{
+	if (*dest)
+	{
+		printf ("freeing %p and setting to NULL\n", *dest);
+		free(*dest);
+		*dest = NULL;
+	}
+	if (src)
+	{
+		*dest = strdup(src);
+		if (*dest == NULL)
+			return(ERR_MEM);
+	}
+	else
+		(*dest) = NULL;
+	return (SUCCESS);
+}

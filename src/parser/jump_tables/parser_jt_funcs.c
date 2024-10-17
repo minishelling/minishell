@@ -31,11 +31,10 @@ int parser_redir(t_cmd *cmd, t_token *token)
 	t_token	*file_token;
 	t_redir	*redir_list;
 
-	file_token = get_after_space_token(token);
 	if (token->next)
 		file_token = token->next;
 	else
-		file_token = NULL;
+		file_token = NULL;  //syntax erro - no file name?
 	redir_list = new_redir();
 	if (!redir_list)
 		return (ERR_MEM);
@@ -51,7 +50,12 @@ int parser_redir(t_cmd *cmd, t_token *token)
 int	parser_add_new_arg(t_cmd *cmd, t_token *token)
 {
 	size_t	i;
-
+	if (!cmd->args)
+	{
+		cmd->args = ft_calloc(2, sizeof(char *));  // Initial allocation
+		if (!cmd->args)
+			return (ERR_MEM);
+	}
 	i = 0;
 	while (cmd->args[i])
 		i++;
@@ -61,7 +65,12 @@ int	parser_add_new_arg(t_cmd *cmd, t_token *token)
 
 int parser_arith_expan(t_cmd *cmd_node, t_token *token)
 {
-	(void) token;
+	(void)token;
+	if (cmd_node->args)
+	{
+		free_args(&cmd_node->args);
+		cmd_node->args = NULL;
+	}
 	cmd_node->args = ft_calloc(2, sizeof(char *));
 	cmd_node->args[0] = ft_strdup("((");
 	if (!cmd_node->args[0])

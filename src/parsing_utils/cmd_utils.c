@@ -52,19 +52,10 @@ void free_args(char ***args)
 	*args = NULL;
 }
 
-/**
- * @brief Frees a t_cmd structure, including its arguments and redirections.
- * 
- * This function frees the command structure, its list of arguments, and its list
- * of redirections. Since both `free_args` and `free_redir_list` set their pointers
- * to `NULL` after freeing, this function doesn't need to manually set them to `NULL`.
- * 
- * @param cmd A pointer to the t_cmd structure to free. Once freed, this pointer
- *            will be set to NULL.
- */
-void	free_cmd(t_cmd **cmd)
+
+void free_cmd(t_cmd **cmd)
 {
-	if (!cmd || !(*cmd))
+	if (*cmd == NULL)
 		return;
 	if ((*cmd)->args)
 		free_args(&(*cmd)->args);
@@ -73,3 +64,4 @@ void	free_cmd(t_cmd **cmd)
 	free(*cmd);
 	*cmd = NULL;
 }
+

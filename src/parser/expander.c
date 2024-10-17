@@ -177,45 +177,51 @@ char *copy_chars(char *token_str, char *expanded_str)
 	return (new_expanded_str);
 }
 
-/**
- * @brief Expands the string in the given token by processing single quotes, 
- *        double quotes, and environment variables.
- *
- * This function modifies the `token->str` field to contain the expanded 
- * string based on the characters and special symbols encountered in it. 
- * It handles single quotes, double quotes, and variable expansion, 
- * concatenating the results into a single string.
- *
- * @param token A pointer to the token containing the string to be expanded.
- * @param env_list A pointer to the environment variable list for variable 
- *        expansion.
- */
 void expand_str(t_shell *shell, t_token *token, t_env *env_list)
 {
-	char *expanded_str = ft_strdup("");
+    char *expanded_str = ft_strdup("");  // Initial allocation
 
-	while (*(token->str))
-	{
-		if (*(token->str) == '\'')
-		{
-			token->str++;
-			expanded_str = process_single_quotes(&(token->str), expanded_str);
-		}
-		else if (*(token->str) == '\"')
-		{
-			token->str++;
-			expanded_str = process_double_quotes(shell, &(token->str), expanded_str, env_list);
-		}
-		else if (*(token->str) == '$')
-			expanded_str = expand_variable(shell, &(token->str), expanded_str, env_list);
-		else
-		{
-			expanded_str = copy_chars(token->str, expanded_str);
-			token->str += ft_strcspn(token->str, "\'\"$ ");
-		}
-	}
-	token->str = expanded_str;
+    if (!expanded_str)
+    {
+        perror("Failed to allocate memory for expanded_str");
+        return;
+    }
+
+    char *original_str = token->str;  // Save the original string pointer
+
+    // Traverse through the original string using original_str
+    while (*original_str)  // Use original_str for processing
+    {
+        if (*original_str == '\'')
+        {
+            original_str++;
+            expanded_str = process_single_quotes(&original_str, expanded_str);
+        }
+        else if (*original_str == '\"')
+        {
+            original_str++;
+            expanded_str = process_double_quotes(shell, &original_str, expanded_str, env_list);
+        }
+        else if (*original_str == '$')
+        {
+            expanded_str = expand_variable(shell, &original_str, expanded_str, env_list);
+        }
+        else
+        {
+            expanded_str = copy_chars(original_str, expanded_str);
+            original_str += ft_strcspn(original_str, "\'\"$ ");  // Move past the next token
+        }
+    }
+
+    printf("original_str is at %p\n", original_str);
+    printf("expanded_str is %s\n", expanded_str);
+	safe_assign_str(&token->str, expanded_str);
+    if (!token->str)
+        perror("Failed to allocate memory for token->str");  // protect better
+    free(expanded_str);
 }
+
+
 
 /**
  * @brief Expands a list of tokens from the starting token to the ending token.

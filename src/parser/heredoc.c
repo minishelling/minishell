@@ -164,9 +164,7 @@ int handle_heredocs(t_shell *shell, t_token *token_list)
 					return (ERR_MEM);
 				delimiter = next_token->str;
 				printf("in handle heredocs, delimiter is %s\n", delimiter);
-				if (next_token->str)
-                    free(next_token->str);
-				next_token->str = file_name;
+				safe_assign_str(&next_token->str, file_name);  //protect better
 				fd = read_heredoc_input(shell, next_token->str, delimiter);
 				if (g_signalcode == SIGINT)
 				{
@@ -176,7 +174,7 @@ int handle_heredocs(t_shell *shell, t_token *token_list)
 				else if (fd)
 				{
 					free(file_name);
-					next_token->str = ft_itoa(fd);
+					safe_assign_str(&next_token->str, ft_itoa(fd)); //protect better
 				}
 				// else
 				// 	error

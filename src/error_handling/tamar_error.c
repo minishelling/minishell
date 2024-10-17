@@ -20,11 +20,39 @@ char *get_err_msg(int e)
 	return (error_messages[e]);
 }
 
-void clean_nicely(t_shell *shell, void *param)
+void free_tree(t_tree **node)
+{
+	if (*node == NULL)
+		return;
+	free_tree(&(*node)->left);
+	free_tree(&(*node)->right);
+	if ((*node)->cmd)
+	{
+		printf("Freeing command in node %p\n", *node);
+		free_cmd(&(*node)->cmd);
+	}
+	free(*node);
+	*node = NULL;
+}
+
+void clean_nicely(t_shell *shell, void* param)
 {
 	(void)param;
-	free_token_list(shell->token);
+	printf("Entering clean_nicely...\n");
+	if (shell->token)
+	{
+		printf("Freeing token list...\n");
+		free_token_list2(&shell->token);
+		printf("Finished freeing token list\n");
+	}
+	if (shell->tree)
+	{
+		printf("Freeing tree nodes...\n");
+		free_tree(&shell->tree);
+		printf("Finished freeing tree nodes\n");
+	}
 }
+
 
 void handle_parsing_err(t_shell *shell, int err_no, void *param)
 {
@@ -47,7 +75,7 @@ void handle_parsing_err(t_shell *shell, int err_no, void *param)
 		write(2, full_msg, full_msg_len);
 		free(full_msg);
 	}
-	clean_nicely(shell, param);
+	// clean_nicely(shell, param); ??
 }
 
 void handle_cmd_err(t_cmd *cmd, char *err_msg)
@@ -82,16 +110,14 @@ void handle_perror(char *str)
 	size_t cmd_len, prompt_len, total_len;
 
 	if (!str)
-	{
-		return; // Handle null arguments
-	}
+		return;
 	err_prompt = ERR_PROMPT;
 	cmd_len = ft_strlen(str);
 	prompt_len = ft_strlen(err_prompt);
 	total_len = cmd_len + prompt_len;
 	full_err_msg = (char *)malloc(total_len + 1);
 	if (!full_err_msg)
-		return; // Handle malloc failure
+		return; // ???
 	ft_strlcpy(full_err_msg, err_prompt, total_len + 1);
 	ft_strlcat(full_err_msg, str, total_len + 1);
 	perror(full_err_msg);
