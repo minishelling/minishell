@@ -1,50 +1,19 @@
 #include "../../include/minishell.h"
 
-static char	*ft_strjoin_cmd_path(char *path, char *cmd_name)
-{
-	char	*cmd_path;
+static char	*check_name_as_path(t_shell *shell, char *cmd_name);
+static char	*check_path_access(t_shell *shell, char *current_path, char *cmd_name);
+static char	*ft_strjoin_cmd_path(char *path, char *cmd_name);
 
-	if (!path || !cmd_name)
-		return (NULL);
-	cmd_path = ft_strdup(path);
-	if (!cmd_path)
-		return (NULL);
-	if (append_suffix(&cmd_path, "/", false))
-		return (NULL);
-	cmd_path = ft_strjoin_fs1(&cmd_path, cmd_name);
-	if (!cmd_path)
-		return (NULL);
-	return (cmd_path);
-}
-
-static char	*check_name_as_relative_path(t_shell *shell, char *cmd_name)
-{
-	if (access(cmd_name, F_OK) == 0)
-	{
-		if (access(cmd_name, X_OK) == 0)
-			return (cmd_name);
-		shell->exit_code = 126;
-	}
-	return (NULL);
-}
-
-static char	*check_path_access(t_shell *shell, char *current_path, char *cmd_name)
-{
-	char	*cmd_path;
-
-	cmd_path = ft_strjoin_cmd_path(current_path, cmd_name);
-	if (!cmd_path)
-		return (NULL);
-	if (access(cmd_path, F_OK) == 0)
-	{
-		if (access(cmd_path, X_OK) == 0)
-			return (cmd_path);
-		shell->exit_code = 126;
-	}
-	ft_free((void **) &cmd_path);
-	return (NULL);
-}
-
+/**
+ * @brief Returns the full path of the command by looking
+ * at the PATH variable in the environment.
+ * If there is no path node, or none of the path values are valid,
+ * it checks if the command name itself is a path.
+ * @param shell A pointer to the shell structure.
+ * @param cmd_name The command name.
+ * @return On success it returns the full path
+ * to the commands executable file. On failure it returns NULL.
+ */
 char	*get_cmd_path(t_shell *shell, char *cmd_name)
 {
 	t_env	*path_node;
@@ -59,7 +28,7 @@ char	*get_cmd_path(t_shell *shell, char *cmd_name)
 	if (path_node)
 		paths = ft_split(path_node->value, ':');
 	if (!paths)
-		return (check_name_as_relative_path(shell, cmd_name));
+		return (check_name_as_path(shell, cmd_name));
 	i = 0;
 	while (paths[i])
 	{
@@ -69,5 +38,78 @@ char	*get_cmd_path(t_shell *shell, char *cmd_name)
 		i++;
 	}
 	ft_free_2d((void ***) &paths);
-	return (check_name_as_relative_path(shell, cmd_name));
+	return (check_name_as_path(shell, cmd_name));
+}
+
+/**
+ * @brief It checks whether the command name is a valid path.
+ * 
+ * @param shell A pointer to the shell structure.
+ * @param cmd_name The command's name.
+ * @return If the file is found and is executable,
+ * it returns the name of the command that will act as path.
+ * If the file not found or if it is but is not executable,
+ * it returns NULL, and in the latter case it sets the exit code to 126.
+ */
+static char	*check_name_as_path(t_shell *shell, char *cmd_name)
+{
+	if (access(cmd_name, F_OK) == 0)
+	{
+		if (access(cmd_name, X_OK) == 0)
+			return (cmd_name);
+		shell->exit_code = 126;
+	}
+	return (NULL);
+}
+
+/**
+ * @brief Concatenates the command name to the current path,
+ * and tests if the full path is executable.
+ * @param shell A pointer to the shell structure.
+ * @param current_path The current path value.
+ * @param cmd_name The command name.
+ * @return If the full path is executable it returns the path.
+ * If the path leads to a valid file but is not executable,
+ * it returns NULL and sets the error code to 126.
+ * Else it returns NULL.
+ */
+static char	*check_path_access(t_shell *shell, char *current_path, char *cmd_name)
+{
+	char	*cmd_path;
+
+	cmd_path = ft_strjoin_cmd_path(current_path, cmd_name);
+	if (!cmd_path)
+		return (NULL);
+	if (check_name_as_path(shell, cmd_path) == NULL)
+	{
+		ft_free((void **) &cmd_path);
+		return (NULL);
+	}
+	return (cmd_path);
+}
+
+/**
+ * @brief Returns a string with the cmd name concatenated
+ * to the current path value.
+ * @param path The current path value.
+ * @param cmd_name The command name.
+ * @return If there's a malloc failure it prints
+ * an error message and returns NULL.
+ * Otherwise it returns the full command's path.
+ */
+static char	*ft_strjoin_cmd_path(char *path, char *cmd_name)
+{
+	char	*cmd_path;
+
+	if (!path || !cmd_name)
+		return (NULL);
+	cmd_path = ft_strdup(path);
+	if (!cmd_path)
+		return (handle_perror("ft_strjoin_cmd_path"), NULL);
+	if (append_suffix(&cmd_path, "/", false))
+		return (handle_perror("ft_strjoin_cmd_path"), NULL);
+	cmd_path = ft_strjoin_fs1(&cmd_path, cmd_name);
+	if (!cmd_path)
+		return (handle_perror("ft_strjoin_cmd_path"), NULL);
+	return (cmd_path);
 }
