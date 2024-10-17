@@ -213,11 +213,11 @@ void expand_str(t_shell *shell, t_token *token, t_env *env_list)
         }
     }
 
-    printf("original_str is at %p\n", original_str);
-    printf("expanded_str is %s\n", expanded_str);
+    //printf("original_str is at %p\n", original_str);
+    //printf("expanded_str is %s\n", expanded_str);
 	safe_assign_str(&token->str, expanded_str);
     if (!token->str)
-        perror("Failed to allocate memory for token->str");  // protect better
+        fprintf(stderr, "Failed to allocate memory for token->str");  // protect better
     free(expanded_str);
 }
 

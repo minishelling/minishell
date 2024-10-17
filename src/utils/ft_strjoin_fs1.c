@@ -25,7 +25,7 @@ int	safe_assign_str(char **dest, const char *src)
 {
 	if (*dest)
 	{
-		printf ("freeing %p and setting to NULL\n", *dest);
+		//printf ("freeing %p and setting to NULL\n", *dest);
 		free(*dest);
 		*dest = NULL;
 	}

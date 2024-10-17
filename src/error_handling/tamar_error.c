@@ -28,7 +28,7 @@ void free_tree(t_tree **node)
 	free_tree(&(*node)->right);
 	if ((*node)->cmd)
 	{
-		printf("Freeing command in node %p\n", *node);
+		//printf("Freeing command in node %p\n", *node);
 		free_cmd(&(*node)->cmd);
 	}
 	free(*node);
@@ -38,18 +38,18 @@ void free_tree(t_tree **node)
 void clean_nicely(t_shell *shell, void* param)
 {
 	(void)param;
-	printf("Entering clean_nicely...\n");
+	//printf("Entering clean_nicely...\n");
 	if (shell->token)
 	{
-		printf("Freeing token list...\n");
+		//printf("Freeing token list...\n");
 		free_token_list2(&shell->token);
-		printf("Finished freeing token list\n");
+		//printf("Finished freeing token list\n");
 	}
 	if (shell->tree)
 	{
-		printf("Freeing tree nodes...\n");
+		//printf("Freeing tree nodes...\n");
 		free_tree(&shell->tree);
-		printf("Finished freeing tree nodes\n");
+		//printf("Finished freeing tree nodes\n");
 	}
 }
 
