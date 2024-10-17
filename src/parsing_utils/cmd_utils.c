@@ -57,8 +57,8 @@ void free_cmd(t_cmd **cmd)
 {
 	if (*cmd == NULL)
 		return;
-	if ((*cmd)->args)
-		free_args(&(*cmd)->args);
+	// if ((*cmd)->args)
+	// 	free_args(&(*cmd)->args);
 	if ((*cmd)->redir)
 		free_redir_list(&(*cmd)->redir);
 	free(*cmd);
