@@ -75,7 +75,7 @@ int assign_token_id_and_string(char *str, size_t *pos, t_token *token)
 	token->id = get_token_id(str[(*pos)]);
 	func[token->id](str, pos, &token->id);
 	token->str = ft_substr(str, start_pos, (*pos - start_pos));
-	printf ("token->str is at %p\n", token->str);
+	//printf ("token->str is at %p\n", token->str);
 	if (!token->str)
 		return (ERR_MEM);
 	return (PARSING_OK);

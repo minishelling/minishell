@@ -213,14 +213,14 @@ int	parse(t_shell *shell)
 	err_no = tokenize(shell, shell->input);
 	if (err_no)
 		return (free_token_list2(&shell->token), err_no);
-	printf ("After tokenization:\n");
-	print_token(shell->token);
+	//printf ("After tokenization:\n");
+	//print_token(shell->token);
 	
 	err_no = syntax(shell);
 	if (err_no)
 		return (free_token_list2(&shell->token), err_no);
-	printf ("After syntax:\n");
-	print_token(shell->token);
+	//printf ("After syntax:\n");
+	//print_token(shell->token);
 	
 	err_no = append (shell);
 	if (err_no)
@@ -229,11 +229,11 @@ int	parse(t_shell *shell)
 	err_no = handle_heredocs(shell, shell->token);
 	if (err_no)
 	return (free_token_list2(&shell->token), err_no);
-	printf ("after heredocs handling\n");
+	//printf ("after heredocs handling\n");
 	
-	print_token(shell->token);
-	fprintf(stderr, "Parser:\nSignal code: %d\n", g_signalcode);
-	fprintf(stderr, "Exit code: %d\n", shell->exit_code);
+	//print_token(shell->token);
+	//fprintf(stderr, "PARSER:\nSignal code: %d\n", g_signalcode);
+	//fprintf(stderr, "Exit code: %d\n", shell->exit_code);
 	if (g_signalcode == SIGINT)
 	{
 		return (SIGINT_HDOC);
@@ -245,7 +245,7 @@ int	parse(t_shell *shell)
 	printf("\n"WHITE_TEXT MAGENTA_BACKGROUND"THE TREE"RESET_COLOR);
 	printf("\n--------------------\n");
 	
-	printf ("token->str is at %p\n", shell->token->str);
+	//printf ("token->str is at %p\n", shell->token->str);
 	
 	if (shell->tree)
 		print_tree_verbose(shell->tree, 0);
