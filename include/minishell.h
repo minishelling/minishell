@@ -284,9 +284,9 @@ int			pre_execute(t_shell *shell, t_tree *node, t_tree *parent_node, int prev_ex
 int			handle_pipe_subtree(t_shell *shell, t_tree *tree_node);
 
 //FREE
-void		free_token(t_token *token);
-void		free_token_list(t_token *token_list);
-void		free_token_list2(t_token **token_list);
+void		free_token(t_token **token);
+void		free_token_list(t_token **token_list);
+void		free_args(char ***args);
 void		free_cmd(t_cmd **cmd);
 void		free_tree(t_tree **node);
 
@@ -306,9 +306,7 @@ void		handle_builtin_err(char *cmd_name, char *arg, char *err_msg);
 //CLEAN
 void		clean_nicely(t_shell *shell, void *param);
 
-t_ecode		safe_assign_str(char **dest, const char *src);
-void		free_token2(t_token **token);
-void		free_args(char ***args);
+int		safe_assign_str(char **dest, const char *src);
 
 //SIGNALS
 

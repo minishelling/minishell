@@ -1,65 +1,5 @@
 #include "../../include/minishell.h"
 
-/**
- * @brief Check if the token is a double quote.
- *
- * This function determines if the given token is classified as a
- * double quote based on its token ID.
- *
- * @param token A pointer to the token to check.
- * @return true If the token is a double quote.
- * @return false If the token is not a double quote.
- */
-bool is_dquote(t_token *token)
-{
-	return (token && token->id == DQUOTE);
-}
-
-/**
- * @brief Check if the token is a single quote.
- *
- * This function determines if the given token is classified as a
- * single quote based on its token ID.
- *
- * @param token A pointer to the token to check.
- * @return true If the token is a single quote.
- * @return false If the token is not a single quote.
- */
-bool is_squote(t_token *token)
-{
-	return (token && token->id == SQUOTE);
-}
-
-/**
- * @brief Check if the token is a word.
- *
- * This function determines if the given token is classified as a word
- * based on its token ID.
- *
- * @param token A pointer to the token to check.
- * @return true If the token is a word.
- * @return false If the token is not a word.
- */
-bool is_word(t_token *token)
-{
-	return (token && token->id == WORD);
-}
-
-/**
- * @brief Check if the token is an environment variable.
- *
- * This function determines if the given token is classified as an
- * environment variable based on its token ID.
- *
- * @param token A pointer to the token to check.
- * @return true If the token is an environment variable.
- * @return false If the token is not an environment variable.
- */
-bool is_env_var(t_token *token)
-{
-	return (token && token->id == ENV_VAR);
-}
-
 // /**
 //  * @brief Get the number of arguments from a token.
 //  *
@@ -77,7 +17,6 @@ size_t get_arg_num(t_token *token)
 	arg_count = 0;
 	while (token)
 	{
-		// if (is_word(token) || is_env_var(token) || is_squote(token) || is_dquote(token))
 		if (token->id == WORD || token->id == ENV_VAR || token->id == SQUOTE || token->id == DQUOTE)
 			arg_count++;
 		token = token->next;
@@ -197,7 +136,7 @@ int	make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token)
 		if (err_no)
 		{
 			free_cmd(cmd);
-			free_token_list2(&shell->token);
+			free_token_list(&shell->token);
 			return (err_no);
 		}
 		break;
@@ -212,23 +151,23 @@ int	parse(t_shell *shell)
 
 	err_no = tokenize(shell, shell->input);
 	if (err_no)
-		return (free_token_list2(&shell->token), err_no);
+		return (free_token_list(&shell->token), err_no);
 	//printf ("After tokenization:\n");
 	//print_token(shell->token);
 	
 	err_no = syntax(shell);
 	if (err_no)
-		return (free_token_list2(&shell->token), err_no);
+		return (free_token_list(&shell->token), err_no);
 	//printf ("After syntax:\n");
 	//print_token(shell->token);
 	
 	err_no = append (shell);
 	if (err_no)
-	return (free_token_list2(&shell->token), err_no);
+	return (free_token_list(&shell->token), err_no);
 
 	err_no = handle_heredocs(shell, shell->token);
 	if (err_no)
-	return (free_token_list2(&shell->token), err_no);
+	return (free_token_list(&shell->token), err_no);
 	//printf ("after heredocs handling\n");
 	
 	//print_token(shell->token);
@@ -241,7 +180,7 @@ int	parse(t_shell *shell)
 
 	shell->tree = make_tree(shell, shell->token, last_token(shell->token));
 	if (!shell->tree)
-		free_token_list2(&shell->token);   //protect more
+		free_token_list(&shell->token);   //protect more
 	printf("\n"WHITE_TEXT MAGENTA_BACKGROUND"THE TREE"RESET_COLOR);
 	printf("\n--------------------\n");
 	

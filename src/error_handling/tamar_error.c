@@ -16,7 +16,6 @@ char *get_err_msg(int e)
 		"Error: unable to allocate dynamic memory\n",
 		"SIGINT_HDOC"
 	};
-
 	return (error_messages[e]);
 }
 
@@ -27,10 +26,7 @@ void free_tree(t_tree **node)
 	free_tree(&(*node)->left);
 	free_tree(&(*node)->right);
 	if ((*node)->cmd)
-	{
-		//printf("Freeing command in node %p\n", *node);
 		free_cmd(&(*node)->cmd);
-	}
 	free(*node);
 	*node = NULL;
 }
@@ -38,21 +34,12 @@ void free_tree(t_tree **node)
 void clean_nicely(t_shell *shell, void* param)
 {
 	(void)param;
-	//printf("Entering clean_nicely...\n");
 	if (shell->token)
-	{
-		//printf("Freeing token list...\n");
-		free_token_list2(&shell->token);
-		//printf("Finished freeing token list\n");
-	}
+		free_token_list(&shell->token);
 	if (shell->tree)
-	{
-		//printf("Freeing tree nodes...\n");
 		free_tree(&shell->tree);
-		//printf("Finished freeing tree nodes\n");
-	}
-}
 
+}
 
 void handle_parsing_err(t_shell *shell, int err_no, void *param)
 {
@@ -72,7 +59,7 @@ void handle_parsing_err(t_shell *shell, int err_no, void *param)
 		if (!full_msg)
 		{
 			perror("handle_parsing_err");
-			return ; // handle malloc failure
+			exit(EXIT_FAILURE) ; //??
 		}
 		full_msg_len = ft_strlen(full_msg);
 		write(2, full_msg, full_msg_len);

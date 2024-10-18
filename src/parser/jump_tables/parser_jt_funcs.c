@@ -39,7 +39,9 @@ int parser_redir(t_cmd *cmd, t_token *token)
 	if (!redir_list)
 		return (ERR_MEM);
 	redir_list->redir_id = which_redir(token->str);
-	redir_list->file = file_token->str;
+	redir_list->file = ft_strdup(file_token->str);
+	if (redir_list->file)
+		return (ERR_MEM);
 	if (redir_list->file[0] == '|' || redir_list->file[0] == '&' || redir_list->file[0] == ';'
 		|| redir_list->file[0] == '(' || redir_list->file[0] == ')')
 			return (ERR_SYNTAX_ERROR);
@@ -50,16 +52,12 @@ int parser_redir(t_cmd *cmd, t_token *token)
 int	parser_add_new_arg(t_cmd *cmd, t_token *token)
 {
 	size_t	i;
-	if (!cmd->args)
-	{
-		cmd->args = ft_calloc(2, sizeof(char *));  // Initial allocation
-		if (!cmd->args)
-			return (ERR_MEM);
-	}
 	i = 0;
 	while (cmd->args[i])
 		i++;
-	cmd->args[i] = token->str;
+	cmd->args[i] = ft_strdup(token->str);
+	if (!cmd->args[i])
+		return (ERR_MEM);
 	return (PARSING_OK);
 }
 
