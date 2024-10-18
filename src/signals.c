@@ -56,11 +56,15 @@ void	init_signals(t_signal_mode signal_mode)
 	if (signal_mode == INTERACTIVE)
 		sigint_struct.sa_handler = sigint_handler_interactive;
 	else if (signal_mode == PARENT_NON_INTERACTIVE)
-		sigint_struct.sa_handler = sigint_handler_parent_non_interactive;
+	{
+		sigint_struct.sa_handler = SIG_IGN;
+		// sigint_struct.sa_handler = sigint_handler_parent_non_interactive;
+	}
 	else if (signal_mode == CHILD_NON_INTERACTIVE)
 	{
 		sigquit_struct.sa_handler = SIG_DFL;
-		sigint_struct.sa_handler = sigint_handler_child_non_interactive;
+		sigint_struct.sa_handler = SIG_DFL;
+		// sigint_struct.sa_handler = sigint_handler_child_non_interactive;
 	}
 	else if (signal_mode == PARENT_HEREDOC)
 		sigint_struct.sa_handler = sigint_handler_heredoc_parent;
