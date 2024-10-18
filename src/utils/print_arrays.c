@@ -1,12 +1,18 @@
 #include "../../include/minishell.h"
 
+/**
+ * @brief Prints the strings in an array of strings.
+ * 
+ * @param arr The array of strings.
+ * 
+ * @return void
+ */
 void	ft_print_2d_arr(char **arr)
 {
 	int	i;
 
 	if (!arr || !*arr)
 	{
-		// ft_putstr_fd((char *) get_error_msg(NULL_ERROR), STDERR_FILENO);
 		return ;
 	}
 	i = 0;
@@ -17,6 +23,14 @@ void	ft_print_2d_arr(char **arr)
 	}
 }
 
+/**
+ * @brief Prints the strings in an array
+ * that contains arrays of strings.
+ * 
+ * @param arr The array of array of strings.
+ * 
+ * @return void
+ */
 void	ft_print_3d_arr(char ***arr)
 {
 	int	i;
@@ -24,7 +38,6 @@ void	ft_print_3d_arr(char ***arr)
 
 	if (!arr || !*arr)
 	{
-		// ft_putstr_fd((char *) get_error_msg(NULL_ERROR), STDERR_FILENO);
 		return ;
 	}
 	i = 0;

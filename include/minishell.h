@@ -304,74 +304,74 @@ void		handle_perror(char *str);
 void		handle_builtin_err(char *cmd_name, char *arg, char *err_msg);
 
 //CLEAN
-void	clean_nicely(t_shell *shell, void *param);
+void		clean_nicely(t_shell *shell, void *param);
 
-int		safe_assign_str(char **dest, const char *src);
-void	free_token2(t_token **token);
-void	free_args(char ***args);
+t_ecode		safe_assign_str(char **dest, const char *src);
+void		free_token2(t_token **token);
+void		free_args(char ***args);
 
 //SIGNALS
 
-void	init_signals(t_signal_mode signal_mode);
+void		init_signals(t_signal_mode signal_mode);
 
-void	set_signals(t_signal_mode signal_mode);
-void 	print_heredoc_newline(void);
+void		set_signals(t_signal_mode signal_mode);
+void 		print_heredoc_newline(void);
 
 //ENV - Lisandro
 
-ssize_t	count_keyvalue_env_nodes(t_env *env_list);
-ssize_t	count_key_env_nodes(t_env *env_list);
-ssize_t	count_envp_keys(char **envp);
-ssize_t	count_values_from_env_node(t_env *env_list, char *key);
-char	**create_env_array(t_env *env);
-char	**create_export_array(t_env *env);
-void	free_env_list(t_env	**head);
-void	free_env_node(t_env **node);
-t_env	*new_env_node(void);
-t_ecode	populate_env_node(t_env **node, char *keyval);
-t_env	*create_populated_env_node(char *keyval);
-t_ecode	create_env_list(t_env **head, char **envp);
-void	print_env_node(t_env *node);
-void	print_env_list(t_env *head);
-t_ecode	add_last_env_node(t_env **head, t_env *node);
-t_ecode	update_env_node(t_env **head, char *key, char *value, bool create_node);
-t_ecode	update_value_in_env_node(t_env *node, char *value);
-t_ecode	update_keyvalue_in_env_node(t_env *node);
-t_ecode	update_pwd(t_env *env_head);
-char	*get_key_from_keyvalue(char *keyvalue);
-t_ecode	get_value_from_keyvalue(char *keyvalue, char **value_ptr);
-t_env	*find_env_node(t_env *env, char *key);
-t_env	*get_last_env_node(t_env *head);
+ssize_t		count_keyvalue_env_nodes(t_env *env_list);
+ssize_t		count_key_env_nodes(t_env *env_list);
+ssize_t		count_envp_keys(char **envp);
+ssize_t		count_values_from_env_node(t_env *env_list, char *key);
+char		**create_env_array(t_env *env);
+char		**create_export_array(t_env *env);
+void		free_env_list(t_env	**head);
+void		free_env_node(t_env **node);
+t_env		*new_env_node(void);
+t_ecode		populate_env_node(t_env **node, char *keyval);
+t_env		*create_populated_env_node(char *keyval);
+t_ecode		create_env_list(t_env **head, char **envp);
+void		print_env_node(t_env *node);
+void		print_env_list(t_env *head);
+t_ecode		add_last_env_node(t_env **head, t_env *node);
+t_ecode		update_env_node(t_env **head, char *key, char *value, bool create_node);
+t_ecode		update_value_in_env_node(t_env *node, char *value);
+t_ecode		update_keyvalue_in_env_node(t_env *node);
+t_ecode		update_pwd(t_env *env_head);
+char		*get_key_from_keyvalue(char *keyvalue);
+t_ecode		get_value_from_keyvalue(char *keyvalue, char **value_ptr);
+t_env		*find_env_node(t_env *env, char *key);
+t_env		*get_last_env_node(t_env *head);
 
 
 
 // UTILS
 
-char	**ft_strjoin_arr(char **arr, char *str);
-char	*ft_strjoin_fs1(char **s1, const char *s2);
-char	*ft_strjoin_fs2(const char *s1, char **s2);
-t_ecode	append_suffix(char **str, char *suffix, bool duplicate);
-void	close_all_fds_in_process(void);
-void	close_all_fds_in_cmd(t_cmd *cmd);
-size_t	ft_str_count(char **cmd_args);
-bool	ft_is_natural(char *arg);
-size_t	max_len(char *s1, char *s2);
+char		**ft_strjoin_arr(char **arr, char *str);
+char		*ft_strjoin_fs1(char **s1, const char *s2);
+char		*ft_strjoin_fs2(const char *s1, char **s2);
+t_ecode		append_suffix(char **str, char *suffix, bool duplicate);
+void		close_all_fds_in_process(void);
+void		close_all_fds_in_cmd(t_cmd *cmd);
+size_t		ft_str_count(char **cmd_args);
+bool		ft_is_natural(char *arg);
+size_t		max_len(char *s1, char *s2);
 
 //FREE
 
-void	ft_free_2d(void ***arr);
-void	ft_free_3d(void ****arr);
-void	ft_free(void **var);
+void		ft_free_2d(void ***arr);
+void		ft_free_3d(void ****arr);
+void		ft_free(void **var);
 
 
 //PRINT
 
-void	ft_print_2d_arr(char **arr);
-void	ft_print_3d_arr(char ***arr);
+void		ft_print_2d_arr(char **arr);
+void		ft_print_3d_arr(char ***arr);
 
 /* EXECUTOR */
 
-int	executor(t_shell *shell, t_cmd *cmd);
+int			executor(t_shell *shell, t_cmd *cmd);
 
 //EXECUTOR UTILS
 
@@ -380,38 +380,38 @@ size_t		count_cmds(t_cmd *head);
 t_ecode		create_std_backup(int backup[2]);
 t_ecode		dup_and_close(int oldfd, int newfd);
 
-char	*get_cmd_path(t_shell *shell, char *cmd_name);
+char		*get_cmd_path(t_shell *shell, char *cmd_name);
 // void 	run_child(t_shell *shell, t_cmd *cmd);
 // void	do_parent_duties(t_shell *shell, t_cmd *cmd);
-void	handle_builtin(t_shell *shell, t_cmd *cmd);
+void		handle_builtin(t_shell *shell, t_cmd *cmd);
 // t_ecode	execute_builtin(t_shell *shell, char **cmd_args);
 // void	handle_non_builtin(t_shell *shell, t_cmd *cmd);
 
 //BUILTINS
 
-t_ecode echo_builtin(t_shell *shell, char **cmd_args);
-t_ecode	cd_builtin(t_shell *shell, char **cmd_args);
-t_ecode	env_builtin(t_shell *shell, char **cmd_args);
-t_ecode	unset_builtin(t_shell *shell, char **cmd_args);
-t_ecode	pwd_builtin(t_shell *shell, char **cmd_args);
-t_ecode	declare_builtin(t_shell *shell, char **cmd_args);
-t_ecode	export_builtin(t_shell *shell, char **args);
-t_ecode	exit_builtin(t_shell *shell, char **cmd_args);
+t_ecode 	echo_builtin(t_shell *shell, char **cmd_args);
+t_ecode		cd_builtin(t_shell *shell, char **cmd_args);
+t_ecode		env_builtin(t_shell *shell, char **cmd_args);
+t_ecode		unset_builtin(t_shell *shell, char **cmd_args);
+t_ecode		pwd_builtin(t_shell *shell, char **cmd_args);
+t_ecode		declare_builtin(t_shell *shell, char **cmd_args);
+t_ecode		export_builtin(t_shell *shell, char **args);
+t_ecode		exit_builtin(t_shell *shell, char **cmd_args);
 
 
 //	CD
 
-t_ecode	cd_builtin(t_shell *shell, char **cmd_args);
-t_ecode	chdir_home(t_env **env_list, char *cwd);
-t_ecode	update_oldpwd_pwd(t_env **env_list, char *cwd);
-t_ecode	chdir_tilde(t_env **env_list, char *cwd);
-t_ecode	chdir_dash(t_env **env_list, char *cwd);
-t_ecode	chdir_cdpath(t_env **env_list, char *directory, char *cwd);
-t_ecode	traverse_and_chdir_cdpath(char **cdpath_values, ssize_t values_count, char *directory);
-t_ecode	check_curpath_access(char *curpath);
-t_ecode	chdir_null_cdpath(char *directory, ssize_t *i, int8_t *null_flag);
-t_ecode chdir_cdpath_value(char *cdpath_value, char *directory, ssize_t *i);
-t_ecode	chdir_default(t_env **env_list, char *directory, char *cwd);
+t_ecode		cd_builtin(t_shell *shell, char **cmd_args);
+t_ecode		chdir_home(t_env **env_list, char *cwd);
+t_ecode		update_oldpwd_pwd(t_env **env_list, char *cwd);
+t_ecode		chdir_tilde(t_env **env_list, char *cwd);
+t_ecode		chdir_dash(t_env **env_list, char *cwd);
+t_ecode		chdir_cdpath(t_env **env_list, char *directory, char *cwd);
+t_ecode		traverse_and_chdir_cdpath(char **cdpath_values, ssize_t values_count, char *directory);
+t_ecode		check_curpath_access(char *curpath);
+t_ecode		chdir_null_cdpath(char *directory, ssize_t *i, int8_t *null_flag);
+t_ecode 	chdir_cdpath_value(char *cdpath_value, char *directory, ssize_t *i);
+t_ecode		chdir_default(t_env **env_list, char *directory, char *cwd);
 
 bool		has_cdpath_prefix(char *directory);
 // t_ecode		check_for_special_cd_cases(t_env *env, char *directory, char **curpath);

@@ -5,6 +5,7 @@
  * 
  * @param s1 String 1.
  * @param s2 String 2.
+ * 
  * @return The length of s1 if it is greater or equal to the length of s2.
  * The length of s2 if it is greater than the length of s1.
  */
