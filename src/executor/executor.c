@@ -1,5 +1,24 @@
 #include "../../include/minishell.h"
 
+static void	handle_non_builtin(t_shell *shell, t_cmd *cmd);
+static void	handle_redirs_in_child(t_cmd *cmd);
+static void	run_child(t_shell *shell, t_cmd *cmd);
+static void	do_parent_duties(t_shell *shell, t_cmd *cmd);
+
+/**
+ * @brief Executes a passed command.
+ * It checks whether the command is an arithmetic expansion,
+ * a built-in or an executable file.
+ * @param shell A pointer to the shell structure.
+ * @param cmd A pointer to the command node.
+ * @return If it is an arithmetic expansion it prints
+ * an error message and returns FAILURE.
+ * If it is a built-in it calls the built-in function handler.
+ * For any other type of command it calls the non-builtin handler.
+ * If the command was successfully executed it returns SUCCESS,
+ * and the exit code is set appropriately. Otherwise it returns
+ * the corresponding exit code.
+ */
 int	executor(t_shell *shell, t_cmd *cmd)
 {
 	t_builtin	is_builtin;
@@ -11,7 +30,7 @@ int	executor(t_shell *shell, t_cmd *cmd)
 	}
 	if (!ft_strncmp(cmd->args[0], "((", 3))
 	{
-		ft_putstr_fd("This is an arithmetic expansion. We currently don't handle those.\n", 2);
+		ft_putstr_fd("This is an arithmetic expansion. We don't do that here.\n", 2);
 		shell->exit_code = FAILURE;
 		return (shell->exit_code);
 	}
@@ -23,34 +42,35 @@ int	executor(t_shell *shell, t_cmd *cmd)
 	return (shell->exit_code);
 }
 
-void	handle_non_builtin(t_shell *shell, t_cmd *cmd)
+/**
+ * @brief Creates a fork and executes the command in the child process.
+ * The parent process waits for the child process to finish,
+ * stores the exit code of the child and cleans up the memory and fds.
+ * @param shell A pointer to the shell structure.
+ * @param cmd A pointer to the current's command structure.
+ * @return void
+ */
+static void	handle_non_builtin(t_shell *shell, t_cmd *cmd)
 {
 	shell->parent = fork();
 	if (shell->parent == -1)
-		exit(EXIT_FAILURE);
+		exit(EXIT_FAILURE); //Clean nicely
 	else if (!shell->parent)
 		run_child(shell, cmd);
 	do_parent_duties(shell, cmd);
 }
 
-t_ecode	handle_redirs_in_child(t_cmd *cmd)
-{
-	if (cmd->latest_in == ERROR || cmd->latest_in == ERROR)
-		exit(EXIT_FAILURE);
-	if (cmd->latest_in != STDIN_FILENO)
-	{
-		if (dup_and_close(cmd->latest_in, STDIN_FILENO))
-			exit(EXIT_FAILURE);
-	}
-	if (cmd->latest_out != STDOUT_FILENO)
-	{
-		if (dup_and_close(cmd->latest_out, STDOUT_FILENO))
-			exit(EXIT_FAILURE);
-	}
-	return (SUCCESS);
-}
-
-void	run_child(t_shell *shell, t_cmd *cmd)
+/**
+ * @brief It executes the current command. In the process it
+ * handles signals, redirections, gets the path to the executable file,
+ * and creates the environment array for the command's execution.
+ * @param shell A pointer to the shell structure.
+ * @param cmd A pointer to the command's structure.
+ * @return void
+ * In case of failure it exits with an exit code,
+ * and printing an error message if it corresponds.
+ */
+static void	run_child(t_shell *shell, t_cmd *cmd)
 {
 	char	*cmd_path;
 	char	**env_array;
@@ -67,10 +87,40 @@ void	run_child(t_shell *shell, t_cmd *cmd)
 	env_array = create_env_array(shell->env_list);
 	execve(cmd_path, cmd->args, env_array);
 	handle_cmd_err(cmd, strerror(ENOENT));
-	exit(EXIT_CMD_NOT_FOUND);
+	exit(EXIT_CMD_NOT_FOUND); //Clean nicely?
 }
 
-void	do_parent_duties(t_shell *shell, t_cmd *cmd)
+/**
+ * @brief Replaces STDIN and STDOUT with redirections if valid.
+ * If there was an error opening the redirections, or duping, it exits.
+ * @param cmd A pointer to the command's structure.
+ * @return void
+ */
+static void	handle_redirs_in_child(t_cmd *cmd)
+{
+	if (cmd->latest_in == ERROR || cmd->latest_in == ERROR)
+		exit(EXIT_FAILURE); //Clean nicely?
+	if (cmd->latest_in != STDIN_FILENO)
+	{
+		if (dup_and_close(cmd->latest_in, STDIN_FILENO))
+			exit(EXIT_FAILURE); //Clean nicely?
+	}
+	if (cmd->latest_out != STDOUT_FILENO)
+	{
+		if (dup_and_close(cmd->latest_out, STDOUT_FILENO))
+			exit(EXIT_FAILURE); //Clean nicely?
+	}
+}
+
+/**
+ * @brief Waits for the child process to finish
+ * and stores the exit status.
+ * It also closes all the open file descriptors. 
+ * @param shell A pointer to the shell structure.
+ * @param cmd A pointer to the command's structure.
+ * @return void
+ */
+static void	do_parent_duties(t_shell *shell, t_cmd *cmd)
 {
 	int	wstatus;
 
@@ -84,5 +134,5 @@ void	do_parent_duties(t_shell *shell, t_cmd *cmd)
 	}
 	else if (WIFSIGNALED(wstatus) == true)
 		shell->exit_code = EXIT_SIGQUIT;
-	close_all_fds_in_cmd(cmd);
+	close_all_fds_in_cmd(cmd); //Clean nicely
 }

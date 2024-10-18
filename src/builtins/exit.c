@@ -32,17 +32,17 @@ static t_ecode handle_argc_2(char **cmd_args)
 	if (!ft_strncmp(cmd_args[1], "--", 3))
 	{
 		ft_putstr_fd("exit\n", 2);
-		exit(SUCCESS);
+		exit(SUCCESS); //Clean nicely
 	}
 	else if (ft_is_natural(cmd_args[1]))
 	{
 		ft_putstr_fd("exit\n", 2);
-		exit(ft_atoi(cmd_args[1]));
+		exit(ft_atoi(cmd_args[1])); //Clean nicely
 	}
 	else
 	{
 		handle_builtin_err(cmd_args[0], cmd_args[1], "numeric argument required");
-		exit(2);
+		exit(2); //Clean nicely
 	}
 }
 
@@ -53,12 +53,12 @@ static t_ecode handle_argc_gt_2(char **cmd_args, size_t argc)
 		if (ft_is_natural(cmd_args[2]) && argc == 3)
 		{
 			ft_putstr_fd("exit\n", 2);
-			exit(ft_atoi(cmd_args[2]));
+			exit(ft_atoi(cmd_args[2])); //Clean nicely
 		}
 		else if (!ft_is_natural(cmd_args[2]))
 		{
 			handle_builtin_err(cmd_args[0], cmd_args[1], "numeric argument required");
-			exit(2);
+			exit(2); //Clean nicely
 		}
 		else
 		{
@@ -70,7 +70,7 @@ static t_ecode handle_argc_gt_2(char **cmd_args, size_t argc)
 	else if (!ft_is_natural(cmd_args[1]))
 	{
 		handle_builtin_err(cmd_args[0], cmd_args[1], "numeric argument required");
-		exit(2); //Return 2
+		exit(2); //Clean nicely (return 2)
 	}
 	else
 	{

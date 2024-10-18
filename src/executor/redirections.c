@@ -23,7 +23,7 @@ static t_ecode	open_current_redir(t_redir_id redir_id, char *redir_file, int *fd
 static t_ecode	close_and_replace(int replacement, int *oldfd)
 {
 	if (close(*oldfd) == -1)
-		handle_perror("close");
+		handle_perror("close_and_replace");
 	*oldfd = replacement;
 	return (FAILURE);
 }
