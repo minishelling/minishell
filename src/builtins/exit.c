@@ -1,8 +1,9 @@
 #include "../../include/minishell.h"
 
-static t_ecode handle_end_of_options(t_shell *shell, char **cmd_args, size_t argc);
-static t_ecode handle_argc_2(t_shell *shell, char **cmd_args);
-static t_ecode handle_argc_gt_2(t_shell *shell, char **cmd_args);
+static t_ecode	handle_end_of_options(t_shell *shell,
+					char **cmd_args, size_t argc);
+static t_ecode	handle_argc_2(t_shell *shell, char **cmd_args);
+static t_ecode	handle_argc_gt_2(t_shell *shell, char **cmd_args);
 
 /**
  * @brief Exits the minishell.
@@ -46,11 +47,12 @@ t_ecode	exit_builtin(t_shell *shell, char **cmd_args)
  * @param argc The number of arguments.
  * 
  * @return It exits with SUCCESS as default or the given error code if valid.
- * If the error code is invalid, it exits with the code 2 and prints an error msg.
- * If the error code is valid but there are many arguments it returns FAILURE,
+ * If the code is invalid, it exits with the code 2 and prints an error msg.
+ * If the code is valid but there are many arguments it returns FAILURE,
  * printing an error message as well.
  */
-static t_ecode handle_end_of_options(t_shell *shell, char **cmd_args, size_t argc)
+static t_ecode	handle_end_of_options(t_shell *shell,
+					char **cmd_args, size_t argc)
 {
 	(void) shell;
 	if (argc == 2)
@@ -69,7 +71,7 @@ static t_ecode handle_end_of_options(t_shell *shell, char **cmd_args, size_t arg
 	if (!ft_is_natural(cmd_args[2]))
 	{
 		ft_putstr_fd("exit\n", 2);
-		handle_builtin_err(cmd_args[0], cmd_args[2], "numeric argument required");
+		handle_builtin_err("exit", cmd_args[2], "numeric argument required");
 		exit(EXIT_NUM_ARG_REQ); // Clean nicely
 	}
 	else
@@ -88,9 +90,9 @@ static t_ecode handle_end_of_options(t_shell *shell, char **cmd_args, size_t arg
  * 
  * @return If the argument provided is a natural number
  * it exits with that number as the exit code.
- * Else it will print an error message and exit with the code EXIT_NUM_ARG_REQ (2).
+ * Else it will print an error msg and exit with the code EXIT_NUM_ARG_REQ (2).
  */
-static t_ecode handle_argc_2(t_shell *shell, char **cmd_args)
+static t_ecode	handle_argc_2(t_shell *shell, char **cmd_args)
 {
 	(void) shell;
 	if (ft_is_natural(cmd_args[1]))
@@ -101,7 +103,7 @@ static t_ecode handle_argc_2(t_shell *shell, char **cmd_args)
 	else
 	{
 		ft_putstr_fd("exit\n", 2);
-		handle_builtin_err(cmd_args[0], cmd_args[1], "numeric argument required");
+		handle_builtin_err("exit", cmd_args[1], "numeric argument required");
 		exit(EXIT_NUM_ARG_REQ); //Clean nicely
 	}
 }
@@ -112,17 +114,17 @@ static t_ecode handle_argc_2(t_shell *shell, char **cmd_args)
  * @param shell A pointer to the shell structure.
  * @param cmd_args An array with the command's arguments.
  * 
- * @return If the first argument is not a natural number, it prints an error message
+ * @return If the first argument is not a natural number, it prints an error msg
  * and exits with the code EXIT_NUM_ARG_REQ (2).
  * Else it will print an error message and return FAILURE.
  */
-static t_ecode handle_argc_gt_2(t_shell *shell, char **cmd_args)
+static t_ecode	handle_argc_gt_2(t_shell *shell, char **cmd_args)
 {
 	(void) shell;
 	if (!ft_is_natural(cmd_args[1]))
 	{
 		ft_putstr_fd("exit\n", 2);
-		handle_builtin_err(cmd_args[0], cmd_args[1], "numeric argument required");
+		handle_builtin_err("exit", cmd_args[1], "numeric argument required");
 		exit(EXIT_NUM_ARG_REQ); //Clean nicely
 	}
 	else

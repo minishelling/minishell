@@ -56,7 +56,8 @@ t_ecode	chdir_cdpath(t_env **env_list, char *directory, char *cwd)
  * In case of a successful directory change it returns SUCCESS.
  * Otherwise it returns the code PROCEED.
  */
-t_ecode	traverse_and_chdir_cdpath(char **cdpath_values, ssize_t values_count, char *directory)
+t_ecode	traverse_and_chdir_cdpath(char **cdpath_values,
+			ssize_t values_count, char *directory)
 {
 	ssize_t	i;
 	int8_t	null_flag;
@@ -93,9 +94,10 @@ t_ecode	traverse_and_chdir_cdpath(char **cdpath_values, ssize_t values_count, ch
  * @param i A pointer to the counter of CDPATH values.
  * @param null_flag A flag to indicate if we have already tried this path before.
  * 
- * @return If the null flag is already activated, or if changing into the directory
- * failed, it returns PROCEED. If changing into the directory succeeded it returns
- * SUCCESS. On malloc failure it prints an error message and returns MALLOC_ERROR.
+ * @return If the null flag is already activated,
+ * or if changing into the directory failed, it returns PROCEED.
+ * If changing into the directory succeeded it returns SUCCESS.
+ * On malloc failure it prints an error message and returns MALLOC_ERROR.
  */
 t_ecode	chdir_null_cdpath(char *directory, ssize_t *i, int8_t *null_flag)
 {
@@ -127,7 +129,7 @@ t_ecode	chdir_null_cdpath(char *directory, ssize_t *i, int8_t *null_flag)
  * @return On success it returns SUCCESS. On malloc failure it prints
  * an error code and returns MALLOC_ERROR. Otherwise it returns PROCEED.
  */
-t_ecode chdir_cdpath_value(char *cdpath_value, char *directory, ssize_t *i)
+t_ecode	chdir_cdpath_value(char *cdpath_value, char *directory, ssize_t *i)
 {
 	char	*curpath;
 	t_ecode	status;

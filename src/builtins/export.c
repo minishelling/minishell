@@ -22,7 +22,7 @@ static bool	is_valid_identifier(char *keyval)
 			return (false);
 		i++;
 	}
-	return (true);	
+	return (true);
 }
 
 /**
@@ -45,7 +45,6 @@ t_ecode	export_builtin(t_shell *shell, char **cmd_args)
 	char	*key;
 	char	*value;
 	t_ecode	status;
-	char	*error_message;
 
 	if (!cmd_args)
 		return (FAILURE);
@@ -53,10 +52,8 @@ t_ecode	export_builtin(t_shell *shell, char **cmd_args)
 		return (declare_builtin(shell, cmd_args));
 	if (!is_valid_identifier(cmd_args[1]))
 	{
-		error_message = ft_strjoin("mini_shared: export: '", cmd_args[1]); //Protect...
-		error_message = ft_strjoin_fs1(&error_message, "': not a valid identifier\n"); //Protect... Handle error separately.
-		write (STDOUT_FILENO, error_message, ft_strlen(error_message));
-		return (ft_free((void **) &error_message), FAILURE);
+		handle_builtin_err(cmd_args[0], cmd_args[1], "not a valid identifier");
+		return (FAILURE);
 	}
 	key = get_key_from_keyvalue(cmd_args[1]);
 	if (!key)

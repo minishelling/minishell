@@ -1,9 +1,9 @@
 #include "../../include/minishell.h"
 
-static char	**sort_env_list(t_env *env_list_head);
-static char	**create_declare_array(t_env *env_head);
+static char		**sort_env_list(t_env *env_list_head);
+static char		**create_declare_array(t_env *env_head);
 static t_ecode	create_declare_string(t_env *curr_node, char **curr_str);
-static void	bubblesort_array(char **arr, ssize_t count);
+static void		bubblesort_array(char **arr, ssize_t count);
 
 /**
  * @brief Prints the environment list with the 'declare' format.
@@ -98,7 +98,8 @@ static char	**create_declare_array(t_env *env_head)
  * @param curr_str The address of the position in the declare array
  * that's going to be used to create the string.
  * 
- * @return On success it returns SUCCESS, on failure it prints an error with errno,
+ * @return On success it returns SUCCESS,
+ * on failure it prints an error with errno,
  * and returns FAILURE, which indicates to the parent function
  * that it has to free the array.
  */
@@ -108,8 +109,8 @@ static t_ecode	create_declare_string(t_env *curr_node, char **curr_str)
 
 	if (curr_node->value)
 	{
-		strlen = ft_strlen(curr_node->key) + ft_strlen("=\"") +
-			ft_strlen(curr_node->value) + ft_strlen("\"");
+		strlen = ft_strlen(curr_node->key) + ft_strlen("=\"")
+			+ ft_strlen(curr_node->value) + ft_strlen("\"");
 		*curr_str = ft_calloc(strlen + 1, sizeof(char));
 		if (!*curr_str)
 			return (handle_perror("create_declare_string"), FAILURE);

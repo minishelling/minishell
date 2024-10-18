@@ -20,7 +20,9 @@ t_ecode	pwd_builtin(t_shell *shell, char **cmd_args)
 	if (cmd_args && cmd_args[1] && cmd_args[1][0] == '-')
 	{
 		option_len = ft_strlen(cmd_args[1]);
-		if (!ft_strncmp(cmd_args[1], "-", option_len) || !ft_strncmp(cmd_args[1], "--", option_len));
+		if (!ft_strncmp(cmd_args[1], "-", option_len)
+			|| !ft_strncmp(cmd_args[1], "--", option_len))
+				;
 		else
 		{
 			handle_builtin_err(cmd_args[0], cmd_args[1], "invalid option");

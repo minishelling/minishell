@@ -42,9 +42,9 @@ t_ecode	update_oldpwd_pwd(t_env **env_list, char *cwd)
  */
 char	*get_home(void)
 {
-	char *home_path;
-	char **home_breakdown;
-	size_t home_path_len;
+	char	*home_path;
+	char	**home_breakdown;
+	size_t	home_path_len;
 
 	home_breakdown = NULL;
 	home_path = getenv("HOME");
@@ -53,12 +53,12 @@ char	*get_home(void)
 		home_breakdown = ft_split(home_path, '/');
 		if (!home_breakdown)
 			return (handle_perror("get_home"), NULL);
-		home_path_len = ft_strlen("/") * 2 + ft_strlen(home_breakdown[0]) +
-						ft_strlen(home_breakdown[1]);
+		home_path_len = ft_strlen("/") * 2 + ft_strlen(home_breakdown[0])
+			+ ft_strlen(home_breakdown[1]);
 		home_path = ft_calloc(home_path_len + 1, sizeof(char));
 		if (!home_path)
 			return (ft_free_2d((void ***)&home_breakdown),
-					handle_perror("get_home"), NULL);
+				handle_perror("get_home"), NULL);
 		ft_strlcpy(home_path, "/", 2);
 		ft_strlcat(home_path, home_breakdown[0], home_path_len + 1);
 		ft_strlcat(home_path, "/", home_path_len + 1);

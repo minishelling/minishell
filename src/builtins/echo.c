@@ -1,7 +1,7 @@
 #include "../../include/minishell.h"
 
-static void print_echo_chars(char **strs_arr, bool no_newline);
-static int newline_option(char *option_arg);
+static void	print_echo_chars(char **strs_arr, bool no_newline);
+static int	newline_option(char *option_arg);
 
 /**
  * @brief Prints the arguments provided, with the option
@@ -14,7 +14,7 @@ static int newline_option(char *option_arg);
  * @return If the cmd_args variable is NULL it returns FAILURE.
  * Returns SUCCESS otherwise.
  */
-t_ecode echo_builtin(t_shell *shell, char **cmd_args)
+t_ecode	echo_builtin(t_shell *shell, char **cmd_args)
 {
 	bool	no_newline;
 	char	**strs_arr;
@@ -49,7 +49,7 @@ t_ecode echo_builtin(t_shell *shell, char **cmd_args)
  * will be printed by the end of printing all the strings.
  * @return void
  */
-static void print_echo_chars(char **strs_arr, bool no_newline)
+static void	print_echo_chars(char **strs_arr, bool no_newline)
 {
 	int	i;
 	int	j;
@@ -81,7 +81,7 @@ static void print_echo_chars(char **strs_arr, bool no_newline)
  * which will trigger the no_newline boolean in the echo builtin.
  * If the option isn't valid it returns 0.
  */
-static int newline_option(char *option_arg)
+static int	newline_option(char *option_arg)
 {
 	size_t	i;
 
