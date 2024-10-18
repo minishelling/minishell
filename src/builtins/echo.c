@@ -6,9 +6,11 @@ static int newline_option(char *option_arg);
 /**
  * @brief Prints the arguments provided, with the option
  * to not print a trailing newline character at the end.
+ * 
  * @param shell A pointer to the shell structure.
  * @param cmd_args The command arguments, containing the function name,
  * the option, and the strings to be printed.
+ * 
  * @return If the cmd_args variable is NULL it returns FAILURE.
  * Returns SUCCESS otherwise.
  */

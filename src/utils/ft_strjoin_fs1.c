@@ -12,7 +12,7 @@ char	*ft_strjoin_fs1(char **s1, char const *s2)
 		return (*s1);
 	ls1 = ft_strlen(*s1);
 	ls2 = ft_strlen(s2);
-	dst = malloc(sizeof(char) * (ls1 + ls2 + 1));
+	dst = ft_calloc(ls1 + ls2 + 1, sizeof(char));
 	if (!dst)
 		return (ft_free((void **) s1), NULL);
 	ft_strlcpy(dst, *s1, (ls1 + 1));
@@ -31,7 +31,7 @@ int	safe_assign_str(char **dest, const char *src)
 	}
 	if (src)
 	{
-		*dest = strdup(src);
+		*dest = ft_strdup(src);
 		if (*dest == NULL)
 			return(ERR_MEM);
 	}

@@ -5,6 +5,7 @@
  * 
  * @param shell A pointer to the shell structure.
  * @param cmd_args The array of arguments of the given command.
+ * 
  * @return On success it returns 0.
  * Failure only happens when a parameter is given as NULL.
  */

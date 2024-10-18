@@ -4,6 +4,7 @@
  * @brief Counts the number of key-value strings in an environment list.
  * 
  * @param env_list The head node of the environment list.
+ * 
  * @return The number of nodes that contain a key-value string.
  */
 ssize_t	count_keyvalue_env_nodes(t_env *env_list)
@@ -24,6 +25,7 @@ ssize_t	count_keyvalue_env_nodes(t_env *env_list)
  * @brief Counts the number of keys in the environment list.
  * 
  * @param env_list The head node of the environment list.
+ * 
  * @return The number of keys/nodes in the environment list.
  */
 ssize_t	count_key_env_nodes(t_env *env_list)
@@ -44,6 +46,7 @@ ssize_t	count_key_env_nodes(t_env *env_list)
  * 
  * @param envp The environment array.
  * @return The number of keys in envp.
+ * 
  * Returns -1 if envp is NULL or if the first string is NULL.
  */
 ssize_t	count_envp_keys(char **envp)
@@ -63,6 +66,7 @@ ssize_t	count_envp_keys(char **envp)
  * 
  * @param env_list The head node of the environment list.
  * @param key The name of the target environment node.
+ * 
  * @return The number of values in an environment node.
  * Returns -1 on failure.
  */

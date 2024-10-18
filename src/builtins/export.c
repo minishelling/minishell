@@ -4,6 +4,7 @@
  * @brief Checks if a key-value string is a valid identifier to export.
  * 
  * @param keyval A key-value string to be added to the environment if valid.
+ * 
  * @return True if the key is a valid identifier, false otherwise.
  */
 static bool	is_valid_identifier(char *keyval)
@@ -36,6 +37,7 @@ static bool	is_valid_identifier(char *keyval)
  * 
  * @param shell A pointer to the shell structure.
  * @param cmd_args The array of arguments of the given command.
+ * 
  * @return 0 if it was possible to update or create the environment node.
  */
 t_ecode	export_builtin(t_shell *shell, char **cmd_args)

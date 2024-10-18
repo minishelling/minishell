@@ -9,8 +9,10 @@ static void	bubblesort_array(char **arr, ssize_t count);
  * @brief Prints the environment list with the 'declare' format.
  * The values are quoted, and if a variable doesn't have a value
  * it simply prints the key.
+ * 
  * @param shell A pointer to the shell structure.
  * @param cmd_args The array of command arguments.
+ * 
  * @return If there's a malloc failure it returns FAILURE and prints
  * an error message with the errno value. On success it returns SUCCESS.
  */
@@ -35,7 +37,9 @@ t_ecode	declare_builtin(t_shell *shell, char **cmd_args)
 /**
  * @brief It creates a declare (env) array out of an environment list
  * and sorts it using the bubblesort algorithm.
+ * 
  * @param env_list_head The head node of the environment list.
+ * 
  * @return The sorted declare array. 
  */
 static char	**sort_env_list(t_env *env_list_head)
@@ -55,7 +59,9 @@ static char	**sort_env_list(t_env *env_list_head)
  * @brief Creates an an environment array with the declare format.
  * The format includes quotes around the variable's values,
  * and if a variable has no value it simply includes the key.
+ * 
  * @param env_head The head node of the environment list.
+ * 
  * @return The environment array, or NULL on failure.
  */
 static char	**create_declare_array(t_env *env_head)
@@ -87,9 +93,11 @@ static char	**create_declare_array(t_env *env_head)
  * it creates the current string for the declare array.
  * If the node has a value, it adds quotes around it,
  * if it doesn't then it just uses the key for the string.
+ * 
  * @param curr_node The current environment node.
  * @param curr_str The address of the position in the declare array
  * that's going to be used to create the string.
+ * 
  * @return On success it returns SUCCESS, on failure it prints an error with errno,
  * and returns FAILURE, which indicates to the parent function
  * that it has to free the array.
@@ -124,6 +132,7 @@ static t_ecode	create_declare_string(t_env *curr_node, char **curr_str)
  * 
  * @param arr The array to sort.
  * @param count The number of elements in the array.
+ * 
  * @return void: The elements are sorted within the given array.
  */
 static void	bubblesort_array(char **arr, ssize_t count)

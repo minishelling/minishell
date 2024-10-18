@@ -4,6 +4,9 @@
  * @brief Creates a new environment node.
  * It allocates memory using ft_calloc,
  * and initializes each variable to NULL
+ * 
+ * @param void
+ * 
  * @return A pointer to the newly created t_env node.
  */
 t_env	*new_env_node(void)
@@ -24,8 +27,10 @@ t_env	*new_env_node(void)
  * It retrieves the key and value from keyval
  * and assigns them to the corresponding variables.
  * It also duplicates the keyval string to the corresponding variable.
+ * 
  * @param node A double pointer to the node to be populated.
  * @param keyval The string containing the key-value information.
+ * 
  * @return If any of the allocations fail, it frees the node
  * as well as previous allocations, and returns FAILURE.
  * It returns SUCCESS otherwise.
@@ -56,7 +61,9 @@ t_ecode	populate_env_node(t_env **node, char *keyval)
 /**
  * @brief Creates a new environment node
  * and populates its variables with the data in keyval.
+ * 
  * @param keyval The string containing the key-value information.
+ * 
  * @return The new populated node on success.
  * Returns NULL if keyval is NULL, or if the new node failed memory allocation.
  */
@@ -78,8 +85,10 @@ t_env	*create_populated_env_node(char *keyval)
  * @brief Creates the environment list from the environment array.
  * It creates all the nodes in the environment list
  * and initializes them with keys and if applicable values and keyvalues.
+ * 
  * @param head A pointer to the address where the head node is going to be stored.
  * @param envp The environment array.
+ * 
  * @return FAILURE if envp is NULL or if the first string is NULL,
  * or if a node failed to be allocated.
  * Returns SUCCESS otherwise.

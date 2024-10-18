@@ -16,9 +16,8 @@ static void close_fds(int fd1, int fd2)
 
 static int	handle_pipe_left_node(t_shell *shell, t_tree *tree_node, int fd[2])
 {
-	// fprintf(stderr, "Went into handle case left: %p\n", tree_node->left);
-	// fprintf(stderr, "Went into handle case left: %s\n", tree_node->left->cmd_list->args[0]);
 	int	status;
+
 	if (dup2(fd[WRITE_END], STDOUT_FILENO) == -1)
 	{
 		perror("dup2");                                                                                         
@@ -31,8 +30,6 @@ static int	handle_pipe_left_node(t_shell *shell, t_tree *tree_node, int fd[2])
 
 static int	handle_pipe_right_node(t_shell *shell, t_tree *tree_node, int fd[2])
 {
-	// fprintf(stderr, "Went into handle case right: %p\n", tree_node->right);
-	// fprintf(stderr, "Went into handle case right: %s\n", tree_node->right->cmd_list->args[0]);
 	int	status;
 	if (dup2(fd[READ_END], STDIN_FILENO) == -1)
 	{

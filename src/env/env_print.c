@@ -3,7 +3,9 @@
 /**
  * @brief Prints all the variables in an environment node, if they exist.
  * It prints a default message if the string was NULL.
+ * 
  * @param node The node whose variables need to be printed.
+ * 
  * @return void
  */
 void	print_env_node(t_env *node)
@@ -32,6 +34,7 @@ void	print_env_node(t_env *node)
  * @brief Prints the variables in all nodes of the environment list.
  * 
  * @param head The head node of the environment list.
+ * 
  * @return void
  */
 void	print_env_list(t_env *head)

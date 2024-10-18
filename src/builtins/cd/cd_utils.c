@@ -3,9 +3,11 @@
 /**
  * @brief Updates the PWD and OLDPWD environment nodes
  * with the new values.
+ * 
  * @param env_list A double pointer to the environment list.
  * @param cwd The cwd string that holds the value of OLDPWD,
  * and that's going to be updated with the value of PWD.
+ * 
  * @return It returns an error code in the case of a NULL env list,
  * or in the case that it fails to update OLDPWD or PWD,
  * while also printing an error message.
@@ -30,9 +32,11 @@ t_ecode	update_oldpwd_pwd(t_env **env_list, char *cwd)
 }
 
 /**
- * @brief Returns the path to home, retrieved from the original
- * HOME environment variable.
+ * @brief Returns the path to home,
+ * retrieved from the original HOME environment variable.
+ * 
  * @param void
+ * 
  * @return A string containing the path to home,
  * or NULL if it doesn't exist or if there was a malloc failure.
  */
@@ -70,7 +74,9 @@ char	*get_home(void)
  * has a valid prefix to go into cdpath.
  * A valid prefix is a directory that does not start with:
  * '/' '.' '..' or '~'.
+ * 
  * @param directory The directory string.
+ * 
  * @return True if the directory doesn't start with any of these characters.
  * False if it does.
  */

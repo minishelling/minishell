@@ -5,6 +5,7 @@
  * 
  * @param env_list A double pointer to the environment list head.
  * @param cwd The current working directory.
+ * 
  * @return It returns SUCCESS if it manages to change directory
  * and update OLDPWD and PWD. In case of failure
  * it prints an error message and returns FAILURE.
@@ -38,8 +39,10 @@ t_ecode	chdir_home(t_env **env_list, char *cwd)
  * @brief Changes directory to home.
  * If HOME is unset, it retrieves HOME's original value,
  * and extracts the first two directories.
+ * 
  * @param env_list A double pointer to the environment list head.
  * @param cwd The current working directory.
+ * 
  * @return It returns SUCCESS if it manages to change directory
  * and update OLDPWD and PWD. In case of failure
  * it prints an error message and returns FAILURE.
@@ -76,6 +79,7 @@ t_ecode	chdir_tilde(t_env **env_list, char *cwd)
  * 
  * @param env_list A double pointer to the environment list.
  * @param cwd The current working directory.
+ * 
  * @return If it successfully changes directory, and updates
  * OLDPWD and PWD it returns SUCCESS.
  * If OLDPWD was not found it returns FAILURE and prints an error message.

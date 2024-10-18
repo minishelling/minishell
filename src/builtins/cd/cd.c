@@ -5,8 +5,10 @@
  * It will attempt to change into the target directory.
  * If CDPATH is set that would take priority over the cwd.
  * It also supports absolute paths.
+ * 
  * @param shell A pointer to the shell structure.
  * @param cmd_args An array of the command's arguments.
+ * 
  * @return If the change of directories and updating
  * OLDPWD and PWD is successful it returns SUCCESS.
  * Otherwise it returns an error code, and if neccessary

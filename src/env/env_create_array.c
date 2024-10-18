@@ -3,7 +3,9 @@
 /**
  * @brief Creates an array of keyvalue strings
  * from an environment list.
+ * 
  * @param env The head of the environment list.
+ * 
  * @return The array of keyvalues strings.
  */
 char	**create_env_array(t_env *env)
@@ -41,7 +43,9 @@ char	**create_env_array(t_env *env)
 /**
  * @brief Creates an array of keyvalue or key strings
  * from an environment list.
+ * 
  * @param env The head of the environment list.
+ * 
  * @return The array of keyvalues or keys strings.
  */
 char	**create_export_array(t_env *env)

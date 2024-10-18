@@ -5,6 +5,7 @@
  * 
  * @param head The head node of the environment list.
  * @param node The node to add to the list.
+ * 
  * @return It returns SUCCESS if the node is added to the end of the list,
  * or if the head is NULL and it puts the node first on the list,
  * or if there's no node to add.
@@ -33,6 +34,7 @@ t_ecode	add_last_env_node(t_env **head, t_env *node)
  * @param value The new value that's going to update the value and keyvalue strings.
  * @param create_node If true it creates a new node if it fails to find it
  * in the environment list, and appends it to the end of the list.
+ * 
  * @return SUCCESS if the value and keyvalue strings were updated successfully.
  * An ERROR code if memory allocation fails.
  */
@@ -74,6 +76,7 @@ t_ecode	update_env_node(t_env **head, char *key, char *value, bool create_node)
  * 
  * @param node The target node whose value needs updating.
  * @param value The new value.
+ * 
  * @return SUCCESS if the value is successfully replaced,
  * or if the new value is NULL and there was no value,
  * or if the new value is NULL and there was a value the latter is freed.
@@ -101,7 +104,9 @@ t_ecode	update_value_in_env_node(t_env *node, char *value)
 /**
  * @brief Takes an environment node and updates the keyvalue string
  * based on the key and value strings.
+ * 
  * @param node The node whose keyvalue string is to be modified.
+ * 
  * @return It returns SUCCESS in the event that there is no value string,
  * or if it successfully created a new string out of the key and value strings.
  * It returns ERROR codes in case of failure.
