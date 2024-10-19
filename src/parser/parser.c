@@ -168,7 +168,7 @@ int	parse(t_shell *shell)
 	err_no = handle_heredocs(shell, shell->token);
 	if (err_no)
 	return (free_token_list(&shell->token), err_no);
-	//printf ("after heredocs handling\n");
+	printf ("after heredocs handling\n");
 	
 	//print_token(shell->token);
 	//fprintf(stderr, "PARSER:\nSignal code: %d\n", g_signalcode);
@@ -189,7 +189,6 @@ int	parse(t_shell *shell)
 	if (shell->tree)
 		print_tree_verbose(shell->tree, 0);
 	printf ("\n");
-	
 	
 	return (PARSING_OK);
 }
