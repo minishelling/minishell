@@ -74,29 +74,29 @@ char	*decide_expansion_type(t_shell *shell, char **str, char *expanded_str, t_en
 {
 	if (**str == '\'')
 	{
-		printf ("	squotes\n");
+		//printf ("	squotes\n");
 		(*str)++;
 		expanded_str = process_squotes(str, expanded_str);
 	}
 	else if (**str == '\"')
 	{
-		printf ("	dquotes\n");
+		//printf ("	dquotes\n");
 		(*str)++;
 		expanded_str = process_dquotes(shell, str, expanded_str, env_list);
 	}
 	else if (**str == '$')
 	{
-		printf ("	$ sign\n");
+		//printf ("	$ sign\n");
 		expanded_str = handle_env_var_sign(shell, str, expanded_str, env_list);
-		printf ("after $ sign, expanded_str is %s\n", expanded_str);
+		//printf ("after $ sign, expanded_str is %s\n", expanded_str);
 	}
 	else
 	{
-		printf ("	copy chars\n");
+		//printf ("	copy chars\n");
 		expanded_str = copy_chars(*str, expanded_str);
 		*str += ft_strcspn(*str, "\'\"$ ");
 	}
-	printf ("in decide_expansion_type, expanded_str is %s\n", expanded_str);
+	//printf ("in decide_expansion_type, expanded_str is %s\n", expanded_str);
 	return (expanded_str);
 }
 
@@ -134,7 +134,7 @@ t_token *expand(t_shell *shell, t_token *start_token, t_token *end_token, t_env 
 		if (current_token == end_token)
 			break;
 		current_token = current_token->next;
-		printf ("in the while loop current token is %s\n", current_token->str);
+		//printf ("in the while loop current token is %s\n", current_token->str);
 	}
 	return (start_token);
 }

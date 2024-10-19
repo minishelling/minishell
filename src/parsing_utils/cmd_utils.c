@@ -1,30 +1,19 @@
 #include "../../include/minishell.h"
 
-/**
- * @brief Allocates and initializes a new command structure.
- * 
- * This function allocates memory for a new `t_cmd` structure and initializes 
- * its fields to default values: `args`, `redir`, and `next` are set to NULL, 
- * while `latest_in` and `latest_out` are initialized to `STDIN_FILENO` and 
- * `STDOUT_FILENO`, respectively. If memory allocation fails, the function 
- * returns NULL.
- * 
- * @return t_cmd* Pointer to the newly allocated and initialized command structure, 
- * or NULL if memory allocation fails.
- */
+
 t_cmd *new_cmd(void)
 {
-	t_cmd *current_cmd;
+	t_cmd *cur_cmd;
 
-	current_cmd = malloc(sizeof(t_cmd) * 1);
-	if (!current_cmd)
+	cur_cmd = malloc(sizeof(t_cmd) * 1);
+	if (!cur_cmd)
 		return (NULL);
-	current_cmd->args = NULL;
-	current_cmd->redir = NULL;
-	current_cmd->next = NULL;
-	current_cmd->latest_in = STDIN_FILENO;
-	current_cmd->latest_out = STDOUT_FILENO;
-	return (current_cmd);
+	cur_cmd->args = NULL;
+	cur_cmd->redir = NULL;
+	cur_cmd->next = NULL;
+	cur_cmd->latest_in = STDIN_FILENO;
+	cur_cmd->latest_out = STDOUT_FILENO;
+	return (cur_cmd);
 }
 
 /**

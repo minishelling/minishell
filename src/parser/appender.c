@@ -55,6 +55,46 @@ void remove_subshell_parens(t_shell *shell)
 	}
 }
 
+/**
+ * remove_space_tokens - Removes all spacing tokens from the token list.
+ * 
+ * This function traverses the list of tokens and removes the space, tab, 
+ * and newline tokens that serve only to separate tokens. Now that the necessary 
+ * strings are concatenated, there is no need for spacing tokens anymore. For 
+ * example, `"hello""world"` and `"hello" "world"` will be treated differently. 
+ * The memory used by the removed tokens is properly freed.
+ *
+ * @head: Pointer to the head of the token list.
+ */
+void	remove_space_tokens(t_token **head)
+{
+	t_token *current;
+	t_token *prev;
+	t_token *temp;
+
+	current = *head;
+	prev = NULL;
+
+	while (current != NULL)
+	{
+		if (current->id == SPACE_CHAR || current->id == TAB_CHAR || current->id == NL)
+		{
+			if (prev == NULL)
+				*head = current->next;
+			else
+				prev->next = current->next;
+			temp = current;
+			current = current->next;
+			free_token(&temp);
+		}
+		else
+		{
+			prev = current;
+			current = current->next;
+		}
+	}
+}
+
 static	int join_strs_and_free_cur_token(t_token **prev_token, t_token **cur_token)
 {
 	char	*joined_str;

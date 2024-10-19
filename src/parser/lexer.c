@@ -131,6 +131,6 @@ int tokenize(t_shell *shell, char *input)
 			return (ERR_MEM);
 		add_token_in_back(&shell->token, token);
 	}
-	return (PARSING_OK);
 	classify_and_or_operators(shell->token);
-}
+	return (PARSING_OK);
+}	

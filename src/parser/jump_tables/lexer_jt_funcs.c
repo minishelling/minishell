@@ -29,7 +29,9 @@ void	advance_pos_space_or_word(char *str, size_t *pos, t_token_id *token_id)
 void	advance_pos_pipe(char *str, size_t *pos, t_token_id *token_id)
 {
 	(void)token_id;
-	int pipe_count = 0;
+	int pipe_count;
+	
+	pipe_count = 0;
 	while (pipe_count < 2 && str[*pos] && str[*pos] == '|')
 	{
 		(*pos)++;

@@ -76,6 +76,8 @@ void	print_token(t_token *head)
 			printf(MAGENTA_TEXT"%pTOKEN [%02d]"RESET_COLOR"\tid: %s [%d]\n\t\tstr: |%s|\tstr address: %p\n",ptr, (con - size), token_name[ptr->id], ptr->id, ptr->str, ptr->str);
 			ptr = ptr->next;
 		}
+		else
+			printf ("NULL\n");
 	}
 	return ;
 }

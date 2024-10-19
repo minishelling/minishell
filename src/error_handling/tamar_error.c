@@ -25,7 +25,7 @@ void free_tree(t_tree **node)
 		return;
 	free_tree(&(*node)->left);
 	free_tree(&(*node)->right);
-	if ((*node)->cmd)
+	if ((*node)->type == CMD)
 		free_cmd(&(*node)->cmd);
 	free(*node);
 	*node = NULL;

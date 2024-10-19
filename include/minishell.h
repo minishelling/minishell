@@ -260,7 +260,7 @@ int			append (t_shell *shell);
 t_tree		*make_tree(t_shell *shell, t_token *start_token, t_token *end_token);
 
 //CMD
-int			make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token);
+int			make_cmd(t_cmd **cmd, t_token *start_token, t_token *end_token);
 t_cmd		*new_cmd(void);
 int			parse(t_shell *shell);
 int			parser_noop(t_cmd *cmd_node, t_token *token);
