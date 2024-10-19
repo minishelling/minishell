@@ -181,14 +181,14 @@ int	parse(t_shell *shell)
 	shell->tree = make_tree(shell, shell->token, last_token(shell->token));
 	if (!shell->tree)
 		free_token_list(&shell->token);   //protect more
-	printf("\n"WHITE_TEXT MAGENTA_BACKGROUND"THE TREE"RESET_COLOR);
-	printf("\n--------------------\n");
+	// printf("\n"WHITE_TEXT MAGENTA_BACKGROUND"THE TREE"RESET_COLOR);
+	// printf("\n--------------------\n");
 	
-	//printf ("token->str is at %p\n", shell->token->str);
+	// //printf ("token->str is at %p\n", shell->token->str);
 	
-	if (shell->tree)
-		print_tree_verbose(shell->tree, 0);
-	printf ("\n");
+	// if (shell->tree)
+	// 	print_tree_verbose(shell->tree, 0);
+	// printf ("\n");
 	
 	
 	return (PARSING_OK);
