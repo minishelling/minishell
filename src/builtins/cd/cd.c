@@ -25,6 +25,8 @@ t_ecode	cd_builtin(t_shell *shell, char **cmd_args)
 	directory = cmd_args[1];
 	getcwd(cwd, PATH_MAX);
 	e_status = INIT;
+	if (ft_str_count(cmd_args) > 2)
+		return (handle_builtin_err("cd", NULL, "too many arguments"), FAILURE);
 	if (!directory || !ft_strncmp(directory, "--", 3))
 		e_status = chdir_home(&shell->env_list, cwd);
 	else if (!ft_strncmp(directory, "~", 2))
@@ -37,23 +39,5 @@ t_ecode	cd_builtin(t_shell *shell, char **cmd_args)
 		e_status = chdir_default(&shell->env_list, directory, cwd);
 	if (e_status)
 		return (e_status);
-	return (SUCCESS);
-}
-
-/**
- * @brief Checks access of curpath with F_OK and X_OK.
- * 
- * @param curpath The current path variable.
- * @return If the directory was not found it returns FAILURE
- * and errno is set accordingly. If the directory was found
- * but is not executable/accessible, it also returns FAILURE
- * and errno is set accordingly. Otherwise it returns SUCCESS. 
- */
-t_ecode	check_curpath_access(char *curpath)
-{
-	if (access(curpath, F_OK))
-		return (FAILURE);
-	if (access(curpath, X_OK))
-		return (FAILURE);
 	return (SUCCESS);
 }

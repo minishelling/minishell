@@ -15,12 +15,12 @@ bool	ft_is_natural(char *arg)
 {
 	int	i;
 
-	if (!arg || !arg[0] || (arg[0] == '-' && !arg[1]))
+	if (!arg || !arg[0] || ((arg[0] == '-' || arg[0] == '+') && !arg[1]))
 		return (false);
 	i = 0;
 	while (arg && arg[i])
 	{
-		if (i == 0 && arg[i] == '-')
+		if (i == 0 && (arg[i] == '-' || arg[i] == '+'))
 			i++;
 		if (!ft_isdigit(arg[i]))
 			return (false);

@@ -32,7 +32,7 @@ size_t	token_size(t_token *t_list)
 
 void	print_env(t_env *env_list)
 {
-	printf("LINKED LISTOF ENV VARS:\n\n");
+	// printf("LINKED LISTOF ENV VARS:\n\n");
 	while (env_list != NULL)
 	{
 		printf("%s", env_list->key);

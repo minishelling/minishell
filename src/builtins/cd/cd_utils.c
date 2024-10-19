@@ -87,3 +87,21 @@ bool	has_cdpath_prefix(char *directory)
 		return (false);
 	return (true);
 }
+
+/**
+ * @brief Checks access of curpath with F_OK and X_OK.
+ * 
+ * @param curpath The current path variable.
+ * @return If the directory was not found it returns FAILURE
+ * and errno is set accordingly. If the directory was found
+ * but is not executable/accessible, it also returns FAILURE
+ * and errno is set accordingly. Otherwise it returns SUCCESS. 
+ */
+t_ecode	check_curpath_access(char *curpath)
+{
+	if (access(curpath, F_OK))
+		return (FAILURE);
+	if (access(curpath, X_OK))
+		return (FAILURE);
+	return (SUCCESS);
+}

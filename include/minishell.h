@@ -329,7 +329,7 @@ t_env		*new_env_node(void);
 t_ecode		populate_env_node(t_env **node, char *keyval);
 t_env		*create_populated_env_node(char *keyval);
 t_ecode		create_env_list(t_env **head, char **envp);
-void		print_env_node(t_env *node);
+void		print_env_node_debugging(t_env *node);
 void		print_env_list(t_env *head);
 t_ecode		add_last_env_node(t_env **head, t_env *node);
 t_ecode		update_env_node(t_env **head, char *key, char *value, bool create_node);
