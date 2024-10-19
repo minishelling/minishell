@@ -25,7 +25,6 @@ int	safe_assign_str(char **dest, const char *src)
 {
 	if (*dest)
 	{
-		//printf ("freeing %p and setting to NULL\n", *dest);
 		free(*dest);
 		*dest = NULL;
 	}
@@ -38,4 +37,33 @@ int	safe_assign_str(char **dest, const char *src)
 	else
 		(*dest) = NULL;
 	return (SUCCESS);
+}
+
+/**
+ * @brief Custom implementation of the standard C library function `strcspn` 
+ *        (string complement span). Calculates the length of the initial 
+ *        segment of `str` that consists entirely of characters not found in `reject`.
+ *
+ * This function scans through the string `str` and counts the number
+ * of characters until it encounters a character from the `reject` string.
+ * It returns the length of the initial segment of `str` that does not contain
+ * any characters from `reject`.
+ *
+ * @param str The string to be scanned.
+ * @param reject The string containing the characters to reject.
+ * @return The number of characters in the initial segment of `str` 
+ *         that are not in `reject`.
+ */
+size_t ft_strcspn(const char *str, const char *reject)
+{
+	size_t count;
+
+	count = 0;
+	while (str[count] != '\0')
+	{
+		if (ft_strchr(reject, str[count]))
+			break;
+		count++;
+	}
+	return (count);
 }

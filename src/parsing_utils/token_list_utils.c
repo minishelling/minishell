@@ -125,8 +125,44 @@ void	remove_space_tokens(t_token **head)
 	}
 }
 
+/**
+ * @brief Finds the token immediately before a specified token in the list.
+ * 
+ * This function traverses the token list starting from the given `start_token`,
+ * and returns the token that comes immediately before the specified token (`before_what`).
+ * If the specified token is not found in the list,
+ * the function returns the first token in the list.
+ * 
+ * @param start_token The token to start searching from.
+ * @param before_what The token that we are searching for its preceding token.
+ * 
+ * @return The token that comes immediately before the `before_what` token, or the first token
+ *         if no valid preceding token is found.
+ */
+t_token *non_null_previous(t_token *start_token, t_token *before_what)
+{
+	t_token		*return_token;
 
+	return_token = start_token;
+	while (return_token->next && return_token->next != before_what)
+		return_token = return_token->next;
+	return (return_token);
+}
 
+/**
+ * @brief Finds the token immediately preceding a specified token in the list.
+ * 
+ * This function searches the token list starting from the given `head` token and returns
+ * the token that is immediately before the specified `target` token. If the `head` is 
+ * the same as the `target` token or the `target` token is not found, it returns `NULL`.
+ * 
+ * @param head The token to start searching from.
+ * @param target The token for which the preceding token is being searched.
+ * 
+ * @return The token that comes immediately before the `target` token, or `NULL` if no
+ *         preceding token exists (e.g., if the target is the first token or the target
+ *         token is not found).
+ */
 t_token *previous_token_if_exists(t_token *head, t_token *target)
 {
 	t_token *current;

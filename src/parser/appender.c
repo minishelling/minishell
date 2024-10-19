@@ -11,20 +11,21 @@
  * @param current_token Pointer to a pointer of the current token.
  * @return Pointer to the newly allocated string if successful; NULL otherwise.
  */
-static char *join_quotes(t_token **previous_token, t_token **current_token)
+static char *join_quotes(t_token **prev_token, t_token **cur_token)
 {
-	size_t len_prev;
-	size_t len_curr;
+	size_t	len_prev;
+	size_t	len_cur;
+	char	*new_str;
 
-	len_prev = strlen((*previous_token)->str);
-	len_curr = strlen((*current_token)->str);
+	len_prev = ft_strlen((*prev_token)->str);
+	len_cur = ft_strlen((*cur_token)->str);
 
-	char *new_str = malloc(len_prev + len_curr + 1);
+	new_str = malloc(len_prev + len_cur + 1);
 	if (!new_str)
 		return NULL; // Handle allocation failure
-	ft_strlcpy(new_str, (*previous_token)->str, len_prev + 1);  //check
-	ft_strlcat(new_str, (*current_token)->str, len_prev + len_curr + 1);  //check
-	free(*current_token);
+	ft_strlcpy(new_str, (*prev_token)->str, len_prev + 1);
+	ft_strlcat(new_str, (*cur_token)->str, len_prev + len_cur + 1);
+	free(*cur_token);
 	return new_str;
 }
 
@@ -40,29 +41,29 @@ static char *join_quotes(t_token **previous_token, t_token **current_token)
  */
 bool join_quotes_tokens(t_shell *shell)
 {
-	t_token *current_token;
-	t_token *previous_token;
+	t_token *cur_token;
+	t_token *prev_token;
 	char *new_str;
 
-	previous_token = NULL;
-	current_token = shell->token;
+	prev_token = NULL;
+	cur_token = shell->token;
 
-	while (current_token != NULL)
+	while (cur_token)
 	{
 	   	new_str = NULL;
-		if (is_dquote(previous_token) && is_dquote(current_token))
-			new_str = join_quotes(&previous_token, &current_token);
-		else if (is_squote(previous_token) && is_squote(current_token))
-			new_str = join_quotes(&previous_token, &current_token);
-		else if ((is_dquote(previous_token) && is_squote(current_token)) ||
-				 (is_squote(previous_token) && is_dquote(current_token)))
-			new_str = join_quotes(&previous_token, &current_token);
+		if (is_dquote(prev_token) && is_dquote(cur_token))
+			new_str = join_quotes(&prev_token, &cur_token);
+		else if (is_squote(prev_token) && is_squote(cur_token))
+			new_str = join_quotes(&prev_token, &cur_token);
+		else if ((is_dquote(prev_token) && is_squote(cur_token)) ||
+				 (is_squote(prev_token) && is_dquote(cur_token)))
+			new_str = join_quotes(&prev_token, &cur_token);
 		if (new_str)
-			safe_assign_str(&previous_token->str, new_str); // protect better
+			safe_assign_str(&prev_token->str, new_str); // protect better
 		else
 			return false;
-		previous_token = current_token;
-		current_token = current_token->next;
+		prev_token = cur_token;
+		cur_token = cur_token->next;
 	}
 	return true;
 }
@@ -172,20 +173,17 @@ int append (t_shell *shell)
 		return (free_token_list(&shell->token), err_no);
 	// printf ("after joining quotes tokens:\n");
 	// print_token(shell->token);
-	
 	err_no = join_env_var_quote_n_word_str(shell);
 	if (err_no)
 	return (free_token_list(&shell->token), err_no);
 	// printf ("after concat words and env_vars tokens\n");
 	// print_token(shell->token);
-	
 	remove_space_tokens(&shell->token);
 	// printf ("after removing space tokens\n");
 	// print_token(shell->token);
-
 	remove_subshell_parens(shell);
 	// printf ("after removing subshell_parens\n");
 	// print_token(shell->token);
-	
 	return (PARSING_OK);
 }
+

@@ -1,5 +1,31 @@
 #include "../../include/minishell.h"
 
+/**
+ * @brief Identifies and assigns token IDs for logical operators (`&&` and `||`).
+ * 
+ * This function traverses the token list and assigns the appropriate token ID 
+ * for logical operators `&&` (AND operator) and `||` (OR operator). If a single 
+ * `&` is encountered, it is considered a WORD token.
+ * 
+ * @param token_list_head A pointer to the head of the token list to be processed.
+ */
+void classify_and_or_operators(t_token *token_list_head)
+{
+	t_token *current_token;
+
+	current_token = token_list_head;
+	while (current_token)
+	{
+		if (current_token->str[0] && current_token->str[1] && 
+				current_token->str[0] == '&' && current_token->str[1] != '&')
+					current_token->id = WORD;
+		else if (!ft_strncmp(current_token->str, "||", 2))
+			current_token->id = OR_OPR;
+		
+		current_token = current_token->next;
+	}
+}
+
 /** 
  * @brief Function pointer type for delimiter handling functions.
  *
@@ -74,13 +100,11 @@ int assign_token_id_and_string(char *str, size_t *pos, t_token *token)
 	};
 	token->id = get_token_id(str[(*pos)]);
 	func[token->id](str, pos, &token->id);
-	token->str = ft_substr(str, start_pos, (*pos - start_pos));
-	//printf ("token->str is at %p\n", token->str);
+	token->str = ft_substr(str, start_pos, (*pos - start_pos));  //!
 	if (!token->str)
 		return (ERR_MEM);
 	return (PARSING_OK);
 }
-
 
 /** 
  * @brief Tokenizes the input string into a linked list of tokens.
@@ -108,4 +132,5 @@ int tokenize(t_shell *shell, char *input)
 		add_token_in_back(&shell->token, token);
 	}
 	return (PARSING_OK);
+	classify_and_or_operators(shell->token);
 }

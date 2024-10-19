@@ -41,7 +41,7 @@ char *create_temp_file_for_heredoc(int counter)
 		return (NULL);  // Handle allocation failure
 
 	// Calculate the total length: length of "heredoc" + counter_str + null terminator
-	total_length = strlen(prefix) + strlen(counter_str) + 1;
+	total_length = ft_strlen(prefix) + ft_strlen(counter_str) + 1;
 
 	// Allocate memory for the final file name
 	file_name = (char *)malloc(total_length * sizeof(char));
@@ -99,7 +99,7 @@ int read_heredoc_input(t_shell *shell, const char *file_name, const char *delimi
 				close (fd);
 				exit(EXIT_SUCCESS);
 			}
-			bytes_read = strlen(line);
+			bytes_read = ft_strlen(line);
 			write(fd, line, bytes_read);
 			write(fd, "\n", 1);
 			free(line);

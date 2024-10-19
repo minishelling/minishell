@@ -24,7 +24,6 @@
 
 
 #define MINISHARED_PROMPT "\001\033[38;5;93m\002M\001\033[38;5;99m\002i\001\033[38;5;111m\002n\001\033[38;5;63m\002i\001\033[38;5;75m\002_\001\033[38;5;81m\002s\001\033[38;5;118m\002h\001\033[38;5;154m\002a\001\033[38;5;190m\002r\001\033[38;5;226m\002e\001\033[38;5;214m\002d\001\033[0m\002: \001\033[0m\002"
-
 #define ERR_PROMPT "Mini_shared: \001\033[0m\002"
 
 # define META_CHARS_PLUS_SET " \t\n|&()><\'\"$"
@@ -35,12 +34,9 @@
 #define WHITE_TEXT "\033[0;37m"
 #define MAGENTA_BACKGROUND "\033[45m"
 #define WHITE_BACKGROUND "\033[47m"
-#define GREY_BACKGROUND "\033[48;5;24m"
 
 # define READ_END 0
 # define WRITE_END 1
-
-#define FREED_MAGIC ((void*)0xDEADBEEF)  //remove
 
 extern int	g_signalcode;
 
@@ -234,7 +230,7 @@ void		advance_pos_parens(char *str, size_t *pos, t_token_id *token_id);
 void		advance_pos_redir(char *str, size_t *pos, t_token_id *token_id);
 void		advance_pos_env_var(char *str, size_t *pos, t_token_id *token_id);
 void		advance_pos_pipe(char *str, size_t *pos, t_token_id *token_id);
-t_token		*get_after_space_token(t_token *token);
+t_token		*skip_whitespace_and_get_next_token(t_token *token);
 t_token		*get_after_pipe_token(t_token *token);
 t_token		*get_after_word_token(t_token *token);
 t_token		*get_after_arith_expan_token(t_token *token);
@@ -294,7 +290,6 @@ void		free_tree(t_tree **node);
 void		print_env(t_env *env_list);
 void		print_token(t_token *head);
 void		print_cmd(t_cmd *cmd);
-void		print_tree(t_tree *node, int level);  //to keep?
 void		print_tree_verbose(t_tree *node, int level);
 
 //ERROR
@@ -304,9 +299,11 @@ void		handle_perror(char *str);
 void		handle_builtin_err(char *cmd_name, char *arg, char *err_msg);
 
 //CLEAN
-void	clean_nicely(t_shell *shell, void *param);
+void		clean_nicely(t_shell *shell, void *param);
 
-int		safe_assign_str(char **dest, const char *src);
+int			safe_assign_str(char **dest, const char *src);
+size_t		ft_strcspn(const char *str, const char *reject);
+char		*handle_env_var_sign(t_shell *shell, char **str, char *expanded_str, t_env *env_list);
 
 //SIGNALS
 

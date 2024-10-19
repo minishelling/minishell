@@ -162,33 +162,3 @@ void print_tree_verbose(t_tree *node, int level)
 }
 
 
-void print_tree(t_tree *node, int level) 
-{
-	int i;
-	char	*tree_node_name[4] = 
-	{
-		[0] = "AND_OPR",
-		[1] = "OR_OPR",
-		[2] = "CMD",
-		[3] = "PIPE"
-	};
-	if (!node)
-		return;
-	i = 0;
-	while (i < level)
-	{
-		fprintf(stderr, "    ");
-		i++;
-	}
-	if (node->type == CMD)
-		fprintf(stderr, GREY_BACKGROUND"%s"RESET_COLOR" |%s| |%s|\n", tree_node_name[node->type], node->start_token->str, node->end_token->str);
-	else if (node->type == T_AND_OPR || node->type == T_OR_OPR || node->type == T_PIPE)
-		fprintf(stderr, MAGENTA_TEXT"%s"RESET_COLOR"\n", tree_node_name[node->type]);
-	else
-		{
-			fprintf(stderr, "NULL\n");
-			exit(EXIT_FAILURE);
-		}
-	print_tree(node->left, level + 1);
-	print_tree(node->right, level + 1);
-}

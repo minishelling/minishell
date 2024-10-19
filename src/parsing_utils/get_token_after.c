@@ -1,18 +1,21 @@
 #include "../../include/minishell.h"
 
-t_token	*get_after_space_token(t_token *token)
+t_token *skip_whitespace_and_get_next_token(t_token *token)
 {
-	t_token	*return_token;
+    t_token *return_token;
 
-	if (token == NULL)
-		return (NULL);
-	return_token = token->next;
-	if (return_token == NULL)
-		return (NULL);
-	if (return_token->id == SPACE_CHAR || return_token->id == TAB_CHAR || return_token->id == NL)
-		return_token = return_token->next;
-	return (return_token);
+    if (token == NULL)
+        return (NULL);
+
+    return_token = token->next;
+    while (return_token && (return_token->id == SPACE_CHAR || return_token->id == TAB_CHAR || return_token->id == NL))
+    {
+        return_token = return_token->next;
+    }
+
+    return (return_token);
 }
+
 
 t_token	*get_after_pipe_token(t_token *token)
 {
