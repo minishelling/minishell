@@ -306,7 +306,7 @@ void		handle_builtin_err(char *cmd_name, char *arg, char *err_msg);
 //CLEAN
 void		clean_nicely(t_shell *shell, void *param);
 
-int		safe_assign_str(char **dest, const char *src);
+int			safe_assign_str(char **dest, const char *src);
 
 //SIGNALS
 

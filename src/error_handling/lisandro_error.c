@@ -8,14 +8,13 @@ void handle_builtin_err(char *cmd_name, char *arg, char *err_msg)
 	char *full_msg;
 	size_t total_len;
 
-	// Calculate total length: prompt + command + colon + arg + colon + space + error message + newline
-	total_len = ft_strlen(ERR_PROMPT) + ft_strlen(cmd_name) +
-		ft_strlen(COLON) + ft_strlen(err_msg) + ft_strlen(_NEWLINE);
+	total_len = ft_strlen(ERR_PROMPT) + ft_strlen(cmd_name)
+		+ ft_strlen(COLON) + ft_strlen(err_msg) + ft_strlen(_NEWLINE);
 	full_msg = (char *)malloc(total_len + 1);
 	if (!full_msg)
 	{
 		perror("handle_builtin_err");
-		return ; // handle malloc failure, I am not sure how - there is a problem already
+		return ;
 	}
 	ft_strlcpy(full_msg, ERR_PROMPT, ft_strlen(ERR_PROMPT) + 1);
 	ft_strlcat(full_msg, cmd_name, total_len + 1);

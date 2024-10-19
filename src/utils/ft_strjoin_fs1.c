@@ -47,7 +47,7 @@ char	*ft_strjoin_fs1(char **s1, char const *s2)
  * @return On malloc failure it prints an error message
  * and returns an error code. On success it returns SUCCESS.
  */
-t_ecode	safe_assign_str(char **dest, const char *src)
+int	safe_assign_str(char **dest, const char *src)
 {
 	if (*dest)
 	{
