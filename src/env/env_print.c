@@ -61,6 +61,7 @@ void	print_env_node(t_env *node)
 	ft_strlcat(str, "=", str_len + 1);
 	ft_strlcat(str, node->value, str_len + 1);
 	ft_putstr_fd(str, STDOUT_FILENO);
+	ft_putchar_fd('\n', STDOUT_FILENO);
 	ft_free((void **) &str);
 	return ;
 }

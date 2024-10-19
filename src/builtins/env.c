@@ -20,6 +20,6 @@ t_ecode	env_builtin(t_shell *shell, char **cmd_args)
 			"options and arguments are not implemented.");
 		return (FAILURE);
 	}
-	print_env(shell->env_list);
+	print_env_list(shell->env_list);
 	return (SUCCESS);
 }
