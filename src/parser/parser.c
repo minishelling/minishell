@@ -152,22 +152,24 @@ int	parse(t_shell *shell)
 	err_no = tokenize(shell, shell->input);
 	if (err_no)
 		return (free_token_list(&shell->token), err_no);
-	//printf ("After tokenization:\n");
-	//print_token(shell->token);
+	// printf ("After tokenization:\n");
+	// print_token(shell->token);
 	
 	err_no = syntax(shell);
 	if (err_no)
 		return (free_token_list(&shell->token), err_no);
-	//printf ("After syntax:\n");
-	//print_token(shell->token);
+	// printf ("After syntax:\n");
+	// print_token(shell->token);
 	
 	err_no = append (shell);
 	if (err_no)
-	return (free_token_list(&shell->token), err_no);
+		return (free_token_list(&shell->token), err_no);
+	// printf ("After append:\n");
+	// print_token(shell->token);
 
 	err_no = handle_heredocs(shell, shell->token);
 	if (err_no)
-	return (free_token_list(&shell->token), err_no);
+		return (free_token_list(&shell->token), err_no);
 	//printf ("after heredocs handling\n");
 	
 	//print_token(shell->token);

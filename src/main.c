@@ -54,5 +54,6 @@ int main(int argc, char **argv, char **envp)
 			shell.input = NULL;
 		}
 	}
+	free_env_list(&shell.env_list);
 	exit(EXIT_SUCCESS);
 }

@@ -175,7 +175,7 @@ int append (t_shell *shell)
 	
 	err_no = join_env_var_quote_n_word_str(shell);
 	if (err_no)
-	return (free_token_list(&shell->token), err_no);
+		return (free_token_list(&shell->token), err_no);
 	// printf ("after concat words and env_vars tokens\n");
 	// print_token(shell->token);
 	
