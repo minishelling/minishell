@@ -10,8 +10,10 @@ void free_token(t_token **token)
 			(*token)->str = NULL;
 		}
 		else
-		free(*token);
-		*token = NULL;
+		{
+			free(*token);
+			*token = NULL;
+		}
 	}
 }
 
@@ -29,6 +31,7 @@ void	free_token_list(t_token **token_list)
 		free_token(&current);
 		current = next;
 	}
+	free(*token_list);
 	*token_list = NULL;
 }
 
