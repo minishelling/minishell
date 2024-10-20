@@ -1,6 +1,6 @@
 #include "../../include/minishell.h"
 
-char *copy_chars(char *token_str, char *expanded_str)
+char	*copy_chars(char *token_str, char *expanded_str)
 {
 	size_t	len;
 	char	*temp_str;
@@ -18,14 +18,14 @@ char *copy_chars(char *token_str, char *expanded_str)
 	return (new_expanded_str);
 }
 
-char *process_dquotes(t_shell *shell, char **str, char *expanded_str, t_env *env_list)
+char	*process_dquotes(t_shell *shell, char **str, char *expanded_str, t_env *env_list)
 {
 	char	temp[2];
 	char	*new_expanded_str;
 
 	while (**str && **str != '"')
 	{
-		if (**str == '$')
+		if (**str == '$' && ft_strncmp(*str, "$\"", 2))
 		{
 			expanded_str = handle_env_var_sign(shell, str, expanded_str, env_list);
 			if (!expanded_str)
@@ -47,7 +47,7 @@ char *process_dquotes(t_shell *shell, char **str, char *expanded_str, t_env *env
 	return (expanded_str);
 }
 
-char *process_squotes(char **str, char *expanded_str)
+char	*process_squotes(char **str, char *expanded_str)
 {
 	char	*end_quote;
 	char	*temp_str;
@@ -74,29 +74,21 @@ char	*decide_expansion_type(t_shell *shell, char **str, char *expanded_str, t_en
 {
 	if (**str == '\'')
 	{
-		//printf ("	squotes\n");
 		(*str)++;
 		expanded_str = process_squotes(str, expanded_str);
 	}
 	else if (**str == '\"')
 	{
-		//printf ("	dquotes\n");
 		(*str)++;
 		expanded_str = process_dquotes(shell, str, expanded_str, env_list);
 	}
 	else if (**str == '$')
-	{
-		//printf ("	$ sign\n");
 		expanded_str = handle_env_var_sign(shell, str, expanded_str, env_list);
-		//printf ("after $ sign, expanded_str is %s\n", expanded_str);
-	}
 	else
 	{
-		//printf ("	copy chars\n");
 		expanded_str = copy_chars(*str, expanded_str);
 		*str += ft_strcspn(*str, "\'\"$ ");
 	}
-	//printf ("in decide_expansion_type, expanded_str is %s\n", expanded_str);
 	return (expanded_str);
 }
 
@@ -123,7 +115,7 @@ int	expand_token_str(t_shell *shell, t_token *token, t_env *env_list)
 }
 
 
-t_token *expand(t_shell *shell, t_token *start_token, t_token *end_token, t_env *env_list)
+t_token	*expand(t_shell *shell, t_token *start_token, t_token *end_token, t_env *env_list)
 {
 	t_token *current_token;
 
@@ -134,7 +126,6 @@ t_token *expand(t_shell *shell, t_token *start_token, t_token *end_token, t_env 
 		if (current_token == end_token)
 			break;
 		current_token = current_token->next;
-		//printf ("in the while loop current token is %s\n", current_token->str);
 	}
 	return (start_token);
 }

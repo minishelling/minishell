@@ -82,6 +82,5 @@ char	*handle_env_var_sign(t_shell *shell, char **str, char *expanded_str, t_env 
 	}
 	else
 		expanded_str = expand_env_var(str, expanded_str, env_list);
-	printf ("in handle_env_var_sign expanded_str is %s\n", expanded_str);
 	return (expanded_str);
 }
