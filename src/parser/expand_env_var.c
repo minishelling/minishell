@@ -73,9 +73,9 @@ char	*handle_env_var_sign(t_shell *shell, char **str, char *expanded_str, t_env 
 		if (!expanded_str)
 		return (NULL);
 	}
-	else if (ft_strncmp(*str, "$?", 2) == 0 && ft_strlen(*str) == 2)
+	else if (ft_strncmp(*str, "$?", 2) == 0)
 	{
-		expanded_str = ft_itoa(shell->exit_code);
+		expanded_str = ft_strjoin(expanded_str, ft_itoa(shell->exit_code));
 		(*str) += 2;
 		if (!expanded_str)
 		return (NULL);

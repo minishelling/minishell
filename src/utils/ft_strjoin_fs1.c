@@ -21,8 +21,10 @@ char	*ft_strjoin_fs1(char **s1, char const *s2)
 	return (dst);
 }
 
-int	safe_assign_str(char **dest, const char *src)
+int safe_assign_str(char **dest, const char *src)
 {
+	if (!dest || !*dest)
+		printf ("no!\n");
 	if (*dest)
 	{
 		free(*dest);
@@ -30,14 +32,15 @@ int	safe_assign_str(char **dest, const char *src)
 	}
 	if (src)
 	{
-		*dest = strdup(src);
+		*dest = ft_strdup(src);
 		if (*dest == NULL)
-			return(ERR_MEM);
+			return (ERR_MEM);
 	}
 	else
 		(*dest) = NULL;
 	return (SUCCESS);
 }
+
 
 /**
  * @brief Custom implementation of the standard C library function `strcspn` 

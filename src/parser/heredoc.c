@@ -162,7 +162,7 @@ int handle_heredocs(t_shell *shell, t_token *token_list)
 				heredoc_counter++;
 				if (file_name == NULL)
 					return (ERR_MEM);
-				delimiter = next_token->str;
+				delimiter = ft_strdup(next_token->str);
 				printf("in handle heredocs, delimiter is %s\n", delimiter);
 				safe_assign_str(&next_token->str, file_name);  //protect better
 				fd = read_heredoc_input(shell, next_token->str, delimiter);

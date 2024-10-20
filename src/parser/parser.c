@@ -59,18 +59,19 @@ static int	traverse_tokens_to_make_cmd(t_cmd *current_cmd, t_token *start_token,
 	cur_token = start_token;
 	while (cur_token)
 	{
-		//printf ("cur_token is %s\n", cur_token->str);
+		// printf (" !!  CUR TOKEN is %s\n", cur_token->str);
 		err_no = build_command_from_token(current_cmd, cur_token);
 		if (cur_token == end_token)
 			break;
+		//printf ("end_token is %s\n", end_token->str);
 		if (err_no)
 			return (err_no);
 		if (cur_token->id == LT || cur_token->id == GT)
-			cur_token = get_after_word_token(cur_token);
-		else if (cur_token->id == ARITH_EXPAN)
+            cur_token = get_after_word_token(cur_token);
+        else if (cur_token->id == ARITH_EXPAN)
 			cur_token = get_after_arith_expan_token(cur_token);
-		else
-			cur_token = cur_token->next;
+        else
+            cur_token = cur_token->next;
 	}
 	return (PARSING_OK);
 }
@@ -80,7 +81,6 @@ int	make_cmd(t_cmd **cmd, t_token *start_token, t_token *end_token)
 	size_t	arg_num;
 	int		err_no;
 	
-	//printf ("	in make_cmd start_token is %s, end_token is %s\n", start_token->str, end_token->str);
 	*cmd = new_cmd();
 	if (!*cmd)
 		return (ERR_MEM);
@@ -94,7 +94,6 @@ int	make_cmd(t_cmd **cmd, t_token *start_token, t_token *end_token)
 	return (PARSING_OK);
 }
 
-
 int	parse(t_shell *shell)
 {
 	int err_no;
@@ -102,19 +101,18 @@ int	parse(t_shell *shell)
 	err_no = tokenize(shell, shell->input);
 	if (err_no)
 		return (free_token_list(&shell->token), err_no);
-	printf ("After tokenization:\n");
-	print_token(shell->token);
+	// printf ("After tokenization:\n");
+	// print_token(shell->token);
 	
 	err_no = syntax(shell);
 	if (err_no)
 		return (free_token_list(&shell->token), err_no);
-	printf ("After syntax:\n");
-	print_token(shell->token);
+	// printf ("After syntax:\n");
+	// print_token(shell->token);
 	
 	err_no = append(shell);
 	if (err_no)
 	return (free_token_list(&shell->token), err_no);
-
 	err_no = handle_heredocs(shell, shell->token);
 	if (err_no)
 	return (free_token_list(&shell->token), err_no);
@@ -124,16 +122,13 @@ int	parse(t_shell *shell)
 	//fprintf(stderr, "PARSER:\nSignal code: %d\n", g_signalcode);
 	//fprintf(stderr, "Exit code: %d\n", shell->exit_code);
 	if (g_signalcode == SIGINT)
-	{
 		return (SIGINT_HDOC);
-	}
 
 	shell->tree = make_tree(shell, shell->token, last_token(shell->token));
 	if (!shell->tree)
 		free_token_list(&shell->token);   //protect more
 	printf("\n"WHITE_TEXT MAGENTA_BACKGROUND"THE TREE"RESET_COLOR);
 	printf("\n--------------------\n");
-	
 	
 	if (shell->tree)
 		print_tree_verbose(shell->tree, 0);

@@ -50,22 +50,12 @@ t_token	*get_after_word_token(t_token *token)
 	return (token);
 }
 
-t_token *get_after_arith_expan_token(t_token *token)
+t_token *get_after_arith_expan_token(t_token *first_arith_expan_token)
 {
-
-	if (token == NULL)
-		return (NULL);
-	if (token->next)
-		token = token->next;
-	while (token)
-	{
-		//printf ("	in the arith_expan thingie, token is %s\n", token->str);
-		if (token->id == ARITH_EXPAN)
-		{
-			return (token->next);
-			break ;
-		}
-		token = token->next;
-	}
-	return (token);
+	t_token	*cur_token;
+	
+	cur_token = first_arith_expan_token->next;
+	while (cur_token && cur_token->id && cur_token->id != ARITH_EXPAN)
+		cur_token = cur_token->next;
+	return (cur_token);
 }

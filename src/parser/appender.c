@@ -1,60 +1,5 @@
 #include "../../include/minishell.h"
 
-
-
-
-void process_and_remove_parens(t_shell *shell, t_token *current, t_token *word_token)
-{
-	t_token *token_after_par;
-	t_token *token_before_par;
-	
-	token_after_par = word_token->next;
-	token_before_par = previous_token_if_exists(shell->token, current);
-	shell->token = remove_token_by_reference(shell->token, current);
-	shell->token = remove_token_by_reference(shell->token, word_token);
-	if (token_before_par && token_before_par->id == PAR_OPEN &&
-		token_after_par && token_after_par->id == PAR_CLOSE)
-			handle_arith_expan(&shell->token, &token_before_par, &token_after_par);
-}
-
-void check_and_process_parens(t_shell *shell, t_token **current_token)
-{
-	t_token *next_token = (*current_token)->next;
-
-	while (next_token && next_token->id == WORD && next_token->next)
-		next_token = next_token->next;
-
-	if (next_token && next_token->id == PAR_CLOSE)
-	{
-		process_and_remove_parens(shell, *current_token, next_token);
-		t_token *token_after_par = next_token->next;
-		if (token_after_par)
-			*current_token = token_after_par;
-		else
-			return;
-	}
-	else
-		*current_token = (*current_token)->next;
-}
-
-void remove_subshell_parens(t_shell *shell)
-{
-	t_token *current_token;
-	
-	current_token = shell->token;
-	while (current_token && current_token->next)
-	{
-		if (current_token->id == PAR_OPEN)
-		{
-			check_and_process_parens(shell, &current_token);
-			if (!current_token)
-				break;
-		}
-		else
-			current_token = current_token->next;
-	}
-}
-
 /**
  * remove_space_tokens - Removes all spacing tokens from the token list.
  * 
@@ -179,19 +124,20 @@ int append (t_shell *shell)
 	err_no = join_quotes_tokens(shell);
 	if (err_no)
 		return (free_token_list(&shell->token), err_no);
-	printf ("after joining quotes tokens:\n");
-	print_token(shell->token);
+	// printf ("after joining quotes tokens:\n");
+	// print_token(shell->token);
+	
 	err_no = join_env_var_quotes_and_word_str(shell);
 	if (err_no)
 	return (free_token_list(&shell->token), err_no);
-	printf ("after concat quote, words and env_vars tokens\n");
-	print_token(shell->token);
-	remove_space_tokens(&shell->token);
-	printf ("after removing space tokens\n");
-	print_token(shell->token);
-	remove_subshell_parens(shell);
-	// printf ("after removing subshell_parens\n");
+	// printf ("after concat quote, words and env_vars tokens\n");
 	// print_token(shell->token);
+	
+	remove_space_tokens(&shell->token);
+	// printf ("after removing space tokens\n");
+	// print_token(shell->token);
+	
+	print_token(shell->token);
 	return (PARSING_OK);
 }
 

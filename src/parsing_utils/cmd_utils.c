@@ -43,6 +43,8 @@ void free_args(char ***args)
 
 void free_cmd(t_cmd **cmd)
 {
+	// printf ("*cmd is %p\n", *cmd);
+	// print_cmd(*cmd);
 	if (*cmd == NULL)
 		return;
 	if ((*cmd)->args)
