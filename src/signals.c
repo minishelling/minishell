@@ -28,7 +28,7 @@ void	sigint_handler_child_non_interactive(int signal)
 	if (signal == SIGINT)
 	{
 		close_all_fds_in_process();
-		exit (EXIT_SIGINT);
+		exit (E_SIGINT);
 	}
 }
 
@@ -43,7 +43,7 @@ void	sigint_handler_heredoc_child(int signal)
 	if (signal == SIGINT)
 	{
 		close_all_fds_in_process();
-		exit (EXIT_SIGINT);
+		exit (E_SIGINT);
 	}
 }
 

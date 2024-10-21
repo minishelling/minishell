@@ -58,8 +58,8 @@ typedef enum exit_code
 	EXIT_CMD_NOT_EXECUTABLE = 126,
 	EXIT_CMD_NOT_FOUND = 127,
 	EXIT_SIGNAL_CODE = 128,
-	EXIT_SIGINT = 130,
-	EXIT_SIGQUIT = 131
+	E_SIGINT = 130,
+	E_SIGQUIT = 131
 }	t_exit_code;
 
 typedef enum e_codes

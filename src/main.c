@@ -22,7 +22,7 @@ int main(int argc, char **argv, char **envp)
 	while (1) 
 	{
 		g_signalcode = 0;
-		//init_signals(INTERACTIVE);
+		// init_signals(INTERACTIVE);
 		shell.input = readline(MINISHARED_PROMPT);
 		if (g_signalcode == SIGINT)
 		{
@@ -40,11 +40,10 @@ int main(int argc, char **argv, char **envp)
 				handle_parsing_err(&shell, status, NULL);
 			else
 			{
-				//init_signals(PARENT_NON_INTERACTIVE);
+				// init_signals(PARENT_NON_INTERACTIVE);
 				shell.exit_code = pre_execute(&shell, shell.tree, NULL, 0);
 				printf ("last exit_code %d\n", shell.exit_code);
 				clean_nicely(&shell, NULL);
-				free_tree(&shell.tree);
 				shell.tree = NULL;
 			}
 			//close_all_fds_in_process();

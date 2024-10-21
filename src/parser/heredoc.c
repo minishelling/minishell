@@ -168,7 +168,7 @@ int handle_heredocs(t_shell *shell, t_token *token_list)
 				fd = read_heredoc_input(shell, next_token->str, delimiter);
 				if (g_signalcode == SIGINT)
 				{
-					shell->exit_code = EXIT_SIGINT;
+					shell->exit_code = E_SIGINT;
 					return (SIGINT_HDOC);
 				}
 				else if (fd)
