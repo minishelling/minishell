@@ -11,8 +11,8 @@ static void	close_fds(int fd1, int fd2);
  * This function creates a pipe and then forks the process twice,
  * but before forking for a second time it waits until the execution
  * of the first process is finished.
- * The first process is supposed to execute the right node of the tree,
- * while the second is suposed to execute the left node.
+ * The first process is supposed to execute the left node of the tree,
+ * while the second is suposed to execute the right node.
  * Before returning, all processes and subprocesses are waited to terminate.
  * 
  * @param shell A pointer to the shell structure.
