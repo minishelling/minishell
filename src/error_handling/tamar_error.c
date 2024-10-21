@@ -25,7 +25,7 @@ void free_tree(t_tree **node)
 		return;
 	free_tree(&(*node)->left);
 	free_tree(&(*node)->right);
-	if ((*node)->cmd)
+	if ((*node)->type == CMD)
 		free_cmd(&(*node)->cmd);
 	free(*node);
 	*node = NULL;
@@ -34,6 +34,11 @@ void free_tree(t_tree **node)
 void clean_nicely(t_shell *shell, void* param)
 {
 	(void)param;
+	if (shell->input)
+	{
+		free(shell->input);
+		shell->input = NULL;
+	}
 	if (shell->token)
 		free_token_list(&shell->token);
 	if (shell->tree)

@@ -34,7 +34,7 @@ int parser_redir(t_cmd *cmd, t_token *token)
 	if (token->next)
 		file_token = token->next;
 	else
-		file_token = NULL;  //syntax erro - no file name?
+		return(ERR_SYNTAX_ERROR);  //syntax erro - no file name?
 	redir_list = new_redir();
 	if (!redir_list)
 		return (ERR_MEM);
@@ -69,10 +69,13 @@ int parser_arith_expan(t_cmd *cmd_node, t_token *token)
 		free_args(&cmd_node->args);
 		cmd_node->args = NULL;
 	}
-	cmd_node->args = ft_calloc(2, sizeof(char *));
+	cmd_node->args = ft_calloc(3, sizeof(char *));
 	cmd_node->args[0] = ft_strdup("((");
 	if (!cmd_node->args[0])
 		return (ERR_MEM);
-	cmd_node->args[1] = NULL;
+	cmd_node->args[1] = ft_strdup("))");
+	if (!cmd_node->args[1])
+	cmd_node->args[2] = NULL;
+		return (ERR_MEM);
 	return (PARSING_OK);
 }
