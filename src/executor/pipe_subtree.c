@@ -44,7 +44,7 @@ int	handle_pipe_subtree(t_shell *shell, t_tree *tree_node)
 	else if (left_node_pid == 0)
 		handle_pipe_left_node(shell, tree_node, fd);
 	waitpid(left_node_pid, &status, 0);
-	if (WEXITSTATUS(status) == EXIT_SIGINT || WEXITSTATUS(status) == EXIT_SIGQUIT)
+	if (WEXITSTATUS(status) == E_SIGINT || WEXITSTATUS(status) == E_SIGQUIT)
 		return (WEXITSTATUS(status));
 	right_node_pid = fork();
 	if (right_node_pid == ERROR)
@@ -59,7 +59,17 @@ int	handle_pipe_subtree(t_shell *shell, t_tree *tree_node)
 }
 
 /**
- * @brief 
+ * @brief Executes the left node a pipe subtree.
+ * 
+ * This node is supposed to write the command's output into
+ * the WRITE_END (1) of the pipe. Thus it duplicates the fd[WRITE_END]
+ * into STDOUT, and then closes both pipe file descriptors before executing.
+ * 
+ * @param shell A pointer to the shell structure.
+ * @param tree_node A pointer to the parent tree node (the pipe node).
+ * @param fd The pipe's file descriptors.
+ * 
+ * @return void
  */
 static void	handle_pipe_left_node(t_shell *shell, t_tree *tree_node, int fd[2])
 {
@@ -75,6 +85,19 @@ static void	handle_pipe_left_node(t_shell *shell, t_tree *tree_node, int fd[2])
 	exit(status);
 }
 
+/**
+ * @brief Executes the right node a pipe subtree.
+ * 
+ * This node is supposed to read from the pipe READ_END (0)
+ * for the command's input. Thus it duplicates the fd[READ_END]
+ * into STDIN, and then closes both pipe file descriptors before executing.
+ * 
+ * @param shell A pointer to the shell structure.
+ * @param tree_node A pointer to the parent tree node (the pipe node).
+ * @param fd The pipe's file descriptors.
+ * 
+ * @return void
+ */
 static void	handle_pipe_right_node(t_shell *shell, t_tree *tree_node, int fd[2])
 {
 	int	status;
@@ -89,6 +112,15 @@ static void	handle_pipe_right_node(t_shell *shell, t_tree *tree_node, int fd[2])
 	exit(status);
 }
 
+/**
+ * @brief Closes the given file descriptors.
+ * 
+ * @param fd1 File descriptor 1.
+ * @param fd2 File descriptor 2.
+ * 
+ * @return void
+ * If there was an error closing a file descriptor it prints an error message.
+ */
 static void	close_fds(int fd1, int fd2)
 {
 	if (fd1 != ERROR)
