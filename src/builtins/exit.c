@@ -25,7 +25,7 @@ t_ecode	exit_builtin(t_shell *shell, char **cmd_args)
 	int8_t	exit_code;
 
 	arg_count = ft_str_count(cmd_args);
-	if (!ft_strncmp(cmd_args[1], "--", 3))
+	if (arg_count == 2 && !ft_strncmp(cmd_args[1], "--", 3))
 		exit_code = handle_end_of_options(shell, cmd_args, arg_count);
 	else if (arg_count == 2)
 		exit_code = handle_argc_2(shell, cmd_args);
