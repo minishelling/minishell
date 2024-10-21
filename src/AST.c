@@ -188,8 +188,7 @@ t_tree *init_leaf_node(t_shell *shell, t_token *start_token, t_token *end_token)
 {
 	t_tree *leaf_node;
 	
-	leaf_node = ft_calloc(1, sizeof(t_tree));
-	// leaf_node = (t_tree *)malloc(sizeof(t_tree));
+	leaf_node = (t_tree *)malloc(sizeof(t_tree));
 	if (!leaf_node)
 	{	
 		handle_parsing_err(shell, ERR_MEM, NULL);
@@ -217,8 +216,7 @@ t_tree *init_tree_node(t_shell *shell, t_token *op_token)
 		fprintf(stderr, "Error: op_token is NULL\n");
    		exit(EXIT_FAILURE);
 	}
-	tree_node = ft_calloc (1, sizeof(t_tree));
-	// tree_node = (t_tree *)malloc(sizeof(t_tree));
+	tree_node = (t_tree *)malloc(sizeof(t_tree));
 	if (!tree_node) 
 	{
 		handle_parsing_err(shell, ERR_MEM, NULL);

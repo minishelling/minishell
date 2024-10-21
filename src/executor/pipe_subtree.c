@@ -1,9 +1,34 @@
 #include "../../include/minishell.h"
 
-static int	handle_pipe_left_node(t_shell *shell, t_tree *tree_node, int fd[2]);
-static int	handle_pipe_right_node(t_shell *shell, t_tree *tree_node, int fd[2]);
-static void close_fds(int fd1, int fd2);
+static void	handle_pipe_left_node(t_shell *shell, t_tree *tree_node, int fd[2]);
+static void	handle_pipe_right_node(t_shell *shell,
+				t_tree *tree_node, int fd[2]);
+static void	close_fds(int fd1, int fd2);
 
+/**
+ * @brief Executes a subtree where the root is a pipe operator.
+ * 
+ * This function creates a pipe and then forks the process twice,
+ * but before forking for a second time it waits until the execution
+ * of the first process is finished.
+ * The first process is supposed to execute the right node of the tree,
+ * while the second is suposed to execute the left node.
+ * Before returning, all processes and subprocesses are waited to terminate.
+ * 
+ * @param shell A pointer to the shell structure.
+ * @param tree_node A pointer to the tree node to be executed.
+ * 
+ * @return If there was an error in piping, forking or closing a fd,
+ * then it exits the main process with the exit code EXIT_FAILURE (1).
+ * If the left node process has exited with a signal code, then
+ * the execution stops and it returns the WEXITSTATUS of that left node.
+ * Otherwise it returns the WEXITSTATUS of the right node.
+ * 
+ * Note that a check for if the node processes have exited normally
+ * (with an exit function) or by a signal is not needed since each node
+ * will always exit with the exit function, and the exit code of execution,
+ * and the check is provided there (in the executor).
+ */
 int	handle_pipe_subtree(t_shell *shell, t_tree *tree_node)
 {
 	int		fd[2];
@@ -19,6 +44,8 @@ int	handle_pipe_subtree(t_shell *shell, t_tree *tree_node)
 	else if (left_node_pid == 0)
 		handle_pipe_left_node(shell, tree_node, fd);
 	waitpid(left_node_pid, &status, 0);
+	if (WEXITSTATUS(status) == EXIT_SIGINT || WEXITSTATUS(status) == EXIT_SIGQUIT)
+		return (WEXITSTATUS(status));
 	right_node_pid = fork();
 	if (right_node_pid == ERROR)
 		exit(EXIT_FAILURE);
@@ -28,16 +55,19 @@ int	handle_pipe_subtree(t_shell *shell, t_tree *tree_node)
 	waitpid(right_node_pid, &status, 0);
 	while (wait(NULL) != ERROR)
 		;
-	return (status);
+	return (WEXITSTATUS(status));
 }
 
-static int	handle_pipe_left_node(t_shell *shell, t_tree *tree_node, int fd[2])
+/**
+ * @brief 
+ */
+static void	handle_pipe_left_node(t_shell *shell, t_tree *tree_node, int fd[2])
 {
 	int	status;
 
 	if (dup2(fd[WRITE_END], STDOUT_FILENO) == ERROR)
 	{
-		perror("dup2");                                                                                         
+		perror("dup2");
 		exit(EXIT_FAILURE);
 	}
 	close_fds(fd[READ_END], fd[WRITE_END]);
@@ -45,9 +75,10 @@ static int	handle_pipe_left_node(t_shell *shell, t_tree *tree_node, int fd[2])
 	exit(status);
 }
 
-static int	handle_pipe_right_node(t_shell *shell, t_tree *tree_node, int fd[2])
+static void	handle_pipe_right_node(t_shell *shell, t_tree *tree_node, int fd[2])
 {
 	int	status;
+
 	if (dup2(fd[READ_END], STDIN_FILENO) == ERROR)
 	{
 		perror("dup2");
@@ -58,7 +89,7 @@ static int	handle_pipe_right_node(t_shell *shell, t_tree *tree_node, int fd[2])
 	exit(status);
 }
 
-static void close_fds(int fd1, int fd2)
+static void	close_fds(int fd1, int fd2)
 {
 	if (fd1 != ERROR)
 	{
