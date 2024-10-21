@@ -9,15 +9,17 @@ static void	do_parent_duties(t_shell *shell, t_cmd *cmd);
  * @brief Executes a passed command.
  * It checks whether the command is an arithmetic expansion,
  * a built-in or an executable file.
+ * 
  * @param shell A pointer to the shell structure.
  * @param cmd A pointer to the command node.
- * @return If it is an arithmetic expansion it prints
- * an error message and returns FAILURE.
+ * 
+ * @return If it is an arithmetic expansion it prints an error message
+ * and returns FAILURE.
  * If it is a built-in it calls the built-in function handler.
  * For any other type of command it calls the non-builtin handler.
  * If the command was successfully executed it returns SUCCESS,
- * and the exit code is set appropriately. Otherwise it returns
- * the corresponding exit code.
+ * and the exit code is set appropriately.
+ * Otherwise it returns the corresponding exit code.
  */
 int	executor(t_shell *shell, t_cmd *cmd)
 {
@@ -126,13 +128,8 @@ static void	do_parent_duties(t_shell *shell, t_cmd *cmd)
 
 	waitpid(shell->parent, &wstatus, 0);
 	if (WIFEXITED(wstatus) == true)
-	{
-		if (g_signalcode == SIGINT)
-			shell->exit_code = EXIT_SIGINT;
-		else	
 		shell->exit_code = WEXITSTATUS(wstatus);
-	}
 	else if (WIFSIGNALED(wstatus) == true)
-		shell->exit_code = EXIT_SIGQUIT;
+		shell->exit_code = WTERMSIG(wstatus) + EXIT_SIGNAL_CODE;
 	close_all_fds_in_cmd(cmd); //Clean nicely
 }
