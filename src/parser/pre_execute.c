@@ -1,7 +1,7 @@
 
 #include "../../include/minishell.h"
 
-int pre_execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int prev_exit_code) 
+int pre_execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int prev_exit_code)
 {
 	int exit_code;
 	exit_code = prev_exit_code;
@@ -21,11 +21,13 @@ int pre_execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int
 		// fprintf(stderr, "STARTING EXPANSIONS\n");
 		// printf ("in pre_execute:\n");
 		// print_token(shell->token);
-		tree_node->start_token = expand(shell, tree_node->start_token, tree_node->end_token, shell->env_list);
+		
+		expand(shell, tree_node->start_token, tree_node->end_token, shell->env_list);
 		// fprintf(stderr, "FINISHED MAKING EXPANSIONS\n");
 		// printf ("in pre_execute:\n");
 		// print_token(shell->token);
-		make_cmd(&tree_node->cmd, tree_node->start_token, tree_node->end_token);
+		
+		make_cmd(shell, &tree_node->cmd, tree_node->start_token, tree_node->end_token);
 		// tree_node->cmd = shell->cmd;
 		// fprintf(stderr, "FINISHED MAKING CMDS\n");
 		if (open_redirections(shell, tree_node->cmd) == SUCCESS)

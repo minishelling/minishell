@@ -65,7 +65,7 @@ static int	traverse_tokens_to_make_cmd(t_cmd *current_cmd, t_token *start_token,
 			break;
 		//printf ("end_token is %s\n", end_token->str);
 		if (err_no)
-			return (err_no);
+			return (ERR_CMD);
 		if (cur_token->id == LT || cur_token->id == GT)
             cur_token = get_after_word_token(cur_token);
         else if (cur_token->id == ARITH_EXPAN)
@@ -76,22 +76,30 @@ static int	traverse_tokens_to_make_cmd(t_cmd *current_cmd, t_token *start_token,
 	return (PARSING_OK);
 }
 
-int	make_cmd(t_cmd **cmd, t_token *start_token, t_token *end_token)
+void	make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token, t_token *end_token)
 {
 	size_t	arg_num;
 	int		err_no;
 	
 	*cmd = new_cmd();
 	if (!*cmd)
-		return (ERR_MEM);
+	{
+		handle_parsing_err(shell, ERR_CMD, NULL);
+		clean_nicely_and_exit(shell, NULL);
+	}
 	arg_num = get_arg_num(start_token, end_token);
 	(*cmd)->args = ft_calloc((arg_num + 1), sizeof(char *));
 	if (!(*cmd)->args)
-		return (ERR_MEM);
+	{
+		handle_parsing_err(shell, ERR_CMD, NULL);
+		clean_nicely_and_exit(shell, NULL);
+	}
 	err_no = traverse_tokens_to_make_cmd(*cmd, start_token, end_token);
 	if (err_no)
-		return (err_no);
-	return (PARSING_OK);
+	{
+		handle_parsing_err(shell, err_no, NULL);
+		clean_nicely_and_exit(shell, NULL);
+	}
 }
 
 int	parse(t_shell *shell)
@@ -129,12 +137,12 @@ int	parse(t_shell *shell)
 	shell->tree = make_tree(shell, shell->token, last_token(shell->token));
 	if (!shell->tree)
 		free_token_list(&shell->token);   //protect more
-	printf("\n"WHITE_TEXT MAGENTA_BACKGROUND"THE TREE"RESET_COLOR);
-	printf("\n--------------------\n");
+	// printf("\n"WHITE_TEXT MAGENTA_BACKGROUND"THE TREE"RESET_COLOR);
+	// printf("\n--------------------\n");
 	
-	if (shell->tree)
-		print_tree_verbose(shell->tree, 0);
-	printf ("\n");
+	// if (shell->tree)
+	// 	print_tree_verbose(shell->tree, 0);
+	// printf ("\n");
 	
 	return (PARSING_OK);
 }
