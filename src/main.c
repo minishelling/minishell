@@ -42,7 +42,7 @@ int main(int argc, char **argv, char **envp)
 			{
 				// init_signals(PARENT_NON_INTERACTIVE);
 				shell.exit_code = pre_execute(&shell, shell.tree, NULL, 0);
-				printf ("last exit_code %d\n", shell.exit_code);
+				// printf ("last exit_code %d\n", shell.exit_code);
 				clean_nicely(&shell, NULL);
 				shell.tree = NULL;
 			}

@@ -137,7 +137,7 @@ int append (t_shell *shell)
 	// printf ("after removing space tokens\n");
 	// print_token(shell->token);
 	
-	print_token(shell->token);
+	// print_token(shell->token);
 	return (PARSING_OK);
 }
 
