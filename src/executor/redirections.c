@@ -89,6 +89,7 @@ static t_ecode	replace_redir_fd(t_cmd *cmd, t_redir *redir)
 {
 	t_ecode	status;
 
+	status = SUCCESS;
 	if (redir->redir_id == HERE || redir->redir_id == IN)
 	{
 		if (redir->fd == ERROR)

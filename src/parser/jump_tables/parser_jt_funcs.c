@@ -40,7 +40,7 @@ int parser_redir(t_cmd *cmd, t_token *token)
 		return (ERR_MEM);
 	redir_list->redir_id = which_redir(token->str);
 	redir_list->file = ft_strdup(file_token->str);
-	if (redir_list->file)
+	if (!redir_list->file)
 		return (ERR_MEM);
 	if (redir_list->file[0] == '|' || redir_list->file[0] == '&' || redir_list->file[0] == ';'
 		|| redir_list->file[0] == '(' || redir_list->file[0] == ')')
