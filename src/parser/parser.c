@@ -21,7 +21,7 @@ size_t get_arg_num(t_token *start_token, t_token *end_token)
 
 typedef int (*t_parser_func)(t_cmd *current_cmd, t_token *token);
 
-int	build_command_from_token(t_cmd *current_cmd, t_token *token)
+int	build_command_from_token(t_cmd *cmd, t_token *token)
 {
 int err_no;
 t_parser_func parser_functions[15] = {
@@ -43,7 +43,7 @@ t_parser_func parser_functions[15] = {
 	};
 	if (parser_functions[token->id])
 	{
-		err_no = parser_functions[token->id](current_cmd, token);
+		err_no = parser_functions[token->id](cmd, token);
 		if (err_no) 
 			return (err_no);
 	}
@@ -59,15 +59,19 @@ static int	traverse_tokens_to_make_cmd(t_cmd *current_cmd, t_token *start_token,
 	cur_token = start_token;
 	while (cur_token)
 	{
-		// printf (" !!  CUR TOKEN is %s\n", cur_token->str);
 		err_no = build_command_from_token(current_cmd, cur_token);
-		if (cur_token == end_token)
-			break;
-		//printf ("end_token is %s\n", end_token->str);
 		if (err_no)
 			return (ERR_CMD);
+		if (cur_token == end_token)
+			break;
 		if (cur_token->id == LT || cur_token->id == GT)
-            cur_token = get_after_word_token(cur_token);
+		{
+			cur_token = cur_token->next;
+			if (cur_token->next)
+				cur_token = cur_token->next;
+			if (cur_token == end_token)
+			break;
+		}
         else if (cur_token->id == ARITH_EXPAN)
 			cur_token = get_after_arith_expan_token(cur_token);
         else
@@ -125,7 +129,7 @@ int	parse(t_shell *shell)
 	// print_token(shell->token);
 	err_no = handle_heredocs(shell, shell->token);
 	if (err_no)
-	return (free_token_list(&shell->token), err_no);
+			return (free_token_list(&shell->token), err_no);
 	// printf ("after heredocs handling\n");
 	// print_token(shell->token);
 	
@@ -137,12 +141,12 @@ int	parse(t_shell *shell)
 	shell->tree = make_tree(shell, shell->token, last_token(shell->token));
 	if (!shell->tree)
 		free_token_list(&shell->token);   //protect more
-	// printf("\n"WHITE_TEXT MAGENTA_BACKGROUND"THE TREE"RESET_COLOR);
-	// printf("\n--------------------\n");
+	printf("\n"WHITE_TEXT MAGENTA_BACKGROUND"THE TREE"RESET_COLOR);
+	printf("\n--------------------\n");
 	
-	// if (shell->tree)
-	// 	print_tree_verbose(shell->tree, 0);
-	// printf ("\n");
+	if (shell->tree)
+		print_tree_verbose(shell->tree, 0);
+	printf ("\n");
 	
 	return (PARSING_OK);
 }

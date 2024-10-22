@@ -15,7 +15,7 @@ char *get_err_msg(int e)
 		"Syntax error\n",
 		"Error: unable to allocate dynamic memory\n",
 		"Error while expanding: unable to allocate dynamic memory\n",
-		"Error while forming a command: unable to allocate dynamic memory\n"
+		"Error while forming a command: unable to allocate dynamic memory\n",
 		"SIGINT_HDOC"
 	};
 	return (error_messages[e]);

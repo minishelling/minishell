@@ -49,8 +49,6 @@ void free_redir_list(t_redir **redir)
 
 	if (!redir || !(*redir))
 		return;
-
-	printf("Freeing redirection list at %p\n", (void*)*redir);
 	while (*redir)
 	{
 		temp_redir = *redir;
@@ -58,13 +56,10 @@ void free_redir_list(t_redir **redir)
 
 		if (temp_redir->file)
 		{
-			printf("Freeing file in redir at %p\n", (void*)temp_redir->file);
 			free(temp_redir->file);
 			temp_redir->file = NULL;
 		}
-		printf("Freeing redir struct at %p\n", (void*)temp_redir);
 		free(temp_redir);
 	}
 	*redir = NULL;
-	printf("Redirection list freed and set to NULL\n");
 }

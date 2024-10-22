@@ -34,7 +34,7 @@ int pre_execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int
 			exit_code = executor(shell, tree_node->cmd);
 		else
 			exit_code = 1;
-		// print_cmd(tree_node->cmd);
+		print_cmd(tree_node->cmd);
 		//printf ("exit code is %d\n", exit_code);
 	}
 	if (parent_tree_node && parent_tree_node->type == T_AND_OPR && exit_code == 0) 
