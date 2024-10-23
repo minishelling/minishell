@@ -43,9 +43,6 @@ int	handle_pipe_subtree(t_shell *shell, t_tree *tree_node)
 		exit(EXIT_FAILURE);
 	else if (left_node_pid == 0)
 		handle_pipe_left_node(shell, tree_node, fd);
-	// waitpid(left_node_pid, &status, 0);
-	// if (WEXITSTATUS(status) == E_SIGINT || WEXITSTATUS(status) == E_SIGQUIT)
-	// 	return (WEXITSTATUS(status));
 	right_node_pid = fork();
 	if (right_node_pid == ERROR)
 		exit(EXIT_FAILURE);
@@ -53,7 +50,7 @@ int	handle_pipe_subtree(t_shell *shell, t_tree *tree_node)
 		handle_pipe_right_node(shell, tree_node, fd);
 	close_fds(fd[READ_END], fd[WRITE_END]);
 	waitpid(right_node_pid, &status, 0);
-	while (wait(NULL) != ERROR)
+	while(wait(NULL) != ERROR)
 		;
 	return (WEXITSTATUS(status));
 }

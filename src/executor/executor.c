@@ -140,6 +140,10 @@ static void	do_parent_duties(t_shell *shell, t_cmd *cmd)
 	if (WIFEXITED(wstatus) == true)
 		shell->exit_code = WEXITSTATUS(wstatus);
 	else if (WIFSIGNALED(wstatus) == true)
+	{
 		shell->exit_code = WTERMSIG(wstatus) + EXIT_SIGNAL_CODE;
+		ft_putchar_fd('\n', STDOUT_FILENO);
+	}
+		
 	close_all_fds_in_cmd(cmd); //Clean nicely
 }
