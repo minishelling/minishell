@@ -52,6 +52,6 @@ int main(int argc, char **argv, char **envp)
 		}
 	}
 	free_env_list(&shell.env_list);
-	ft_putstr_fd("exit\n", STDERR_FILENO);
+	ft_putstr_fd("exit\n", STDOUT_FILENO);
 	exit(EXIT_SUCCESS);
 }
