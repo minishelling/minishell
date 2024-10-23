@@ -12,6 +12,7 @@ int main(int argc, char **argv, char **envp)
 		ft_putstr_fd("Mini_shared: Error: too many arguments\n", 2);
 		exit(EXIT_FAILURE);
 	}
+	shell.tree= NULL;
 	shell.env_list = NULL;
 	shell.exit_code = 0;
 	if (create_env_list(&shell.env_list, envp))

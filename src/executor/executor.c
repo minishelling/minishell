@@ -77,6 +77,7 @@ static void	run_child(t_shell *shell, t_cmd *cmd)
 	char	*cmd_path;
 	char	**env_array;
 
+	cmd_path = NULL;
 	init_signals(CHILD_NON_INTERACTIVE);
 	handle_redirs_in_child(cmd);
 	if (cmd && cmd->args)
