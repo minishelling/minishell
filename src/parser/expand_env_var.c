@@ -33,9 +33,13 @@ char	*expand_with_env_value(char *expanded_str, char *env_value)
 
 static char	*get_variable_name(char *var_start, char *var_end)
 {
+	char	*var_name;
 	while (ft_isalnum(*var_end) || *var_end == '_')
 		var_end++;
-	return (ft_substr(var_start + 1, 0, var_end - var_start - 1));
+	var_name = ft_substr(var_start + 1, 0, var_end - var_start - 1);
+	if (!var_name)
+		return (NULL);
+	return(var_name);
 }
 
 char	*expand_env_var (char **str, char *expanded_str, t_env *env_list)

@@ -83,12 +83,12 @@ static void	run_child(t_shell *shell, t_cmd *cmd)
 		cmd_path = get_cmd_path(shell, cmd->args[0]);
 	if (!cmd_path && shell->exit_code == 126)
 	{
-		handle_cmd_err(cmd, strerror(EACCES));
+		handle_cmd_err(shell, cmd, strerror(EACCES));
 		exit(EXIT_CMD_NOT_EXECUTABLE);
 	}
 	env_array = create_env_array(shell->env_list);
 	execve(cmd_path, cmd->args, env_array);
-	handle_cmd_err(cmd, strerror(ENOENT));
+	handle_cmd_err(shell, cmd, strerror(ENOENT));
 	exit(EXIT_CMD_NOT_FOUND); //Clean nicely?
 }
 

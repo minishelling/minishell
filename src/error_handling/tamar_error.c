@@ -14,6 +14,8 @@ char *get_err_msg(int e)
 		"Syntax error near unexpected token `<` or `>`\n",
 		"Syntax error\n",
 		"Error: unable to allocate dynamic memory\n",
+		"Error while expanding: unable to allocate dynamic memory\n",
+		"Error while forming a command: unable to allocate dynamic memory\n",
 		"SIGINT_HDOC"
 	};
 	return (error_messages[e]);
@@ -30,6 +32,14 @@ void free_tree(t_tree **node)
 	free(*node);
 	*node = NULL;
 }
+
+void clean_nicely_and_exit(t_shell *shell, void* param)
+{
+	clean_nicely(shell, param);
+	exit(EXIT_FAILURE);
+}
+
+
 
 void clean_nicely(t_shell *shell, void* param)
 {
@@ -55,7 +65,6 @@ void handle_parsing_err(t_shell *shell, int err_no, void *param)
 
 	(void)shell;
 	(void)param;
-
 	if (err_no != SIGINT_HDOC)
 	{
 		err_prompt = ERR_PROMPT;
@@ -64,16 +73,16 @@ void handle_parsing_err(t_shell *shell, int err_no, void *param)
 		if (!full_msg)
 		{
 			perror("handle_parsing_err");
-			exit(EXIT_FAILURE) ; //??
+			exit(EXIT_FAILURE);
 		}
 		full_msg_len = ft_strlen(full_msg);
 		write(2, full_msg, full_msg_len);
 		free(full_msg);
 	}
-	// clean_nicely(shell, param); ??
+	clean_nicely(shell, NULL);
 }
 
-void handle_cmd_err(t_cmd *cmd, char *err_msg)
+void handle_cmd_err(t_shell *shell, t_cmd *cmd, char *err_msg)
 {
 	char *full_msg;
 	size_t cmd_len;
@@ -90,7 +99,7 @@ void handle_cmd_err(t_cmd *cmd, char *err_msg)
 	if (!full_msg)
 	{
 		perror("handle_cmd_err");
-		return ; // handle malloc failure, I am not sure how - there is a problem already
+		clean_nicely_and_exit(shell, NULL);
 	}
 	ft_strlcpy(full_msg, cmd->args[0], cmd_len + 1);
 	ft_strlcat(full_msg, colon, total_len + 1);
@@ -117,7 +126,7 @@ void handle_perror(char *str)
 	if (!full_err_msg)
 	{
 		perror("handle_perror");
-		return ;
+		//??? don't we want to free and exit?
 	}
 	ft_strlcpy(full_err_msg, err_prompt, total_len + 1);
 	ft_strlcat(full_err_msg, str, total_len + 1);

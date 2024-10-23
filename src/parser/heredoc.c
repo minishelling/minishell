@@ -1,7 +1,6 @@
 
 #include "../../include/minishell.h"
 
-// Function to convert an integer to a string
 char *int_to_string(int num) 
 {
 	int temp;
@@ -28,7 +27,6 @@ char *int_to_string(int num)
 	return (str);
 }
 
-// Function to create the temporary file name
 char *create_temp_file_for_heredoc(int counter) 
 {
 	const char *prefix = "/tmp/heredoc";
@@ -38,28 +36,19 @@ char *create_temp_file_for_heredoc(int counter)
 
 	counter_str = int_to_string(counter);
 	if (!counter_str) 
-		return (NULL);  // Handle allocation failure
-
-	// Calculate the total length: length of "heredoc" + counter_str + null terminator
+		return (NULL);
 	total_length = ft_strlen(prefix) + ft_strlen(counter_str) + 1;
-
-	// Allocate memory for the final file name
 	file_name = (char *)malloc(total_length * sizeof(char));
 	if (!file_name) 
 	{
-		perror("Failed to allocate memory");
-		free(counter_str);  // Free previously allocated memory
+		perror("Failed to allocate memory"); //!
+		free(counter_str);
 		return NULL;
 	}
-
-	// Manually concatenate "heredoc" and the counter string
-	strcpy(file_name, prefix);      // Copy "heredoc" to file_name
-	strcat(file_name, counter_str); // Concatenate counter_str to file_name
-
-	// Free the temporary counter string
+	strcpy(file_name, prefix);
+	strcat(file_name, counter_str);
 	free(counter_str);
-
-	return file_name;  // Return the dynamically allocated file name
+	return (file_name);
 }
 
 int read_heredoc_input(t_shell *shell, const char *file_name, const char *delimiter) 
@@ -156,7 +145,7 @@ int handle_heredocs(t_shell *shell, t_token *token_list)
 		if (ft_strncmp(current->str, "<<", 2) == 0) 
 		{
 			next_token = current->next;
-			if (next_token != NULL && next_token->id == WORD) 
+			if (next_token && next_token->id == WORD) 
 			{
 				file_name = create_temp_file_for_heredoc(heredoc_counter);
 				heredoc_counter++;

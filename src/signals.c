@@ -23,7 +23,7 @@ void	sigint_handler_parent_non_interactive(int signal)
 	rl_replace_line("", 0);	
 }
 
-void	sigint_handler_child_non_interactive(int signal)
+void	sigint_handler_child_non_interactive(t_shell *shell, int signal)
 {
 	if (signal == SIGINT)
 	{

@@ -44,9 +44,9 @@ int main(int argc, char **argv, char **envp)
 				shell.exit_code = pre_execute(&shell, shell.tree, NULL, 0);
 				// printf ("last exit_code %d\n", shell.exit_code);
 				clean_nicely(&shell, NULL);
-				shell.tree = NULL;
 			}
 			//close_all_fds_in_process();
+			//free(shell.input) ???
 			shell.input = NULL;
 		}
 	}

@@ -21,7 +21,7 @@ size_t get_arg_num(t_token *start_token, t_token *end_token)
 
 typedef int (*t_parser_func)(t_cmd *current_cmd, t_token *token);
 
-int	build_command_from_token(t_cmd *current_cmd, t_token *token)
+int	build_command_from_token(t_cmd *cmd, t_token *token)
 {
 int err_no;
 t_parser_func parser_functions[15] = {
@@ -43,7 +43,7 @@ t_parser_func parser_functions[15] = {
 	};
 	if (parser_functions[token->id])
 	{
-		err_no = parser_functions[token->id](current_cmd, token);
+		err_no = parser_functions[token->id](cmd, token);
 		if (err_no) 
 			return (err_no);
 	}
@@ -59,15 +59,19 @@ static int	traverse_tokens_to_make_cmd(t_cmd *current_cmd, t_token *start_token,
 	cur_token = start_token;
 	while (cur_token)
 	{
-		// printf (" !!  CUR TOKEN is %s\n", cur_token->str);
 		err_no = build_command_from_token(current_cmd, cur_token);
+		if (err_no)
+			return (ERR_CMD);
 		if (cur_token == end_token)
 			break;
-		//printf ("end_token is %s\n", end_token->str);
-		if (err_no)
-			return (err_no);
 		if (cur_token->id == LT || cur_token->id == GT)
-            cur_token = get_after_word_token(cur_token);
+		{
+			cur_token = cur_token->next;
+			if (cur_token->next)
+				cur_token = cur_token->next;
+			if (cur_token == end_token)
+			break;
+		}
         else if (cur_token->id == ARITH_EXPAN)
 			cur_token = get_after_arith_expan_token(cur_token);
         else
@@ -76,22 +80,30 @@ static int	traverse_tokens_to_make_cmd(t_cmd *current_cmd, t_token *start_token,
 	return (PARSING_OK);
 }
 
-int	make_cmd(t_cmd **cmd, t_token *start_token, t_token *end_token)
+void	make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token, t_token *end_token)
 {
 	size_t	arg_num;
 	int		err_no;
 	
 	*cmd = new_cmd();
 	if (!*cmd)
-		return (ERR_MEM);
+	{
+		handle_parsing_err(shell, ERR_CMD, NULL);
+		clean_nicely_and_exit(shell, NULL);
+	}
 	arg_num = get_arg_num(start_token, end_token);
 	(*cmd)->args = ft_calloc((arg_num + 1), sizeof(char *));
 	if (!(*cmd)->args)
-		return (ERR_MEM);
+	{
+		handle_parsing_err(shell, ERR_CMD, NULL);
+		clean_nicely_and_exit(shell, NULL);
+	}
 	err_no = traverse_tokens_to_make_cmd(*cmd, start_token, end_token);
 	if (err_no)
-		return (err_no);
-	return (PARSING_OK);
+	{
+		handle_parsing_err(shell, err_no, NULL);
+		clean_nicely_and_exit(shell, NULL);
+	}
 }
 
 int	parse(t_shell *shell)
@@ -117,7 +129,7 @@ int	parse(t_shell *shell)
 	// print_token(shell->token);
 	err_no = handle_heredocs(shell, shell->token);
 	if (err_no)
-	return (free_token_list(&shell->token), err_no);
+			return (free_token_list(&shell->token), err_no);
 	// printf ("after heredocs handling\n");
 	// print_token(shell->token);
 	

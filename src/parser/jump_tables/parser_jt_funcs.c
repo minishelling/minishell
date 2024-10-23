@@ -33,8 +33,8 @@ int parser_redir(t_cmd *cmd, t_token *token)
 
 	if (token->next)
 		file_token = token->next;
-	else
-		return(ERR_SYNTAX_ERROR);  //syntax erro - no file name?
+	// else
+	// 	return(ERR_SYNTAX_ERROR);  //syntax erro - no file name?
 	redir_list = new_redir();
 	if (!redir_list)
 		return (ERR_MEM);

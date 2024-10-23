@@ -103,6 +103,8 @@ enum e_parsing_error
 	ERR_SYNTAX_REDIR,
 	ERR_SYNTAX_ERROR,
 	ERR_MEM,
+	ERR_EXPAND,
+	ERR_CMD,
 	SIGINT_HDOC,
 };
 
@@ -233,7 +235,6 @@ void		advance_pos_env_var(char *str, size_t *pos, t_token_id *token_id);
 void		advance_pos_pipe(char *str, size_t *pos, t_token_id *token_id);
 t_token		*skip_whitespace_and_get_next_token(t_token *token);
 t_token		*get_after_pipe_token(t_token *token);
-t_token		*get_after_word_token(t_token *token);
 t_token		*get_after_arith_expan_token(t_token *token);
 t_token		*handle_arith_expan(t_token **head, t_token **cur_open, t_token **cur_close);
 void		remove_space_tokens(t_token **head);
@@ -261,14 +262,14 @@ int			append (t_shell *shell);
 t_tree		*make_tree(t_shell *shell, t_token *start_token, t_token *end_token);
 
 //CMD
-int			make_cmd(t_cmd **cmd, t_token *start_token, t_token *end_token);
+void		make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token, t_token *end_token);
 t_cmd		*new_cmd(void);
 int			parse(t_shell *shell);
 int			parser_noop(t_cmd *cmd_node, t_token *token);
 int			parser_redir(t_cmd *cmd, t_token *token);
 int			parser_arith_expan(t_cmd *cmd_node, t_token *token);
 int			parser_add_new_arg(t_cmd *cmd, t_token *token);
-t_token		*expand(t_shell *shell, t_token *start_token, t_token *end_token, t_env *env_list);
+void		expand(t_shell *shell, t_token *start_token, t_token *end_token, t_env *env_list);
 char		*get_env_value_from_key(t_env *env_head, char *key);
 t_redir		*new_redir(void);
 void		add_redir_in_back(t_redir **redir_list_head, t_redir *new_redir);
@@ -295,12 +296,13 @@ void		print_tree_verbose(t_tree *node, int level);
 
 //ERROR
 void		handle_parsing_err(t_shell *shell, int err_no, void *param);
-void		handle_cmd_err(t_cmd *cmd, char *err_msg);
+void		handle_cmd_err(t_shell *shell, t_cmd *cmd, char *err_msg);
 void		handle_perror(char *str);
 void		handle_builtin_err(char *cmd_name, char *arg, char *err_msg);
 
 //CLEAN
 void		clean_nicely(t_shell *shell, void *param);
+void 		clean_nicely_and_exit(t_shell *shell, void* param);
 
 int			safe_assign_str(char **dest, const char *src);
 size_t		ft_strcspn(const char *str, const char *reject);
@@ -347,7 +349,7 @@ char		**ft_strjoin_arr(char **arr, char *str);
 char		*ft_strjoin_fs1(char **s1, const char *s2);
 char		*ft_strjoin_fs2(const char *s1, char **s2);
 t_ecode		append_suffix(char **str, char *suffix, bool duplicate);
-void		close_all_fds_in_process(void);
+void		close_all_fds_in_process();
 void		close_all_fds_in_cmd(t_cmd *cmd);
 size_t		ft_str_count(char **cmd_args);
 bool		ft_is_natural(char *arg);
