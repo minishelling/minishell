@@ -22,6 +22,11 @@ int main(int argc, char **argv, char **envp)
 	}
 	while (1) 
 	{
+		if (g_signalcode)
+		{
+			write(STDOUT_FILENO, "\n", 1);
+			rl_on_new_line();
+		}
 		g_signalcode = 0;
 		init_signals(INTERACTIVE);
 		shell.input = readline(MINISHARED_PROMPT);
