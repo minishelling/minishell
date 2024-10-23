@@ -65,7 +65,7 @@ int read_heredoc_input(t_shell *shell, const char *file_name, const char *delimi
 	init_signals(PARENT_HEREDOC);
 	if (!heredoc_parent)
 	{
-		fd = open(file_name, O_RDWR | O_CREAT | O_TRUNC, 0644);
+		fd = open(file_name, O_RDWR | O_CREAT | O_TRUNC, 0644);   //check
 		init_signals(CHILD_HEREDOC);
 		colourful_delimiter = ft_strjoin("heredoc [", MAGENTA_TEXT);
 		colourful_delimiter = ft_strjoin_fs1(&colourful_delimiter, delimiter);
@@ -75,7 +75,7 @@ int read_heredoc_input(t_shell *shell, const char *file_name, const char *delimi
 		{
 			rl_clear_history();
 			line = readline(colourful_delimiter);
-			if (line == NULL)
+			if (!line)
 			{
 				ft_free((void **) &colourful_delimiter);
 				close (fd);
@@ -110,24 +110,6 @@ int read_heredoc_input(t_shell *shell, const char *file_name, const char *delimi
 }
 
 
-/**
- * handle_heredocs - Processes heredoc tokens in the token list.
- * 
- * This function scans through the list of tokens to identify heredoc (`<<`)
- * operators and their corresponding delimiters. It then creates a temporary
- * file for the heredoc content and reads user input, using the specified 
- * delimiter to mark the end of the heredoc. The file descriptor of the 
- * heredoc is set in place of the delimiter in the token list.
- * 
- * If an interrupt signal (`SIGINT`) is received, the function returns early
- * with an appropriate error code.
- * 
- * @shell: A pointer to the shell structure containing relevant environment data.
- * @token_list: A pointer to the list of tokens to be processed.
- * 
- * Return: 0 on success, ERR_MEM on memory allocation failure, or SIGINT_HDOC 
- * if interrupted by a signal.
- */
 int handle_heredocs(t_shell *shell, t_token *token_list) 
 {
 	t_token *current;
@@ -152,9 +134,8 @@ int handle_heredocs(t_shell *shell, t_token *token_list)
 				if (file_name == NULL)
 					return (ERR_MEM);
 				delimiter = ft_strdup(next_token->str);
-				printf("in handle heredocs, delimiter is %s\n", delimiter);
 				safe_assign_str(&next_token->str, file_name);  //protect better
-				fd = read_heredoc_input(shell, next_token->str, delimiter);
+				fd = read_heredoc_input(shell, next_token->str, delimiter);  //protect
 				if (g_signalcode == SIGINT)
 				{
 					shell->exit_code = E_SIGINT;

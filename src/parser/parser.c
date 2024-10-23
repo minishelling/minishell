@@ -6,12 +6,15 @@ size_t get_arg_num(t_token *start_token, t_token *end_token)
 	size_t	arg_count;
 	t_token	*cur_token;
 
+	
 	arg_count = 0;
 	cur_token = start_token;
 	while (cur_token)
 	{
 		if (cur_token->id == WORD || cur_token->id == ENV_VAR || cur_token->id == SQUOTE || cur_token->id == DQUOTE)
 			arg_count++;
+		if (cur_token->id == LT || cur_token->id == GT)
+			arg_count--;
 		if (cur_token == end_token)
 			break;
 		cur_token = cur_token->next;
@@ -55,7 +58,7 @@ static int	traverse_tokens_to_make_cmd(t_cmd *current_cmd, t_token *start_token,
 {
 	int err_no;
 	t_token	*cur_token;
-	
+
 	cur_token = start_token;
 	while (cur_token)
 	{
@@ -67,7 +70,7 @@ static int	traverse_tokens_to_make_cmd(t_cmd *current_cmd, t_token *start_token,
 		if (cur_token->id == LT || cur_token->id == GT)
 		{
 			cur_token = cur_token->next;
-			if (cur_token->next)
+			if (cur_token != end_token)
 				cur_token = cur_token->next;
 			if (cur_token == end_token)
 			break;
@@ -92,6 +95,7 @@ void	make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token, t_token *end_to
 		clean_nicely_and_exit(shell, NULL);
 	}
 	arg_num = get_arg_num(start_token, end_token);
+	// fprintf (stderr, "arg num %zu\n", arg_num);
 	(*cmd)->args = ft_calloc((arg_num + 1), sizeof(char *));
 	if (!(*cmd)->args)
 	{

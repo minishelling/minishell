@@ -142,41 +142,21 @@ int	syntax_parens(t_token *prev_token, t_token *cur_token, t_env *env_list)
 	return (PARSING_OK);
 }
 
-/**
- * @brief Syntax checking for redirection (`>` and `<`).
- *
- * This function performs syntax checks for redirection tokens (`>` and `<`),
- * and ensures they are correctly placed within the shell command structure. It checks the following cases:
- *
- * - The token after a redirection must not be an opening parenthesis (`(`).
- * - The token after a redirection must not be a closing parenthesis (`)`).
- * - The token after a redirection must not be a pipe (`|`).
- * - The token after a redirection must not be an AND operator (`&&`).
- * - The token after a redirection must not be another redirection (`>` or `<`).
- * - The token after a redirection must be a valid word (a filename).
- *
- * If any of these invalid cases are found, an error will be returned.
- *
- * @param prev_token Previous token in the token list (may be NULL).
- * @param cur_token Current token (either `>` or `<`).
- * @param env_list The environment list (unused).
- * 
- * @return Returns `PARSING_OK` if the redirection syntax is valid,
- *         or an appropriate error code if invalid syntax is detected:
- *         - `ERR_SYNTAX_NL` if the next token is NULL (end of line).
- *         - `ERR_SYNTAX_UNEXPECT_OPEN` if the next token is an opening parenthesis (`(`).
- *         - `ERR_SYNTAX_UNEXPECT_CLOSE` if the next token is a closing parenthesis (`)`).
- *         - `ERR_SYNTAX_PIPE` if the next token is a pipe (`|`).
- *         - `ERR_SYNTAX_AND` if the next token is an AND operator (`&&`).
- *         - `ERR_SYNTAX_REDIR` if the next token is another redirection (`>` or `<`).
- *         - `ERR_SYNTAX_ERROR` if the next token is not a valid word (filename).
- */
+
+int	remove_delimiter_quotes(t_token *delimiter_token)
+{
+	delimiter_token->id = WORD;
+		if (safe_assign_str(&(delimiter_token->str), (ft_substr(delimiter_token->str, 1, (ft_strlen(delimiter_token->str) - 2)))) != SUCCESS)
+			return (ERR_MEM);
+	return (PARSING_OK);
+}
+
 int	syntax_redir(t_token *prev_token, t_token *cur_token, t_env *env_list)
 {
 	t_token	*next_token;
 	(void)env_list;
 	(void) prev_token;
-	next_token = skip_whitespace_and_get_next_token(cur_token);
+	next_token = skip_whitespace_and_get_next_token(cur_token);  //next token
 	if (!next_token)
 		return (ERR_SYNTAX_NL);
 	if (next_token->id == PAR_OPEN)
@@ -189,7 +169,12 @@ int	syntax_redir(t_token *prev_token, t_token *cur_token, t_env *env_list)
 		return (ERR_SYNTAX_AND);
 	if (next_token->id == GT || next_token->id == LT)
 		return (ERR_SYNTAX_REDIR);
-	if (next_token->id != WORD)
+	if (cur_token->id == LT && (next_token->id == DQUOTE || next_token->id == DQUOTE))
+		return (ERR_SYNTAX_ERROR);
+	if (cur_token->id == GT && (next_token->id == SQUOTE || next_token->id == DQUOTE))
+		if (remove_delimiter_quotes(next_token) != SUCCESS)
+			return (ERR_MEM);
+	if (next_token->id != WORD && next_token->id != DQUOTE)
 		return (ERR_SYNTAX_ERROR);
 	return (PARSING_OK);
 }

@@ -52,6 +52,7 @@ int parser_redir(t_cmd *cmd, t_token *token)
 int	parser_add_new_arg(t_cmd *cmd, t_token *token)
 {
 	size_t	i;
+	
 	i = 0;
 	while (cmd->args[i])
 		i++;
