@@ -91,7 +91,7 @@ int parser_arith_expan(t_cmd *cmd_node, t_token *token)
 		return (ERR_MEM);
 	cmd_node->args[1] = ft_strdup("))");
 	if (!cmd_node->args[1])
-	cmd_node->args[2] = NULL;
 		return (ERR_MEM);
+	cmd_node->args[2] = NULL;
 	return (PARSING_OK);
 }
