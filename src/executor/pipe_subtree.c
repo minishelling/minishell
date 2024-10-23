@@ -42,8 +42,6 @@ int	handle_pipe_subtree(t_shell *shell, t_tree *tree_node)
 	if (left_node_pid == ERROR)
 		exit(EXIT_FAILURE);
 	else if (left_node_pid == 0)
-	{
-		printf ("Handleing pipe left node\n");
 		handle_pipe_left_node(shell, tree_node, fd);
 	// waitpid(left_node_pid, &status, 0);
 	// if (WEXITSTATUS(status) == E_SIGINT || WEXITSTATUS(status) == E_SIGQUIT)
