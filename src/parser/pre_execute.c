@@ -5,8 +5,8 @@ int pre_execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int
 {
 	int exit_code;
 	exit_code = prev_exit_code;
-	fprintf (stderr, "   started pre_execute\n");
-	fprintf (stderr, "current node is %p\n", tree_node);
+	// fprintf (stderr, "   started pre_execute\n");
+	// fprintf (stderr, "current node is %p\n", tree_node);
 	if (tree_node == NULL)
 		return exit_code;
 	if (tree_node->type == T_PIPE)
@@ -18,12 +18,11 @@ int pre_execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int
 	}
 	if (tree_node->type == CMD)
 	{
-		//fprintf(stderr, "STARTING EXPANSIONS\n");
+		// fprintf(stderr, "STARTING EXPANSIONS\n");
 		// fprintf (stderr, "in pre_execute:\n");
 		// print_token(shell->token);
-		
 		expand(shell, tree_node->start_token, tree_node->end_token, shell->env_list);
-		//fprintf(stderr, "FINISHED MAKING EXPANSIONS\n");
+		// fprintf(stderr, "FINISHED MAKING EXPANSIONS\n");
 		// fprintf (stderr, "in pre_execute:\n");
 		// print_token(shell->token);
 		
@@ -33,7 +32,7 @@ int pre_execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int
 			exit_code = executor(shell, tree_node->cmd);
 		else
 			exit_code = 1;
-		print_cmd(tree_node->cmd);
+		//print_cmd(tree_node->cmd);
 		//printf ("exit code is %d\n", exit_code);
 	}
 	if (parent_tree_node && parent_tree_node->type == T_AND_OPR && exit_code == 0) 

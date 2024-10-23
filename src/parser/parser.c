@@ -62,6 +62,7 @@ static int	traverse_tokens_to_make_cmd(t_cmd *current_cmd, t_token *start_token,
 	cur_token = start_token;
 	while (cur_token)
 	{
+		//fprintf (stderr, "cur token is %s\n", cur_token->str);
 		err_no = build_command_from_token(current_cmd, cur_token);
 		if (err_no)
 			return (ERR_CMD);
@@ -69,11 +70,12 @@ static int	traverse_tokens_to_make_cmd(t_cmd *current_cmd, t_token *start_token,
 			break;
 		if (cur_token->id == LT || cur_token->id == GT)
 		{
-			cur_token = cur_token->next;
-			if (cur_token != end_token)
-				cur_token = cur_token->next;
+			cur_token = cur_token->next;  //pointer to delimiter
 			if (cur_token == end_token)
-			break;
+				break;
+			cur_token = cur_token->next;  
+			if (cur_token->id == PIPE)
+				break;
 		}
         else if (cur_token->id == ARITH_EXPAN)
 			cur_token = get_after_arith_expan_token(cur_token);
@@ -145,13 +147,12 @@ int	parse(t_shell *shell)
 	shell->tree = make_tree(shell, shell->token, last_token(shell->token));
 	if (!shell->tree)
 		free_token_list(&shell->token);   //protect more
-	printf("\n"WHITE_TEXT MAGENTA_BACKGROUND"THE TREE"RESET_COLOR);
-	printf("\n--------------------\n");
+	// printf("\n"WHITE_TEXT MAGENTA_BACKGROUND"THE TREE"RESET_COLOR);
+	// printf("\n--------------------\n");
 	
-	if (shell->tree)
-		print_tree_verbose(shell->tree, 0);
-	printf ("\n");
-	
+	// if (shell->tree)
+	// 	print_tree_verbose(shell->tree, 0);
+	// printf ("\n");
 	return (PARSING_OK);
 }
 

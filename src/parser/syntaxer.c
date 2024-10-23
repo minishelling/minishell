@@ -133,7 +133,9 @@ int process_syntax_checks(t_shell *shell, t_token **previous_token)
 			return err_no;
 		*previous_token = current_token;
 		current_token = skip_whitespace_and_get_next_token(current_token);
+		//fprintf(stderr, "current_token is %s\n", current_token->str);
 	}
+	
 	return PARSING_OK;
 }
 
