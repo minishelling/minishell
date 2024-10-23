@@ -269,6 +269,7 @@ int			parse(t_shell *shell);
 int			parser_noop(t_cmd *cmd_node, t_token *token);
 int			parser_redir(t_cmd *cmd, t_token *token);
 int			parser_arith_expan(t_cmd *cmd_node, t_token *token);
+int			parser_add_env_var(t_cmd *cmd, t_token *token);
 int			parser_add_new_arg(t_cmd *cmd, t_token *token);
 void		expand(t_shell *shell, t_token *start_token, t_token *end_token, t_env *env_list);
 char		*get_env_value_from_key(t_env *env_head, char *key);

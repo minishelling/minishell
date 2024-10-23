@@ -11,8 +11,9 @@ size_t get_arg_num(t_token *start_token, t_token *end_token)
 	cur_token = start_token;
 	while (cur_token)
 	{
-		if (cur_token->id == WORD || cur_token->id == ENV_VAR || cur_token->id == SQUOTE || cur_token->id == DQUOTE)
-			arg_count++;
+		if (cur_token->id == WORD || cur_token->id == SQUOTE || cur_token->id == DQUOTE || 
+			(cur_token->id == ENV_VAR && *(cur_token->str) !='\0'))
+				arg_count++;
 		if (cur_token->id == LT || cur_token->id == GT)
 			arg_count--;
 		if (cur_token == end_token)
@@ -39,7 +40,7 @@ t_parser_func parser_functions[15] = {
 	[8] = parser_redir,
 	[9] = parser_add_new_arg,
 	[10] = parser_add_new_arg,
-	[11] = parser_add_new_arg,
+	[11] = parser_add_env_var,
 	[12] = parser_add_new_arg,
 	[13] = parser_noop,
 	[14] = parser_arith_expan
@@ -97,7 +98,7 @@ void	make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token, t_token *end_to
 		clean_nicely_and_exit(shell, NULL);
 	}
 	arg_num = get_arg_num(start_token, end_token);
-	// fprintf (stderr, "arg num %zu\n", arg_num);
+	//fprintf (stderr, "arg num %zu\n", arg_num);
 	(*cmd)->args = ft_calloc((arg_num + 1), sizeof(char *));
 	if (!(*cmd)->args)
 	{

@@ -48,6 +48,21 @@ int parser_redir(t_cmd *cmd, t_token *token)
 	add_redir_in_back(&(cmd->redir), redir_list);
 	return (PARSING_OK);
 }
+int parser_add_env_var(t_cmd *cmd, t_token *token)
+{
+	size_t	i;
+	
+	if ((*(token->str)) == '\0')
+		return (PARSING_OK);
+	i = 0;
+	while (cmd->args[i])
+		i++;
+	cmd->args[i] = ft_strdup(token->str);
+	if (!cmd->args[i])
+		return (ERR_MEM);
+	return (PARSING_OK);
+	
+}
 
 int	parser_add_new_arg(t_cmd *cmd, t_token *token)
 {
