@@ -23,12 +23,12 @@ void	sigint_handler_parent_non_interactive(int signal)
 	rl_replace_line("", 0);	
 }
 
-void	sigint_handler_child_non_interactive(t_shell *shell, int signal)
+void	sigint_handler_child_non_interactive(int signal)
 {
 	if (signal == SIGINT)
 	{
-		close_all_fds_in_process(shell);
-		exit (EXIT_SIGINT);
+		close_all_fds_in_process();
+		exit (E_SIGINT);
 	}
 }
 
@@ -43,7 +43,7 @@ void	sigint_handler_heredoc_child(int signal)
 	if (signal == SIGINT)
 	{
 		close_all_fds_in_process();
-		exit (EXIT_SIGINT);
+		exit (E_SIGINT);
 	}
 }
 
@@ -52,19 +52,21 @@ void	init_signals(t_signal_mode signal_mode)
 	struct sigaction	sigquit_struct;
 	struct sigaction	sigint_struct;
 
+	ft_bzero((void *) &sigint_struct, sizeof(struct sigaction));
+	ft_bzero((void *) &sigquit_struct, sizeof(struct sigaction));
+	sigemptyset(&sigint_struct.sa_mask);
+	sigemptyset(&sigquit_struct.sa_mask);
 	sigquit_struct.sa_handler = SIG_IGN;
 	if (signal_mode == INTERACTIVE)
 		sigint_struct.sa_handler = sigint_handler_interactive;
 	else if (signal_mode == PARENT_NON_INTERACTIVE)
 	{
 		sigint_struct.sa_handler = SIG_IGN;
-		// sigint_struct.sa_handler = sigint_handler_parent_non_interactive;
 	}
 	else if (signal_mode == CHILD_NON_INTERACTIVE)
 	{
 		sigint_struct.sa_handler = SIG_DFL;
 		sigquit_struct.sa_handler = SIG_DFL;
-		// sigint_struct.sa_handler = sigint_handler_child_non_interactive;
 	}
 	else if (signal_mode == PARENT_HEREDOC)
 		sigint_struct.sa_handler = sigint_handler_heredoc_parent;

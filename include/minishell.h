@@ -17,10 +17,11 @@
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <string.h>
-# include <stddef.h>
 # include <dirent.h>
 # include "../libft/libft.h"
-#include <assert.h>
+# include <assert.h>
+# include <sys/types.h>
+# include <sys/stat.h>
 
 
 #define MINISHARED_PROMPT "\001\033[38;5;93m\002M\001\033[38;5;99m\002i\001\033[38;5;111m\002n\001\033[38;5;63m\002i\001\033[38;5;75m\002_\001\033[38;5;81m\002s\001\033[38;5;118m\002h\001\033[38;5;154m\002a\001\033[38;5;190m\002r\001\033[38;5;226m\002e\001\033[38;5;214m\002d\001\033[0m\002: \001\033[0m\002"
@@ -58,8 +59,8 @@ typedef enum exit_code
 	EXIT_CMD_NOT_EXECUTABLE = 126,
 	EXIT_CMD_NOT_FOUND = 127,
 	EXIT_SIGNAL_CODE = 128,
-	EXIT_SIGINT = 130,
-	EXIT_SIGQUIT = 131
+	E_SIGINT = 130,
+	E_SIGQUIT = 131
 }	t_exit_code;
 
 typedef enum e_codes

@@ -153,6 +153,7 @@ int	parse(t_shell *shell)
 	// if (shell->tree)
 	// 	print_tree_verbose(shell->tree, 0);
 	// printf ("\n");
+	
 	return (PARSING_OK);
 }
 
