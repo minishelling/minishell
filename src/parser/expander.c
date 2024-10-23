@@ -6,7 +6,7 @@ char	*copy_chars(char *token_str, char *expanded_str)
 	char	*temp_str;
 	char	*new_expanded_str;
 
-	len = ft_strcspn(token_str, "\'\"$ ");
+	len = ft_strcspn(token_str, "\'\"$");
 	temp_str = ft_substr(token_str, 0, len);
 	if (!temp_str)
 		return (NULL);
@@ -86,8 +86,9 @@ char	*decide_expansion_type(t_shell *shell, char **str, char *expanded_str, t_en
 		expanded_str = handle_env_var_sign(shell, str, expanded_str, env_list);
 	else
 	{
+		//fprintf (stderr, "I'm copying\n");
 		expanded_str = copy_chars(*str, expanded_str);
-		*str += ft_strcspn(*str, "\'\"$ ");
+		*str += ft_strcspn(*str, "\'\"$");
 	}
 	return (expanded_str);
 }

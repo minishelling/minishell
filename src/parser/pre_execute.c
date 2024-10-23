@@ -18,12 +18,11 @@ int pre_execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int
 	}
 	if (tree_node->type == CMD)
 	{
-		//fprintf(stderr, "STARTING EXPANSIONS\n");
+		// fprintf(stderr, "STARTING EXPANSIONS\n");
 		// fprintf (stderr, "in pre_execute:\n");
 		// print_token(shell->token);
-		
 		expand(shell, tree_node->start_token, tree_node->end_token, shell->env_list);
-		//fprintf(stderr, "FINISHED MAKING EXPANSIONS\n");
+		// fprintf(stderr, "FINISHED MAKING EXPANSIONS\n");
 		// fprintf (stderr, "in pre_execute:\n");
 		// print_token(shell->token);
 		

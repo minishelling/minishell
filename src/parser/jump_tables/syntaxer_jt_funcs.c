@@ -154,6 +154,7 @@ int	remove_delimiter_quotes(t_token *delimiter_token)
 int	syntax_redir(t_token *prev_token, t_token *cur_token, t_env *env_list)
 {
 	t_token	*next_token;
+
 	(void)env_list;
 	(void) prev_token;
 	next_token = skip_whitespace_and_get_next_token(cur_token);  //next token
@@ -169,12 +170,11 @@ int	syntax_redir(t_token *prev_token, t_token *cur_token, t_env *env_list)
 		return (ERR_SYNTAX_AND);
 	if (next_token->id == GT || next_token->id == LT)
 		return (ERR_SYNTAX_REDIR);
-	if (cur_token->id == LT && (next_token->id == DQUOTE || next_token->id == DQUOTE))
-		return (ERR_SYNTAX_ERROR);
-	if (cur_token->id == GT && (next_token->id == SQUOTE || next_token->id == DQUOTE))
+	// if (ft_strncmp(cur_token->str, "<<", 2) && ft_strlen(cur_token->str) == 2 && (next_token->id == SQUOTE || next_token->id == DQUOTE))
+	if (next_token->id == SQUOTE || next_token->id == DQUOTE)
 		if (remove_delimiter_quotes(next_token) != SUCCESS)
 			return (ERR_MEM);
-	if (next_token->id != WORD && next_token->id != DQUOTE)
+	if (next_token->id != WORD)
 		return (ERR_SYNTAX_ERROR);
 	return (PARSING_OK);
 }
