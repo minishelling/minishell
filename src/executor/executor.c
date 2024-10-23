@@ -48,8 +48,10 @@ int	executor(t_shell *shell, t_cmd *cmd)
  * @brief Creates a fork and executes the command in the child process.
  * The parent process waits for the child process to finish,
  * stores the exit code of the child and cleans up the memory and fds.
+ * 
  * @param shell A pointer to the shell structure.
  * @param cmd A pointer to the current's command structure.
+ * 
  * @return void
  */
 static void	handle_non_builtin(t_shell *shell, t_cmd *cmd)
@@ -66,8 +68,10 @@ static void	handle_non_builtin(t_shell *shell, t_cmd *cmd)
  * @brief It executes the current command. In the process it
  * handles signals, redirections, gets the path to the executable file,
  * and creates the environment array for the command's execution.
+ * 
  * @param shell A pointer to the shell structure.
  * @param cmd A pointer to the command's structure.
+ * 
  * @return void
  * In case of failure it exits with an exit code,
  * and printing an error message if it corresponds.
@@ -79,12 +83,13 @@ static void	run_child(t_shell *shell, t_cmd *cmd)
 
 	init_signals(CHILD_NON_INTERACTIVE);
 	handle_redirs_in_child(cmd);
+	cmd_path = NULL;
 	if (cmd && cmd->args)
 		cmd_path = get_cmd_path(shell, cmd->args[0]);
-	if (!cmd_path && shell->exit_code == 126)
+	if (!cmd_path && shell->exit_code != 0)
 	{
-		handle_cmd_err(shell, cmd, strerror(EACCES));
-		exit(EXIT_CMD_NOT_EXECUTABLE);
+		handle_cmd_err(shell, cmd, strerror(errno));
+		exit(shell->exit_code);
 	}
 	env_array = create_env_array(shell->env_list);
 	execve(cmd_path, cmd->args, env_array);
@@ -95,7 +100,9 @@ static void	run_child(t_shell *shell, t_cmd *cmd)
 /**
  * @brief Replaces STDIN and STDOUT with redirections if valid.
  * If there was an error opening the redirections, or duping, it exits.
+ * 
  * @param cmd A pointer to the command's structure.
+ * 
  * @return void
  */
 static void	handle_redirs_in_child(t_cmd *cmd)
@@ -117,9 +124,11 @@ static void	handle_redirs_in_child(t_cmd *cmd)
 /**
  * @brief Waits for the child process to finish
  * and stores the exit status.
- * It also closes all the open file descriptors. 
+ * It also closes all the open file descriptors.
+ * 
  * @param shell A pointer to the shell structure.
  * @param cmd A pointer to the command's structure.
+ * 
  * @return void
  */
 static void	do_parent_duties(t_shell *shell, t_cmd *cmd)
