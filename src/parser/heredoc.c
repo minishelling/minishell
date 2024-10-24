@@ -66,6 +66,7 @@ int read_heredoc_input(t_shell *shell, const char *file_name, const char *delimi
 	if (!heredoc_parent)
 	{
 		fd = open(file_name, O_RDWR | O_CREAT | O_TRUNC, 0644);   //check
+		fprintf(stderr, "FD: %d\n", fd);
 		init_signals(CHILD_HEREDOC);
 		colourful_delimiter = ft_strjoin("heredoc [", MAGENTA_TEXT);
 		colourful_delimiter = ft_strjoin_fs1(&colourful_delimiter, delimiter);
@@ -94,21 +95,24 @@ int read_heredoc_input(t_shell *shell, const char *file_name, const char *delimi
 			free(line);
 		}
 		ft_free((void **) &colourful_delimiter);
+		exit(E_SIGINT);
 	}
 	waitpid(heredoc_parent, &wstatus, 0);
 	if (WIFEXITED(wstatus) && WEXITSTATUS(wstatus) == 130)
-		shell->exit_code = 130;
-	if (g_signalcode == SIGINT)
 	{
-		init_signals(PARENT_NON_INTERACTIVE);
-		return (-1);
+		g_signalcode = SIGINT;
+		shell->exit_code = 130;
+		write(STDOUT_FILENO, "\n", 1);
+		rl_on_new_line();
+		rl_replace_line("", 0);
 	}
 	init_signals(PARENT_NON_INTERACTIVE);
+	if (g_signalcode == SIGINT)
+		return (-1);
 	fd = open(file_name, O_RDONLY);
 	unlink(file_name);
 	return (fd);
 }
-
 
 int handle_heredocs(t_shell *shell, t_token *token_list) 
 {

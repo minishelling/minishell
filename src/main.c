@@ -26,6 +26,8 @@ int main(int argc, char **argv, char **envp)
 		{
 			write(STDOUT_FILENO, "\n", 1);
 			rl_on_new_line();
+			rl_replace_line("", 0);
+			rl_on_new_line();
 		}
 		g_signalcode = 0;
 		init_signals(INTERACTIVE);

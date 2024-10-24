@@ -35,16 +35,12 @@ void	sigint_handler_parent_non_interactive(int signal)
 void	sigint_handler_heredoc_parent(int signal)
 {
 	g_signalcode = signal;
-	write(STDOUT_FILENO, "\n", 1);
 }
 
 void	sigint_handler_heredoc_child(int signal)
 {
 	if (signal == SIGINT)
-	{
-		close_all_fds_in_process();
-		exit (E_SIGINT);
-	}
+		close(STDIN_FILENO);
 }
 
 void	init_signals(t_signal_mode signal_mode)
