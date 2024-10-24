@@ -84,7 +84,7 @@ static void	handle_pipe_left_node(t_shell *shell, t_tree *tree_node, int fd[2])
 		exit(EXIT_FAILURE);
 	}
 	close_fds(fd[READ_END], fd[WRITE_END]);
-	status = pre_execute(shell, tree_node->left, tree_node, 0);
+	status = traverse_tree_and_execute(shell, tree_node->left, tree_node, 0);
 	exit(status);
 }
 
@@ -111,7 +111,7 @@ static void	handle_pipe_right_node(t_shell *shell, t_tree *tree_node, int fd[2])
 		exit(EXIT_FAILURE);
 	}
 	close_fds(fd[WRITE_END], fd[READ_END]);
-	status = pre_execute(shell, tree_node->right, tree_node, 0);
+	status = traverse_tree_and_execute(shell, tree_node->right, tree_node, 0);
 	exit(status);
 }
 
