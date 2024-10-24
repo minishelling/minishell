@@ -116,7 +116,7 @@ void handle_cmd_err(t_shell *shell, t_cmd *cmd, char *err_msg)
 void handle_perror(char *str)
 {
 	const char *err_prompt;
-	char full_err_msg[100000];
+	char full_err_msg[ARG_MAX + 12];
 	size_t cmd_len, prompt_len, total_len;
 
 	if (!str)
