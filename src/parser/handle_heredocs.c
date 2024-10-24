@@ -1,4 +1,5 @@
 
+
 #include "../../include/minishell.h"
 
 char *int_to_string(int num) 
@@ -51,64 +52,6 @@ char *create_temp_file_for_heredoc(int counter)
 	return (file_name);
 }
 
-int read_heredoc_input(t_shell *shell, const char *file_name, const char *delimiter) 
-{
-	char    *line = NULL;
-	ssize_t bytes_read;
-	pid_t   heredoc_parent;
-	char    *colourful_delimiter;
-	int     fd;
-	int     wstatus;
-
-	wstatus = 0;
-	heredoc_parent = fork();
-	init_signals(PARENT_HEREDOC);
-	if (!heredoc_parent)
-	{
-		fd = open(file_name, O_RDWR | O_CREAT | O_TRUNC, 0644);   //check
-		init_signals(CHILD_HEREDOC);
-		colourful_delimiter = ft_strjoin("heredoc [", MAGENTA_TEXT);
-		colourful_delimiter = ft_strjoin_fs1(&colourful_delimiter, delimiter);
-		colourful_delimiter = ft_strjoin_fs1(&colourful_delimiter, RESET_COLOR);
-		colourful_delimiter = ft_strjoin_fs1(&colourful_delimiter, "]: ");
-		while (1)
-		{
-			rl_clear_history();
-			line = readline(colourful_delimiter);
-			if (!line)
-			{
-				ft_free((void **) &colourful_delimiter);
-				close (fd);
-				exit(EXIT_SUCCESS);
-			}
-			if ((!ft_strncmp(line, delimiter, ft_strlen(delimiter))) && (line[ft_strlen(delimiter)] == '\0'))
-			{
-				free(line);
-				ft_free((void **) &colourful_delimiter);
-				close (fd);
-				exit(EXIT_SUCCESS);
-			}
-			bytes_read = ft_strlen(line);
-			write(fd, line, bytes_read);
-			write(fd, "\n", 1);
-			free(line);
-		}
-		ft_free((void **) &colourful_delimiter);
-	}
-	waitpid(heredoc_parent, &wstatus, 0);
-	if (WIFEXITED(wstatus) && WEXITSTATUS(wstatus) == 130)
-		shell->exit_code = 130;
-	if (g_signalcode == SIGINT)
-	{
-		init_signals(PARENT_NON_INTERACTIVE);
-		return (-1);
-	}
-	init_signals(PARENT_NON_INTERACTIVE);
-	fd = open(file_name, O_RDONLY);
-	unlink(file_name);
-	return (fd);
-}
-
 int handle_heredocs(t_shell *shell, t_token *token_list) 
 {
 	t_token *current;
@@ -121,7 +64,7 @@ int handle_heredocs(t_shell *shell, t_token *token_list)
 	current = token_list;
 	heredoc_counter = 0;
 
-	while (current)
+	while (current != NULL)
 	{
 		if (ft_strncmp(current->str, "<<", 2) == 0) 
 		{
@@ -153,5 +96,3 @@ int handle_heredocs(t_shell *shell, t_token *token_list)
 	}
 	return (PARSING_OK);
 }
-
-

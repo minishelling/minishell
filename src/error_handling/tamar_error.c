@@ -116,23 +116,16 @@ void handle_cmd_err(t_shell *shell, t_cmd *cmd, char *err_msg)
 void handle_perror(char *str)
 {
 	const char *err_prompt;
-	char *full_err_msg;
+	char full_err_msg[100000];
 	size_t cmd_len, prompt_len, total_len;
 
 	if (!str)
-		return;
+		return ;
 	err_prompt = ERR_PROMPT;
 	cmd_len = ft_strlen(str);
 	prompt_len = ft_strlen(err_prompt);
 	total_len = cmd_len + prompt_len;
-	full_err_msg = (char *)malloc(total_len + 1);
-	if (!full_err_msg)
-	{
-		perror("handle_perror");
-		//??? don't we want to free and exit?
-	}
 	ft_strlcpy(full_err_msg, err_prompt, total_len + 1);
 	ft_strlcat(full_err_msg, str, total_len + 1);
 	perror(full_err_msg);
-	free(full_err_msg);
 }

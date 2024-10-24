@@ -1,5 +1,8 @@
 #include "../../include/minishell.h"
 
+#define ALL_STATUSES 0
+#define LAST_STATUS 1
+
 static void	handle_pipe_left_node(t_shell *shell, t_tree *tree_node, int fd[2]);
 static void	handle_pipe_right_node(t_shell *shell,
 				t_tree *tree_node, int fd[2]);
@@ -32,7 +35,7 @@ static void	close_fds(int fd1, int fd2);
 int	handle_pipe_subtree(t_shell *shell, t_tree *tree_node)
 {
 	int		fd[2];
-	int		status;
+	int		status[2];
 	pid_t	left_node_pid;
 	pid_t	right_node_pid;
 
@@ -43,19 +46,19 @@ int	handle_pipe_subtree(t_shell *shell, t_tree *tree_node)
 		exit(EXIT_FAILURE);
 	else if (left_node_pid == 0)
 		handle_pipe_left_node(shell, tree_node, fd);
-	// waitpid(left_node_pid, &status, 0);
-	// if (WEXITSTATUS(status) == E_SIGINT || WEXITSTATUS(status) == E_SIGQUIT)
-	// 	return (WEXITSTATUS(status));
 	right_node_pid = fork();
 	if (right_node_pid == ERROR)
 		exit(EXIT_FAILURE);
 	else if (right_node_pid == 0)
 		handle_pipe_right_node(shell, tree_node, fd);
 	close_fds(fd[READ_END], fd[WRITE_END]);
-	waitpid(right_node_pid, &status, 0);
-	while (wait(NULL) != ERROR)
-		;
-	return (WEXITSTATUS(status));
+	waitpid(right_node_pid, &status[LAST_STATUS], 0);
+	while(wait(&status[ALL_STATUSES]) != ERROR)
+	{
+		if (status[ALL_STATUSES] >= EXIT_SIGNAL_CODE)
+			g_signalcode = status[ALL_STATUSES]- EXIT_SIGNAL_CODE;
+	}
+	return (WEXITSTATUS(status[LAST_STATUS]));
 }
 
 /**

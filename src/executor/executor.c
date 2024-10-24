@@ -94,7 +94,7 @@ static void	run_child(t_shell *shell, t_cmd *cmd)
 	}
 	env_array = create_env_array(shell->env_list);
 	execve(cmd_path, cmd->args, env_array);
-	handle_cmd_err(shell, cmd, strerror(ENOENT));
+	handle_cmd_err(shell, cmd, "command not found");
 	exit(EXIT_CMD_NOT_FOUND); //Clean nicely?
 }
 
@@ -140,6 +140,9 @@ static void	do_parent_duties(t_shell *shell, t_cmd *cmd)
 	if (WIFEXITED(wstatus) == true)
 		shell->exit_code = WEXITSTATUS(wstatus);
 	else if (WIFSIGNALED(wstatus) == true)
+	{
 		shell->exit_code = WTERMSIG(wstatus) + EXIT_SIGNAL_CODE;
+		g_signalcode = WTERMSIG(wstatus);
+	}
 	close_all_fds_in_cmd(cmd); //Clean nicely
 }
