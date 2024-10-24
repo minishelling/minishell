@@ -88,14 +88,14 @@ void	make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token, \
 
 	*cmd = new_cmd();
 	if (!*cmd)
-		handle_parsing_err(shell, ERR_CMD, NULL);
+		handle_parsing_err(shell, ERR_CMD);
 	arg_num = get_arg_num(start_token, end_token);
 	(*cmd)->args = ft_calloc((arg_num + 1), sizeof(char *));
 	if (!(*cmd)->args)
-		handle_parsing_err(shell, ERR_CMD, NULL);
+		handle_parsing_err(shell, ERR_CMD);
 	err_no = traverse_tokens_to_make_cmd(*cmd, start_token, end_token);
 	if (err_no)
-		handle_parsing_err(shell, err_no, NULL);
+		handle_parsing_err(shell, err_no);
 }
 
 int	parse(t_shell *shell)
@@ -116,8 +116,10 @@ int	parse(t_shell *shell)
 		return (err_no);
 	if (g_signalcode == SIGINT)
 		return (SIGINT_HDOC);
+	
 	shell->tree = make_tree(shell, shell->token, last_token(shell->token));
 	if (!shell->tree)
 		return (ERR_MEM);
+	print_tree(shell->tree, 0);
 	return (PARSING_OK);
 }

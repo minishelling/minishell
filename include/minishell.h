@@ -218,6 +218,11 @@ typedef struct s_shell
 	t_env		*env_list;
 } t_shell;
 
+//FUNCTION POINTERS
+typedef void	(*t_lexer_func)(char *str, size_t *pos, t_token_id *token_id);
+typedef int		(*t_syntax_func)(t_token *prev, t_token *cur, t_env *env_list);
+typedef int		(*t_parser_func)(t_cmd *current_cmd, t_token *token);
+
 //INIT
 int			init_shell(char **envp, t_shell *shell);
 
@@ -228,6 +233,7 @@ t_token_id	get_token_id(char c);
 void		add_token_in_back(t_token **t_list, t_token *new);
 t_token		*copy_token(t_token *t_node);
 t_token		*last_token(t_token *token_list_head);
+
 void		advance_pos_space_or_word(char *str, size_t *pos, t_token_id *token_id);
 void		advance_pos_quote(char *str, size_t *pos, t_token_id *token_id);
 void		advance_pos_and_operator(char *str, size_t *pos, t_token_id *token_id);
@@ -240,13 +246,8 @@ t_token		*get_after_pipe_token(t_token *token);
 t_token		*get_after_arith_expan_token(t_token *token);
 t_token		*handle_arith_expan(t_token **head, t_token **cur_open, t_token **cur_close);
 void		remove_space_tokens(t_token **head, t_token *prev_token);
-t_token		*remove_token_by_reference(t_token *start_token, t_token *token_to_remove);
 t_token		*previous_token_if_exists(t_token *head, t_token *target);
 t_token		*non_null_previous(t_token *start_token, t_token *before_what);
-bool		is_dquote(t_token *token);
-bool		is_squote(t_token *token);
-bool		is_word(t_token *token);
-bool		is_env_var(t_token *token);
 
 //SYNTAX
 int			syntax(t_shell *shell);
@@ -260,26 +261,30 @@ int			syntax_word(t_token *t_prev, t_token *t_cur, t_env *env_list);
 //APPEND
 int			append (t_shell *shell);
 
-//AST
-t_tree		*make_tree(t_shell *shell, t_token *start_token, t_token *end_token);
-
-//CMD
-void		make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token, t_token *end_token);
-t_cmd		*new_cmd(void);
-int			parse(t_shell *shell);
-int			parser_noop(t_cmd *cmd_node, t_token *token);
-int			parser_redir(t_cmd *cmd, t_token *token);
-int			parser_arith_expan(t_cmd *cmd_node, t_token *token);
-int			parser_add_env_var(t_cmd *cmd, t_token *token);
-int			parser_add_new_arg(t_cmd *cmd, t_token *token);
-void		expand(t_shell *shell, t_token *start_token, t_token *end_token, t_env *env_list);
-char		*get_env_value_from_key(t_env *env_head, char *key);
+//REDIRECTION
 t_redir		*new_redir(void);
 void		add_redir_in_back(t_redir **redir_list_head, t_redir *new_redir);
 void		free_redir_list(t_redir **redir_list_head);
 int			handle_heredocs(t_shell *shell, t_token *token_list);
 int 		read_heredoc_input(t_shell *shell, const char *file_name, const char *delimiter);
 t_ecode		open_redirections(t_shell *shell, t_cmd *head);
+
+//AST
+t_tree		*make_tree(t_shell *shell, t_token *start_token, t_token *end_token);
+
+//CMD
+int			parse(t_shell *shell);
+void		make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token, t_token *end_token);
+t_cmd		*new_cmd(void);
+int			parser_noop(t_cmd *cmd_node, t_token *token);
+int			parser_redir(t_cmd *cmd, t_token *token);
+int			parser_arith_expan(t_cmd *cmd_node, t_token *token);
+int			parser_add_env_var(t_cmd *cmd, t_token *token);
+int			parser_add_new_arg(t_cmd *cmd, t_token *token);
+
+//EXPANSION
+void		expand(t_shell *shell, t_token *start_token, t_token *end_token, t_env *env_list);
+char		*get_env_value_from_key(t_env *env_head, char *key);
 
 //PARSING SIDE OF EXECUTION
 int			traverse_tree_and_execute(t_shell *shell, t_tree *node, t_tree *parent_node, int prev_exit_code);
@@ -296,24 +301,21 @@ void		free_tree(t_tree **node);
 void		print_env(t_env *env_list);
 void		print_token(t_token *head);
 void		print_cmd(t_cmd *cmd);
-void		print_tree_verbose(t_tree *node, int level);
+void		print_tree(t_tree *node, int level);
 
 //ERROR
-void		handle_parsing_err(t_shell *shell, int err_no, void *param);
+void		handle_parsing_err(t_shell *shell, int err_no);
 void		handle_cmd_err(t_shell *shell, t_cmd *cmd, char *err_msg);
 void		handle_perror(char *str);
 void		handle_builtin_err(char *cmd_name, char *arg, char *err_msg);
 
 //CLEAN
-void		clean_nicely(t_shell *shell, void *param);
-void 		clean_nicely_and_exit(t_shell *shell, void* param);
+void		clean_nicely(t_shell *shell);
+void 		clean_nicely_and_exit(t_shell *shell);
 
 int			safe_assign_str(char **dest, const char *src);
 size_t		ft_strcspn(const char *str, const char *reject);
 char		*handle_var_sign(t_shell *shell, char **str, char *expanded_str, t_env *env_list);
-typedef int	(*t_syntax_func)(t_token *prev, t_token *cur, t_env *env_list);
-typedef int (*t_parser_func)(t_cmd *current_cmd, t_token *token);
-typedef void (*t_lexer_func)(char *str, size_t *pos, t_token_id *token_id);
 
 //SIGNALS
 

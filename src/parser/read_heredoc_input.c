@@ -43,7 +43,7 @@ static int	handle_heredoc_child(t_shell *shell, const char *file_name, const cha
 	init_signals(CHILD_HEREDOC);
 	colourful_delimiter = get_colourful_delimiter(delimiter);
 	if (!colourful_delimiter)
-		clean_nicely_and_exit(shell, NULL);
+		clean_nicely_and_exit(shell);
 	run_heredoc_loop(delimiter, fd, colourful_delimiter);
 	ft_free((void **)&colourful_delimiter);
 	close(fd);

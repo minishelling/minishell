@@ -1,4 +1,4 @@
-#include "../../include/minishell.h"
+#include "../../../include/minishell.h"
 
 t_redir	*new_redir(void)
 {
@@ -41,7 +41,6 @@ void	add_redir_in_back(t_redir **redir_list_head, t_redir *new_redir)
 	current_redir->next = new_redir;
 	return ;
 }
-
 
 void free_redir_list(t_redir **redir)
 {

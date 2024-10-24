@@ -26,7 +26,7 @@ char	*process_dquotes(t_shell *shell, char **str, char *expanded_str, \
 
 	while (**str && **str != '"')
 	{
-		if (ft_strncmp(*str, "$\"", 2) && ft_strncmp(*str, "$ ", 2))
+		if (**str == '$' && ft_strncmp(*str, "$\"", 2) && ft_strncmp(*str, "$ ", 2))
 		{
 			expanded_str = handle_var_sign(shell, str, expanded_str, env_list);
 			if (!expanded_str)
@@ -129,8 +129,8 @@ void	expand(t_shell *shell, t_token *start_token, t_token *end_token, \
 		err_no = expand_token_str(shell, current_token, env_list);
 		if (err_no)
 		{
-			handle_parsing_err(shell, err_no, NULL);
-			clean_nicely_and_exit(shell, NULL);
+			handle_parsing_err(shell, err_no);
+			clean_nicely_and_exit(shell);
 		}
 		if (current_token == end_token)
 			break ;

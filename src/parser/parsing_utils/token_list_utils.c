@@ -1,4 +1,4 @@
-#include "../include/minishell.h"
+#include "../../../include/minishell.h"
 
 t_token	*new_token(void)
 {
@@ -55,35 +55,6 @@ void	add_token_in_back(t_token **token_list_head, t_token *new_token)
 	last_token(*token_list_head)->next = new_token;
 	return ;
 }
-
-t_token *remove_token_by_reference(t_token *start_token, t_token *token_to_remove)
-{
-	t_token *prev;
-	t_token *current;
-	
-	prev = NULL;
-	current = start_token;
-	while (current)
-	{
-		if (current == token_to_remove)
-		{
-			if (prev == NULL)
-				start_token = current->next;
-			else
-				prev->next = current->next;
-			free_token(&current);
-			return (start_token);
-		}
-
-		// Move to the next token
-		prev = current;
-		current = current->next;
-	}
-	return start_token;
-}
-
-
-
 
 
 /**

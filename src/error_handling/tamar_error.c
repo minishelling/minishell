@@ -33,17 +33,16 @@ void free_tree(t_tree **node)
 	*node = NULL;
 }
 
-void clean_nicely_and_exit(t_shell *shell, void* param)
+void clean_nicely_and_exit(t_shell *shell)
 {
-	clean_nicely(shell, param);
+	clean_nicely(shell);
 	exit(EXIT_FAILURE);
 }
 
 
 
-void clean_nicely(t_shell *shell, void* param)
+void clean_nicely(t_shell *shell)
 {
-	(void)param;
 	if (shell->input)
 	{
 		free(shell->input);
@@ -56,15 +55,13 @@ void clean_nicely(t_shell *shell, void* param)
 
 }
 
-void handle_parsing_err(t_shell *shell, int err_no, void *param)
+void handle_parsing_err(t_shell *shell, int err_no)
 {
 	char *err_msg;
 	char *err_prompt;
 	char *full_msg;
 	size_t full_msg_len;
 
-	(void)shell;
-	(void)param;
 	if (err_no != SIGINT_HDOC)
 	{
 		err_prompt = ERR_PROMPT;
@@ -80,9 +77,9 @@ void handle_parsing_err(t_shell *shell, int err_no, void *param)
 		free(full_msg);
 	}
 	if ((err_no >= ERR_SYNTAX_NL  && err_no <= ERR_SYNTAX_ERROR) || err_no == SIGINT_HDOC)
-		clean_nicely(shell, NULL);
+		clean_nicely(shell);
 	else
-		clean_nicely_and_exit(shell, NULL);
+		clean_nicely_and_exit(shell);
 }
 
 void handle_cmd_err(t_shell *shell, t_cmd *cmd, char *err_msg)
@@ -96,13 +93,12 @@ void handle_cmd_err(t_shell *shell, t_cmd *cmd, char *err_msg)
 
 	cmd_len = ft_strlen(cmd->args[0]);
 	err_len = ft_strlen(err_msg);
-	// Calculate total length: command + colon + space + error message + newline
 	total_len = cmd_len + ft_strlen(colon) + err_len + ft_strlen(newline);
 	full_msg = (char *)malloc(total_len + 1);
 	if (!full_msg)
 	{
 		perror("handle_cmd_err");
-		clean_nicely_and_exit(shell, NULL);
+		clean_nicely_and_exit(shell);
 	}
 	ft_strlcpy(full_msg, cmd->args[0], cmd_len + 1);
 	ft_strlcat(full_msg, colon, total_len + 1);
@@ -111,7 +107,6 @@ void handle_cmd_err(t_shell *shell, t_cmd *cmd, char *err_msg)
 	write(2, full_msg, total_len);
 	free(full_msg);
 }
-
 
 void handle_perror(char *str)
 {

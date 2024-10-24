@@ -1,16 +1,15 @@
-#include "../../include/minishell.h"
+#include "../../../include/minishell.h"
 
-
-t_cmd *new_cmd(void)
+t_cmd	*new_cmd(void)
 {
-	t_cmd *cur_cmd;
+	t_cmd	*cur_cmd;
 
-	cur_cmd = malloc(sizeof(t_cmd) * 1);
+	cur_cmd = (t_cmd *)ft_calloc(1, sizeof(t_cmd));
 	if (!cur_cmd)
 		return (NULL);
-	cur_cmd->args = NULL;
-	cur_cmd->redir = NULL;
-	cur_cmd->next = NULL;
+	// cur_cmd->args = NULL;
+	// cur_cmd->redir = NULL;
+	// cur_cmd->next = NULL;
 	cur_cmd->latest_in = STDIN_FILENO;
 	cur_cmd->latest_out = STDOUT_FILENO;
 	return (cur_cmd);
@@ -24,9 +23,9 @@ t_cmd *new_cmd(void)
  * 
  * @param args A pointer to an array of strings (char ***).
  */
-void free_args(char ***args)
+void	free_args(char ***args)
 {
-	int i;
+	int	i;
 
 	if (!(*args))
 		return;
@@ -41,10 +40,8 @@ void free_args(char ***args)
 	*args = NULL;
 }
 
-void free_cmd(t_cmd **cmd)
+void	free_cmd(t_cmd **cmd)
 {
-	// printf ("*cmd is %p\n", *cmd);
-	// print_cmd(*cmd);
 	if (*cmd == NULL)
 		return;
 	if (cmd && *cmd && (*cmd)->args)

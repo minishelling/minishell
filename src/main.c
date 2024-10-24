@@ -45,13 +45,13 @@ int main(int argc, char **argv, char **envp)
 			status = parse(&shell);
 			//printf ("status is %d\n", status);
 			if (status != PARSING_OK)
-				handle_parsing_err(&shell, status, NULL);
+				handle_parsing_err(&shell, status);
 			else
 			{
 				init_signals(PARENT_NON_INTERACTIVE);
 				shell.exit_code = traverse_tree_and_execute(&shell, shell.tree, NULL, 0);
 				// printf ("last exit_code %d\n", shell.exit_code);
-				clean_nicely(&shell, NULL);
+				clean_nicely(&shell);
 			}
 			//close_all_fds_in_process();
 			//free(shell.input) ???
