@@ -12,11 +12,11 @@ char *get_err_msg(int e)
 		"Syntax error near unexpected token `||`\n",
 		"Syntax error near unexpected token `&&`\n",
 		"Syntax error near unexpected token `<` or `>`\n",
-		"Syntax error\n",
-		"Error: unable to allocate dynamic memory\n",
-		"Error while expanding: unable to allocate dynamic memory\n",
-		"Error while forming a command: unable to allocate dynamic memory\n",
-		"SIGINT_HDOC"
+		"Syntax error\n",  //return and not exit
+		"Error: unable to allocate dynamic memory\n", //exit
+		"Error while expanding: unable to allocate dynamic memory\n",  //exit
+		"Error while forming a command: unable to allocate dynamic memory\n",  //exit
+		"SIGINT_HDOC"  //return and not exit
 	};
 	return (error_messages[e]);
 }
@@ -79,7 +79,10 @@ void handle_parsing_err(t_shell *shell, int err_no, void *param)
 		write(2, full_msg, full_msg_len);
 		free(full_msg);
 	}
-	clean_nicely(shell, NULL);
+	if ((err_no >= ERR_SYNTAX_NL  && err_no <= ERR_SYNTAX_ERROR) || err_no == SIGINT_HDOC)
+		clean_nicely(shell, NULL);
+	else
+		clean_nicely_and_exit(shell, NULL);
 }
 
 void handle_cmd_err(t_shell *shell, t_cmd *cmd, char *err_msg)
@@ -133,4 +136,3 @@ void handle_perror(char *str)
 	perror(full_err_msg);
 	free(full_err_msg);
 }
-

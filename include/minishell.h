@@ -238,7 +238,7 @@ t_token		*skip_whitespace_and_get_next_token(t_token *token);
 t_token		*get_after_pipe_token(t_token *token);
 t_token		*get_after_arith_expan_token(t_token *token);
 t_token		*handle_arith_expan(t_token **head, t_token **cur_open, t_token **cur_close);
-void		remove_space_tokens(t_token **head);
+void		remove_space_tokens(t_token **head, t_token *prev_token);
 t_token		*remove_token_by_reference(t_token *start_token, t_token *token_to_remove);
 t_token		*previous_token_if_exists(t_token *head, t_token *target);
 t_token		*non_null_previous(t_token *start_token, t_token *before_what);
@@ -308,8 +308,10 @@ void 		clean_nicely_and_exit(t_shell *shell, void* param);
 
 int			safe_assign_str(char **dest, const char *src);
 size_t		ft_strcspn(const char *str, const char *reject);
-char		*handle_env_var_sign(t_shell *shell, char **str, char *expanded_str, t_env *env_list);
+char		*handle_var_sign(t_shell *shell, char **str, char *expanded_str, t_env *env_list);
 typedef int	(*t_syntax_func)(t_token *prev, t_token *cur, t_env *env_list);
+typedef int (*t_parser_func)(t_cmd *current_cmd, t_token *token);
+typedef void (*t_lexer_func)(char *str, size_t *pos, t_token_id *token_id);
 
 //SIGNALS
 

@@ -109,7 +109,6 @@ int read_heredoc_input(t_shell *shell, const char *file_name, const char *delimi
 	return (fd);
 }
 
-
 int handle_heredocs(t_shell *shell, t_token *token_list) 
 {
 	t_token *current;
@@ -122,7 +121,7 @@ int handle_heredocs(t_shell *shell, t_token *token_list)
 	current = token_list;
 	heredoc_counter = 0;
 
-	while (current != NULL)
+	while (current)
 	{
 		if (ft_strncmp(current->str, "<<", 2) == 0) 
 		{

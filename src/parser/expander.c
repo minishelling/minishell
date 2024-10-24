@@ -18,16 +18,17 @@ char	*copy_chars(char *token_str, char *expanded_str)
 	return (new_expanded_str);
 }
 
-char	*process_dquotes(t_shell *shell, char **str, char *expanded_str, t_env *env_list)
+char	*process_dquotes(t_shell *shell, char **str, char *expanded_str, \
+	t_env *env_list)
 {
 	char	temp[2];
 	char	*new_expanded_str;
 
 	while (**str && **str != '"')
 	{
-		if (**str == '$' && ft_strncmp(*str, "$\"", 2) && ft_strncmp(*str, "$ ", 2))
+		if (ft_strncmp(*str, "$\"", 2) && ft_strncmp(*str, "$ ", 2))
 		{
-			expanded_str = handle_env_var_sign(shell, str, expanded_str, env_list);
+			expanded_str = handle_var_sign(shell, str, expanded_str, env_list);
 			if (!expanded_str)
 				return (NULL);
 		}
@@ -70,7 +71,8 @@ char	*process_squotes(char **str, char *expanded_str)
 	return (expanded_str);
 }
 
-char	*decide_expansion_type(t_shell *shell, char **str, char *expanded_str, t_env *env_list)
+char	*decide_expansion_type(t_shell *shell, char **str, char *expanded_str, \
+	t_env *env_list)
 {
 	if (**str == '\'')
 	{
@@ -83,10 +85,9 @@ char	*decide_expansion_type(t_shell *shell, char **str, char *expanded_str, t_en
 		expanded_str = process_dquotes(shell, str, expanded_str, env_list);
 	}
 	else if (**str == '$')
-		expanded_str = handle_env_var_sign(shell, str, expanded_str, env_list);
+		expanded_str = handle_var_sign(shell, str, expanded_str, env_list);
 	else
 	{
-		//fprintf (stderr, "I'm copying\n");
 		expanded_str = copy_chars(*str, expanded_str);
 		*str += ft_strcspn(*str, "\'\"$");
 	}
@@ -95,8 +96,8 @@ char	*decide_expansion_type(t_shell *shell, char **str, char *expanded_str, t_en
 
 int	expand_token_str(t_shell *shell, t_token *token, t_env *env_list)
 {
-	char *original_str;
-	char *expanded_str;
+	char	*original_str;
+	char	*expanded_str;
 
 	expanded_str = ft_strdup("");
 	if (!expanded_str)
@@ -104,7 +105,8 @@ int	expand_token_str(t_shell *shell, t_token *token, t_env *env_list)
 	original_str = token->str;
 	while (*original_str)
 	{
-		expanded_str = decide_expansion_type(shell, &original_str, expanded_str, env_list);
+		expanded_str = \
+		decide_expansion_type(shell, &original_str, expanded_str, env_list);
 		if (!expanded_str)
 			return (ERR_EXPAND);
 	}
@@ -115,22 +117,23 @@ int	expand_token_str(t_shell *shell, t_token *token, t_env *env_list)
 	return (PARSING_OK);
 }
 
-void	expand(t_shell *shell, t_token *start_token, t_token *end_token, t_env *env_list)
+void	expand(t_shell *shell, t_token *start_token, t_token *end_token, \
+		t_env *env_list)
 {
-	int 	err_no;
-	t_token *current_token;
+	int		err_no;
+	t_token	*current_token;
 
 	current_token = start_token;
 	while (current_token)
 	{
-		err_no = expand_token_str(shell, current_token, env_list); //catch
+		err_no = expand_token_str(shell, current_token, env_list);
 		if (err_no)
 		{
 			handle_parsing_err(shell, err_no, NULL);
 			clean_nicely_and_exit(shell, NULL);
 		}
 		if (current_token == end_token)
-			break;
+			break ;
 		current_token = current_token->next;
 	}
 }
