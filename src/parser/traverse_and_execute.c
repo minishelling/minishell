@@ -1,85 +1,51 @@
-
 #include "../../include/minishell.h"
 
-// int pre_execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int prev_exit_code)
-// {
-// 	int exit_code;
-	
-// 	exit_code = prev_exit_code;
-// 	if (!tree_node)
-// 		return exit_code;
-// 	if (tree_node->type == T_PIPE)
-// 		return (handle_pipe_subtree(shell, tree_node));
-// 	if (tree_node->left)
-// 	{
-// 		parent_tree_node = tree_node;
-// 		exit_code = pre_execute(shell, tree_node->left, parent_tree_node, exit_code);
-// 	}
-// 	if (tree_node->type == CMD)
-// 	{
-// 		expand(shell, tree_node->start_token, tree_node->end_token, shell->env_list);
-// 		make_cmd(shell, &tree_node->cmd, tree_node->start_token, tree_node->end_token);
-// 		if (open_redirections(shell, tree_node->cmd) == SUCCESS)
-// 			exit_code = executor(shell, tree_node->cmd);
-// 		else
-// 			exit_code = 1;
-// 	}
-// 	if (parent_tree_node && parent_tree_node->type == T_AND_OPR && exit_code == 0) 
-// 	{
-// 		if (tree_node->right)
-// 			return pre_execute(shell, parent_tree_node->right, parent_tree_node, exit_code);
-// 	}
-// 	else if (parent_tree_node && parent_tree_node->type == T_OR_OPR && exit_code != 0)
-// 	{
-// 		if (tree_node->right)
-// 			return pre_execute(shell, parent_tree_node->right, parent_tree_node, exit_code);
-// 	}
-// 	return (exit_code);
-// }
-
-int handle_logical_operators(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int exit_code)
+int	handle_logical_operators(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int exit_code)
 {
-	if (parent_tree_node && parent_tree_node->type == T_AND_OPR && exit_code == 0)
+	if (parent_tree_node && parent_tree_node->type == T_AND_OPR \
+	&& exit_code == 0)
 	{
 		if (tree_node->right)
-			return (traverse_tree_and_execute(shell, parent_tree_node->right, parent_tree_node, exit_code));
+			return (traverse_tree_and_execute \
+			(shell, parent_tree_node->right, parent_tree_node, exit_code));
 	}
-	else if (parent_tree_node && parent_tree_node->type == T_OR_OPR && exit_code != 0)
+	else if (parent_tree_node && parent_tree_node->type == T_OR_OPR \
+	&& exit_code != 0)
 	{
 		if (tree_node->right)
-			return (traverse_tree_and_execute(shell, parent_tree_node->right, parent_tree_node, exit_code));
+			return (traverse_tree_and_execute \
+			(shell, parent_tree_node->right, parent_tree_node, exit_code));
 	}
-	return exit_code;
+	return (exit_code);
 }
 
-int execute_command(t_shell *shell, t_tree *tree_node)
+int	execute_command(t_shell *shell, t_tree *tree_node)
 {
 	expand(shell, tree_node->start_token, tree_node->end_token, shell->env_list);
 	make_cmd(shell, &tree_node->cmd, tree_node->start_token, tree_node->end_token);
-	//print_cmd(tree_node->cmd);
 	if (open_redirections(shell, tree_node->cmd) == SUCCESS)
 		return (executor(shell, tree_node->cmd));
 	else
-		return (1);  //problems with opening redirs
+		return (FAILURE);
 }
 
-int traverse_tree_and_execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int prev_exit_code)
+int	traverse_tree_and_execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int prev_exit_code)
 {
-	int exit_code = prev_exit_code;
+	int	exit_code;
 
+	exit_code = prev_exit_code;
 	if (!tree_node)
 		return (exit_code);
-
-	//fprintf(stderr, "tree node is %p\n", tree_node);
 	if (tree_node->type == T_PIPE)
 		return (handle_pipe_subtree(shell, tree_node));
-
 	if (tree_node->left)
 	{
 		parent_tree_node = tree_node;
-		exit_code = traverse_tree_and_execute(shell, tree_node->left, parent_tree_node, exit_code);
+		exit_code = traverse_tree_and_execute \
+		(shell, tree_node->left, parent_tree_node, exit_code);
 	}
 	if (tree_node->type == CMD)
 		exit_code = execute_command(shell, tree_node);
-	return (handle_logical_operators(shell, tree_node, parent_tree_node, exit_code));
+	return (handle_logical_operators \
+	(shell, tree_node, parent_tree_node, exit_code));
 }

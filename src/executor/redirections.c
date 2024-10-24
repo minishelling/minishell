@@ -24,7 +24,6 @@ t_ecode	open_redirections(t_shell *shell, t_cmd *current_cmd)
 	current_redir = current_cmd->redir;
 	while (current_redir)
 	{
-		
 		if (open_current_redir(current_redir->redir_id,
 				current_redir->file, &current_redir->fd) != SUCCESS)
 			return (FAILURE);

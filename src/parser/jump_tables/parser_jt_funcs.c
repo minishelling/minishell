@@ -1,6 +1,6 @@
 #include "../../../include/minishell.h"
 
-int parser_noop(t_cmd *cmd_node, t_token *token)
+int	parser_noop(t_cmd *cmd_node, t_token *token)
 {
 	(void)cmd_node;
 	(void)token;
@@ -26,15 +26,13 @@ t_redir_id	which_redir(char *str)
 	return (REDIR);
 }
 
-int parser_redir(t_cmd *cmd, t_token *token)
+int	parser_redir(t_cmd *cmd, t_token *token)
 {
 	t_token	*file_token;
 	t_redir	*redir_list;
 
 	if (token->next)
 		file_token = token->next;
-	// else
-	// 	return(ERR_SYNTAX_ERROR);  //syntax erro - no file name?
 	redir_list = new_redir();
 	if (!redir_list)
 		return (ERR_MEM);
@@ -42,16 +40,18 @@ int parser_redir(t_cmd *cmd, t_token *token)
 	redir_list->file = ft_strdup(file_token->str);
 	if (!redir_list->file)
 		return (ERR_MEM);
-	if (redir_list->file[0] == '|' || redir_list->file[0] == '&' || redir_list->file[0] == ';'
+	if (redir_list->file[0] == '|' || redir_list->file[0] == '&' \
+		|| redir_list->file[0] == ';' \
 		|| redir_list->file[0] == '(' || redir_list->file[0] == ')')
-			return (ERR_SYNTAX_ERROR);
+		return (ERR_SYNTAX_ERROR);
 	add_redir_in_back(&(cmd->redir), redir_list);
 	return (PARSING_OK);
 }
-int parser_add_env_var(t_cmd *cmd, t_token *token)
+
+int	parser_add_env_var(t_cmd *cmd, t_token *token)
 {
 	size_t	i;
-	
+
 	if ((*(token->str)) == '\0')
 		return (PARSING_OK);
 	i = 0;
@@ -61,13 +61,12 @@ int parser_add_env_var(t_cmd *cmd, t_token *token)
 	if (!cmd->args[i])
 		return (ERR_MEM);
 	return (PARSING_OK);
-	
 }
 
 int	parser_add_new_arg(t_cmd *cmd, t_token *token)
 {
 	size_t	i;
-	
+
 	i = 0;
 	while (cmd->args[i])
 		i++;
@@ -77,7 +76,7 @@ int	parser_add_new_arg(t_cmd *cmd, t_token *token)
 	return (PARSING_OK);
 }
 
-int parser_arith_expan(t_cmd *cmd_node, t_token *token)
+int	parser_arith_expan(t_cmd *cmd_node, t_token *token)
 {
 	(void)token;
 	if (cmd_node->args)

@@ -309,6 +309,7 @@ void 		clean_nicely_and_exit(t_shell *shell, void* param);
 int			safe_assign_str(char **dest, const char *src);
 size_t		ft_strcspn(const char *str, const char *reject);
 char		*handle_env_var_sign(t_shell *shell, char **str, char *expanded_str, t_env *env_list);
+typedef int	(*t_syntax_func)(t_token *prev, t_token *cur, t_env *env_list);
 
 //SIGNALS
 

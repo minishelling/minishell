@@ -63,7 +63,6 @@ static int	traverse_tokens_to_make_cmd(t_cmd *current_cmd, t_token *start_token,
 	cur_token = start_token;
 	while (cur_token)
 	{
-		//fprintf (stderr, "cur token is %s\n", cur_token->str);
 		err_no = build_command_from_token(current_cmd, cur_token);
 		if (err_no)
 			return (ERR_CMD);
@@ -71,7 +70,7 @@ static int	traverse_tokens_to_make_cmd(t_cmd *current_cmd, t_token *start_token,
 			break;
 		if (cur_token->id == LT || cur_token->id == GT)
 		{
-			cur_token = cur_token->next;  //pointer to delimiter
+			cur_token = cur_token->next;
 			if (cur_token == end_token)
 				break;
 			cur_token = cur_token->next;  
