@@ -52,7 +52,6 @@ void clean_nicely(t_shell *shell)
 		free_token_list(&shell->token);
 	if (shell->tree)
 		free_tree(&shell->tree);
-
 }
 
 void handle_parsing_err(t_shell *shell, int err_no)
