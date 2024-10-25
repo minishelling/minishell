@@ -77,24 +77,4 @@ t_token	*previous_token_if_exists(t_token *head, t_token *target)
 	return (current);
 }
 
-t_token	*handle_arith_expan(t_token **head, t_token **cur_open, \
-	t_token **cur_close)
-{
-	t_token	*outer_open;
-	t_token	*outer_close;
 
-	while (*cur_open && cur_close && (*cur_open)->id == PAR_OPEN \
-		&& (*cur_close)->id == PAR_CLOSE)
-	{
-		outer_open = (*cur_open);
-		outer_close = *cur_close;
-		(*cur_open) = previous_token_if_exists(*head, (*cur_open));
-		(*cur_close) = (*cur_close)->next;
-	}
-	if (!safe_assign_str(&outer_open->str, "((") \
-	|| !safe_assign_str(&outer_close->str, "))"))
-		exit (FAILURE); //!
-	outer_open->id = ARITH_EXPAN;
-	outer_close->id = ARITH_EXPAN;
-	return (*head);
-}
