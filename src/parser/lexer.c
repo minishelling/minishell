@@ -78,7 +78,6 @@ int	tokenize(t_shell *shell, char *input)
 	current_pos = 0;
 	while (input[current_pos])
 	{
-		fprintf(stderr, "The rest: %s\n", &input[current_pos]);
 		token = new_token();
 		if (!token)
 			return (ERR_MEM);
@@ -88,6 +87,6 @@ int	tokenize(t_shell *shell, char *input)
 		add_token_in_back(&shell->token, token);
 	}
 	classify_and_or_operators(shell->token);
-	print_token(shell->token);
+	//print_token(shell->token);
 	return (PARSING_OK);
 }

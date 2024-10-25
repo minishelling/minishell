@@ -57,13 +57,11 @@ t_token	*get_matching_parenthesis(t_token *start_token)
 	return (NULL);
 }
 
-t_token	*ignore_first_parenthesis(t_shell *shell, t_token *start_token, \
-	t_token **middle, t_token **end_token)
+t_token	*ignore_first_parenthesis(t_token *start_token, t_token **middle, \
+	t_token **end_token)
 {
 	t_token	*matching_parenthesis;
-
-	if (start_token == shell->token)
-		shell->token = start_token->next;
+	
 	matching_parenthesis = get_matching_parenthesis(start_token);
 	start_token = start_token->next;
 	if (matching_parenthesis)
@@ -136,8 +134,8 @@ t_tree	*handle_parentheses(t_shell *shell, t_token *start_token, \
 	if (start_token->id == PAR_OPEN && end_token->id == PAR_CLOSE \
 		&& get_matching_parenthesis(start_token) == end_token)
 	{
-		start_token = ignore_first_parenthesis(shell, start_token, \
-			&middle, &end_token);
+		start_token = ignore_first_parenthesis(start_token, &middle, \
+			&end_token);
 		if (end_token)
 		{
 			if (start_token->id == PAR_OPEN && middle->id == PAR_CLOSE \
