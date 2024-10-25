@@ -54,9 +54,6 @@ int main(int argc, char **argv, char **envp)
 				// printf ("last exit_code %d\n", shell.exit_code);
 				clean_nicely(&shell);
 			}
-			//close_all_fds_in_process();
-			//free(shell.input) ???
-			shell.input = NULL;
 		}
 	}
 	free_env_list(&shell.env_list);

@@ -34,6 +34,7 @@ int	assign_token_id_and_string(char *str, size_t *pos, t_token *token)
 {
 	int				start_pos;
 	t_lexer_func	advance[13];
+	char			*token_str;
 
 	start_pos = *pos;
 	advance[0] = &advance_pos_space_or_word;
@@ -51,7 +52,11 @@ int	assign_token_id_and_string(char *str, size_t *pos, t_token *token)
 	advance[12] = &advance_pos_space_or_word;
 	token->id = get_token_id(str[(*pos)]);
 	advance[token->id](str, pos, &token->id);
-	token->str = ft_substr(str, start_pos, (*pos - start_pos));
+	token_str = ft_substr(str, start_pos, (*pos - start_pos));
+	if (!token_str)
+		return (ERR_MEM);
+	safe_assign_str(&(token->str), token_str);
+	free (token_str);
 	if (!token->str)
 		return (ERR_MEM);
 	return (PARSING_OK);
@@ -73,6 +78,7 @@ int	tokenize(t_shell *shell, char *input)
 	current_pos = 0;
 	while (input[current_pos])
 	{
+		fprintf(stderr, "The rest: %s\n", &input[current_pos]);
 		token = new_token();
 		if (!token)
 			return (ERR_MEM);
@@ -82,5 +88,6 @@ int	tokenize(t_shell *shell, char *input)
 		add_token_in_back(&shell->token, token);
 	}
 	classify_and_or_operators(shell->token);
+	print_token(shell->token);
 	return (PARSING_OK);
 }

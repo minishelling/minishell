@@ -36,6 +36,7 @@ void free_tree(t_tree **node)
 void clean_nicely_and_exit(t_shell *shell, int exit_code)
 {
 	clean_nicely(shell);
+	free_env_list(&shell->env_list);
 	exit(exit_code);
 }
 

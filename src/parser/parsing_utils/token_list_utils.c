@@ -4,7 +4,7 @@ t_token	*new_token(void)
 {
 	t_token	*new;
 
-	new = malloc(sizeof(t_token));
+	new = ft_calloc(1, sizeof(t_token));
 	if (!new)
 		return (NULL);
 	new->next = NULL;

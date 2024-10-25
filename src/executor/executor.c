@@ -93,7 +93,9 @@ static void	run_child(t_shell *shell, t_cmd *cmd)
 		clean_nicely_and_exit(shell, shell->exit_code);
 	}
 	env_array = create_env_array(shell->env_list);
-	execve(cmd_path, cmd->args, env_array);
+	if (cmd_path)
+		execve(cmd_path, cmd->args, env_array);
+	ft_free_2d((void ***) &env_array);
 	if (!ft_strncmp(cmd->args[0], "./", 2) || cmd->args[0][0] == '/')
 		handle_cmd_err(shell, cmd, strerror(ENOENT));
 	else

@@ -10,7 +10,6 @@ int	safe_assign_str(char **dest, const char *src)
 	if (src)
 	{
 		*dest = ft_strdup(src);
-		*dest = ft_strdup(src);
 		if (!*dest)
 			return (handle_perror("safe_assign_str"), ERR_MEM);
 	}
