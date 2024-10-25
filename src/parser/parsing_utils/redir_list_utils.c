@@ -17,7 +17,7 @@ t_redir	*new_redir(void)
 t_redir	*last_redir(t_redir *redir_list_head)
 {
 	t_redir	*current_redir;
-	
+
 	if (redir_list_head == NULL)
 		return (NULL);
 	current_redir = redir_list_head;
@@ -42,17 +42,16 @@ void	add_redir_in_back(t_redir **redir_list_head, t_redir *new_redir)
 	return ;
 }
 
-void free_redir_list(t_redir **redir)
+void	free_redir_list(t_redir **redir)
 {
-	t_redir *temp_redir;
+	t_redir	*temp_redir;
 
 	if (!redir || !(*redir))
-		return;
+		return ;
 	while (*redir)
 	{
 		temp_redir = *redir;
 		*redir = (*redir)->next;
-
 		if (temp_redir->file)
 		{
 			free(temp_redir->file);

@@ -3,7 +3,7 @@
 void	free_token(t_token **token)
 {
 	if (!token || !*token)
-		return;
+		return ;
 	if ((*token)->str)
 	{
 		free((*token)->str);

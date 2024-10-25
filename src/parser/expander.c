@@ -26,7 +26,7 @@ char	*process_dquotes(t_shell *shell, char **str, char *expanded_str, \
 
 	while (**str && **str != '"')
 	{
-		if (**str == '$' && ft_strncmp(*str, "$\"", 2) && ft_strncmp(*str, "$ ", 2))
+		if (**str == '$' && (*(*str + 1) != '"' && *(*str + 1) != ' '))
 		{
 			expanded_str = handle_var_sign(shell, str, expanded_str, env_list);
 			if (!expanded_str)
