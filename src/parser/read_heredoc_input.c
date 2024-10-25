@@ -27,7 +27,7 @@ int	read_heredoc_input(t_shell *shell, const char *file_name, \
 	if (fd == -1)
 	{
 		handle_perror("read_heredoc_input");
-		clean_nicely_and_exit(shell);
+		clean_nicely_and_exit(shell, EXIT_FAILURE);
 	}	
 	unlink (file_name);
 	return (fd);
@@ -45,7 +45,7 @@ static int	handle_heredoc_child(t_shell *shell, const char *file_name, \
 	init_signals(CHILD_HEREDOC);
 	colourful_delimiter = get_colourful_delimiter(delimiter);
 	if (!colourful_delimiter)
-		clean_nicely_and_exit(shell);
+		clean_nicely_and_exit(shell, EXIT_FAILURE);
 	run_heredoc_loop(delimiter, fd, colourful_delimiter);
 	ft_free((void **)&colourful_delimiter);
 	close(fd);

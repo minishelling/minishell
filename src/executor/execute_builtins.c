@@ -20,22 +20,22 @@ void	handle_builtin(t_shell *shell, t_cmd *cmd)
 	int	std_backup[2];
 
 	if (create_std_backup(std_backup))
-		exit(EXIT_FAILURE); // Clean nicely and exit.
+		clean_nicely_and_exit(shell, EXIT_FAILURE);
 	if (cmd->latest_in != STDIN_FILENO)
 	{
 		if (dup_and_close(cmd->latest_in, STDIN_FILENO))
-			exit(EXIT_FAILURE); // Clean nicely and exit.
+			clean_nicely_and_exit(shell, EXIT_FAILURE);
 	}
 	if (cmd->latest_out != STDOUT_FILENO)
 	{
 		if (dup_and_close(cmd->latest_out, STDOUT_FILENO))
-			exit(EXIT_FAILURE); // Clean nicely and exit.
+			clean_nicely_and_exit(shell, EXIT_FAILURE);
 	}
 	shell->exit_code = execute_builtin(shell, cmd->args);
 	if (dup_and_close(std_backup[STDIN_FILENO], STDIN_FILENO))
-		exit(EXIT_FAILURE); // Clean nicely and exit.
+		clean_nicely_and_exit(shell, EXIT_FAILURE);
 	if (dup_and_close(std_backup[STDOUT_FILENO], STDOUT_FILENO))
-		exit(EXIT_FAILURE); // Clean nicely and exit.
+		clean_nicely_and_exit(shell, EXIT_FAILURE);
 }
 
 /**

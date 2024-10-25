@@ -40,15 +40,15 @@ int	handle_pipe_subtree(t_shell *shell, t_tree *tree_node)
 	pid_t	right_node_pid;
 
 	if (pipe(fd) == ERROR)
-		exit(EXIT_FAILURE);
+		clean_nicely_and_exit(shell, EXIT_FAILURE);
 	left_node_pid = fork();
 	if (left_node_pid == ERROR)
-		exit(EXIT_FAILURE);
+		clean_nicely_and_exit(shell, EXIT_FAILURE);
 	else if (left_node_pid == 0)
 		handle_pipe_left_node(shell, tree_node, fd);
 	right_node_pid = fork();
 	if (right_node_pid == ERROR)
-		exit(EXIT_FAILURE);
+		clean_nicely_and_exit(shell, EXIT_FAILURE);
 	else if (right_node_pid == 0)
 		handle_pipe_right_node(shell, tree_node, fd);
 	close_fds(fd[READ_END], fd[WRITE_END]);
@@ -81,11 +81,11 @@ static void	handle_pipe_left_node(t_shell *shell, t_tree *tree_node, int fd[2])
 	if (dup2(fd[WRITE_END], STDOUT_FILENO) == ERROR)
 	{
 		perror("dup2");
-		exit(EXIT_FAILURE);
+		clean_nicely_and_exit(shell, EXIT_FAILURE);
 	}
 	close_fds(fd[READ_END], fd[WRITE_END]);
 	status = traverse_tree_and_execute(shell, tree_node->left, tree_node, 0);
-	exit(status);
+	clean_nicely_and_exit(shell, status);
 }
 
 /**
@@ -108,11 +108,11 @@ static void	handle_pipe_right_node(t_shell *shell, t_tree *tree_node, int fd[2])
 	if (dup2(fd[READ_END], STDIN_FILENO) == ERROR)
 	{
 		perror("dup2");
-		exit(EXIT_FAILURE);
+		clean_nicely_and_exit(shell, EXIT_FAILURE);
 	}
 	close_fds(fd[WRITE_END], fd[READ_END]);
 	status = traverse_tree_and_execute(shell, tree_node->right, tree_node, 0);
-	exit(status);
+	clean_nicely_and_exit(shell, status);
 }
 
 /**

@@ -310,7 +310,7 @@ void		handle_builtin_err(char *cmd_name, char *arg, char *err_msg);
 
 //CLEAN
 void		clean_nicely(t_shell *shell);
-void 		clean_nicely_and_exit(t_shell *shell);
+void 		clean_nicely_and_exit(t_shell *shell, int exit_code);
 
 int			safe_assign_str(char **dest, const char *src);
 size_t		ft_strcspn(const char *str, const char *reject);

@@ -25,6 +25,7 @@ t_ecode	exit_builtin(t_shell *shell, char **cmd_args)
 	int8_t	exit_code;
 
 	arg_count = ft_str_count(cmd_args);
+	exit_code = SUCCESS;
 	if (arg_count == 2 && !ft_strncmp(cmd_args[1], "--", 3))
 		exit_code = handle_end_of_options(shell, cmd_args, arg_count);
 	else if (arg_count == 2)
@@ -34,7 +35,7 @@ t_ecode	exit_builtin(t_shell *shell, char **cmd_args)
 	else
 	{
 		ft_putstr_fd("exit\n", 2);
-		exit(SUCCESS);
+		clean_nicely_and_exit(shell, SUCCESS);
 	}
 	return (exit_code);
 }
@@ -58,28 +59,25 @@ static t_ecode	handle_end_of_options(t_shell *shell,
 	if (argc == 2)
 	{
 		ft_putstr_fd("exit\n", 2);
-		exit(SUCCESS); //Clean nicely
+		clean_nicely_and_exit(shell, SUCCESS);
 	}
 	else if (argc == 3)
 	{
 		if (ft_is_natural(cmd_args[2]))
 		{
 			ft_putstr_fd("exit\n", 2);
-			exit(ft_atoi(cmd_args[2])); //Clean nicely
+			clean_nicely_and_exit(shell, ft_atoi(cmd_args[2]));
 		}
 	}
 	if (!ft_is_natural(cmd_args[2]))
 	{
 		ft_putstr_fd("exit\n", 2);
 		handle_builtin_err("exit", cmd_args[2], "numeric argument required");
-		exit(EXIT_NUM_ARG_REQ); // Clean nicely
+		clean_nicely_and_exit(shell, EXIT_NUM_ARG_REQ);
 	}
-	else
-	{
-		ft_putstr_fd("exit\n", 2);
-		handle_builtin_err(cmd_args[0], cmd_args[2], "too many arguments");
-		return (FAILURE);
-	}
+	ft_putstr_fd("exit\n", 2);
+	handle_builtin_err(cmd_args[0], cmd_args[2], "too many arguments");
+	return (FAILURE);
 }
 
 /**
@@ -98,14 +96,12 @@ static t_ecode	handle_argc_2(t_shell *shell, char **cmd_args)
 	if (ft_is_natural(cmd_args[1]))
 	{
 		ft_putstr_fd("exit\n", 2);
-		exit(ft_atoi(cmd_args[1])); //Clean nicely
+		clean_nicely_and_exit(shell, ft_atoi(cmd_args[1]));
 	}
-	else
-	{
-		ft_putstr_fd("exit\n", 2);
-		handle_builtin_err("exit", cmd_args[1], "numeric argument required");
-		exit(EXIT_NUM_ARG_REQ); //Clean nicely
-	}
+	ft_putstr_fd("exit\n", 2);
+	handle_builtin_err("exit", cmd_args[1], "numeric argument required");
+	clean_nicely_and_exit(shell, EXIT_NUM_ARG_REQ);
+	return (ERROR);
 }
 
 /**
@@ -125,12 +121,9 @@ static t_ecode	handle_argc_gt_2(t_shell *shell, char **cmd_args)
 	{
 		ft_putstr_fd("exit\n", 2);
 		handle_builtin_err("exit", cmd_args[1], "numeric argument required");
-		exit(EXIT_NUM_ARG_REQ); //Clean nicely
+		clean_nicely_and_exit(shell, EXIT_NUM_ARG_REQ);
 	}
-	else
-	{
-		ft_putstr_fd("exit\n", 2);
-		handle_builtin_err(cmd_args[0], cmd_args[1], "too many arguments");
-		return (FAILURE);
-	}
+	ft_putstr_fd("exit\n", 2);
+	handle_builtin_err(cmd_args[0], cmd_args[1], "too many arguments");
+	return (FAILURE);
 }

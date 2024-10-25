@@ -130,7 +130,7 @@ void	expand(t_shell *shell, t_token *start_token, t_token *end_token, \
 		if (err_no)
 		{
 			handle_parsing_err(shell, err_no);
-			clean_nicely_and_exit(shell);
+			clean_nicely_and_exit(shell, EXIT_FAILURE);
 		}
 		if (current_token == end_token)
 			break ;
