@@ -1,7 +1,7 @@
 #include "../../include/minishell.h"
 
 static void	handle_non_builtin(t_shell *shell, t_cmd *cmd);
-static void	handle_redirs_in_child(t_cmd *cmd);
+static void	handle_redirs_in_child(t_shell *shell, t_cmd *cmd);
 static void	run_child(t_shell *shell, t_cmd *cmd);
 static void	do_parent_duties(t_shell *shell, t_cmd *cmd);
 
@@ -58,7 +58,7 @@ static void	handle_non_builtin(t_shell *shell, t_cmd *cmd)
 {
 	shell->parent = fork();
 	if (shell->parent == -1)
-		exit(EXIT_FAILURE); //Clean nicely
+		clean_nicely_and_exit(shell, EXIT_FAILURE);
 	else if (!shell->parent)
 		run_child(shell, cmd);
 	do_parent_duties(shell, cmd);
@@ -83,14 +83,14 @@ static void	run_child(t_shell *shell, t_cmd *cmd)
 
 	cmd_path = NULL;
 	init_signals(CHILD_NON_INTERACTIVE);
-	handle_redirs_in_child(cmd);
+	handle_redirs_in_child(shell, cmd);
 	cmd_path = NULL;
 	if (cmd && cmd->args)
 		cmd_path = get_cmd_path(shell, cmd->args[0]);
 	if (!cmd_path && shell->exit_code != 0)
 	{
 		handle_cmd_err(shell, cmd, strerror(errno));
-		exit(shell->exit_code);
+		clean_nicely_and_exit(shell, shell->exit_code);
 	}
 	env_array = create_env_array(shell->env_list);
 	execve(cmd_path, cmd->args, env_array);
@@ -98,7 +98,7 @@ static void	run_child(t_shell *shell, t_cmd *cmd)
 		handle_cmd_err(shell, cmd, strerror(ENOENT));
 	else
 		handle_cmd_err(shell, cmd, "command not found");
-	exit(EXIT_CMD_NOT_FOUND); //Clean nicely?
+	clean_nicely_and_exit(shell, EXIT_CMD_NOT_FOUND);
 }
 
 /**
@@ -109,19 +109,19 @@ static void	run_child(t_shell *shell, t_cmd *cmd)
  * 
  * @return void
  */
-static void	handle_redirs_in_child(t_cmd *cmd)
+static void	handle_redirs_in_child(t_shell *shell, t_cmd *cmd)
 {
 	if (cmd->latest_in == ERROR || cmd->latest_in == ERROR)
-		exit(EXIT_FAILURE); //Clean nicely?
+		clean_nicely_and_exit(shell, EXIT_FAILURE);
 	if (cmd->latest_in != STDIN_FILENO)
 	{
 		if (dup_and_close(cmd->latest_in, STDIN_FILENO))
-			exit(EXIT_FAILURE); //Clean nicely?
+			clean_nicely_and_exit(shell, EXIT_FAILURE);
 	}
 	if (cmd->latest_out != STDOUT_FILENO)
 	{
 		if (dup_and_close(cmd->latest_out, STDOUT_FILENO))
-			exit(EXIT_FAILURE); //Clean nicely?
+			clean_nicely_and_exit(shell, EXIT_FAILURE);
 	}
 }
 
@@ -147,5 +147,6 @@ static void	do_parent_duties(t_shell *shell, t_cmd *cmd)
 		shell->exit_code = WTERMSIG(wstatus) + EXIT_SIGNAL_CODE;
 		g_signalcode = WTERMSIG(wstatus);
 	}
-	close_all_fds_in_cmd(cmd); //Clean nicely
+	close_all_fds_in_cmd(cmd);
+	clean_nicely(shell);
 }
