@@ -32,7 +32,7 @@ t_token_id	get_token_id(char c)
 
 int	assign_token_id_and_string(char *str, size_t *pos, t_token *token)
 {
-	int					start_pos;
+	int				start_pos;
 	t_lexer_func	advance[13];
 
 	start_pos = *pos;

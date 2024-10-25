@@ -7,9 +7,6 @@ t_cmd	*new_cmd(void)
 	cur_cmd = (t_cmd *)ft_calloc(1, sizeof(t_cmd));
 	if (!cur_cmd)
 		return (NULL);
-	// cur_cmd->args = NULL;
-	// cur_cmd->redir = NULL;
-	// cur_cmd->next = NULL;
 	cur_cmd->latest_in = STDIN_FILENO;
 	cur_cmd->latest_out = STDOUT_FILENO;
 	return (cur_cmd);
@@ -28,7 +25,7 @@ void	free_args(char ***args)
 	int	i;
 
 	if (!(*args))
-		return;
+		return ;
 	i = 0;
 	while ((*args)[i])
 	{
@@ -43,7 +40,7 @@ void	free_args(char ***args)
 void	free_cmd(t_cmd **cmd)
 {
 	if (*cmd == NULL)
-		return;
+		return ;
 	if (cmd && *cmd && (*cmd)->args)
 		free_args(&(*cmd)->args);
 	if ((*cmd)->redir)
@@ -51,4 +48,3 @@ void	free_cmd(t_cmd **cmd)
 	free(*cmd);
 	*cmd = NULL;
 }
-

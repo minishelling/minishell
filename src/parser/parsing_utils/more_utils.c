@@ -2,7 +2,6 @@
 
 int	safe_assign_str(char **dest, const char *src)
 {
-	if (!dest || !*dest)
 	if (*dest)
 	{
 		free(*dest);
@@ -20,15 +19,15 @@ int	safe_assign_str(char **dest, const char *src)
 	return (SUCCESS);
 }
 
-size_t ft_strcspn(const char *str, const char *reject)
+size_t	ft_strcspn(const char *str, const char *reject)
 {
-	size_t count;
+	size_t	count;
 
 	count = 0;
 	while (str[count])
 	{
 		if (ft_strchr(reject, str[count]))
-			break;
+			break ;
 		count++;
 	}
 	return (count);

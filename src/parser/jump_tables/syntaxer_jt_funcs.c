@@ -87,6 +87,8 @@ int	syntax_redir(t_token *prev_token, t_token *cur_token, t_env *env_list)
 	next_token = skip_whitespace_and_get_next_token(cur_token);
 	if (!next_token)
 		return (ERR_SYNTAX_NL);
+	if (next_token->id == ENV_VAR && !ft_strncmp((cur_token->str), "<<", 2))
+		next_token->id = WORD;
 	if (next_token->id == PAR_OPEN)
 		return (ERR_SYNTAX_UNEXPECT_OPEN);
 	if (next_token->id == PAR_CLOSE)
@@ -100,8 +102,8 @@ int	syntax_redir(t_token *prev_token, t_token *cur_token, t_env *env_list)
 	if (next_token->id == SQUOTE || next_token->id == DQUOTE)
 		if (remove_delimiter_quotes(next_token) != SUCCESS)
 			return (ERR_MEM);
-	if (next_token->id != WORD)
-		return (ERR_SYNTAX_ERROR);
+	// if (next_token->id != WORD)
+	// 	return (ERR_SYNTAX_ERROR);
 	return (PARSING_OK);
 }
 

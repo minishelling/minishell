@@ -1,5 +1,4 @@
 
-
 #include "../../include/minishell.h"
 
 char *int_to_string(int num) 
@@ -28,13 +27,14 @@ char *int_to_string(int num)
 	return (str);
 }
 
-char *create_temp_file_for_heredoc(int counter) 
+char	*create_temp_file_for_heredoc(int counter) 
 {
-	const char *prefix = "/tmp/heredoc";
-	char *file_name;
-	char *counter_str;
-	int total_length;
+	const char	*prefix;
+	char		*file_name;
+	char		*counter_str;
+	int			total_length;
 
+	prefix = "/tmp/heredoc";
 	counter_str = int_to_string(counter);
 	if (!counter_str) 
 		return (NULL);
@@ -52,47 +52,37 @@ char *create_temp_file_for_heredoc(int counter)
 	return (file_name);
 }
 
-int handle_heredocs(t_shell *shell, t_token *token_list) 
+
+int	handle_heredocs(t_shell *shell, t_token *token_list) 
 {
-	t_token *current;
-	t_token *next_token;
-	char *delimiter;
-	char *file_name;
-	int fd;
-	int heredoc_counter;
+	t_token	*next_token;
+	char	*delimiter;
+	char	*file_name;
+	int		fd;
+	int		heredoc_counter;
 
-	current = token_list;
 	heredoc_counter = 0;
-
-	while (current != NULL)
+	while (token_list)
 	{
-		if (ft_strncmp(current->str, "<<", 2) == 0) 
+		if (ft_strncmp(token_list->str, "<<", 2) == 0)
 		{
-			next_token = current->next;
-			if (next_token && next_token->id == WORD) 
-			{
+			next_token = token_list->next;
 				file_name = create_temp_file_for_heredoc(heredoc_counter);
 				heredoc_counter++;
 				if (file_name == NULL)
 					return (ERR_MEM);
 				delimiter = ft_strdup(next_token->str);
-				safe_assign_str(&next_token->str, file_name);  //protect better
-				fd = read_heredoc_input(shell, next_token->str, delimiter);  //protect
+				safe_assign_str(&next_token->str, file_name); //protect better
+				fd = read_heredoc_input(shell, next_token->str, delimiter);
 				if (g_signalcode == SIGINT)
 				{
 					shell->exit_code = E_SIGINT;
 					return (SIGINT_HDOC);
 				}
-				else if (fd)
-				{
-					free(file_name);
-					safe_assign_str(&next_token->str, ft_itoa(fd)); //protect better
-				}
-				// else
-				// 	error
-			}
+				free(file_name);
+				safe_assign_str(&next_token->str, ft_itoa(fd)); //protect better
 		}
-		current = current->next;
+		token_list = token_list->next;
 	}
 	return (PARSING_OK);
 }

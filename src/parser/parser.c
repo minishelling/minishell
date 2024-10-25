@@ -116,10 +116,9 @@ int	parse(t_shell *shell)
 		return (err_no);
 	if (g_signalcode == SIGINT)
 		return (SIGINT_HDOC);
-	
 	shell->tree = make_tree(shell, shell->token, last_token(shell->token));
 	if (!shell->tree)
 		return (ERR_MEM);
-	print_tree(shell->tree, 0);
+	//print_tree(shell->tree, 0);
 	return (PARSING_OK);
 }
