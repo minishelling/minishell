@@ -63,7 +63,10 @@ static char	*check_name_as_path(t_shell *shell, char *cmd_name)
 	struct stat	stat_buffer;
 
 	if (stat(cmd_name, &stat_buffer) != 0)
+	{
+		shell->exit_code = 0;
 		return (NULL);
+	}
 	if (access(cmd_name, F_OK) == 0)
 	{
 		if (S_ISDIR(stat_buffer.st_mode))
