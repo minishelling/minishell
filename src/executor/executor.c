@@ -148,5 +148,4 @@ static void	do_parent_duties(t_shell *shell, t_cmd *cmd)
 		g_signalcode = WTERMSIG(wstatus);
 	}
 	close_all_fds_in_cmd(cmd);
-	clean_nicely(shell);
 }
