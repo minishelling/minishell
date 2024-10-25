@@ -139,6 +139,7 @@ static void	do_parent_duties(t_shell *shell, t_cmd *cmd)
 {
 	int	wstatus;
 
+	wstatus = 0;
 	waitpid(shell->parent, &wstatus, 0);
 	if (WIFEXITED(wstatus) == true)
 		shell->exit_code = WEXITSTATUS(wstatus);

@@ -55,7 +55,7 @@ int	handle_pipe_subtree(t_shell *shell, t_tree *tree_node)
 	waitpid(right_node_pid, &status[LAST_STATUS], 0);
 	while(wait(&status[ALL_STATUSES]) != ERROR)
 	{
-		if (status[ALL_STATUSES] >= EXIT_SIGNAL_CODE)
+		if (status[ALL_STATUSES] == E_SIGINT || status[ALL_STATUSES] == E_SIGQUIT)
 			g_signalcode = status[ALL_STATUSES]- EXIT_SIGNAL_CODE;
 	}
 	return (WEXITSTATUS(status[LAST_STATUS]));

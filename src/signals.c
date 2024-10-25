@@ -23,15 +23,6 @@ void	sigint_handler_parent_non_interactive(int signal)
 	rl_replace_line("", 0);	
 }
 
-// void	sigint_handler_child_non_interactive(int signal)
-// {
-// 	if (signal == SIGINT)
-// 	{
-// 		close_all_fds_in_process();
-// 		exit (E_SIGINT);
-// 	}
-// }
-
 void	sigint_handler_heredoc_parent(int signal)
 {
 	g_signalcode = signal;
