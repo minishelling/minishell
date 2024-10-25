@@ -33,10 +33,10 @@ void free_tree(t_tree **node)
 	*node = NULL;
 }
 
-void clean_nicely_and_exit(t_shell *shell)
+void clean_nicely_and_exit(t_shell *shell, int exit_code)
 {
 	clean_nicely(shell);
-	exit(EXIT_FAILURE);
+	exit(exit_code);
 }
 
 
@@ -79,7 +79,7 @@ void handle_parsing_err(t_shell *shell, int err_no)
 	if ((err_no >= ERR_SYNTAX_NL  && err_no <= ERR_SYNTAX_ERROR) || err_no == SIGINT_HDOC)
 		clean_nicely(shell);
 	else
-		clean_nicely_and_exit(shell);
+		clean_nicely_and_exit(shell, EXIT_FAILURE);
 }
 
 void handle_cmd_err(t_shell *shell, t_cmd *cmd, char *err_msg)
@@ -98,7 +98,7 @@ void handle_cmd_err(t_shell *shell, t_cmd *cmd, char *err_msg)
 	if (!full_msg)
 	{
 		perror("handle_cmd_err");
-		clean_nicely_and_exit(shell);
+		clean_nicely_and_exit(shell, EXIT_FAILURE);
 	}
 	ft_strlcpy(full_msg, cmd->args[0], cmd_len + 1);
 	ft_strlcat(full_msg, colon, total_len + 1);

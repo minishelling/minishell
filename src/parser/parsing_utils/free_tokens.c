@@ -33,18 +33,14 @@ void free_token(t_token **token)
 
 void	free_token_list(t_token **token_list)
 {
-	t_token	*current;
 	t_token	*next;
 
 	if (!token_list || !(*token_list))
 		return ;
-	current = *token_list;
-	while (current)
+	while (*token_list)
 	{
-		next = current->next;
-		free_token(&current);
-		current = next;
+		next = (*token_list)->next;
+		free_token(token_list);
+		*token_list = next;
 	}
-	free(*token_list);
-	*token_list = NULL;
 }
