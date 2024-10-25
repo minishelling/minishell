@@ -9,7 +9,7 @@ t_tree	*init_leaf_node(t_shell *shell, t_token *start_token, \
 	if (!leaf_node)
 	{
 		handle_parsing_err(shell, ERR_MEM);
-		clean_nicely_and_exit(shell);
+		clean_nicely_and_exit(shell, EXIT_FAILURE);
 	}
 	leaf_node->type = CMD;
 	leaf_node->start_token = start_token;
@@ -28,7 +28,7 @@ static t_tree	*process_arith_expan(t_shell *shell, t_token *start_token, \
 	|| safe_assign_str(&(end_token->str), "))") != SUCCESS)
 	{
 		handle_parsing_err(shell, ERR_MEM);
-		clean_nicely_and_exit(shell);
+		clean_nicely_and_exit(shell, EXIT_FAILURE);
 	}
 	start_token->id = ARITH_EXPAN;
 	end_token->id = ARITH_EXPAN;
@@ -108,13 +108,13 @@ t_tree	*init_tree_node(t_shell *shell, t_token *op_token)
 	if (!op_token)
 	{
 		handle_parsing_err(shell, ERR_MEM);
-		clean_nicely_and_exit(shell);
+		clean_nicely_and_exit(shell, EXIT_FAILURE);
 	}
 	tree_node = (t_tree *)ft_calloc(1, sizeof(t_tree));
 	if (!tree_node)
 	{
 		handle_parsing_err(shell, ERR_MEM);
-		clean_nicely_and_exit(shell);
+		clean_nicely_and_exit(shell, EXIT_FAILURE);
 	}
 	if (op_token->id == AND_OPR)
 		tree_node->type = T_AND_OPR;
