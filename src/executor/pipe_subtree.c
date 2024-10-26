@@ -1,5 +1,8 @@
 #include "../../include/minishell.h"
 
+#define READ_END 0
+#define WRITE_END 1
+
 #define ALL 0
 #define LAST_STATUS 1
 
@@ -7,6 +10,7 @@ static void	handle_pipe_left_node(t_shell *shell, t_tree *tree_node, int fd[2]);
 static void	handle_pipe_right_node(t_shell *shell,
 				t_tree *tree_node, int fd[2]);
 static void	close_fds(int fd1, int fd2);
+static void	handle_signal_status(void);
 
 /**
  * @brief Executes a subtree where the root is a pipe operator.
@@ -35,7 +39,7 @@ static void	close_fds(int fd1, int fd2);
 int	handle_pipe_subtree(t_shell *shell, t_tree *tree_node)
 {
 	int		fd[2];
-	int		status[2];
+	int		status;
 	pid_t	left_node_pid;
 	pid_t	right_node_pid;
 
@@ -52,13 +56,9 @@ int	handle_pipe_subtree(t_shell *shell, t_tree *tree_node)
 	else if (right_node_pid == 0)
 		handle_pipe_right_node(shell, tree_node, fd);
 	close_fds(fd[READ_END], fd[WRITE_END]);
-	waitpid(right_node_pid, &status[LAST_STATUS], 0);
-	while (wait(&status[ALL]) != ERROR)
-	{
-		if (status[ALL] == E_SIGINT || status[ALL] == E_SIGQUIT)
-			g_signalcode = status[ALL] - EXIT_SIGNAL_CODE;
-	}
-	return (WEXITSTATUS(status[LAST_STATUS]));
+	waitpid(right_node_pid, &status, 0);
+	handle_signal_status();
+	return (WEXITSTATUS(status));
 }
 
 /**
@@ -135,5 +135,29 @@ static void	close_fds(int fd1, int fd2)
 	{
 		if (close(fd2) == ERROR)
 			perror("close fd2");
+	}
+}
+
+/**
+ * @brief Handles the case where a child exited with a signal.
+ * 
+ * If a child exited with the signal SIGINT or SIGQUIT
+ * then the global variable g_signalcode is modified
+ * to be the signal code.
+ * 
+ * @param void
+ * 
+ * @return void
+ */
+static void	handle_signal_status(void)
+{
+	int	status;
+
+	while (wait(&status) != ERROR)
+	{
+		if (status == EXIT_SIGINT || status == EXIT_SIGQUIT)
+			g_signalcode = status - EXIT_SIGNAL_CODE;
+		else if (status >> 8 == EXIT_SIGINT || status >> 8 == EXIT_SIGQUIT)
+			g_signalcode = status >> 8;
 	}
 }

@@ -35,9 +35,6 @@
 # define MAGENTA_BACKGROUND "\033[45m"
 # define WHITE_BACKGROUND "\033[47m"
 
-# define READ_END 0
-# define WRITE_END 1
-
 typedef enum signal_mode
 {
 	INTERACTIVE,
@@ -57,8 +54,8 @@ typedef enum exit_code
 	EXIT_CMD_NOT_EXECUTABLE = 126,
 	EXIT_CMD_NOT_FOUND = 127,
 	EXIT_SIGNAL_CODE = 128,
-	E_SIGINT = 130,
-	E_SIGQUIT = 131
+	EXIT_SIGINT = 130,
+	EXIT_SIGQUIT = 131
 }	t_exit_code;
 
 typedef enum e_codes
