@@ -314,7 +314,7 @@ void 		clean_nicely_and_exit(t_shell *shell, int exit_code);
 
 int			safe_assign_str(char **dest, const char *src);
 size_t		ft_strcspn(const char *str, const char *reject);
-char		*handle_var_sign(t_shell *shell, char **str, char *expanded_str, t_env *env_list);
+void		handle_var_sign(t_shell *shell, char **str, char **expanded_str, t_env *env_list);
 
 //SIGNALS
 
