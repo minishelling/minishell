@@ -44,9 +44,9 @@ char	*get_key_from_keyvalue(char *keyvalue)
  * If there's nothing following a '=' char, then it returns an empty string.
  * 
  * @param keyvalue The keyvalue string to extract the value from.
- * @param value_ptr The a pointer to the string where to store the value information.
+ * @param value_ptr The ptr to the string where to store the value information.
  * 
- * @return An ERROR code if there is no value or if it fails to assign memory for it.
+ * @return An ERROR code if there is no value or if it fails to assign memory.
  * Returns SUCCESS otherwise.
  */
 t_ecode	get_value_from_keyvalue(char *keyvalue, char **value_ptr)
@@ -56,7 +56,7 @@ t_ecode	get_value_from_keyvalue(char *keyvalue, char **value_ptr)
 
 	if (!keyvalue || !keyvalue[0])
 		return (NULL_ERROR);
-	while (*keyvalue && *keyvalue!= '=')
+	while (*keyvalue && *keyvalue != '=')
 		keyvalue++;
 	if (*keyvalue != '=')
 		return (NULL_STRING);
@@ -142,20 +142,21 @@ t_env	*get_last_env_node(t_env *head)
  * NULL if there's no environment list, the token key is NULL,
  * or if the node was not found.
  */
-char *get_env_value_from_key(t_env *env_head, char *token_key) 
+char	*get_env_value_from_key(t_env *env_head, char *token_key)
 {
-    t_env *cur;
-    size_t token_key_len;
+	t_env	*cur;
+	size_t	token_key_len;
 
-    if (!env_head || !token_key || !token_key[0])
-        return (NULL);
-    token_key_len = ft_strlen(token_key);
-    cur = env_head;
-    while (cur) {
-        if (token_key_len == ft_strlen(cur->key) &&
-            ft_strncmp(token_key, cur->key, token_key_len) == 0) 
-            	return (cur->value);
-        cur = cur->next;
-    }
-    return (NULL);
+	if (!env_head || !token_key || !token_key[0])
+		return (NULL);
+	token_key_len = ft_strlen(token_key);
+	cur = env_head;
+	while (cur)
+	{
+		if (token_key_len == ft_strlen(cur->key)
+			&& ft_strncmp(token_key, cur->key, token_key_len) == 0)
+			return (cur->value);
+		cur = cur->next;
+	}
+	return (NULL);
 }

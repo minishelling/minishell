@@ -31,7 +31,7 @@ t_ecode	add_last_env_node(t_env **head, t_env *node)
  * 
  * @param head The head node of the environment list.
  * @param key The key to find the target node, or to use when creating a new one.
- * @param value The new value that's going to update the value and keyvalue strings.
+ * @param value The value that's going to update the value and keyvalue strings.
  * @param create_node If true it creates a new node if it fails to find it
  * in the environment list, and appends it to the end of the list.
  * 

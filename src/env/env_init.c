@@ -38,11 +38,11 @@ t_env	*new_env_node(void)
 t_ecode	populate_env_node(t_env **node, char *keyval)
 {
 	if (!*node)
-		return (NULL_NODE); //Do I leave NULL_NODE? In this case there wouldn't be a reason to perror.
+		return (FAILURE);
 	if (!keyval)
 	{
 		ft_free((void **) node);
-		return (NULL_STRING); //Do I leave NULL_STRING? In this case there wouldn't be a reason to perror.
+		return (FAILURE);
 	}
 	(*node)->key = get_key_from_keyvalue(keyval);
 	if (!(*node)->key)
@@ -76,8 +76,8 @@ t_env	*create_populated_env_node(char *keyval)
 	new_node = new_env_node();
 	if (!new_node)
 		return (NULL);
-	if (populate_env_node(&new_node, keyval) == MALLOC_ERROR) // Print error?
-		return (NULL);
+	if (populate_env_node(&new_node, keyval) == MALLOC_ERROR)
+		return (handle_perror("create_populated_env_node"), NULL);
 	return (new_node);
 }
 
@@ -86,7 +86,7 @@ t_env	*create_populated_env_node(char *keyval)
  * It creates all the nodes in the environment list
  * and initializes them with keys and if applicable values and keyvalues.
  * 
- * @param head A pointer to the address where the head node is going to be stored.
+ * @param head A ptr to the address where the head node is going to be stored.
  * @param envp The environment array.
  * 
  * @return FAILURE if envp is NULL or if the first string is NULL,

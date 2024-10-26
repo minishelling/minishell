@@ -62,7 +62,8 @@ ssize_t	count_envp_keys(char **envp)
 }
 
 /**
- * @brief Counts the number of values that are separated by a colon in an environment node.
+ * @brief Counts the number of values
+ * that are separated by a colon in an environment node.
  * 
  * @param env_list The head node of the environment list.
  * @param key The name of the target environment node.
