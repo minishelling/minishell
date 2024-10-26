@@ -28,6 +28,8 @@ t_ecode	unset_builtin(t_shell *shell, char **cmd_args)
 		previous_node = previous_node->next;
 	if (previous_node)
 		previous_node->next = env_node->next;
+	if (env_node == shell->env_list)
+		shell->env_list = shell->env_list->next;
 	free_env_node(&env_node);
 	return (SUCCESS);
 }
