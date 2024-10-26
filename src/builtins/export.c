@@ -1,29 +1,6 @@
 #include "../../include/minishell.h"
 
-/**
- * @brief Checks if a key-value string is a valid identifier to export.
- * 
- * @param keyval A key-value string to be added to the environment if valid.
- * 
- * @return True if the key is a valid identifier, false otherwise.
- */
-static bool	is_valid_identifier(char *keyval)
-{
-	int	i;
-
-	if (keyval && (keyval[0] != '_' && !ft_isalpha(keyval[0])))
-		return (false);
-	i = 1;
-	while (keyval[i])
-	{
-		if (keyval[i] == '=')
-			break ;
-		if (keyval[i] != '_' && !ft_isalnum(keyval[i]))
-			return (false);
-		i++;
-	}
-	return (true);
-}
+static bool	is_valid_identifier(char *keyval);
 
 /**
  * @brief Adds a given key-value combination to the environment node.
@@ -63,4 +40,29 @@ t_ecode	export_builtin(t_shell *shell, char **cmd_args)
 	if (status != SUCCESS && status != NULL_STRING)
 		return (ft_free((void **) &key), MALLOC_ERROR);
 	return (update_env_node(&shell->env_list, key, value, true));
+}
+
+/**
+ * @brief Checks if a key-value string is a valid identifier to export.
+ * 
+ * @param keyval A key-value string to be added to the environment if valid.
+ * 
+ * @return True if the key is a valid identifier, false otherwise.
+ */
+static bool	is_valid_identifier(char *keyval)
+{
+	int	i;
+
+	if (keyval && (keyval[0] != '_' && !ft_isalpha(keyval[0])))
+		return (false);
+	i = 1;
+	while (keyval[i])
+	{
+		if (keyval[i] == '=')
+			break ;
+		if (keyval[i] != '_' && !ft_isalnum(keyval[i]))
+			return (false);
+		i++;
+	}
+	return (true);
 }

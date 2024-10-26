@@ -32,8 +32,8 @@ int	executor(t_shell *shell, t_cmd *cmd)
 	}
 	if (!ft_strncmp(cmd->args[0], "((", 3))
 	{
-		ft_putstr_fd("This is an arithmetic expansion. \
-		We don't do that here.\n", 2);
+		ft_putstr_fd( \
+		"This is an arithmetic expansion. We don't do that here.\n", 2);
 		shell->exit_code = FAILURE;
 		return (shell->exit_code);
 	}
