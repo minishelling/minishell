@@ -56,11 +56,11 @@ static t_ecode	execute_builtin(t_shell *shell, char **cmd_args)
 {
 	t_builtin	builtin_code;
 
-	t_ecode	(*builtins_jumptable[])(t_shell *, char **) = {echo_builtin,
-		cd_builtin,	pwd_builtin, export_builtin, declare_builtin,
-		unset_builtin, env_builtin, exit_builtin};
+	t_ecode (*builtins_jumptable[])(t_shell *, char **) = {echo_builtin,
+	cd_builtin, pwd_builtin, export_builtin, declare_builtin,
+	unset_builtin, env_builtin, exit_builtin};
 	if (!shell || !cmd_args)
-		return (NULL_ERROR); //This would come from a bug, for instance freeing wrong. But it's important to have it anyways I guess.
+		return (NULL_ERROR);
 	builtin_code = check_builtin(cmd_args[0]);
 	if (builtin_code == NON_BUILTIN)
 		return (PROCEED);
