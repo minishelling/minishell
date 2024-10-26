@@ -1,7 +1,8 @@
 #include "../../include/minishell.h"
 
 static char	*check_name_as_path(t_shell *shell, char *cmd_name);
-static char	*check_path_access(t_shell *shell, char *current_path, char *cmd_name);
+static char	*check_path_access(t_shell *shell, \
+				char *current_path, char *cmd_name);
 static char	*ft_strjoin_cmd_path(char *path, char *cmd_name);
 
 /**
@@ -38,7 +39,7 @@ char	*get_cmd_path(t_shell *shell, char *cmd_name)
 	{
 		cmd_path = check_path_access(shell, paths[i], cmd_name);
 		if (cmd_path)
-			return(cmd_path);
+			return (cmd_path);
 		i++;
 	}
 	ft_free_2d((void ***) &paths);
@@ -53,8 +54,9 @@ char	*get_cmd_path(t_shell *shell, char *cmd_name)
  * 
  * @return If the file is found and is executable,
  * it returns the name of the command that will act as path.
- * If the file is a directory it sets errno to EISDIR,
- * and for files (and directories) that are found but cannot be executed
+ * If the a file fails stat, the exit code is set to 0 and NULL is returned.
+ * If the file is a directory it sets errno to EISDIR.
+ * For directories, and files that are found but cannot be executed
  * it sets the exit code to 126 and returns NULL.
  * Else the exit_code is set to 127 and returns NULL as well.
  */
@@ -93,7 +95,8 @@ static char	*check_name_as_path(t_shell *shell, char *cmd_name)
  * it returns NULL and sets the error code to 126.
  * Else it returns NULL.
  */
-static char	*check_path_access(t_shell *shell, char *current_path, char *cmd_name)
+static char	*check_path_access(t_shell *shell, \
+				char *current_path, char *cmd_name)
 {
 	char	*cmd_path;
 

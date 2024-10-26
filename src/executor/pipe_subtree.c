@@ -1,6 +1,6 @@
 #include "../../include/minishell.h"
 
-#define ALL_STATUSES 0
+#define ALL 0
 #define LAST_STATUS 1
 
 static void	handle_pipe_left_node(t_shell *shell, t_tree *tree_node, int fd[2]);
@@ -53,10 +53,10 @@ int	handle_pipe_subtree(t_shell *shell, t_tree *tree_node)
 		handle_pipe_right_node(shell, tree_node, fd);
 	close_fds(fd[READ_END], fd[WRITE_END]);
 	waitpid(right_node_pid, &status[LAST_STATUS], 0);
-	while(wait(&status[ALL_STATUSES]) != ERROR)
+	while (wait(&status[ALL]) != ERROR)
 	{
-		if (status[ALL_STATUSES] == E_SIGINT || status[ALL_STATUSES] == E_SIGQUIT)
-			g_signalcode = status[ALL_STATUSES]- EXIT_SIGNAL_CODE;
+		if (status[ALL] == E_SIGINT || status[ALL] == E_SIGQUIT)
+			g_signalcode = status[ALL] - EXIT_SIGNAL_CODE;
 	}
 	return (WEXITSTATUS(status[LAST_STATUS]));
 }

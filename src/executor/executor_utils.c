@@ -4,20 +4,29 @@
  * @brief Checks if the given command name is a valid built-in.
  * 
  * @param cmd_name The command name to be checked if is a built-in.
+ * 
  * @return The builtin code if it matches the name of a built-in.
  * Returns the code NON_BUILTIN if it doesn't.
  */
 t_builtin	check_builtin(char *cmd_name)
 {
-	char		*builtins[] = {"echo", "cd", "pwd", "export",
-						"declare", "unset", "env", "exit", NULL};
+	char		*builtins[BUILTIN_COUNT];
 	t_builtin	builtin_code;
 
+	builtins[ECHO] = "echo";
+	builtins[CD] = "cd";
+	builtins[PWD] = "pwd";
+	builtins[EXPORT] = "export";
+	builtins[DECLARE] = "declare";
+	builtins[UNSET] = "unset";
+	builtins[ENV] = "env";
+	builtins[EXIT] = "exit";
+	builtins[NON_BUILTIN] = NULL;
 	builtin_code = ECHO;
 	while (builtins[builtin_code])
 	{
 		if (!ft_strncmp(cmd_name, builtins[builtin_code],
-			max_len(cmd_name, builtins[builtin_code])))
+				max_len(cmd_name, builtins[builtin_code])))
 			return (builtin_code);
 		builtin_code++;
 	}
@@ -47,7 +56,7 @@ size_t	count_cmds(t_cmd *head)
 }
 
 /**
- * @brief Duplicates the current STDIN and STDOUT into the variable given as parameter.
+ * @brief Dups the current STDIN and STDOUT into the variable given as parameter.
  * 
  * @param backup The variable to hold the duplicates of STDIN and STDOUT.
  * @return SUCCESS if it duplicates both standard file descriptors successfully.
