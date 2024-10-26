@@ -10,7 +10,7 @@ static void	handle_pipe_left_node(t_shell *shell, t_tree *tree_node, int fd[2]);
 static void	handle_pipe_right_node(t_shell *shell,
 				t_tree *tree_node, int fd[2]);
 static void	close_fds(int fd1, int fd2);
-static void	handle_signal_status(void);
+static void	handle_signal_status(pid_t last_pid, int *last_status);
 
 /**
  * @brief Executes a subtree where the root is a pipe operator.
@@ -56,8 +56,7 @@ int	handle_pipe_subtree(t_shell *shell, t_tree *tree_node)
 	else if (right_node_pid == 0)
 		handle_pipe_right_node(shell, tree_node, fd);
 	close_fds(fd[READ_END], fd[WRITE_END]);
-	waitpid(right_node_pid, &status, 0);
-	handle_signal_status();
+	handle_signal_status(right_node_pid, &status);
 	return (WEXITSTATUS(status));
 }
 
@@ -145,14 +144,21 @@ static void	close_fds(int fd1, int fd2)
  * then the global variable g_signalcode is modified
  * to be the signal code.
  * 
- * @param void
+ * @param last_pid The pid of the last child to be executed.
+ * @param last_status A pointer where we want to store the last status.
  * 
  * @return void
  */
-static void	handle_signal_status(void)
+static void	handle_signal_status(pid_t last_pid, int *last_status)
 {
 	int	status;
 
+	waitpid(last_pid, last_status, 0);
+	if (*last_status == EXIT_SIGINT || *last_status == EXIT_SIGQUIT)
+		g_signalcode = *last_status - EXIT_SIGNAL_CODE;
+	else if (*last_status >> 8 == EXIT_SIGINT \
+		|| *last_status >> 8 == EXIT_SIGQUIT)
+		g_signalcode = *last_status >> 8;
 	while (wait(&status) != ERROR)
 	{
 		if (status == EXIT_SIGINT || status == EXIT_SIGQUIT)
