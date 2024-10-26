@@ -23,25 +23,22 @@
 # include <sys/types.h>
 # include <sys/stat.h>
 
-
-#define MINISHARED_PROMPT "\001\033[38;5;93m\002M\001\033[38;5;99m\002i\001\033[38;5;111m\002n\001\033[38;5;63m\002i\001\033[38;5;75m\002_\001\033[38;5;81m\002s\001\033[38;5;118m\002h\001\033[38;5;154m\002a\001\033[38;5;190m\002r\001\033[38;5;226m\002e\001\033[38;5;214m\002d\001\033[0m\002: \001\033[0m\002"
-#define ERR_PROMPT "Mini_shared: \001\033[0m\002"
+# define MINISHARED_PROMPT "\001\033[38;5;93m\002M\001\033[38;5;99m\002i\001\033[38;5;111m\002n\001\033[38;5;63m\002i\001\033[38;5;75m\002_\001\033[38;5;81m\002s\001\033[38;5;118m\002h\001\033[38;5;154m\002a\001\033[38;5;190m\002r\001\033[38;5;226m\002e\001\033[38;5;214m\002d\001\033[0m\002: \001\033[0m\002"
+# define ERR_PROMPT "Mini_shared: \001\033[0m\002"
 
 # define META_CHARS_PLUS_SET " \t\n|&()><\'\"$"
 # define ERROR -1
 
-#define RESET_COLOR "\033[0m"
-#define MAGENTA_TEXT "\033[0;35m"
-#define WHITE_TEXT "\033[0;37m"
-#define MAGENTA_BACKGROUND "\033[45m"
-#define WHITE_BACKGROUND "\033[47m"
+# define RESET_COLOR "\033[0m"
+# define MAGENTA_TEXT "\033[0;35m"
+# define WHITE_TEXT "\033[0;37m"
+# define MAGENTA_BACKGROUND "\033[45m"
+# define WHITE_BACKGROUND "\033[47m"
 
 # define READ_END 0
 # define WRITE_END 1
 
-extern int	g_signalcode;
-
-typedef enum	signal_mode
+typedef enum signal_mode
 {
 	INTERACTIVE,
 	PARENT_NON_INTERACTIVE,
@@ -70,25 +67,11 @@ typedef enum e_codes
 	SUCCESS = 0,
 	FAILURE,
 	PROCEED,
-	INVALID_OPTION,
-	INVALID_FILE,
 	NULL_ERROR,
 	NULL_ENV,
 	NULL_NODE,
 	NULL_STRING,
-	NULL_ARRAY,
-	NULL_CURPATH_LIST,
-	DUP_ERROR,
-	COUNT_ERROR,
-	CWD_ERROR,
 	MALLOC_ERROR,
-	HOME_ERROR,
-	ACCESS_ERROR,
-	CHDIR_ERROR,
-	CDPATH_ERROR,
-	CDPATH_NULL,
-	ENV_ERROR,
-	NEW_NODE_ERROR,
 	COUNT
 }	t_ecode;
 
@@ -110,7 +93,7 @@ enum e_parsing_error
 	SIGINT_HDOC,
 };
 
-typedef enum e_token_id 
+typedef enum e_token_id
 {
 	SPACE_CHAR,
 	TAB_CHAR,
@@ -129,7 +112,7 @@ typedef enum e_token_id
 	ARITH_EXPAN
 }	t_token_id;
 
-typedef enum e_redir_id 
+typedef enum e_redir_id
 {
 	REDIR = 0,
 	IN,
@@ -140,7 +123,7 @@ typedef enum e_redir_id
 
 typedef enum e_builtin
 {
-	ECHO, //0
+	ECHO,
 	CD,
 	PWD,
 	EXPORT,
@@ -148,7 +131,7 @@ typedef enum e_builtin
 	UNSET,
 	ENV,
 	EXIT,
-	NON_BUILTIN, //8
+	NON_BUILTIN,
 	BUILTIN_COUNT
 }	t_builtin;
 
@@ -197,35 +180,35 @@ typedef enum e_tree_type
 	T_OR_OPR,
 	CMD,
 	T_PIPE
-} t_tree_type;
+}	t_tree_type;
 
 typedef struct s_tree
 {
-	struct s_tree 	*left;
+	struct s_tree	*left;
 	struct s_tree	*right;
 	t_tree_type		type;
-	t_token 		*start_token;
-    t_token 		*end_token;
+	t_token			*start_token;
+	t_token			*end_token;
 	t_cmd			*cmd;
-} t_tree;
+}	t_tree;
 
-typedef struct s_shell 
+typedef struct s_shell
 {
 	pid_t		parent;
 	uint8_t		exit_code;
-    char 		*input;
-    t_token 	*token;
+	char		*input;
+	t_token		*token;
 	t_tree		*tree;
 	t_env		*env_list;
-} t_shell;
+}	t_shell;
+
+extern int		g_signalcode;
 
 //FUNCTION POINTERS
+
 typedef void	(*t_lexer_func)(char *str, size_t *pos, t_token_id *token_id);
 typedef int		(*t_syntax_func)(t_token *prev, t_token *cur, t_env *env_list);
 typedef int		(*t_parser_func)(t_cmd *current_cmd, t_token *token);
-
-//INIT
-// int			init_shell(char **envp, t_shell *shell);
 
 //TOKENIZATION
 int			tokenize(t_shell *shell, char *input);
@@ -259,14 +242,14 @@ int			syntax_noop(t_token *t_prev, t_token *t_cur, t_env *env_list);
 int			syntax_word(t_token *t_prev, t_token *t_cur, t_env *env_list);
 
 //APPEND
-int			append (t_shell *shell);
+int			append(t_shell *shell);
 
 //REDIRECTION
 t_redir		*new_redir(void);
 void		add_redir_in_back(t_redir **redir_list_head, t_redir *new_redir);
 void		free_redir_list(t_redir **redir_list_head);
 int			handle_heredocs(t_shell *shell, t_token *token_list);
-int 		read_heredoc_input(t_shell *shell, const char *file_name, const char *delimiter);
+int			read_heredoc_input(t_shell *shell, const char *file_name, const char *delimiter);
 t_ecode		open_redirections(t_shell *shell, t_cmd *head);
 
 //AST
@@ -311,7 +294,7 @@ void		handle_builtin_err(char *cmd_name, char *arg, char *err_msg);
 
 //CLEAN
 void		clean_nicely(t_shell *shell);
-void 		clean_nicely_and_exit(t_shell *shell, int exit_code);
+void		clean_nicely_and_exit(t_shell *shell, int exit_code);
 
 int			safe_assign_str(char **dest, const char *src);
 size_t		ft_strcspn(const char *str, const char *reject);
@@ -322,9 +305,9 @@ void		handle_var_sign(t_shell *shell, char **str, char **expanded_str, t_env *en
 void		init_signals(t_signal_mode signal_mode);
 
 void		set_signals(t_signal_mode signal_mode);
-void 		print_heredoc_newline(void);
+void		print_heredoc_newline(void);
 
-//ENV - Lisandro
+// ================ ENV ================ //
 
 ssize_t		count_keyvalue_env_nodes(t_env *env_list);
 ssize_t		count_key_env_nodes(t_env *env_list);
@@ -350,33 +333,30 @@ t_ecode		get_value_from_keyvalue(char *keyvalue, char **value_ptr);
 t_env		*find_env_node(t_env *env, char *key);
 t_env		*get_last_env_node(t_env *head);
 
-
-
 // UTILS
 
 char		**ft_strjoin_arr(char **arr, char *str);
 char		*ft_strjoin_fs1(char **s1, const char *s2);
 char		*ft_strjoin_fs2(const char *s1, char **s2);
 t_ecode		append_suffix(char **str, char *suffix, bool duplicate);
-void		close_all_fds_in_process();
+void		close_all_fds_in_process(void);
 void		close_all_fds_in_cmd(t_cmd *cmd);
 size_t		ft_str_count(char **cmd_args);
 bool		ft_is_natural(char *arg);
 size_t		max_len(char *s1, char *s2);
 
-//FREE
+// ================ FREE ================ //
 
 void		ft_free_2d(void ***arr);
 void		ft_free_3d(void ****arr);
 void		ft_free(void **var);
-
 
 //PRINT
 
 void		ft_print_2d_arr(char **arr);
 void		ft_print_3d_arr(char ***arr);
 
-/* EXECUTOR */
+// ================ EXECUTOR ================ //
 
 int			executor(t_shell *shell, t_cmd *cmd);
 
@@ -388,15 +368,11 @@ t_ecode		create_std_backup(int backup[2]);
 t_ecode		dup_and_close(int oldfd, int newfd);
 
 char		*get_cmd_path(t_shell *shell, char *cmd_name);
-// void 	run_child(t_shell *shell, t_cmd *cmd);
-// void	do_parent_duties(t_shell *shell, t_cmd *cmd);
 void		handle_builtin(t_shell *shell, t_cmd *cmd);
-// t_ecode	execute_builtin(t_shell *shell, char **cmd_args);
-// void	handle_non_builtin(t_shell *shell, t_cmd *cmd);
 
-//BUILTINS
+// ================	BUILTINS ================ //
 
-t_ecode 	echo_builtin(t_shell *shell, char **cmd_args);
+t_ecode		echo_builtin(t_shell *shell, char **cmd_args);
 t_ecode		cd_builtin(t_shell *shell, char **cmd_args);
 t_ecode		env_builtin(t_shell *shell, char **cmd_args);
 t_ecode		unset_builtin(t_shell *shell, char **cmd_args);
@@ -405,27 +381,25 @@ t_ecode		declare_builtin(t_shell *shell, char **cmd_args);
 t_ecode		export_builtin(t_shell *shell, char **args);
 t_ecode		exit_builtin(t_shell *shell, char **cmd_args);
 
-
-//	CD
-
-t_ecode		cd_builtin(t_shell *shell, char **cmd_args);
-t_ecode		chdir_home(t_env **env_list, char *cwd);
+//	cd_utils.c
 t_ecode		update_oldpwd_pwd(t_env **env_list, char *cwd);
-t_ecode		chdir_tilde(t_env **env_list, char *cwd);
-t_ecode		chdir_dash(t_env **env_list, char *cwd);
+char		*get_home(void);
+bool		has_cdpath_prefix(char *directory);
+t_ecode		check_curpath_access(char *curpath);
+
+//	chdir_cdpath.c
 t_ecode		chdir_cdpath(t_env **env_list, char *directory, char *cwd);
 t_ecode		traverse_and_chdir_cdpath(char **cdpath_values, ssize_t values_count, char *directory);
-t_ecode		check_curpath_access(char *curpath);
 t_ecode		chdir_null_cdpath(char *directory, ssize_t *i, int8_t *null_flag);
-t_ecode 	chdir_cdpath_value(char *cdpath_value, char *directory, ssize_t *i);
+t_ecode		chdir_cdpath_value(char *cdpath_value, char *directory, ssize_t *i);
+
+//	chdir_default.c
 t_ecode		chdir_default(t_env **env_list, char *directory, char *cwd);
 
-bool		has_cdpath_prefix(char *directory);
-// t_ecode		check_for_special_cd_cases(t_env *env, char *directory, char **curpath);
-char		*get_home(void);
-
-// ERROR
-
-const char	*get_error_msg(int e_nbr);
+//	chdir_functions.c
+t_ecode		chdir_home(t_env **env_list, char *cwd);
+t_ecode		chdir_tilde(t_env **env_list, char *cwd);
+t_ecode		chdir_dash(t_env **env_list, char *cwd);
+t_ecode		cd_builtin(t_shell *shell, char **cmd_args);
 
 #endif
