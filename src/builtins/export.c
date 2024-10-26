@@ -1,6 +1,52 @@
 #include "../../include/minishell.h"
 
-static bool	is_valid_identifier(char *keyval);
+static t_ecode	export_node(t_shell *shell, char *current_arg);
+static bool		is_valid_identifier(char *keyval);
+
+/**
+ * @brief Adds given key-value combinations to the environment node.
+ * 
+ * If there's no arguments passed, it runs the declare built-in,
+ * which prints the full environment list in a formatted way.
+ * If there's at least an argument, it will attempt to add it
+ * to the environment list.
+ * It will continue to do so until it runs out of arguments.
+ * 
+ * @param shell A pointer to the shell structure.
+ * @param cmd_args The array of arguments of the given command.
+ * 
+ * @return If there was a malloc failure it returns immediately
+ * with the error code MALLOC_ERROR.
+ * If there was any other error it will raise a flag, but it will
+ * keep exporting new nodes until it runs out of arguments
+ * and at the end it will return FAILURE.
+ * Else it returns SUCCESS.
+ */
+t_ecode	export_builtin(t_shell *shell, char **cmd_args)
+{
+	t_ecode	status;
+	size_t	i;
+	bool	failure_flag;
+
+	if (!cmd_args)
+		return (FAILURE);
+	if (!cmd_args[1])
+		return (declare_builtin(shell, cmd_args));
+	i = 1;
+	failure_flag = false;
+	while (cmd_args[i])
+	{
+		status = export_node(shell, cmd_args[i]);
+		if (status == MALLOC_ERROR)
+			return (MALLOC_ERROR);
+		else if (failure_flag == false && status)
+			failure_flag = true;
+		i++;
+	}
+	if (failure_flag)
+		return (FAILURE);
+	return (SUCCESS);
+}
 
 /**
  * @brief Adds a given key-value combination to the environment node.
@@ -13,34 +59,37 @@ static bool	is_valid_identifier(char *keyval);
  * Else it only adds the key to the node.
  * 
  * @param shell A pointer to the shell structure.
- * @param cmd_args The array of arguments of the given command.
+ * @param current_arg The current key-val string to add to the env list.
  * 
  * @return 0 if it was possible to update or create the environment node.
  */
-t_ecode	export_builtin(t_shell *shell, char **cmd_args)
+static t_ecode	export_node(t_shell *shell, char *current_arg)
 {
 	char	*key;
 	char	*value;
 	t_ecode	status;
 
-	if (!cmd_args)
-		return (FAILURE);
-	if (!cmd_args[1])
-		return (declare_builtin(shell, cmd_args));
-	if (!is_valid_identifier(cmd_args[1]))
+	if (!is_valid_identifier(current_arg))
 	{
-		handle_builtin_err(cmd_args[0], cmd_args[1], "not a valid identifier");
+		handle_builtin_err("export", current_arg, "not a valid identifier");
 		return (FAILURE);
 	}
-	key = get_key_from_keyvalue(cmd_args[1]);
+	key = get_key_from_keyvalue(current_arg);
 	if (!key)
 		return (MALLOC_ERROR);
 	value = NULL;
-	status = get_value_from_keyvalue(cmd_args[1], &value);
+	status = get_value_from_keyvalue(current_arg, &value);
 	if (status != SUCCESS && status != NULL_STRING)
 		return (ft_free((void **) &key), MALLOC_ERROR);
-	return (update_env_node(&shell->env_list, key, value, true));
+	status = update_env_node(&shell->env_list, key, value, true);
+	ft_free((void **) &key);
+	if (value)
+		ft_free((void **) &value);
+	if (status && status != MALLOC_ERROR)
+		return (FAILURE);
+	return (status);
 }
+
 
 /**
  * @brief Checks if a key-value string is a valid identifier to export.

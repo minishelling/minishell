@@ -81,7 +81,9 @@ void	print_env_list(t_env *head)
 		return ;
 	while (head)
 	{
-		print_env_node(head);
+		if (head->keyvalue)
+			ft_putendl_fd(head->keyvalue, STDOUT_FILENO);
+			// print_env_node(head);
 		head = head->next;
 	}
 	return ;

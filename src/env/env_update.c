@@ -61,6 +61,7 @@ t_ecode	update_env_node(t_env **head, char *key, char *value, bool create_node)
 			if (!keyval)
 				return (handle_perror("update_env_node"), MALLOC_ERROR);
 			node = create_populated_env_node(keyval);
+			ft_free((void **) &keyval);
 		}
 		if (!node)
 			return (handle_perror("update_env_node"), MALLOC_ERROR);
