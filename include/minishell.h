@@ -224,7 +224,7 @@ typedef int		(*t_syntax_func)(t_token *prev, t_token *cur, t_env *env_list);
 typedef int		(*t_parser_func)(t_cmd *current_cmd, t_token *token);
 
 //INIT
-int			init_shell(char **envp, t_shell *shell);
+// int			init_shell(char **envp, t_shell *shell);
 
 //TOKENIZATION
 int			tokenize(t_shell *shell, char *input);
