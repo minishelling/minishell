@@ -90,7 +90,6 @@ static t_ecode	export_node(t_shell *shell, char *current_arg)
 	return (status);
 }
 
-
 /**
  * @brief Checks if a key-value string is a valid identifier to export.
  * 

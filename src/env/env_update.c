@@ -1,5 +1,7 @@
 #include "../../include/minishell.h"
 
+static t_ecode	create_and_add_node(t_env **head, char *key, char *value);
+
 /**
  * @brief Appends a node to the environment list.
  * 
@@ -41,7 +43,6 @@ t_ecode	add_last_env_node(t_env **head, t_env *node)
 t_ecode	update_env_node(t_env **head, char *key, char *value, bool create_node)
 {
 	t_env	*node;
-	char	*keyval;
 
 	if (!key)
 		return (NULL_ERROR);
@@ -49,27 +50,47 @@ t_ecode	update_env_node(t_env **head, char *key, char *value, bool create_node)
 	if (!node && create_node == false)
 		return (NULL_NODE);
 	else if (!node && create_node == true)
-	{
-		if (key && !value)
-			node = create_populated_env_node(key);
-		else
-		{
-			keyval = ft_strjoin(key, "=");
-			if (!keyval)
-				return (handle_perror("update_env_node"), MALLOC_ERROR);
-			keyval = ft_strjoin_fs1(&keyval, value);
-			if (!keyval)
-				return (handle_perror("update_env_node"), MALLOC_ERROR);
-			node = create_populated_env_node(keyval);
-			ft_free((void **) &keyval);
-		}
-		if (!node)
-			return (handle_perror("update_env_node"), MALLOC_ERROR);
-		return (add_last_env_node(head, node));
-	}
+		return (create_and_add_node(head, key, value));
 	if (update_value_in_env_node(node, value))
 		return (handle_perror("update_env_node"), MALLOC_ERROR);
 	return (SUCCESS);
+}
+
+/**
+ * @brief Creates a new node, populates it and adds it to the env list.
+ * 
+ * If there's only a key and no value, it populates the node only with a key.
+ * If there's a value, even if it is an empty string, it will create a string
+ * containing 'key=value' combination, and it will populate the node from there.
+ * 
+ * @param head A double pointer to the head node of the env list.
+ * @param key The key string.
+ * @param value The value string.
+ * 
+ * @return If there's a malloc failure it prints an error message and returns
+ * MALLOC_ERROR. Else it will return the status of 'add_last_env_node'.
+ */
+static t_ecode	create_and_add_node(t_env **head, char *key, char *value)
+{
+	t_env	*node;
+	char	*keyval;
+
+	if (key && !value)
+		node = create_populated_env_node(key);
+	else
+	{
+		keyval = ft_strjoin(key, "=");
+		if (!keyval)
+			return (handle_perror("update_env_node"), MALLOC_ERROR);
+		keyval = ft_strjoin_fs1(&keyval, value);
+		if (!keyval)
+			return (handle_perror("update_env_node"), MALLOC_ERROR);
+		node = create_populated_env_node(keyval);
+		ft_free((void **)&keyval);
+	}
+	if (!node)
+		return (handle_perror("update_env_node"), MALLOC_ERROR);
+	return (add_last_env_node(head, node));
 }
 
 /**
