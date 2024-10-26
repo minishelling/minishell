@@ -12,7 +12,8 @@ char *get_err_msg(int e)
 		"Syntax error near unexpected token `||`\n",
 		"Syntax error near unexpected token `&&`\n",
 		"Syntax error near unexpected token `<` or `>`\n",
-		"Syntax error\n",  //return and not exit
+		"Syntax error\n", //return and not exit
+		"Parsing error\n",
 		"Error: unable to allocate dynamic memory\n", //exit
 		"Error while expanding: unable to allocate dynamic memory\n",  //exit
 		"Error while forming a command: unable to allocate dynamic memory\n",  //exit
@@ -76,7 +77,7 @@ void handle_parsing_err(t_shell *shell, int err_no)
 		write(2, full_msg, full_msg_len);
 		free(full_msg);
 	}
-	if ((err_no >= ERR_SYNTAX_NL  && err_no <= ERR_SYNTAX_ERROR) || err_no == SIGINT_HDOC)
+	if ((err_no >= ERR_SYNTAX_NL  && err_no <= ERR_PARSING_ERROR) || err_no == SIGINT_HDOC)
 		clean_nicely(shell);
 	else
 		clean_nicely_and_exit(shell, EXIT_FAILURE);

@@ -7,8 +7,7 @@ void	classify_and_or_operators(t_token *token_list_head)
 	current_token = token_list_head;
 	while (current_token)
 	{
-		if (current_token->str[0] && current_token->str[1] && \
-			current_token->str[0] == '&' && current_token->str[1] != '&')
+		if (current_token->str[0] == '&' && current_token->str[1] != '&')
 			current_token->id = WORD;
 		else if (!ft_strncmp(current_token->str, "||", 2))
 			current_token->id = OR_OPR;
@@ -87,6 +86,5 @@ int	tokenize(t_shell *shell, char *input)
 		add_token_in_back(&shell->token, token);
 	}
 	classify_and_or_operators(shell->token);
-	//print_token(shell->token);
 	return (PARSING_OK);
 }

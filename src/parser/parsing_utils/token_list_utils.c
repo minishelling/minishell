@@ -76,5 +76,3 @@ t_token	*previous_token_if_exists(t_token *head, t_token *target)
 		current = current->next;
 	return (current);
 }
-
-

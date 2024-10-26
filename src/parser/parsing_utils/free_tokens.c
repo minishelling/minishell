@@ -6,11 +6,9 @@ void	free_token(t_token **token)
 		return ;
 	if ((*token)->str)
 	{
-		//fprintf(stderr, "string to be freed: %s\n", (*token)->str);
 		free((*token)->str);
 		(*token)->str = NULL;
 	}
-	//fprintf(stderr, "token to be freed: %p\n", (*token));
 	free(*token);
 	*token = NULL;
 }

@@ -21,7 +21,7 @@ int	check_parens(t_token *head)
 		else if (current->id == PAR_CLOSE)
 		{
 			if (balance <= 0)
-				return (ERR_SYNTAX_UNEXPECT_CLOSE);
+				return (ERR_SYNTAX_CLOSE_PAR);
 			balance--;
 		}
 		current = current->next;
@@ -30,7 +30,7 @@ int	check_parens(t_token *head)
 	{
 		if (non_null_previous(head, current)->id == PAR_OPEN)
 			return (ERR_SYNTAX_NL);
-		return (ERR_SYNTAX_UNEXPECT_OPEN);
+		return (ERR_PARSING_ERROR);
 	}
 	return (PARSING_OK);
 }
@@ -70,15 +70,15 @@ void	initialize_syntax_func(t_syntax_func func[14])
 	func[2] = syntax_noop;
 	func[3] = syntax_pipe;
 	func[4] = syntax_and_opr;
-	func[5] = syntax_parens;
-	func[6] = syntax_parens;
+	func[5] = syntax_open_paren;
+	func[6] = syntax_close_paren;
 	func[7] = syntax_redir;
 	func[8] = syntax_redir;
-	func[9] = syntax_noop;
-	func[10] = syntax_noop;
+	func[9] = syntax_quote;
+	func[10] = syntax_quote;
 	func[11] = syntax_noop;
 	func[12] = syntax_word;
-	func[13] = syntax_pipe;
+	func[13] = syntax_or_opr;
 }
 
 int	process_syntax_checks(t_shell *shell, t_token **previous_token)
@@ -86,13 +86,17 @@ int	process_syntax_checks(t_shell *shell, t_token **previous_token)
 	t_token			*current_token;
 	t_syntax_func	func[14];
 	int				err_no;
+	int				par_count;
+	int				quote_type;
 
+	par_count = 0;
+	quote_type = LITERAL;
 	initialize_syntax_func(func);
 	current_token = shell->token;
 	while (current_token)
 	{
 		err_no = func[current_token->id] \
-		(*previous_token, current_token, shell->env_list);
+		(*previous_token, current_token, &par_count);
 		if (err_no)
 			return (err_no);
 		*previous_token = current_token;

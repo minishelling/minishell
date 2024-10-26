@@ -1,69 +1,133 @@
 #include "../../../include/minishell.h"
 
-int	syntax_noop(t_token *prev_token, t_token *cur_token, t_env *env_list)
+int	syntax_noop(t_token *prev_token, t_token *cur_token, int *par_count)
 {
 	(void) prev_token;
 	(void) cur_token;
-	(void) env_list;
+	(void)par_count;
 	return (PARSING_OK);
 }
 
-int	syntax_pipe(t_token *prev_token, t_token *cur_token, t_env *env_list)
+int	syntax_pipe(t_token *prev_token, t_token *cur_token, int *par_count)
 {
 	t_token	*next_token;
 
-	(void) env_list;
+	(void)par_count;
 	next_token = skip_whitespace_and_get_next_token(cur_token);
-	if (prev_token == NULL || next_token == NULL)
+	if (!prev_token)
 		return (ERR_SYNTAX_PIPE);
-	if ((cur_token->id == PIPE || cur_token->id == OR_OPR) \
-		&& next_token->id == PAR_CLOSE)
+	if (!next_token)
+		return (ERR_PARSING_ERROR);
+	if (next_token->id == PIPE)
 		return (ERR_SYNTAX_PIPE);
-	if ((cur_token->id == PIPE || cur_token->id == OR_OPR) \
-		&& (next_token->id == PIPE || next_token->id == OR_OPR))
-		return (ERR_SYNTAX_PIPE);
-	if ((cur_token->id == OR_OPR && (next_token->id == OR_OPR \
-		|| next_token->id == PIPE)) \
-		|| (cur_token->id == PIPE && next_token->id == OR_OPR))
-		return (ERR_SYNTAX_PIPE);
+	if (next_token->id == AND_OPR)
+		return (ERR_SYNTAX_AND);
+	if (next_token->id == OR_OPR)
+		return (ERR_SYNTAX_OR);
+	if (next_token->id == PAR_CLOSE)
+		return (ERR_SYNTAX_CLOSE_PAR);
+	if (next_token->id == PAR_CLOSE)
+		return (ERR_SYNTAX_CLOSE_PAR);
 	return (PARSING_OK);
 }
 
-int	syntax_and_opr(t_token *prev_token, t_token *cur_token, t_env *env_list)
+int	syntax_or_opr(t_token *prev_token, t_token *cur_token, int *par_count)
 {
 	t_token	*next_token;
 
-	(void) env_list;
+	(void)par_count;
 	next_token = skip_whitespace_and_get_next_token(cur_token);
-	if (prev_token == NULL || next_token == NULL)
+	if (!prev_token)
+			return (ERR_SYNTAX_OR);
+	 if (!next_token)
+		return (ERR_PARSING_ERROR);
+	if (next_token->id == PIPE)
+		return (ERR_SYNTAX_PIPE);
+	if (next_token->id == OR_OPR)
+		return (ERR_SYNTAX_OR);
+	if (next_token->id == AND_OPR)
 		return (ERR_SYNTAX_AND);
-	if (cur_token->id == AND_OPR && (prev_token->id == GT \
-		|| prev_token->id == LT))
-		return (ERR_SYNTAX_AND);
-	if (cur_token->id == AND_OPR && (next_token->str[0] == '&' \
-		|| next_token->id == OR_OPR || next_token->id == AND_OPR))
-		return (ERR_SYNTAX_AND);
-	if (cur_token->id == AND_OPR && next_token->id == PAR_CLOSE)
-		return (ERR_SYNTAX_AND);
+	if (next_token->id == PAR_CLOSE)
+		return (ERR_SYNTAX_CLOSE_PAR);
 	return (PARSING_OK);
 }
 
-int	syntax_parens(t_token *prev_token, t_token *cur_token, t_env *env_list)
+int	syntax_and_opr(t_token *prev_token, t_token *cur_token, int *par_count)
 {
 	t_token	*next_token;
+
+	(void)par_count;
+	next_token = skip_whitespace_and_get_next_token(cur_token);
+	if (!prev_token)
+		return (ERR_SYNTAX_AND);
+	if (!next_token)
+		return (ERR_PARSING_ERROR);
+	if (next_token->id == PIPE)
+		return (ERR_SYNTAX_PIPE);
+	if (next_token->id == OR_OPR)
+		return (ERR_SYNTAX_OR);
+	if (next_token->id == AND_OPR)
+		return (ERR_SYNTAX_AND);
+	if (next_token->id == PAR_CLOSE)
+		return (ERR_SYNTAX_CLOSE_PAR);
+	return (PARSING_OK);
+}
+
+int	parens_count_check(t_token *cur_token, int *par_count)
+{
+	if (cur_token->id == PAR_OPEN)
+		(*par_count)++;
+	else if (cur_token->id == PAR_CLOSE)
+		(*par_count)--;
+	if (*par_count < 0)
+		return (ERR_SYNTAX_CLOSE_PAR);
+	return (PARSING_OK);	
+}
+
+
+int	syntax_open_paren(t_token *prev_token, t_token *cur_token, int *par_count)
+{
+	t_token	*next_token;
+	int		err_no;
+
+	(void)prev_token;
+	(void) cur_token;
+	err_no = parens_count_check(cur_token, par_count);
+	if (err_no)
+		return (err_no);
+	next_token = skip_whitespace_and_get_next_token(cur_token);
+	if (!next_token)
+		return (ERR_PARSING_ERROR);
+	if (next_token->id == PIPE)
+		return (ERR_SYNTAX_PIPE);
+	if (next_token->id == AND_OPR)
+		return (ERR_SYNTAX_AND);
+	if (next_token->id == OR_OPR)
+		return (ERR_SYNTAX_OR);
+	if (next_token->id == PAR_CLOSE)
+		return (ERR_SYNTAX_CLOSE_PAR);
+	return (PARSING_OK);
+}
+
+int	syntax_close_paren(t_token *prev_token, t_token *cur_token, int *par_count)
+{
+	t_token	*next_token;
+	int		err_no;
 
 	(void) prev_token;
-	(void) env_list;
 	(void) cur_token;
+	err_no = parens_count_check(cur_token, par_count);
+	if (err_no)
+		return (err_no);
+	if (!prev_token)
+		return (ERR_SYNTAX_CLOSE_PAR);
 	next_token = skip_whitespace_and_get_next_token(cur_token);
 	if (next_token)
 	{
-		if (cur_token->id == PAR_OPEN && next_token->id == AND_OPR)
-			return (ERR_SYNTAX_AND);
-		if (cur_token->id == PAR_OPEN && next_token->id == OR_OPR)
-			return (ERR_SYNTAX_OR);
-		if (cur_token->id == PAR_OPEN && next_token->id == PIPE)
-			return (ERR_SYNTAX_PIPE);
+		if (cur_token->id == PAR_CLOSE && next_token->id == PAR_OPEN)
+			return (ERR_SYNTAX_OPEN_PAR);
+		if (cur_token->id == PAR_CLOSE && next_token->id == WORD)
+			return (ERR_SYNTAX_ERROR);
 	}
 	return (PARSING_OK);
 }
@@ -78,21 +142,22 @@ int	remove_delimiter_quotes(t_token *delimiter_token)
 	return (PARSING_OK);
 }
 
-int	syntax_redir(t_token *prev_token, t_token *cur_token, t_env *env_list)
+int	syntax_redir(t_token *prev_token, t_token *cur_token, int *par_count)
 {
 	t_token	*next_token;
 
-	(void)env_list;
 	(void) prev_token;
+	(void)par_count;
+
 	next_token = skip_whitespace_and_get_next_token(cur_token);
 	if (!next_token)
 		return (ERR_SYNTAX_NL);
 	if (next_token->id == ENV_VAR && !ft_strncmp((cur_token->str), "<<", 2))
 		next_token->id = WORD;
 	if (next_token->id == PAR_OPEN)
-		return (ERR_SYNTAX_UNEXPECT_OPEN);
+		return (ERR_SYNTAX_OPEN_PAR);
 	if (next_token->id == PAR_CLOSE)
-		return (ERR_SYNTAX_UNEXPECT_CLOSE);
+		return (ERR_SYNTAX_CLOSE_PAR);
 	if (next_token->id == PIPE || next_token->id == OR_OPR)
 		return (ERR_SYNTAX_PIPE);
 	if (next_token->id == AND_OPR)
@@ -105,13 +170,13 @@ int	syntax_redir(t_token *prev_token, t_token *cur_token, t_env *env_list)
 	return (PARSING_OK);
 }
 
-int	syntax_word(t_token *prev_token, t_token *cur_token, t_env *env_list)
+int	syntax_word(t_token *prev_token, t_token *cur_token, int *par_count)
 {
 	t_token	*next_token;
 
-	(void) prev_token;
-	(void) env_list;
-	(void) cur_token;
+	(void)par_count;
+	(void)prev_token;
+	(void)cur_token;
 	next_token = skip_whitespace_and_get_next_token(cur_token);
 	if (next_token)
 	{
@@ -120,8 +185,24 @@ int	syntax_word(t_token *prev_token, t_token *cur_token, t_env *env_list)
 			if (next_token->next == NULL)
 				return (ERR_SYNTAX_NL);
 			else
-				return (ERR_SYNTAX_UNEXPECT_OPEN);
+				return (ERR_SYNTAX_OPEN_PAR);
 		}
 	}
+	return (PARSING_OK);
+}
+
+
+int	syntax_quote(t_token *prev_token, t_token *cur_token, int *par_count)
+{
+	t_token *next_token;
+
+	(void)par_count;
+	next_token = skip_whitespace_and_get_next_token(cur_token);
+	
+	if (next_token && next_token->id == PAR_OPEN)
+		return (ERR_SYNTAX_OPEN_PAR);
+	if ((cur_token->id == SQUOTE && prev_token && prev_token->id == PAR_CLOSE) 
+		|| (cur_token->id == DQUOTE && prev_token && prev_token->id == PAR_CLOSE))
+		return (ERR_SYNTAX_ERROR);
 	return (PARSING_OK);
 }

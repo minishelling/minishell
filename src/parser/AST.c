@@ -57,17 +57,18 @@ t_token	*get_matching_parenthesis(t_token *start_token)
 	return (NULL);
 }
 
-t_token	*ignore_first_parenthesis(t_token *start_token, t_token **middle, \
-	t_token **end_token)
+// t_token	*ignore_first_parenthesis(t_token *start_token, t_token **middle, \
+// 	t_token **end_token)
+t_token	*ignore_first_parenthesis(t_token *start_token, t_token **end_token)
 {
 	t_token	*matching_parenthesis;
 	
 	matching_parenthesis = get_matching_parenthesis(start_token);
 	start_token = start_token->next;
 	if (matching_parenthesis)
-		*middle = non_null_previous(start_token, matching_parenthesis);
-	if (matching_parenthesis == *end_token)
-		*end_token = *middle;
+		*end_token= non_null_previous(start_token, matching_parenthesis);
+	// if (matching_parenthesis == *end_token)
+	// 	*end_token = *middle;
 	return (start_token);
 }
 
@@ -128,21 +129,17 @@ t_tree	*init_tree_node(t_shell *shell, t_token *op_token)
 t_tree	*handle_parentheses(t_shell *shell, t_token *start_token, \
 	t_token *end_token)
 {
-	t_token	*middle;
-
-	middle = NULL;
 	if (start_token->id == PAR_OPEN && end_token->id == PAR_CLOSE \
 		&& get_matching_parenthesis(start_token) == end_token)
 	{
-		start_token = ignore_first_parenthesis(start_token, &middle, \
-			&end_token);
+		start_token = ignore_first_parenthesis(start_token, &end_token);
 		if (end_token)
 		{
-			if (start_token->id == PAR_OPEN && middle->id == PAR_CLOSE \
-			&& get_matching_parenthesis(start_token) == middle)
+			if (start_token->id == PAR_OPEN && end_token->id == PAR_CLOSE \
+			&& get_matching_parenthesis(start_token) == end_token)
 			{
-				process_arith_expan(shell, start_token, end_token, middle);
-				return (init_leaf_node(shell, start_token, middle));
+				process_arith_expan(shell, start_token, end_token, end_token);
+				return (init_leaf_node(shell, start_token, end_token));
 			}
 			else
 				return (make_tree(shell, start_token, end_token));
@@ -174,7 +171,6 @@ t_tree	*make_tree(t_shell *shell, t_token *start_token, t_token *end_token)
 	if (start_token == NULL || end_token == NULL)
 		return (NULL);
 	subtree = handle_parentheses(shell, start_token, end_token);
-
 	if (subtree)
 		return (subtree);
 	return (handle_logical_operator(shell, start_token, end_token));
