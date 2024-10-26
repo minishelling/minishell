@@ -1,8 +1,8 @@
 #include "../../include/minishell.h"
 
-char *get_err_msg(int e)
+char	*get_err_msg(int e)
 {
-	char *error_messages[] = { 
+	char	*error_messages[] = { 
 		"OK",
 		"syntax error near unexpected token `newline`\n",
 		"Syntax error: unclosed quotes\n",
@@ -18,13 +18,14 @@ char *get_err_msg(int e)
 		"Error while forming a command: unable to allocate dynamic memory\n",  //exit
 		"SIGINT_HDOC"  //return and not exit
 	};
+
 	return (error_messages[e]);
 }
 
-void free_tree(t_tree **node)
+void	free_tree(t_tree **node)
 {
 	if (*node == NULL)
-		return;
+		return ;
 	free_tree(&(*node)->left);
 	free_tree(&(*node)->right);
 	if ((*node)->type == CMD)
@@ -33,16 +34,14 @@ void free_tree(t_tree **node)
 	*node = NULL;
 }
 
-void clean_nicely_and_exit(t_shell *shell, int exit_code)
+void	clean_nicely_and_exit(t_shell *shell, int exit_code)
 {
 	clean_nicely(shell);
 	free_env_list(&shell->env_list);
 	exit(exit_code);
 }
 
-
-
-void clean_nicely(t_shell *shell)
+void	clean_nicely(t_shell *shell)
 {
 	if (shell->input)
 	{
@@ -55,12 +54,12 @@ void clean_nicely(t_shell *shell)
 		free_tree(&shell->tree);
 }
 
-void handle_parsing_err(t_shell *shell, int err_no)
+void	handle_parsing_err(t_shell *shell, int err_no)
 {
-	char *err_msg;
-	char *err_prompt;
-	char *full_msg;
-	size_t full_msg_len;
+	char	*err_msg;
+	char	*err_prompt;
+	char	*full_msg;
+	size_t	full_msg_len;
 
 	if (err_no != SIGINT_HDOC)
 	{
@@ -76,20 +75,20 @@ void handle_parsing_err(t_shell *shell, int err_no)
 		write(2, full_msg, full_msg_len);
 		free(full_msg);
 	}
-	if ((err_no >= ERR_SYNTAX_NL  && err_no <= ERR_SYNTAX_ERROR) || err_no == SIGINT_HDOC)
+	if ((err_no >= ERR_SYNTAX_NL && err_no <= ERR_SYNTAX_ERROR) || err_no == SIGINT_HDOC)
 		clean_nicely(shell);
 	else
 		clean_nicely_and_exit(shell, EXIT_FAILURE);
 }
 
-void handle_cmd_err(t_shell *shell, t_cmd *cmd, char *err_msg)
+void	handle_cmd_err(t_shell *shell, t_cmd *cmd, char *err_msg)
 {
-	char *full_msg;
-	size_t cmd_len;
-	size_t err_len;
-	size_t total_len;
-	const char *colon = ": ";
-	const char *newline = "\n";
+	char		*full_msg;
+	size_t		cmd_len;
+	size_t		err_len;
+	size_t		total_len;
+	const char	*colon = ": ";
+	const char	*newline = "\n";
 
 	cmd_len = ft_strlen(cmd->args[0]);
 	err_len = ft_strlen(err_msg);
@@ -108,11 +107,11 @@ void handle_cmd_err(t_shell *shell, t_cmd *cmd, char *err_msg)
 	free(full_msg);
 }
 
-void handle_perror(char *str)
+void	handle_perror(char *str)
 {
-	const char *err_prompt;
-	char full_err_msg[ARG_MAX + 12];
-	size_t cmd_len, prompt_len, total_len;
+	const char	*err_prompt;
+	char		full_err_msg[ARG_MAX + 12];
+	size_t		cmd_len, prompt_len, total_len;
 
 	if (!str)
 		return ;

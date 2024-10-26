@@ -3,10 +3,10 @@
 #define COLON ": "
 #define _NEWLINE "\n"
 
-void handle_builtin_err(char *cmd_name, char *arg, char *err_msg)
+void	handle_builtin_err(char *cmd_name, char *arg, char *err_msg)
 {
-	char *full_msg;
-	size_t total_len;
+	char	*full_msg;
+	size_t	total_len;
 
 	total_len = ft_strlen(ERR_PROMPT) + ft_strlen(cmd_name)
 		+ ft_strlen(COLON) + ft_strlen(err_msg) + ft_strlen(_NEWLINE);
