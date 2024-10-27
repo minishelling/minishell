@@ -243,7 +243,6 @@ int		advance_pos_redir(char *str, size_t *pos, t_token_id *token_id);
 int		advance_pos_env_var(char *str, size_t *pos, t_token_id *token_id);
 int		advance_pos_pipe(char *str, size_t *pos, t_token_id *token_id);
 t_token		*skip_whitespace_and_get_next_token(t_token *token);
-t_token		*get_after_pipe_token(t_token *token);
 t_token		*get_after_arith_expan_token(t_token *token);
 void		remove_space_tokens(t_token **head, t_token *prev_token);
 t_token		*previous_token_if_exists(t_token *head, t_token *target);

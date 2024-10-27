@@ -105,7 +105,6 @@ int	parse(t_shell *shell)
 	err_no = tokenize(shell, shell->input);
 	if (err_no)
 		return (err_no);
-	// print_token(shell->token);
 	err_no = syntax(shell);
 	if (err_no)
 		return (err_no);

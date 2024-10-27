@@ -13,22 +13,6 @@ t_token	*skip_whitespace_and_get_next_token(t_token *token)
 	return (return_token);
 }
 
-t_token	*get_after_pipe_token(t_token *token)
-{
-	t_token	*t_previous;
-
-	if (!token)
-		return (NULL);
-	while (token)
-	{
-		t_previous = token;
-		token = token->next;
-		if (t_previous->id == PIPE)
-			break ;
-	}
-	return (token);
-}
-
 t_token	*get_after_arith_expan_token(t_token *first_arith_expan_token)
 {
 	t_token	*cur_token;
@@ -37,4 +21,26 @@ t_token	*get_after_arith_expan_token(t_token *first_arith_expan_token)
 	while (cur_token && cur_token->id && cur_token->id != ARITH_EXPAN)
 		cur_token = cur_token->next;
 	return (cur_token);
+}
+
+t_token	*non_null_previous(t_token *start_token, t_token *before_what)
+{
+	t_token	*return_token;
+
+	return_token = start_token;
+	while (return_token->next && return_token->next != before_what)
+		return_token = return_token->next;
+	return (return_token);
+}
+
+t_token	*previous_token_if_exists(t_token *head, t_token *target)
+{
+	t_token	*current;
+
+	if (head == target)
+		return (NULL);
+	current = head;
+	while (current && current->next != target)
+		current = current->next;
+	return (current);
 }

@@ -62,13 +62,11 @@ t_token	*get_matching_parenthesis(t_token *start_token)
 t_token	*ignore_first_parenthesis(t_token *start_token, t_token **end_token)
 {
 	t_token	*matching_parenthesis;
-	
+
 	matching_parenthesis = get_matching_parenthesis(start_token);
 	start_token = start_token->next;
 	if (matching_parenthesis)
-		*end_token= non_null_previous(start_token, matching_parenthesis);
-	// if (matching_parenthesis == *end_token)
-	// 	*end_token = *middle;
+		*end_token = non_null_previous(start_token, matching_parenthesis);
 	return (start_token);
 }
 

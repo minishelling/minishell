@@ -29,6 +29,23 @@ t_token_id	get_token_id(char c)
 	return (token_id);
 }
 
+void	initialize_lexing_func(t_lexer_func advance[13])
+{
+	advance[0] = advance_pos_space_or_word;
+	advance[1] = advance_pos_space_or_word;
+	advance[2] = advance_pos_space_or_word;
+	advance[3] = advance_pos_pipe;
+	advance[4] = advance_pos_and_operator;
+	advance[5] = advance_pos_parens;
+	advance[6] = advance_pos_parens;
+	advance[7] = advance_pos_redir;
+	advance[8] = advance_pos_redir;
+	advance[9] = advance_pos_quote;
+	advance[10] = advance_pos_quote;
+	advance[11] = advance_pos_env_var;
+	advance[12] = advance_pos_space_or_word;
+}
+
 int	assign_token_id_and_string(char *str, size_t *pos, t_token *token)
 {
 	int				start_pos;
@@ -36,20 +53,8 @@ int	assign_token_id_and_string(char *str, size_t *pos, t_token *token)
 	t_lexer_func	advance[13];
 	char			*token_str;
 
+	initialize_lexing_func(advance);
 	start_pos = *pos;
-	advance[0] = &advance_pos_space_or_word;
-	advance[1] = &advance_pos_space_or_word;
-	advance[2] = &advance_pos_space_or_word;
-	advance[3] = &advance_pos_pipe;
-	advance[4] = &advance_pos_and_operator;
-	advance[5] = &advance_pos_parens;
-	advance[6] = &advance_pos_parens;
-	advance[7] = &advance_pos_redir;
-	advance[8] = &advance_pos_redir;
-	advance[9] = &advance_pos_quote;
-	advance[10] = &advance_pos_quote;
-	advance[11] = &advance_pos_env_var;
-	advance[12] = &advance_pos_space_or_word;
 	token->id = get_token_id(str[(*pos)]);
 	err_no = advance[token->id](str, pos, &token->id);
 	if (err_no == ERR_CMD_SUBSTIT)
@@ -58,7 +63,7 @@ int	assign_token_id_and_string(char *str, size_t *pos, t_token *token)
 	if (!token_str)
 		return (ERR_MEM);
 	safe_assign_str(&(token->str), token_str);
-	free (token_str);
+	free(token_str);
 	if (!token->str)
 		return (ERR_MEM);
 	return (PARSING_OK);

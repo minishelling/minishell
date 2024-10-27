@@ -13,12 +13,12 @@ char *get_err_msg(int e)
 		"Syntax error near unexpected token `||`\n",
 		"Syntax error near unexpected token `&&`\n",
 		"Syntax error near unexpected token `<` or `>`\n",
-		"Syntax error\n", //return and not exit
+		"Syntax error\n",
 		"More input needed\n",
-		"Error: unable to allocate dynamic memory\n", //exit
-		"Error while expanding: unable to allocate dynamic memory\n",  //exit
-		"Error while forming a command: unable to allocate dynamic memory\n",  //exit
-		"SIGINT_HDOC"  //return and not exit
+		"Error: unable to allocate dynamic memory\n",
+		"Error while expanding: unable to allocate dynamic memory\n",
+		"Error while forming a command: unable to allocate dynamic memory\n",
+		"SIGINT_HDOC"
 	};
 	return (error_messages[e]);
 }
