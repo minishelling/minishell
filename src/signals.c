@@ -39,6 +39,8 @@ void	init_signals(t_signal_mode signal_mode)
 	struct sigaction	sigquit_struct;
 	struct sigaction	sigint_struct;
 
+	ft_bzero(&sigquit_struct, sizeof(struct sigaction));
+	ft_bzero(&sigint_struct, sizeof(struct sigaction));
 	sigemptyset(&sigint_struct.sa_mask);
 	sigemptyset(&sigquit_struct.sa_mask);
 	sigquit_struct.sa_handler = SIG_IGN;

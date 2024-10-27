@@ -126,7 +126,7 @@ static char	*ft_strjoin_cmd_path(char *path, char *cmd_name)
 {
 	char	*cmd_path;
 
-	if (!path || !cmd_name)
+	if (!path || !cmd_name || !cmd_name[0])
 		return (NULL);
 	cmd_path = ft_strdup(path);
 	if (!cmd_path)

@@ -51,6 +51,8 @@ static void	handle_minishell_input(t_shell *shell)
 			clean_nicely(shell);
 		}
 	}
+	else
+		ft_free((void **) &shell->input);
 }
 
 static void	run_minishell_loop(t_shell *shell)
