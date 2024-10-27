@@ -7,8 +7,7 @@ void	classify_and_or_operators(t_token *token_list_head)
 	current_token = token_list_head;
 	while (current_token)
 	{
-		if (current_token->str[0] && current_token->str[1] && \
-			current_token->str[0] == '&' && current_token->str[1] != '&')
+		if (current_token->str[0] == '&' && current_token->str[1] != '&')
 			current_token->id = WORD;
 		else if (!ft_strncmp(current_token->str, "||", 2))
 			current_token->id = OR_OPR;
@@ -30,33 +29,41 @@ t_token_id	get_token_id(char c)
 	return (token_id);
 }
 
+void	initialize_lexing_func(t_lexer_func advance[13])
+{
+	advance[0] = advance_pos_space_or_word;
+	advance[1] = advance_pos_space_or_word;
+	advance[2] = advance_pos_space_or_word;
+	advance[3] = advance_pos_pipe;
+	advance[4] = advance_pos_and_operator;
+	advance[5] = advance_pos_parens;
+	advance[6] = advance_pos_parens;
+	advance[7] = advance_pos_redir;
+	advance[8] = advance_pos_redir;
+	advance[9] = advance_pos_quote;
+	advance[10] = advance_pos_quote;
+	advance[11] = advance_pos_env_var;
+	advance[12] = advance_pos_space_or_word;
+}
+
 int	assign_token_id_and_string(char *str, size_t *pos, t_token *token)
 {
 	int				start_pos;
+	int				err_no;
 	t_lexer_func	advance[13];
 	char			*token_str;
 
+	initialize_lexing_func(advance);
 	start_pos = *pos;
-	advance[0] = &advance_pos_space_or_word;
-	advance[1] = &advance_pos_space_or_word;
-	advance[2] = &advance_pos_space_or_word;
-	advance[3] = &advance_pos_pipe;
-	advance[4] = &advance_pos_and_operator;
-	advance[5] = &advance_pos_parens;
-	advance[6] = &advance_pos_parens;
-	advance[7] = &advance_pos_redir;
-	advance[8] = &advance_pos_redir;
-	advance[9] = &advance_pos_quote;
-	advance[10] = &advance_pos_quote;
-	advance[11] = &advance_pos_env_var;
-	advance[12] = &advance_pos_space_or_word;
 	token->id = get_token_id(str[(*pos)]);
-	advance[token->id](str, pos, &token->id);
+	err_no = advance[token->id](str, pos, &token->id);
+	if (err_no == ERR_CMD_SUBSTIT)
+		return (err_no);
 	token_str = ft_substr(str, start_pos, (*pos - start_pos));
 	if (!token_str)
 		return (ERR_MEM);
 	safe_assign_str(&(token->str), token_str);
-	free (token_str);
+	free(token_str);
 	if (!token->str)
 		return (ERR_MEM);
 	return (PARSING_OK);
@@ -73,6 +80,7 @@ int	tokenize(t_shell *shell, char *input)
 {
 	size_t	current_pos;
 	t_token	*token;
+	int		err_no;
 
 	shell->token = NULL;
 	current_pos = 0;
@@ -81,12 +89,11 @@ int	tokenize(t_shell *shell, char *input)
 		token = new_token();
 		if (!token)
 			return (ERR_MEM);
-		assign_token_id_and_string(input, &current_pos, token);
-		if (!token->str)
-			return (ERR_MEM);
+		err_no = assign_token_id_and_string(input, &current_pos, token);
+		if (err_no == ERR_CMD_SUBSTIT)
+			return (free_token(&token), err_no);
 		add_token_in_back(&shell->token, token);
 	}
 	classify_and_or_operators(shell->token);
-	//print_token(shell->token);
 	return (PARSING_OK);
 }

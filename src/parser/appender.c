@@ -22,6 +22,8 @@ void	remove_space_tokens(t_token **head, t_token *prev)
 		if (current->id == SPACE_CHAR || current->id == TAB_CHAR \
 			|| current->id == NL)
 		{
+			if (current->id == NL)
+				ft_putstr_fd("We don't treat NL as metachars here.\n", 2);
 			if (prev == NULL)
 				*head = current->next;
 			else

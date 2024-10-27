@@ -5,7 +5,7 @@ static int	handle_heredoc_child(t_shell *shell, const char *file_name, \
 static char	*get_colourful_delimiter(const char *delimiter);
 static void	run_heredoc_loop(const char *delimiter, int fd, \
 	const char *colourful_delimiter);
-void	handle_signals_after_reading_hdoc(t_shell *shell, int wstatus);
+void		handle_signals_after_reading_hdoc(t_shell *shell, int wstatus);
 
 int	read_heredoc_input(t_shell *shell, const char *file_name, \
 	const char *delimiter)
@@ -28,7 +28,7 @@ int	read_heredoc_input(t_shell *shell, const char *file_name, \
 	{
 		handle_perror("read_heredoc_input");
 		clean_nicely_and_exit(shell, EXIT_FAILURE);
-	}	
+	}
 	unlink (file_name);
 	return (fd);
 }
@@ -101,12 +101,12 @@ static void	run_heredoc_loop(const char *delimiter, int fd, \
 void	handle_signals_after_reading_hdoc(t_shell *shell, int wstatus)
 {
 	if (WIFEXITED(wstatus) && WEXITSTATUS(wstatus) == 130)
-		{
-			g_signalcode = SIGINT;
-			shell->exit_code = 130;
-			write(STDOUT_FILENO, "\n", 1);
-			rl_on_new_line();
-			rl_replace_line("", 0);
-		}
-		init_signals(PARENT_NON_INTERACTIVE);
+	{
+		g_signalcode = SIGINT;
+		shell->exit_code = 130;
+		write(STDOUT_FILENO, "\n", 1);
+		rl_on_new_line();
+		rl_replace_line("", 0);
+	}
+	init_signals(PARENT_NON_INTERACTIVE);
 }

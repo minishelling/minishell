@@ -28,6 +28,7 @@
 
 # define META_CHARS_PLUS_SET " \t\n|&()><\'\"$"
 # define ERROR -1
+# define LITERAL 0
 
 # define RESET_COLOR "\033[0m"
 # define MAGENTA_TEXT "\033[0;35m"
@@ -75,15 +76,17 @@ typedef enum e_codes
 enum e_parsing_error
 {
 	PARSING_OK,
+	ERR_CMD_SUBSTIT,
 	ERR_SYNTAX_NL,
 	ERR_UNCLOSED_QUOTES,
-	ERR_SYNTAX_UNEXPECT_OPEN,
-	ERR_SYNTAX_UNEXPECT_CLOSE,
+	ERR_SYNTAX_OPEN_PAR,
+	ERR_SYNTAX_CLOSE_PAR,
 	ERR_SYNTAX_PIPE,
 	ERR_SYNTAX_OR,
 	ERR_SYNTAX_AND,
 	ERR_SYNTAX_REDIR,
 	ERR_SYNTAX_ERROR,
+	ERR_PARSING_ERROR,
 	ERR_MEM,
 	ERR_EXPAND,
 	ERR_CMD,
@@ -121,6 +124,7 @@ typedef enum e_redir_id
 typedef enum e_builtin
 {
 	ECHO,
+	ECHO,
 	CD,
 	PWD,
 	EXPORT,
@@ -128,6 +132,7 @@ typedef enum e_builtin
 	UNSET,
 	ENV,
 	EXIT,
+	NON_BUILTIN,
 	NON_BUILTIN,
 	BUILTIN_COUNT
 }	t_builtin;
@@ -202,10 +207,9 @@ typedef struct s_shell
 extern int		g_signalcode;
 
 //FUNCTION POINTERS
-
-typedef void	(*t_lexer_func)(char *str, size_t *pos, t_token_id *token_id);
-typedef int		(*t_syntax_func)(t_token *prev, t_token *cur, t_env *env_list);
-typedef int		(*t_parser_func)(t_cmd *current_cmd, t_token *token);
+typedef int	(*t_lexer_func)(char *str, size_t *pos, t_token_id *token_id);
+typedef int	(*t_syntax_func)(t_token *prev, t_token *cur, int *par_count);
+typedef int	(*t_parser_func)(t_cmd *current_cmd, t_token *token);
 
 //TOKENIZATION
 int			tokenize(t_shell *shell, char *input);
@@ -215,15 +219,14 @@ void		add_token_in_back(t_token **t_list, t_token *new);
 t_token		*copy_token(t_token *t_node);
 t_token		*last_token(t_token *token_list_head);
 
-void		advance_pos_space_or_word(char *str, size_t *pos, t_token_id *token_id);
-void		advance_pos_quote(char *str, size_t *pos, t_token_id *token_id);
-void		advance_pos_and_operator(char *str, size_t *pos, t_token_id *token_id);
-void		advance_pos_parens(char *str, size_t *pos, t_token_id *token_id);
-void		advance_pos_redir(char *str, size_t *pos, t_token_id *token_id);
-void		advance_pos_env_var(char *str, size_t *pos, t_token_id *token_id);
-void		advance_pos_pipe(char *str, size_t *pos, t_token_id *token_id);
+int		advance_pos_space_or_word(char *str, size_t *pos, t_token_id *token_id);
+int		advance_pos_quote(char *str, size_t *pos, t_token_id *token_id);
+int		advance_pos_and_operator(char *str, size_t *pos, t_token_id *token_id);
+int		advance_pos_parens(char *str, size_t *pos, t_token_id *token_id);
+int		advance_pos_redir(char *str, size_t *pos, t_token_id *token_id);
+int		advance_pos_env_var(char *str, size_t *pos, t_token_id *token_id);
+int		advance_pos_pipe(char *str, size_t *pos, t_token_id *token_id);
 t_token		*skip_whitespace_and_get_next_token(t_token *token);
-t_token		*get_after_pipe_token(t_token *token);
 t_token		*get_after_arith_expan_token(t_token *token);
 void		remove_space_tokens(t_token **head, t_token *prev_token);
 t_token		*previous_token_if_exists(t_token *head, t_token *target);
@@ -231,12 +234,16 @@ t_token		*non_null_previous(t_token *start_token, t_token *before_what);
 
 //SYNTAX
 int			syntax(t_shell *shell);
-int			syntax_pipe(t_token *t_prev, t_token *t_cur, t_env *env_list);
-int			syntax_and_opr(t_token *t_prev, t_token *t_cur, t_env *env_list);
-int			syntax_parens(t_token *t_prev, t_token *t_cur, t_env *env_list);
-int			syntax_redir(t_token *t_prev, t_token *t_cur, t_env *env_list);
-int			syntax_noop(t_token *t_prev, t_token *t_cur, t_env *env_list);
-int			syntax_word(t_token *t_prev, t_token *t_cur, t_env *env_list);
+int			syntax_pipe(t_token *t_prev, t_token *t_cur, int *par_count);
+int			syntax_and_opr(t_token *t_prev, t_token *t_cur, int *par_count);
+int			syntax_open_paren(t_token *prev_token, t_token *cur_token, int *par_count);
+int			syntax_close_paren(t_token *prev_token, t_token *cur_token, int *par_count);
+int			syntax_redir(t_token *t_prev, t_token *t_cur, int *par_count);
+int			syntax_noop(t_token *t_prev, t_token *t_cur, int *par_count);
+int			syntax_word(t_token *t_prev, t_token *t_cur, int *par_count);
+int			syntax_quote(t_token *prev_token, t_token *cur_token, int *par_count);
+int			syntax_or_opr(t_token *prev_token, t_token *cur_token, int *par_count);
+int			syntax_env_var(t_token *prev_token, t_token *cur_token, int *par_count);
 
 //APPEND
 int			append(t_shell *shell);

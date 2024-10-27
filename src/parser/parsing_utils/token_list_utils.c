@@ -54,27 +54,3 @@ void	add_token_in_back(t_token **token_list_head, t_token *new_token)
 	last_token(*token_list_head)->next = new_token;
 	return ;
 }
-
-t_token	*non_null_previous(t_token *start_token, t_token *before_what)
-{
-	t_token	*return_token;
-
-	return_token = start_token;
-	while (return_token->next && return_token->next != before_what)
-		return_token = return_token->next;
-	return (return_token);
-}
-
-t_token	*previous_token_if_exists(t_token *head, t_token *target)
-{
-	t_token	*current;
-
-	if (head == target)
-		return (NULL);
-	current = head;
-	while (current && current->next != target)
-		current = current->next;
-	return (current);
-}
-
-

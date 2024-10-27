@@ -1,6 +1,7 @@
 #include "../../include/minishell.h"
 
-int	handle_logical_operators(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int exit_code)
+int	handle_logical_operators(t_shell *shell, t_tree *tree_node, \
+	t_tree *parent_tree_node, int exit_code)
 {
 	if (parent_tree_node && parent_tree_node->type == T_AND_OPR \
 	&& exit_code == 0)
@@ -21,17 +22,18 @@ int	handle_logical_operators(t_shell *shell, t_tree *tree_node, t_tree *parent_t
 
 int	execute_command(t_shell *shell, t_tree *tree_node)
 {
-
-	expand(shell, tree_node->start_token, tree_node->end_token, shell->env_list);
-	
-	make_cmd(shell, &tree_node->cmd, tree_node->start_token, tree_node->end_token);
+	expand(shell, tree_node->start_token, tree_node->end_token, \
+		shell->env_list);
+	make_cmd(shell, &tree_node->cmd, tree_node->start_token, \
+		tree_node->end_token);
 	if (open_redirections(shell, tree_node->cmd) == SUCCESS)
 		return (executor(shell, tree_node->cmd));
 	else
 		return (FAILURE);
 }
 
-int	traverse_tree_and_execute(t_shell *shell, t_tree *tree_node, t_tree *parent_tree_node, int prev_exit_code)
+int	traverse_tree_and_execute(t_shell *shell, t_tree *tree_node, \
+	t_tree *parent_tree_node, int prev_exit_code)
 {
 	int	exit_code;
 
