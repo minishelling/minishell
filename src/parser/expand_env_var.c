@@ -38,11 +38,13 @@ void	expand_env_var(char **str, char **expanded_str, t_env *env_list)
 	*str = var_end;
 }
 
+// If it comes from "decide expansion type" and there are no quotes and a single $ before ending,
+//or if it comes from "handle_dquote" and is the last $ before a \' as in "'$'"
 void	handle_var_sign(t_shell *shell, char **str, char **expanded_str, \
 	t_env *env_list)
 {
 	char	*str_exit_code;
-	if (ft_strncmp(*str, "$", 1) == 0 && ft_strlen(*str) == 1)
+	if ((ft_strncmp(*str, "$", 1) == 0 && ft_strlen(*str) == 1) || ft_strncmp(*str, "$'", 2) == 0)
 	{
 		*expanded_str = ft_strjoin_fs1(expanded_str, "$");
 		(*str)++;

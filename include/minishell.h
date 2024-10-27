@@ -96,6 +96,7 @@ typedef enum e_codes
 enum e_parsing_error
 {
 	PARSING_OK,
+	ERR_CMD_SUBSTIT,
 	ERR_SYNTAX_NL,
 	ERR_UNCLOSED_QUOTES,
 	ERR_SYNTAX_OPEN_PAR,
@@ -222,9 +223,9 @@ typedef struct s_shell
 } t_shell;
 
 //FUNCTION POINTERS
-typedef void	(*t_lexer_func)(char *str, size_t *pos, t_token_id *token_id);
-typedef int		(*t_syntax_func)(t_token *prev, t_token *cur, int *par_count);
-typedef int		(*t_parser_func)(t_cmd *current_cmd, t_token *token);
+typedef int	(*t_lexer_func)(char *str, size_t *pos, t_token_id *token_id);
+typedef int	(*t_syntax_func)(t_token *prev, t_token *cur, int *par_count);
+typedef int	(*t_parser_func)(t_cmd *current_cmd, t_token *token);
 
 //TOKENIZATION
 int			tokenize(t_shell *shell, char *input);
@@ -234,13 +235,13 @@ void		add_token_in_back(t_token **t_list, t_token *new);
 t_token		*copy_token(t_token *t_node);
 t_token		*last_token(t_token *token_list_head);
 
-void		advance_pos_space_or_word(char *str, size_t *pos, t_token_id *token_id);
-void		advance_pos_quote(char *str, size_t *pos, t_token_id *token_id);
-void		advance_pos_and_operator(char *str, size_t *pos, t_token_id *token_id);
-void		advance_pos_parens(char *str, size_t *pos, t_token_id *token_id);
-void		advance_pos_redir(char *str, size_t *pos, t_token_id *token_id);
-void		advance_pos_env_var(char *str, size_t *pos, t_token_id *token_id);
-void		advance_pos_pipe(char *str, size_t *pos, t_token_id *token_id);
+int		advance_pos_space_or_word(char *str, size_t *pos, t_token_id *token_id);
+int		advance_pos_quote(char *str, size_t *pos, t_token_id *token_id);
+int		advance_pos_and_operator(char *str, size_t *pos, t_token_id *token_id);
+int		advance_pos_parens(char *str, size_t *pos, t_token_id *token_id);
+int		advance_pos_redir(char *str, size_t *pos, t_token_id *token_id);
+int		advance_pos_env_var(char *str, size_t *pos, t_token_id *token_id);
+int		advance_pos_pipe(char *str, size_t *pos, t_token_id *token_id);
 t_token		*skip_whitespace_and_get_next_token(t_token *token);
 t_token		*get_after_pipe_token(t_token *token);
 t_token		*get_after_arith_expan_token(t_token *token);
@@ -259,6 +260,7 @@ int			syntax_noop(t_token *t_prev, t_token *t_cur, int *par_count);
 int			syntax_word(t_token *t_prev, t_token *t_cur, int *par_count);
 int			syntax_quote(t_token *prev_token, t_token *cur_token, int *par_count);
 int			syntax_or_opr(t_token *prev_token, t_token *cur_token, int *par_count);
+int			syntax_env_var(t_token *prev_token, t_token *cur_token, int *par_count);
 
 //APPEND
 int			append (t_shell *shell);

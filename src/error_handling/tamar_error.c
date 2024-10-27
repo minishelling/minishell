@@ -4,6 +4,7 @@ char *get_err_msg(int e)
 {
 	char *error_messages[] = { 
 		"OK",
+		"This is either a command substitution or an arithmetic expansion. We don't do these here.\n",
 		"syntax error near unexpected token `newline`\n",
 		"Syntax error: unclosed quotes\n",
 		"syntax error near unexpected token `(`\n",
@@ -13,7 +14,7 @@ char *get_err_msg(int e)
 		"Syntax error near unexpected token `&&`\n",
 		"Syntax error near unexpected token `<` or `>`\n",
 		"Syntax error\n", //return and not exit
-		"Parsing error\n",
+		"More input needed\n",
 		"Error: unable to allocate dynamic memory\n", //exit
 		"Error while expanding: unable to allocate dynamic memory\n",  //exit
 		"Error while forming a command: unable to allocate dynamic memory\n",  //exit
@@ -40,8 +41,6 @@ void clean_nicely_and_exit(t_shell *shell, int exit_code)
 	free_env_list(&shell->env_list);
 	exit(exit_code);
 }
-
-
 
 void clean_nicely(t_shell *shell)
 {
@@ -77,7 +76,7 @@ void handle_parsing_err(t_shell *shell, int err_no)
 		write(2, full_msg, full_msg_len);
 		free(full_msg);
 	}
-	if ((err_no >= ERR_SYNTAX_NL  && err_no <= ERR_PARSING_ERROR) || err_no == SIGINT_HDOC)
+	if ((err_no >= ERR_CMD_SUBSTIT  && err_no <= ERR_PARSING_ERROR) || err_no == SIGINT_HDOC)
 		clean_nicely(shell);
 	else
 		clean_nicely_and_exit(shell, EXIT_FAILURE);

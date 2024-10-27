@@ -14,7 +14,7 @@ int	check_parens(t_token *head)
 
 	balance = 0;
 	current = head;
-	while (current != NULL)
+	while (current)
 	{
 		if (current->id == PAR_OPEN)
 			balance++;
@@ -76,7 +76,7 @@ void	initialize_syntax_func(t_syntax_func func[14])
 	func[8] = syntax_redir;
 	func[9] = syntax_quote;
 	func[10] = syntax_quote;
-	func[11] = syntax_noop;
+	func[11] = syntax_env_var;
 	func[12] = syntax_word;
 	func[13] = syntax_or_opr;
 }

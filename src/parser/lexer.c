@@ -32,6 +32,7 @@ t_token_id	get_token_id(char c)
 int	assign_token_id_and_string(char *str, size_t *pos, t_token *token)
 {
 	int				start_pos;
+	int				err_no;
 	t_lexer_func	advance[13];
 	char			*token_str;
 
@@ -50,7 +51,9 @@ int	assign_token_id_and_string(char *str, size_t *pos, t_token *token)
 	advance[11] = &advance_pos_env_var;
 	advance[12] = &advance_pos_space_or_word;
 	token->id = get_token_id(str[(*pos)]);
-	advance[token->id](str, pos, &token->id);
+	err_no = advance[token->id](str, pos, &token->id);
+	if (err_no == ERR_CMD_SUBSTIT)
+		return (err_no);
 	token_str = ft_substr(str, start_pos, (*pos - start_pos));
 	if (!token_str)
 		return (ERR_MEM);
@@ -72,6 +75,7 @@ int	tokenize(t_shell *shell, char *input)
 {
 	size_t	current_pos;
 	t_token	*token;
+	int		err_no;
 
 	shell->token = NULL;
 	current_pos = 0;
@@ -80,9 +84,9 @@ int	tokenize(t_shell *shell, char *input)
 		token = new_token();
 		if (!token)
 			return (ERR_MEM);
-		assign_token_id_and_string(input, &current_pos, token);
-		if (!token->str)
-			return (ERR_MEM);
+		err_no = assign_token_id_and_string(input, &current_pos, token);
+		if (err_no == ERR_CMD_SUBSTIT)
+			return (free_token(&token), err_no);
 		add_token_in_back(&shell->token, token);
 	}
 	classify_and_or_operators(shell->token);
