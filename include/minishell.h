@@ -124,7 +124,6 @@ typedef enum e_redir_id
 typedef enum e_builtin
 {
 	ECHO,
-	ECHO,
 	CD,
 	PWD,
 	EXPORT,
@@ -132,7 +131,6 @@ typedef enum e_builtin
 	UNSET,
 	ENV,
 	EXIT,
-	NON_BUILTIN,
 	NON_BUILTIN,
 	BUILTIN_COUNT
 }	t_builtin;

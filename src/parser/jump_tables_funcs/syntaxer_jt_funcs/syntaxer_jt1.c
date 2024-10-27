@@ -1,4 +1,4 @@
-#include "../../../include/minishell.h"
+#include "../../../../include/minishell.h"
 
 int	syntax_noop(t_token *prev_token, t_token *cur_token, int *par_count)
 {
