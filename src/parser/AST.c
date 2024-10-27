@@ -57,8 +57,6 @@ t_token	*get_matching_parenthesis(t_token *start_token)
 	return (NULL);
 }
 
-// t_token	*ignore_first_parenthesis(t_token *start_token, t_token **middle, \
-// 	t_token **end_token)
 t_token	*ignore_first_parenthesis(t_token *start_token, t_token **end_token)
 {
 	t_token	*matching_parenthesis;

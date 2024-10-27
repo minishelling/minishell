@@ -29,7 +29,6 @@
 
 # define META_CHARS_PLUS_SET " \t\n|&()><\'\"$"
 # define ERROR -1
-# define LITERAL 0 
 
 #define RESET_COLOR "\033[0m"
 #define MAGENTA_TEXT "\033[0;35m"

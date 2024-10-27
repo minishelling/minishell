@@ -87,10 +87,8 @@ int	process_syntax_checks(t_shell *shell, t_token **previous_token)
 	t_syntax_func	func[14];
 	int				err_no;
 	int				par_count;
-	int				quote_type;
 
 	par_count = 0;
-	quote_type = LITERAL;
 	initialize_syntax_func(func);
 	current_token = shell->token;
 	while (current_token)
