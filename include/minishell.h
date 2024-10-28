@@ -64,6 +64,7 @@ typedef enum e_codes
 	INIT = -1,
 	SUCCESS = 0,
 	FAILURE,
+	SYNTAX_FAILURE,
 	PROCEED,
 	NULL_ERROR,
 	NULL_ENV,

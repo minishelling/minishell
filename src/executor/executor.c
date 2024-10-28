@@ -34,7 +34,7 @@ int	executor(t_shell *shell, t_cmd *cmd)
 	{
 		ft_putstr_fd(\
 		"This is an arithmetic expansion. We don't do that here.\n", 2);
-		shell->exit_code = FAILURE;
+		shell->exit_code = SYNTAX_FAILURE;
 		return (shell->exit_code);
 	}
 	is_builtin = check_builtin(cmd->args[0]);

@@ -30,7 +30,7 @@ t_ecode	append_suffix(char **str, char *suffix, bool duplicate)
 	suffix_len = ft_strlen(suffix);
 	str_len = ft_strlen(*str);
 	if (!ft_strncmp(&(*str)[str_len - suffix_len],
-			suffix, suffix_len) && !duplicate)
+		suffix, suffix_len) && !duplicate)
 		return (SUCCESS);
 	new_str = ft_strdup(*str);
 	if (!new_str)
