@@ -2,7 +2,7 @@
 
 int			read_hdoc_input(t_shell *shell, const char *file_name, \
 	const char **hdoc_delim);
-static int	handle_hdoc_child(t_shell *shell, const char *file_name, \
+static void	handle_hdoc_child(t_shell *shell, const char *file_name, \
 	const char *delimiter);
 static char	*get_colourful_delimiter(const char *delimiter);
 static void	run_hdoc_loop(const char *delimiter, int fd, \
@@ -22,10 +22,12 @@ int	read_hdoc_input(t_shell *shell, const char *file_name, \
 	if (!hdoc_parent)
 		handle_hdoc_child(shell, file_name, *hdoc_delim);
 	waitpid(hdoc_parent, &wstatus, 0);
-	ft_free((void **) hdoc_delim);  //added this
+	ft_free((void **) hdoc_delim);
+	if (WEXITSTATUS(wstatus) == EXIT_FAILURE)
+		clean_nicely_and_exit(shell, EXIT_FAILURE);
 	handle_signals_after_reading_hdoc(shell, wstatus);
 	if (g_signalcode == SIGINT)
-		return (ERROR);  //why not give it SIGINT_HDOC ?
+		return (ERROR);
 	fd = open(file_name, O_RDONLY);
 	if (fd == -1)
 	{
@@ -36,24 +38,31 @@ int	read_hdoc_input(t_shell *shell, const char *file_name, \
 	return (fd);
 }
 
-static int	handle_hdoc_child(t_shell *shell, const char *file_name, \
+static void	handle_hdoc_child(t_shell *shell, const char *file_name, \
 	const char *hdoc_delim)
 {
 	int		fd;
 	char	*colourful_delimiter;
 	(void)shell;
 	fd = open(file_name, O_RDWR | O_CREAT | O_TRUNC, 0644);
-	if (!fd)
-		handle_perror("handle_heredoc_child");    //is this enough? don't we want to free hdoc_delim and finish?
+	if (fd == -1)
+	{
+		ft_free((void **) &hdoc_delim);
+		handle_perror("handle_heredoc_child");
+		clean_nicely_and_exit(shell, EXIT_FAILURE);
+	}
 	init_signals(CHILD_HEREDOC);
 	colourful_delimiter = get_colourful_delimiter(hdoc_delim);
-	colourful_delimiter = NULL;
 	if (!colourful_delimiter)
-		clean_nicely_and_exit(shell, EXIT_FAILURE);      //do we just want to exit the child? hdoc_delim is not freed
+	{
+		ft_free((void **) &hdoc_delim);
+		clean_nicely_and_exit(shell, EXIT_FAILURE);
+	}
 	run_hdoc_loop(hdoc_delim, fd, colourful_delimiter);
+	ft_free((void **) &hdoc_delim);
 	ft_free((void **)&colourful_delimiter);
 	close(fd);
-	exit(g_signalcode);
+	clean_nicely_and_exit(shell, SUCCESS);
 }
 
 static char	*get_colourful_delimiter(const char *delimiter)
@@ -66,7 +75,7 @@ static char	*get_colourful_delimiter(const char *delimiter)
 	col_delimiter = (char *) ft_calloc(col_delimiter_len + 1, sizeof(char));
 	if (!col_delimiter)
 	{
-		handle_perror("handle_heredoc_child");
+		handle_perror("get_colourful_delimiter");
 		return (NULL);
 	}
 	ft_strlcpy(col_delimiter, "heredoc [", col_delimiter_len + 1);

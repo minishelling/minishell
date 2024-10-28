@@ -27,7 +27,7 @@ int	parse(t_shell *shell)
 	if (g_signalcode == SIGINT)
 		return (SIGINT_HDOC);
 	shell->tree = make_tree(shell, shell->token, last_token(shell->token));
-	//print_tree(shell->tree, 0);
+	print_tree(shell->tree, 0);
 	return (PARSING_OK);
 }
 

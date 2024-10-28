@@ -29,8 +29,6 @@ int	handle_hdocs (t_shell *shell, t_token *token_list)
 			if (g_signalcode == SIGINT)
 			{
 				shell->exit_code = EXIT_SIGINT;
-				// ft_free((void **) &hdoc_delim);  // added this in read_hdoc_input
-				//printf ("hdoc_delim is %p\n", hdoc_delim);
 				return (SIGINT_HDOC);
 			}
 			err_no = overwrite_token_str_w_hdoc_fd(fd, token_list->next);
