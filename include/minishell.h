@@ -253,7 +253,7 @@ void		add_redir_in_back(t_redir **redir_list_head, t_redir *new_redir);
 void		free_redir_list(t_redir **redir_list_head);
 int			handle_heredocs(t_shell *shell, t_token *token_list);
 int			read_heredoc_input(t_shell *shell, const char *file_name, const char *delimiter);
-t_ecode		open_redirections(t_shell *shell, t_cmd *head);
+t_ecode		open_redirections(t_cmd *head);
 
 //AST
 t_tree		*make_tree(t_shell *shell, t_token *start_token, t_token *end_token);

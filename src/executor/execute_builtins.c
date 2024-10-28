@@ -3,17 +3,31 @@
 static t_ecode	execute_builtin(t_shell *shell, char **cmd_args);
 
 /**
- * @brief Handles redirections and executes a builtin function.
+ * @brief Handles I/O redirections and executes a builtin command.
  * 
- * It creates a backup of STDIN and STDOUT, and then duplicates
- * the redirection file descriptors into the corresponding STD fd,
- * if there are any present.
- * Then it executes the builtin and stores the exit code in the shell struct.
- * After the execution is completed it restores the STDIN and STDOUT.
+ * This function manages temporary redirections for standard input (STDIN) and 
+ * output (STDOUT) to execute a builtin command with specified I/O redirections.
+ * The function performs the following steps:
+ * - Backs up the current STDIN and STDOUT file descriptors.
+ * - Redirects STDIN and/or STDOUT based on redirection specifications in the 
+ *   cmd structure.
+ * - Executes the builtin command via `execute_builtin` and stores the exit 
+ *   code in the shell structure.
+ * - Restores the original STDIN and STDOUT file descriptors to their previous 
+ *   states.
  * 
- * @param shell A pointer to the shell structure.
- * @param cmd A pointer to the command's structure.
- * @return void 
+ * @param[in,out] shell A pointer to the shell structure, where the function 
+ *                      will store the exit code after executing the builtin.
+ * @param[in] cmd A pointer to the command structure containing arguments and 
+ *                redirection file descriptors for STDIN and STDOUT.
+ * 
+ * @return void This function does not return a value, but it may terminate 
+ *              the program if critical errors occur.
+ *
+ * @note This function assumes that `cmd->latest_in` and `cmd->latest_out` 
+ *       specify valid redirection targets, if any are present. In case of 
+ *       failure during redirection or restoration, the function will clean up 
+ *       and exit the program.
  */
 void	handle_builtin(t_shell *shell, t_cmd *cmd)
 {
@@ -39,18 +53,23 @@ void	handle_builtin(t_shell *shell, t_cmd *cmd)
 }
 
 /**
- * @brief Executes the builtin function.
+ * @brief Executes a shell builtin command if recognized.
+ *
+ * Given a command name, this function checks if the command is a valid 
+ * builtin using a lookup function. If it is a recognized builtin, the 
+ * function executes it via a jumptable of function pointers. If not, 
+ * the function signals the caller to search for and execute an external 
+ * command.
  * 
- * Given the command's name, it checks if it is a valid builtin.
- * If it is then it calls the builtin function from a jumptable.
- * 
- * @param shell A pointer to the shell structure.
- * @param cmd_args An array with the command's arguments.
- * @return If the shell or cmd's array are null it returns a NULL ERROR.
- * If the command is not a builtin it returns PROCEED, which indicates
- * to the parent function to look and execute the command's binary file.
- * On error it returns an error code and prints an error message
- * if it is neccessary.
+ * @param[in] shell A pointer to the shell structure.
+ * @param[in] cmd_args An array of strings representing the command name 
+ *                     and its arguments.
+ * @return t_ecode The function returns one of the following:
+ * - `NULL_ERROR` if either `shell` or `cmd_args` is NULL.
+ * - `PROCEED` if the command is not a recognized builtin, indicating 
+ *   that the caller should attempt to execute it as an external binary.
+ * - An error code if there was an error executing the builtin, and may 
+ *   print an error message if appropriate.
  */
 static t_ecode	execute_builtin(t_shell *shell, char **cmd_args)
 {
