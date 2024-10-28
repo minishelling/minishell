@@ -1,6 +1,6 @@
 #include "../../include/minishell.h"
 
-t_ecode	open_redirections(t_shell *shell, t_cmd *cmd);
+t_ecode	open_redirections(t_cmd *cmd);
 static t_ecode	open_current_redir(t_redir_id redir_id,
 					char *redir_file, int *fd);
 static t_ecode	replace_redir_fd(t_cmd *cmd, t_redir *redir);
