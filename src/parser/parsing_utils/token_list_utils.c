@@ -17,7 +17,7 @@ t_token	*last_token(t_token *token_list_head)
 {
 	t_token	*token;
 
-	if (token_list_head == NULL)
+	if (!token_list_head)
 		return (NULL);
 	token = token_list_head;
 	while (token->next)
@@ -36,8 +36,8 @@ t_token	*copy_token(t_token *token)
 		return (NULL);
 	dup_token->id = token->id;
 	dup_token->str = ft_strdup(token->str);
-	if (dup_token->str == NULL)
-		return (free(dup_token), NULL);
+	if (!dup_token->str)
+		return (free_token(&dup_token), NULL);
 	dup_token->next = NULL;
 	return (dup_token);
 }

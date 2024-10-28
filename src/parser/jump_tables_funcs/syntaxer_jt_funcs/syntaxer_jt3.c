@@ -1,14 +1,9 @@
 #include "../../../../include/minishell.h"
 
-int	remove_delimiter_quotes(t_token *delimiter_token)
-{
-	delimiter_token->id = WORD;
-	if (safe_assign_str(&(delimiter_token->str), \
-		(ft_substr(delimiter_token->str, 1, \
-			(ft_strlen(delimiter_token->str) - 2)))) != SUCCESS)
-		return (ERR_MEM);
-	return (PARSING_OK);
-}
+int	syntax_redir(t_token *prev_token, t_token *cur_token, int *par_count);
+int	remove_delimiter_quotes(t_token *delimiter_token);
+int	syntax_quote(t_token *prev_token, t_token *cur_token, int *par_count);
+int	syntax_env_var(t_token *prev_token, t_token *cur_token, int *par_count);
 
 int	syntax_redir(t_token *prev_token, t_token *cur_token, int *par_count)
 {
@@ -36,6 +31,16 @@ int	syntax_redir(t_token *prev_token, t_token *cur_token, int *par_count)
 			return (ERR_MEM);
 	if (next_token->id == ENV_VAR && !ft_strncmp((cur_token->str), "<<", 2))
 		next_token->id = WORD;
+	return (PARSING_OK);
+}
+
+int	remove_delimiter_quotes(t_token *delimiter_token)
+{
+	delimiter_token->id = WORD;
+	if (safe_assign_str(&(delimiter_token->str), \
+		(ft_substr(delimiter_token->str, 1, \
+			(ft_strlen(delimiter_token->str) - 2)))) != SUCCESS)
+		return (ERR_MEM);
 	return (PARSING_OK);
 }
 

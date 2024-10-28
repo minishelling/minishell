@@ -273,6 +273,12 @@ t_ecode		open_redirections(t_shell *shell, t_cmd *head);
 
 //AST
 t_tree		*make_tree(t_shell *shell, t_token *start_token, t_token *end_token);
+t_tree		*init_leaf_node(t_shell *shell, t_token *start_token, t_token *end_token);
+t_tree		*init_tree_node(t_shell *shell, t_token *op_token);
+t_token		*get_matching_parenthesis(t_token *start_token);
+t_token		*ignore_first_parenthesis(t_token *start_token, t_token **end_token);
+t_tree		*process_arith_expan(t_shell *shell, t_token *start_token, \
+	t_token *end_token);
 
 //CMD
 int			parse(t_shell *shell);
