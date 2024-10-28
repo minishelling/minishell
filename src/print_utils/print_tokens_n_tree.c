@@ -1,18 +1,23 @@
 #include "../../include/minishell.h"
 
-size_t	token_size(t_token *t_list)
-{
-	size_t	ret;
+size_t	get_token_list_size(t_token *list);
+void	init_token_names(char **token_name);
+void	print_tokens(t_token *list);
+void	print_tree(t_tree *node, int level);
 
-	ret = 0;
-	if (t_list == NULL)
+size_t	get_token_list_size(t_token *list)
+{
+	size_t	token_list_size;
+
+	token_list_size = 0;
+	if (!list)
 		return (0);
-	while (t_list)
+	while (list)
 	{
-		t_list = t_list->next;
-		ret++;
+		list = list->next;
+		token_list_size++;
 	}
-	return (ret);
+	return (token_list_size);
 }
 
 void	init_token_names(char **token_name)
@@ -24,8 +29,8 @@ void	init_token_names(char **token_name)
 	token_name[4] = "AND_OPR";
 	token_name[5] = "PAR_OPEN";
 	token_name[6] = "PAR_CLOSE";
-	token_name[7] = "GT";
-	token_name[8] = "LT";
+	token_name[7] = "LT";
+	token_name[8] = "GT";
 	token_name[9] = "SQUOTE";
 	token_name[10] = "DQUOTE";
 	token_name[11] = "ENV_VAR";
@@ -34,31 +39,31 @@ void	init_token_names(char **token_name)
 	token_name[14] = "ARITH_EXPAN";
 }
 
-void	print_token(t_token *head)
+void	print_tokens(t_token *list)
 {
-	int			size;
-	t_token		*ptr;
-	int			con;
+	int			list_size;
+	int			i;
+	t_token		*cur_token;
 	char		*token_name[15];
 
 	init_token_names(token_name);
-	con = token_size(head);
-	ptr = head;
-	size = token_size(ptr);
+	list_size = get_token_list_size(list);
+	i = list_size;
+	cur_token = list;
 	printf("\n"WHITE_TEXT MAGENTA_BACKGROUND"LIST OF TOKENS" \
-	RESET_COLOR"\t[%d]\n", con);
+	RESET_COLOR"\t[%d]\n", list_size);
 	printf("--------------------\n");
-	while (size--)
+	while (i--)
 	{
-		if (ptr && ptr->str)
+		if (cur_token && cur_token->str)
 		{
 			printf(MAGENTA_TEXT"%pTOKEN [%02d]"RESET_COLOR"\t \
-			id: %s [%d]\n\t\tstr: |%s|\tstr address: %p\n", ptr, \
-			(con - size), token_name[ptr->id], ptr->id, ptr->str, ptr->str);
+			id: %s [%d]\n\t\tstr: |%s|\tstr address: %p\n", cur_token, \
+			(list_size - i), token_name[cur_token->id], cur_token->id, cur_token->str, cur_token->str);
 		}
 		else
 			printf("NULL\n");
-		ptr = ptr->next;
+		cur_token = cur_token->next;
 	}
 }
 

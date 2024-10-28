@@ -1,33 +1,24 @@
 #include "../../include/minishell.h"
 
+t_ecode	open_redirections(t_shell *shell, t_cmd *cmd);
 static t_ecode	open_current_redir(t_redir_id redir_id,
 					char *redir_file, int *fd);
 static t_ecode	replace_redir_fd(t_cmd *cmd, t_redir *redir);
 static t_ecode	close_and_replace(int replacement, int *oldfd);
 
-/**
- * @brief Opens all input and output redirections of a command.
- * 
- * @param shell A pointer to the shell structure.
- * @param current_cmd A pointer to the structure of the current command.
- * 
- * @return If a redirection fails to open, if there's a dup failure,
- * or if the structures were NULL in the first place, it returns FAILURE,
- * otherwise it returns SUCCESS.
- */
-t_ecode	open_redirections(t_shell *shell, t_cmd *current_cmd)
+t_ecode	open_redirections(t_shell *shell, t_cmd *cmd)
 {
 	t_redir	*current_redir;
 
-	if (!shell || !current_cmd)
+	if (!shell || !cmd)
 		return (FAILURE);
-	current_redir = current_cmd->redir;
+	current_redir = cmd->redir;
 	while (current_redir)
 	{
 		if (open_current_redir(current_redir->redir_id,
 				current_redir->file, &current_redir->fd) != SUCCESS)
 			return (FAILURE);
-		if (replace_redir_fd(current_cmd, current_redir) != SUCCESS)
+		if (replace_redir_fd(cmd, current_redir) != SUCCESS)
 			return (FAILURE);
 		current_redir = current_redir->next;
 	}

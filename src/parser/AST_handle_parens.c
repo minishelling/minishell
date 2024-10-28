@@ -1,40 +1,40 @@
 #include "../../include/minishell.h"
 
-t_token	*get_matching_parenthesis(t_token *start_token);
-t_token	*ignore_first_parenthesis(t_token *start_token, t_token **end_token);
+t_token	*get_matching_paren(t_token *start_token);
+t_token	*ignore_first_parens(t_token *start_token, t_token **end_token);
 t_tree	*process_arith_expan(t_shell *shell, t_token *start_token, \
 	t_token *end_token);
 	
-t_token	*get_matching_parenthesis(t_token *start_token)
+t_token	*get_matching_paren(t_token *start_token)
 {
-	t_token	*iterator;
-	int		parentheses;
+	t_token	*cur_token;
+	int		parens;
 
-	iterator = start_token;
-	parentheses = 1;
-	while (iterator->next && parentheses)
+	cur_token = start_token;
+	parens = 1;
+	while (cur_token->next && parens)
 	{
-		if (iterator->next->id == PAR_OPEN)
-			parentheses++;
-		else if (iterator->next->id == PAR_CLOSE)
+		if (cur_token->next->id == PAR_OPEN)
+			parens++;
+		else if (cur_token->next->id == PAR_CLOSE)
 		{
-			parentheses--;
-			if (parentheses == 0)
-				return (iterator->next);
+			parens--;
+			if (parens == 0)
+				return (cur_token->next);
 		}
-		iterator = iterator->next;
+		cur_token = cur_token->next;
 	}
 	return (NULL);
 }
 
-t_token	*ignore_first_parenthesis(t_token *start_token, t_token **end_token)
+t_token	*ignore_first_parens(t_token *start_token, t_token **end_token)
 {
-	t_token	*matching_parenthesis;
+	t_token	*matching_paren;
 
-	matching_parenthesis = get_matching_parenthesis(start_token);
+	matching_paren = get_matching_paren(start_token);
 	start_token = start_token->next;
-	if (matching_parenthesis)
-		*end_token = non_null_previous(start_token, matching_parenthesis);
+	if (matching_paren)
+		*end_token = non_null_previous(start_token, matching_paren);
 	return (start_token);
 }
 

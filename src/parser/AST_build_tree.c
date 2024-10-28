@@ -1,9 +1,9 @@
 #include "../../include/minishell.h"
 
 t_tree	*make_tree(t_shell *shell, t_token *start_token, t_token *end_token);
-t_tree	*handle_parentheses(t_shell *shell, t_token *start_token, \
+t_tree	*handle_parens(t_shell *shell, t_token *start_token, \
 	t_token *end_token);
-t_token	*find_last_log_op_token_nip(t_token *token_head, t_token *end_token);
+t_token	*find_last_log_op_token_nip(t_token *list, t_token *end_token);
 t_tree	*init_leaf_node(t_shell *shell, t_token *start_token, \
 	t_token *end_token);
 t_tree	*init_tree_node(t_shell *shell, t_token *op_token);
@@ -15,7 +15,7 @@ t_tree	*make_tree(t_shell *shell, t_token *start_token, t_token *end_token)
 
 	if (start_token == NULL || end_token == NULL)
 		return (NULL);
-	subtree = handle_parentheses(shell, start_token, end_token);
+	subtree = handle_parens(shell, start_token, end_token);
 	if (subtree)
 		return (subtree);
 	log_op_token = find_last_log_op_token_nip(start_token, end_token);
@@ -28,17 +28,17 @@ t_tree	*make_tree(t_shell *shell, t_token *start_token, t_token *end_token)
 	return (subtree);
 }
 
-t_tree	*handle_parentheses(t_shell *shell, t_token *start_token, \
+t_tree	*handle_parens(t_shell *shell, t_token *start_token, \
 	t_token *end_token)
 {
 	if (start_token->id == PAR_OPEN && end_token->id == PAR_CLOSE \
-		&& get_matching_parenthesis(start_token) == end_token)
+		&& get_matching_paren(start_token) == end_token)
 	{
-		start_token = ignore_first_parenthesis(start_token, &end_token);
+		start_token = ignore_first_parens(start_token, &end_token);
 		if (end_token)
 		{
 			if (start_token->id == PAR_OPEN && end_token->id == PAR_CLOSE \
-			&& get_matching_parenthesis(start_token) == end_token)
+			&& get_matching_paren(start_token) == end_token)
 			{
 				process_arith_expan(shell, start_token, end_token);
 				return (init_leaf_node(shell, start_token, end_token));
@@ -50,7 +50,7 @@ t_tree	*handle_parentheses(t_shell *shell, t_token *start_token, \
 	return (NULL);
 }
 
-t_token	*find_last_log_op_token_nip(t_token *token_head, t_token *end_token)
+t_token	*find_last_log_op_token_nip(t_token *list, t_token *end_token)
 {
 	t_token	*token_iterator;
 	t_token	*return_token;
@@ -58,7 +58,7 @@ t_token	*find_last_log_op_token_nip(t_token *token_head, t_token *end_token)
 
 	return_token = NULL;
 	parenthesis = 0;
-	token_iterator = token_head;
+	token_iterator = list;
 	while (token_iterator && token_iterator != end_token)
 	{
 		if (token_iterator->id == PAR_OPEN)

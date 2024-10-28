@@ -27,7 +27,7 @@
 #define MINISHARED_PROMPT "\001\033[38;5;93m\002M\001\033[38;5;99m\002i\001\033[38;5;111m\002n\001\033[38;5;63m\002i\001\033[38;5;75m\002_\001\033[38;5;81m\002s\001\033[38;5;118m\002h\001\033[38;5;154m\002a\001\033[38;5;190m\002r\001\033[38;5;226m\002e\001\033[38;5;214m\002d\001\033[0m\002: \001\033[0m\002"
 #define ERR_PROMPT "Mini_shared: \001\033[0m\002"
 
-# define META_CHARS_PLUS_SET " \t\n|&()><\'\"$"
+# define META_CHARS_PLUS_SET " \t\n|&()<>\'\"$"
 # define ERROR -1
 
 #define RESET_COLOR "\033[0m"
@@ -243,9 +243,9 @@ int		advance_pos_env_var(char *str, size_t *pos, t_token_id *token_id);
 int		advance_pos_pipe(char *str, size_t *pos, t_token_id *token_id);
 t_token		*skip_whitespace_and_get_next_token(t_token *token);
 t_token		*get_after_arith_expan_token(t_token *token);
-void		remove_space_tokens(t_token **head, t_token *prev_token);
-t_token		*previous_token_if_exists(t_token *head, t_token *target);
-t_token		*non_null_previous(t_token *start_token, t_token *before_what);
+void		remove_space_tokens(t_token **list, t_token *prev_token);
+t_token		*previous_token_if_exists(t_token *list, t_token *target);
+t_token		*non_null_previous(t_token *list, t_token *before_what);
 
 //SYNTAX
 int			syntax(t_shell *shell);
@@ -265,18 +265,18 @@ int			append (t_shell *shell);
 
 //REDIRECTION
 t_redir		*new_redir(void);
-void		add_redir_in_back(t_redir **redir_list_head, t_redir *new_redir);
-void		free_redir_list(t_redir **redir_list_head);
-int			handle_heredocs(t_shell *shell, t_token *token_list);
-int 		read_heredoc_input(t_shell *shell, const char *file_name, const char *delimiter);
-t_ecode		open_redirections(t_shell *shell, t_cmd *head);
+void		add_redir_in_back(t_redir **list, t_redir *new_redir);
+void		free_redir_list(t_redir **list);
+int			handle_hdocs(t_shell *shell, t_token *token_list);
+int 		read_hdoc_input(t_shell *shell, const char *file_name, const char **delimiter);
+t_ecode		open_redirections(t_shell *shell, t_cmd *cmd);
 
 //AST
 t_tree		*make_tree(t_shell *shell, t_token *start_token, t_token *end_token);
 t_tree		*init_leaf_node(t_shell *shell, t_token *start_token, t_token *end_token);
 t_tree		*init_tree_node(t_shell *shell, t_token *op_token);
-t_token		*get_matching_parenthesis(t_token *start_token);
-t_token		*ignore_first_parenthesis(t_token *start_token, t_token **end_token);
+t_token		*get_matching_paren(t_token *start_token);
+t_token		*ignore_first_parens(t_token *start_token, t_token **end_token);
 t_tree		*process_arith_expan(t_shell *shell, t_token *start_token, \
 	t_token *end_token);
 
@@ -292,7 +292,7 @@ int			parser_add_new_arg(t_cmd *cmd, t_token *token);
 
 //EXPANSION
 void		expand(t_shell *shell, t_token *start_token, t_token *end_token, t_env *env_list);
-char		*get_env_value_from_key(t_env *env_head, char *key);
+char		*get_env_value_from_key(t_env *env_, char *key);
 
 //PARSING SIDE OF EXECUTION
 int			traverse_tree_and_execute(t_shell *shell, t_tree *node, t_tree *parent_node, int prev_exit_code);
@@ -300,14 +300,14 @@ int			handle_pipe_subtree(t_shell *shell, t_tree *tree_node);
 
 //FREE
 void		free_token(t_token **token);
-void		free_token_list(t_token **token_list);
+void		free_token_list(t_token **list);
 void		free_args(char ***args);
 void		free_cmd(t_cmd **cmd);
 void		free_tree(t_tree **node);
 
 //PRINT
 void		print_env(t_env *env_list);
-void		print_token(t_token *head);
+void		print_tokens(t_token *list);
 void		print_cmd(t_cmd *cmd);
 void		print_tree(t_tree *node, int level);
 

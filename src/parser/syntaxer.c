@@ -1,18 +1,18 @@
 #include "../../include/minishell.h"
 
 int		syntax(t_shell *shell);
-int		process_syntax_checks(t_shell *shell, t_token **previous_token);
+int		process_syntax_checks(t_shell *shell, t_token **prev_token);
 void	initialize_syntax_func(t_syntax_func func[14]);
-int		check_parens(t_token *head);
-int		check_quotes(t_token *token_list_head);
+int		check_parens(t_token *list);
+int		check_quotes(t_token *list);
 
 int	syntax(t_shell *shell)
 {
-	t_token	*previous_token;
+	t_token	*prev_token;
 	int		err_no;
 
-	previous_token = NULL;
-	err_no = process_syntax_checks(shell, &previous_token);
+	prev_token = NULL;
+	err_no = process_syntax_checks(shell, &prev_token);
 	if (err_no)
 		return (err_no);
 	err_no = check_parens(shell->token);
@@ -22,7 +22,7 @@ int	syntax(t_shell *shell)
 	return (err_no);
 }
 
-int	process_syntax_checks(t_shell *shell, t_token **previous_token)
+int	process_syntax_checks(t_shell *shell, t_token **prev_token)
 {
 	t_token			*current_token;
 	t_syntax_func	func[14];
@@ -35,10 +35,10 @@ int	process_syntax_checks(t_shell *shell, t_token **previous_token)
 	while (current_token)
 	{
 		err_no = func[current_token->id] \
-		(*previous_token, current_token, &par_count);
+		(*prev_token, current_token, &par_count);
 		if (err_no)
 			return (err_no);
-		*previous_token = current_token;
+		*prev_token = current_token;
 		current_token = skip_whitespace_and_get_next_token(current_token);
 	}
 	return (PARSING_OK);
@@ -63,47 +63,48 @@ void	initialize_syntax_func(t_syntax_func func[14])
 }
 //the case in which balace in negative i.e. parens closing before there is a
 // matching open paren, is already handled in "syntax_close_paren".
-int	check_parens(t_token *head)
+int	check_parens(t_token *list)
 {
 	int		balance;
-	t_token	*current;
+	t_token	*cur_token;
 
 	balance = 0;
-	current = head;
-	while (current)
+	cur_token = list;
+	while (cur_token)
 	{
-		if (current->id == PAR_OPEN)
+		if (cur_token->id == PAR_OPEN)
 			balance++;
-		else if (current->id == PAR_CLOSE)
+		else if (cur_token->id == PAR_CLOSE)
 			balance--;
-		current = current->next;
+		cur_token = cur_token->next;
 	}
 	if (balance > 0)
 	{
-		if (non_null_previous(head, current)->id == PAR_OPEN)
+		if (non_null_previous(list, cur_token)->id == PAR_OPEN)
 			return (ERR_SYNTAX_NL);
 		return (ERR_PARSING_ERROR);
 	}
 	return (PARSING_OK);
 }
 
-int	check_quotes(t_token *token_list_head)
+int	check_quotes(t_token *list)
 {
-	t_token	*current_token;
+	t_token	*cur_token;
+	size_t	str_len;
 	char	*str;
-	size_t	len;
 
-	current_token = token_list_head;
-	while (current_token)
+
+	cur_token = list;
+	while (cur_token)
 	{
-		if (current_token->id == DQUOTE || current_token->id == SQUOTE)
+		if (cur_token->id == DQUOTE || cur_token->id == SQUOTE)
 		{
-			len = ft_strlen(current_token->str);
-			str = current_token->str;
-			if (len == 1 || str[0] != str[len - 1])
+			str_len = ft_strlen(cur_token->str);
+			str = cur_token->str;
+			if (str_len == 1 || str[0] != str[str_len - 1])
 				return (ERR_UNCLOSED_QUOTES);
 		}
-		current_token = current_token->next;
+		cur_token = cur_token->next;
 	}
 	return (PARSING_OK);
 }

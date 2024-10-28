@@ -1,28 +1,31 @@
 #include "../../include/minishell.h"
 
-static int	handle_heredoc_child(t_shell *shell, const char *file_name, \
+int			read_hdoc_input(t_shell *shell, const char *file_name, \
+	const char **hdoc_delim);
+static int	handle_hdoc_child(t_shell *shell, const char *file_name, \
 	const char *delimiter);
 static char	*get_colourful_delimiter(const char *delimiter);
-static void	run_heredoc_loop(const char *delimiter, int fd, \
+static void	run_hdoc_loop(const char *delimiter, int fd, \
 	const char *colourful_delimiter);
 void		handle_signals_after_reading_hdoc(t_shell *shell, int wstatus);
 
-int	read_heredoc_input(t_shell *shell, const char *file_name, \
-	const char *delimiter)
+int	read_hdoc_input(t_shell *shell, const char *file_name, \
+	const char **hdoc_delim)
 {
-	pid_t	heredoc_parent;
+	pid_t	hdoc_parent;
 	int		fd;
 	int		wstatus;
 
 	wstatus = 0;
-	heredoc_parent = fork();
+	hdoc_parent = fork();
 	init_signals(PARENT_HEREDOC);
-	if (!heredoc_parent)
-		handle_heredoc_child(shell, file_name, delimiter);
-	waitpid(heredoc_parent, &wstatus, 0);
+	if (!hdoc_parent)
+		handle_hdoc_child(shell, file_name, *hdoc_delim);
+	waitpid(hdoc_parent, &wstatus, 0);
+	ft_free((void **) hdoc_delim);  //added this
 	handle_signals_after_reading_hdoc(shell, wstatus);
 	if (g_signalcode == SIGINT)
-		return (ERROR);
+		return (ERROR);  //why not give it SIGINT_HDOC ?
 	fd = open(file_name, O_RDONLY);
 	if (fd == -1)
 	{
@@ -33,20 +36,21 @@ int	read_heredoc_input(t_shell *shell, const char *file_name, \
 	return (fd);
 }
 
-static int	handle_heredoc_child(t_shell *shell, const char *file_name, \
-	const char *delimiter)
+static int	handle_hdoc_child(t_shell *shell, const char *file_name, \
+	const char *hdoc_delim)
 {
 	int		fd;
 	char	*colourful_delimiter;
-
+	(void)shell;
 	fd = open(file_name, O_RDWR | O_CREAT | O_TRUNC, 0644);
 	if (!fd)
-		handle_perror("handle_heredoc_child");
+		handle_perror("handle_heredoc_child");    //is this enough? don't we want to free hdoc_delim and finish?
 	init_signals(CHILD_HEREDOC);
-	colourful_delimiter = get_colourful_delimiter(delimiter);
+	colourful_delimiter = get_colourful_delimiter(hdoc_delim);
+	colourful_delimiter = NULL;
 	if (!colourful_delimiter)
-		clean_nicely_and_exit(shell, EXIT_FAILURE);
-	run_heredoc_loop(delimiter, fd, colourful_delimiter);
+		clean_nicely_and_exit(shell, EXIT_FAILURE);      //do we just want to exit the child? hdoc_delim is not freed
+	run_hdoc_loop(hdoc_delim, fd, colourful_delimiter);
 	ft_free((void **)&colourful_delimiter);
 	close(fd);
 	exit(g_signalcode);
@@ -73,7 +77,7 @@ static char	*get_colourful_delimiter(const char *delimiter)
 	return (col_delimiter);
 }
 
-static void	run_heredoc_loop(const char *delimiter, int fd, \
+static void	run_hdoc_loop(const char *delimiter, int fd, \
 	const char *colourful_delimiter)
 {
 	size_t	bytes_read;

@@ -1,5 +1,8 @@
 #include "../../../include/minishell.h"
 
+int		safe_assign_str(char **dest, const char *src);
+size_t	ft_strcspn(const char *str, const char *reject);
+
 int	safe_assign_str(char **dest, const char *src)
 {
 	if (*dest)
