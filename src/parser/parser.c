@@ -7,7 +7,6 @@ size_t		get_arg_num(t_token *start_token, t_token *end_token);
 static int	traverse_tokens_to_make_cmd(t_cmd *cmd, t_token *start_token,
 	t_token *end_token);
 int			build_command_from_token(t_cmd *cmd, t_token *token);
-void		initialize_parsing_funcs(t_parser_func make_cmd[16]);
 
 int	parse(t_shell *shell)
 {
@@ -22,13 +21,16 @@ int	parse(t_shell *shell)
 	err_no = append(shell);
 	if (err_no)
 		return (err_no);
+	if (shell->token && shell->debug_mode == ON)
+		print_tokens(shell->token);
 	err_no = handle_hdocs(shell, shell->token);
 	if (err_no)
 		return (err_no);
 	if (g_signalcode == SIGINT)
 		return (SIGINT_HDOC);
 	shell->tree = make_tree(shell, shell->token, last_token(shell->token));
-	//print_tree(shell->tree, 0);
+	if (shell->tree && shell->debug_mode == ON)
+		print_tree(shell->tree);
 	return (PARSING_OK);
 }
 

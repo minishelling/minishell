@@ -28,6 +28,8 @@
 
 # define META_CHARS_PLUS_SET " \t\n|&()<>\'\"$"
 # define ERROR -1
+# define OFF 0
+# define ON 1
 
 # define RESET_COLOR "\033[0m"
 # define MAGENTA_TEXT "\033[0;35m"
@@ -203,6 +205,7 @@ typedef struct s_shell
 	t_token		*token;
 	t_tree		*tree;
 	t_env		*env_list;
+	bool		debug_mode;
 }	t_shell;
 
 extern int		g_signalcode;
@@ -296,7 +299,9 @@ void		free_tree(t_tree **node);
 void		print_env(t_env *env_list);
 void		print_tokens(t_token *list);
 void		print_cmd(t_cmd *cmd);
-void		print_tree(t_tree *node, int level);
+void		print_tree(t_tree *tree);
+void		print_tree_nodes(t_tree *node, int level);
+
 
 //ERROR
 void		handle_parsing_err(t_shell *shell, int err_no);

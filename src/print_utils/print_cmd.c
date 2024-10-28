@@ -10,10 +10,9 @@ void	print_cmd_args(char **arg)
 
 	i = 0;
 	fprintf(stderr, MAGENTA_TEXT WHITE_BACKGROUND"ARGUMENTS" RESET_COLOR"\n");
-	while (arg[i] != NULL)
+	while (arg[i])
 	{
-		fprintf(stderr, "arg [%02zu]:\t|%s| arg adress: %p\n", \
-		i, arg[i], &arg[i]);
+		fprintf(stderr, "arg [%02zu]:\t|%s|\n", i, arg[i]);
 		i++;
 	}
 }
@@ -48,15 +47,16 @@ void	print_cmd_redir(t_redir *list)
 
 void	print_cmd(t_cmd *cmd)
 {
-	fprintf(stderr, "\n"WHITE_TEXT MAGENTA_BACKGROUND"CMD"RESET_COLOR"\n");
-	fprintf(stderr, "---------------------\n");
+	fprintf(stderr, "\n"WHITE_TEXT MAGENTA_BACKGROUND \
+	"CMD TO BE EXECUTED"RESET_COLOR"\n");
+	fprintf(stderr, "------------------------------------\n");
 	if (cmd)
 	{
 		print_cmd_args((char **)cmd->args);
 		print_cmd_redir(cmd->redir);
-		fprintf (stderr, "latest_in is %d and latest_out %d\n", \
+		fprintf (stderr, "latest_in is %d, latest_out %d\n", \
 		cmd->latest_in, cmd->latest_out);
 		cmd = cmd->next;
-		fprintf(stderr, "______________________\n\n");
+		fprintf(stderr, "------------------------------------\n\n");
 	}
 }
