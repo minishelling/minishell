@@ -1,5 +1,10 @@
 #include "../../../include/minishell.h"
 
+t_token	*skip_whitespace_and_get_next_token(t_token *token);
+t_token	*get_after_arith_expan_token(t_token *first_arith_expan_token);
+t_token	*non_null_previous(t_token *list, t_token *before_what);
+t_token	*previous_token_if_exists(t_token *list, t_token *target);
+
 t_token	*skip_whitespace_and_get_next_token(t_token *token)
 {
 	t_token	*return_token;
@@ -23,23 +28,23 @@ t_token	*get_after_arith_expan_token(t_token *first_arith_expan_token)
 	return (cur_token);
 }
 
-t_token	*non_null_previous(t_token *start_token, t_token *before_what)
+t_token	*non_null_previous(t_token *list, t_token *before_what)
 {
 	t_token	*return_token;
 
-	return_token = start_token;
+	return_token = list;
 	while (return_token->next && return_token->next != before_what)
 		return_token = return_token->next;
 	return (return_token);
 }
 
-t_token	*previous_token_if_exists(t_token *head, t_token *target)
+t_token	*previous_token_if_exists(t_token *list, t_token *target)
 {
 	t_token	*current;
 
-	if (head == target)
+	if (list == target)
 		return (NULL);
-	current = head;
+	current = list;
 	while (current && current->next != target)
 		current = current->next;
 	return (current);

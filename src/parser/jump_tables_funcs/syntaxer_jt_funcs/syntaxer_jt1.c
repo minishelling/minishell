@@ -1,5 +1,10 @@
 #include "../../../../include/minishell.h"
 
+int	syntax_noop(t_token *prev_token, t_token *cur_token, int *par_count);
+int	syntax_and_opr(t_token *prev_token, t_token *cur_token, int *par_count);
+int	syntax_or_opr(t_token *prev_token, t_token *cur_token, int *par_count);
+int	syntax_word(t_token *prev_token, t_token *cur_token, int *par_count);
+
 int	syntax_noop(t_token *prev_token, t_token *cur_token, int *par_count)
 {
 	(void) prev_token;

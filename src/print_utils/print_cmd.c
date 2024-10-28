@@ -1,5 +1,9 @@
 #include "../../include/minishell.h"
 
+void	print_cmd_args(char **arg);
+void	print_cmd_redir(t_redir *list);
+void	print_cmd(t_cmd *cmd);
+
 void	print_cmd_args(char **arg)
 {
 	size_t	i;
@@ -14,9 +18,9 @@ void	print_cmd_args(char **arg)
 	}
 }
 
-void	print_cmd_redir(t_redir *redir_list_head)
+void	print_cmd_redir(t_redir *list)
 {
-	t_redir	*current_redir;
+	t_redir	*cur_redir;
 	char	*redir_name[5];
 
 	redir_name[0] = "REDIR";
@@ -24,21 +28,21 @@ void	print_cmd_redir(t_redir *redir_list_head)
 	redir_name[2] = "HERE_DOC";
 	redir_name[3] = "OUTPUT";
 	redir_name[4] = "APPEND";
-	if (!redir_list_head)
+	if (!list)
 	{
 		fprintf(stderr, "\n"MAGENTA_TEXT WHITE_BACKGROUND \
 		"NO REDIRECTIONS"RESET_COLOR"\n");
 		return ;
 	}
-	current_redir = redir_list_head;
+	cur_redir = list;
 	fprintf(stderr, "\n"MAGENTA_TEXT WHITE_BACKGROUND \
 	"REDIRECTIONS"RESET_COLOR"\n");
-	while (current_redir != NULL)
+	while (cur_redir)
 	{
-		fprintf(stderr, "TYPE [%d]\t%s\n", current_redir->redir_id, \
-		redir_name[current_redir->redir_id]);
-		fprintf(stderr, "FILE\t\t%s\n", current_redir->file);
-		current_redir = current_redir->next;
+		fprintf(stderr, "TYPE [%d]\t%s\n", cur_redir->redir_id, \
+		redir_name[cur_redir->redir_id]);
+		fprintf(stderr, "FILE\t\t%s\n", cur_redir->file);
+		cur_redir = cur_redir->next;
 	}
 }
 

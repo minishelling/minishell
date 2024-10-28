@@ -1,5 +1,10 @@
 #include "../../../include/minishell.h"
 
+t_token	*new_token(void);
+t_token	*last_token(t_token *list);
+t_token	*copy_token(t_token *token);
+void	add_token_in_back(t_token **list, t_token *new_token);
+
 t_token	*new_token(void)
 {
 	t_token	*new;
@@ -13,16 +18,16 @@ t_token	*new_token(void)
 	return (new);
 }
 
-t_token	*last_token(t_token *token_list_head)
+t_token	*last_token(t_token *list)
 {
-	t_token	*token;
+	t_token	*cur_token;
 
-	if (token_list_head == NULL)
+	if (!list)
 		return (NULL);
-	token = token_list_head;
-	while (token->next)
-		token = token->next;
-	return (token);
+	cur_token = list;
+	while (cur_token->next)
+		cur_token = cur_token->next;
+	return (cur_token);
 }
 
 t_token	*copy_token(t_token *token)
@@ -36,21 +41,21 @@ t_token	*copy_token(t_token *token)
 		return (NULL);
 	dup_token->id = token->id;
 	dup_token->str = ft_strdup(token->str);
-	if (dup_token->str == NULL)
-		return (free(dup_token), NULL);
+	if (!dup_token->str)
+		return (free_token(&dup_token), NULL);
 	dup_token->next = NULL;
 	return (dup_token);
 }
 
-void	add_token_in_back(t_token **token_list_head, t_token *new_token)
+void	add_token_in_back(t_token **list, t_token *new_token)
 {
 	if (!new_token)
 		return ;
-	if (!(*token_list_head))
+	if (!(*list))
 	{
-		*token_list_head = new_token;
+		*list = new_token;
 		return ;
 	}
-	last_token(*token_list_head)->next = new_token;
+	last_token(*list)->next = new_token;
 	return ;
 }

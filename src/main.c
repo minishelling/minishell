@@ -9,6 +9,7 @@ static void	init_shell(t_shell *shell, int argc, char **argv, char **envp)
 		exit(EXIT_FAILURE);
 	}
 	g_signalcode = 0;
+	shell->token = NULL;
 	shell->tree = NULL;
 	shell->exit_code = 0;
 	shell->env_list = NULL;

@@ -1,5 +1,6 @@
 #include "../../include/minishell.h"
 
+t_ecode	open_redirections(t_shell *shell, t_cmd *cmd);
 static t_ecode	open_current_redir(t_redir_id redir_id,
 					char *redir_file, int *fd);
 static t_ecode	replace_redir_fd(t_cmd *cmd, t_redir *redir);
@@ -21,19 +22,19 @@ static t_ecode	close_and_replace(int replacement, int *oldfd);
  *   in duplicating file descriptors, or if `current_cmd` is NULL.
  * - `SUCCESS` if all redirections are opened successfully.
  */
-t_ecode	open_redirections(t_cmd *current_cmd)
+t_ecode	open_redirections(t_cmd *cmd)
 {
 	t_redir	*current_redir;
 
-	if (!current_cmd)
+	if (!cmd)
 		return (FAILURE);
-	current_redir = current_cmd->redir;
+	current_redir = cmd->redir;
 	while (current_redir)
 	{
 		if (open_current_redir(current_redir->redir_id,
 				current_redir->file, &current_redir->fd) != SUCCESS)
 			return (FAILURE);
-		if (replace_redir_fd(current_cmd, current_redir) != SUCCESS)
+		if (replace_redir_fd(cmd, current_redir) != SUCCESS)
 			return (FAILURE);
 		current_redir = current_redir->next;
 	}
