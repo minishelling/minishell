@@ -15,26 +15,26 @@ static void	handle_signal_status(pid_t last_pid, int *last_status);
 /**
  * @brief Executes a subtree where the root is a pipe operator.
  * 
- * This function creates a pipe and then forks the process twice,
- * but before forking for a second time it waits until the execution
- * of the first process is finished.
- * The first process is supposed to execute the left node of the tree,
- * while the second is suposed to execute the right node.
- * Before returning, all processes and subprocesses are waited to terminate.
+ * This function sets up a pipe and forks the process twice to 
+ * execute the left and right child nodes of the pipe operator. 
+ * It first creates a pipe, forks the process for the left node, 
+ * then waits for it to complete before forking for the right node. 
+ * It ensures that all processes and subprocesses are waited upon 
+ * before returning.
  * 
- * @param shell A pointer to the shell structure.
- * @param tree_node A pointer to the tree node to be executed.
+ * @param shell A pointer to the shell structure that contains the 
+ *              current execution environment.
+ * @param tree_node A pointer to the tree node representing the pipe 
+ *                  operator, which has left and right child nodes to execute.
  * 
- * @return If there was an error in piping, forking or closing a fd,
- * then it exits the main process with the exit code EXIT_FAILURE (1).
- * If the left node process has exited with a signal code, then
- * the execution stops and it returns the WEXITSTATUS of that left node.
- * Otherwise it returns the WEXITSTATUS of the right node.
+ * @return Returns the exit status of the right child node process. 
+ * If there was an error during the pipe creation, forking, or closing 
+ * file descriptors, it exits the main process with `EXIT_FAILURE` (1). 
+ * If the left node process exits with a signal, it returns the WEXITSTATUS 
+ * of that left node instead.
  * 
- * Note that a check for if the node processes have exited normally
- * (with an exit function) or by a signal is not needed since each node
- * will always exit with the exit function, and the exit code of execution,
- * and the check is provided there (in the executor).
+ * @note: It is assumed that each node will exit normally via an exit function, 
+ * and checks for normal versus signal termination are handled in the executor.
  */
 int	handle_pipe_subtree(t_shell *shell, t_tree *tree_node)
 {
@@ -61,15 +61,19 @@ int	handle_pipe_subtree(t_shell *shell, t_tree *tree_node)
 }
 
 /**
- * @brief Executes the left node a pipe subtree.
+ * @brief Executes the left child node of a pipe subtree.
  * 
- * This node is supposed to write the command's output into
- * the WRITE_END (1) of the pipe. Thus it duplicates the fd[WRITE_END]
- * into STDOUT, and then closes both pipe file descriptors before executing.
+ * This function sets up the left node of a pipe structure to write 
+ * its output to the pipe's `WRITE_END` (1). It duplicates the `WRITE_END` 
+ * file descriptor to STDOUT, closes both pipe file descriptors, and 
+ * then executes the command associated with the left node.
  * 
  * @param shell A pointer to the shell structure.
- * @param tree_node A pointer to the parent tree node (the pipe node).
- * @param fd The pipe's file descriptors.
+ * @param tree_node A pointer to the current tree node representing the 
+ *                  pipe. This node contains the command to be executed 
+ *                  in the left subtree.
+ * @param fd An array containing the pipe's file descriptors, where 
+ *         `fd[0]` is the `READ_END` and `fd[1]` is the `WRITE_END` of the pipe.
  * 
  * @return void
  */
@@ -88,15 +92,19 @@ static void	handle_pipe_left_node(t_shell *shell, t_tree *tree_node, int fd[2])
 }
 
 /**
- * @brief Executes the right node a pipe subtree.
+ * @brief Executes the right child node of a pipe subtree.
  * 
- * This node is supposed to read from the pipe READ_END (0)
- * for the command's input. Thus it duplicates the fd[READ_END]
- * into STDIN, and then closes both pipe file descriptors before executing.
+ * This function is designed to set up the right node of a pipe structure 
+ * to read input from the pipe's `READ_END` (0). It duplicates the `READ_END` 
+ * file descriptor to STDIN, closes both pipe file descriptors, and then 
+ * executes the command associated with the right node.
  * 
  * @param shell A pointer to the shell structure.
- * @param tree_node A pointer to the parent tree node (the pipe node).
- * @param fd The pipe's file descriptors.
+ * @param tree_node A pointer to the current tree node representing the 
+ *                  pipe. This node contains the command to be executed 
+ *                  in the right subtree.
+ * @param fd An array containing the pipe's file descriptors, where 
+ *          `fd[0]` is the `READ_END` and `fd[1]` is the `WRITE_END` of the pipe.
  * 
  * @return void
  */
@@ -115,13 +123,18 @@ static void	handle_pipe_right_node(t_shell *shell, t_tree *tree_node, int fd[2])
 }
 
 /**
- * @brief Closes the given file descriptors.
+ * @brief Closes the specified file descriptors.
  * 
- * @param fd1 File descriptor 1.
- * @param fd2 File descriptor 2.
+ * This function attempts to close two file descriptors provided as 
+ * arguments. If closing any of the file descriptors fails, an error 
+ * message is printed to standard error.
+ * 
+ * @param fd1 The first file descriptor to close. If it is set to 
+ *             `ERROR`, it will be ignored.
+ * @param fd2 The second file descriptor to close. If it is set to 
+ *             `ERROR`, it will be ignored.
  * 
  * @return void
- * If there was an error closing a file descriptor it prints an error message.
  */
 static void	close_fds(int fd1, int fd2)
 {
@@ -138,14 +151,17 @@ static void	close_fds(int fd1, int fd2)
 }
 
 /**
- * @brief Handles the case where a child exited with a signal.
+ * @brief Handles the status of a child process that exited due to a signal.
  * 
- * If a child exited with the signal SIGINT or SIGQUIT
- * then the global variable g_signalcode is modified
- * to be the signal code.
+ * This function waits for the specified child process to terminate and checks 
+ * its exit status. If the child exited due to the signals SIGINT or SIGQUIT, 
+ * the global variable `g_signalcode` is updated with the corresponding signal 
+ * code. It also continues to wait for any other child processes that may have 
+ * exited and updates the signal code accordingly.
  * 
- * @param last_pid The pid of the last child to be executed.
- * @param last_status A pointer where we want to store the last status.
+ * @param last_pid The process ID of the last child process that was executed.
+ * @param last_status A pointer to an integer where the exit status of the 
+ *                    last child process will be stored.
  * 
  * @return void
  */

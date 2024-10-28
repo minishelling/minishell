@@ -10,7 +10,7 @@ static t_ecode	close_and_replace(int replacement, int *oldfd);
  * 
  * This function iterates through the list of redirection structures associated 
  * with the current command, attempting to open each redirection and replace 
- * the corresponding file descriptor. If any operation fails, it returns an error 
+ * the corresponding file descriptor. If any operation fails, it returns an error
  * code. 
  * 
  * @param[in] current_cmd A pointer to the command structure containing the 

@@ -6,20 +6,33 @@ static void	run_child(t_shell *shell, t_cmd *cmd);
 static void	do_parent_duties(t_shell *shell, t_cmd *cmd);
 
 /**
- * @brief Executes a passed command.
- * It checks whether the command is an arithmetic expansion,
- * a built-in or an executable file.
+ * @brief Executes a given command by determining its type.
  * 
- * @param shell A pointer to the shell structure.
- * @param cmd A pointer to the command node.
+ * The function checks if the command is an arithmetic expansion,
+ * a built-in command, or an executable file. It performs the 
+ * following steps:
+ * - If the command is an arithmetic expansion (indicated by 
+ *   the syntax `((`), an error message is printed and it 
+ *   returns a syntax failure code.
+ * - If the command is a built-in, the corresponding built-in 
+ *   handler is invoked to execute it.
+ * - If the command is neither, the non-built-in handler is 
+ *   invoked to execute the command as an external program.
  * 
- * @return If it is an arithmetic expansion it prints an error message
- * and returns FAILURE.
- * If it is a built-in it calls the built-in function handler.
- * For any other type of command it calls the non-builtin handler.
- * If the command was successfully executed it returns SUCCESS,
- * and the exit code is set appropriately.
- * Otherwise it returns the corresponding exit code.
+ * On successful execution of the command, it returns 
+ * `SUCCESS`, updating the shell's exit code appropriately. 
+ * If any issues arise during execution, it returns the 
+ * corresponding exit code.
+ * 
+ * @param shell A pointer to the shell structure containing the
+ *              state and environment for command execution.
+ * @param cmd A pointer to the command node containing command 
+ *            arguments and type information.
+ * 
+ * @return Returns `SUCCESS` if the command was successfully executed.
+ * 		   If the command is an arithmetic expansion, it returns
+ * 		   `SYNTAX_FAILURE`. For other cases, it returns 
+ * 		   the corresponding exit code set during execution.
  */
 int	executor(t_shell *shell, t_cmd *cmd)
 {
@@ -46,14 +59,22 @@ int	executor(t_shell *shell, t_cmd *cmd)
 }
 
 /**
- * @brief Creates a fork and executes the command in the child process.
- * The parent process waits for the child process to finish,
- * stores the exit code of the child and cleans up the memory and fds.
+ * @brief Forks the process to execute a non-built-in cmd in the child process.
+ * 
+ * This function creates a new process using `fork()`. In the child process,
+ * it executes the specified command. The parent process waits for the 
+ * child process to terminate, captures the child's exit code, and performs 
+ * necessary cleanup operations, including freeing memory and closing file 
+ * descriptors.
  * 
  * @param shell A pointer to the shell structure.
- * @param cmd A pointer to the current's command structure.
+ * @param cmd A pointer to the command structure that holds the command's 
+ *            arguments and related information.
  * 
  * @return void
+ * 
+ * @note If the `fork()` call fails, the function calls `clean_nicely_and_exit()`
+ *       to handle cleanup and exit the program with a failure code.
  */
 static void	handle_non_builtin(t_shell *shell, t_cmd *cmd)
 {
@@ -66,16 +87,26 @@ static void	handle_non_builtin(t_shell *shell, t_cmd *cmd)
 }
 
 /**
- * @brief It executes the current command. In the process it
- * handles signals, redirections, gets the path to the executable file,
- * and creates the environment array for the command's execution.
+ * @brief Executes the current command in a child process.
+ * 
+ * This function handles signal initialization, input/output 
+ * redirections, and retrieves the executable file path for 
+ * the command. It also prepares the environment variables 
+ * required for executing the command. 
+ * 
+ * If the command cannot be executed, it handles the error 
+ * by printing an appropriate message and exiting with a 
+ * relevant exit code.
  * 
  * @param shell A pointer to the shell structure.
- * @param cmd A pointer to the command's structure.
+ * @param cmd A pointer to the command structure that holds 
+ *            the command's arguments and related information.
  * 
  * @return void
- * In case of failure it exits with an exit code,
- * and printing an error message if it corresponds.
+ * 
+ * @note If an error occurs during execution, the function will
+ *       print an error message and exit the program with an 
+ *       appropriate exit code.
  */
 static void	run_child(t_shell *shell, t_cmd *cmd)
 {
@@ -106,12 +137,24 @@ static void	run_child(t_shell *shell, t_cmd *cmd)
 }
 
 /**
- * @brief Replaces STDIN and STDOUT with redirections if valid.
- * If there was an error opening the redirections, or duping, it exits.
+ * @brief Replaces the standard input (STDIN) and standard output (STDOUT)
+ * with the specified redirections if they are valid.
  * 
- * @param cmd A pointer to the command's structure.
+ * This function checks the file descriptors for the latest input
+ * and output redirections. If they are valid and not equal to their 
+ * respective standard file descriptors, it duplicates the file descriptors 
+ * for input and output. If there is an error in opening the redirections 
+ * or in duplicating the file descriptors, the function exits the shell 
+ * with an appropriate failure code.
+ * 
+ * @param shell A pointer to the shell structure.
+ * @param cmd A pointer to the command structure that contains 
+ *            the latest input and output file descriptors.
  * 
  * @return void
+ * 
+ * @note If either `latest_in` or `latest_out` is set to ERROR, 
+ *       the function will exit with `EXIT_FAILURE`.
  */
 static void	handle_redirs_in_child(t_shell *shell, t_cmd *cmd)
 {
@@ -130,14 +173,23 @@ static void	handle_redirs_in_child(t_shell *shell, t_cmd *cmd)
 }
 
 /**
- * @brief Waits for the child process to finish
- * and stores the exit status.
- * It also closes all the open file descriptors.
+ * @brief Waits for the child process to finish and 
+ *        stores the exit status while closing all open file descriptors.
+ * 
+ * This function waits for the child process from execution to terminate
+ * and retrieves its exit status. Depending on how the child process exited
+ * (normally or via a signal), it updates the shell's exit code accordingly.
+ * Additionally, it ensures that all file descriptors associated with
+ * the command are closed after the child's execution.
  * 
  * @param shell A pointer to the shell structure.
- * @param cmd A pointer to the command's structure.
+ * @param cmd A pointer to the command structure containing the 
+ *            file descriptors and other command-related data.
  * 
  * @return void
+ * 
+ * @note The exit code is set based on whether the child process exited 
+ *       normally or was terminated by a signal.
  */
 static void	do_parent_duties(t_shell *shell, t_cmd *cmd)
 {
