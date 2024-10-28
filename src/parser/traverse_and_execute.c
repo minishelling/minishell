@@ -11,7 +11,7 @@ int	traverse_tree_and_execute(t_shell *shell, t_tree *tree_node, \
 {
 	int	exit_code;
 
-	fprintf (stderr, "tree node is %p\n", tree_node);
+	//fprintf (stderr, "tree node is %p\n", tree_node);
 	exit_code = prev_exit_code;
 	if (!tree_node)
 		return (exit_code);
@@ -35,6 +35,7 @@ int	execute_command(t_shell *shell, t_tree *tree_node)
 		shell->env_list);
 	make_cmd(shell, &tree_node->cmd, tree_node->start_token, \
 		tree_node->end_token);
+	//print_cmd(tree_node->cmd);
 	if (open_redirections(tree_node->cmd) == SUCCESS)
 		return (executor(shell, tree_node->cmd));
 	else

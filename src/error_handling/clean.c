@@ -20,6 +20,8 @@ void	clean_nicely_and_exit(t_shell *shell, int exit_code)
 {
 	clean_nicely(shell);
 	free_env_list(&shell->env_list);
-	exit(exit_code);
+	//exit(exit_code); // ever different than 1?
+	(void)exit_code;
+	exit (FAILURE);
 }
 

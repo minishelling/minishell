@@ -2,7 +2,7 @@
 
 int			tokenize(t_shell *shell, char *input);
 int			assign_token_id_and_string(char *str, size_t *pos, t_token *token);
-void		initialize_lexing_func(t_lexer_func advance[13]);
+void		initialize_lexing_funcs(t_lexer_func advance[13]);
 t_token_id	get_token_id(char c);
 
 
@@ -27,7 +27,7 @@ int	tokenize(t_shell *shell, char *input)
 	while (token)
 	{
 		if (token->str[0] == '&' && token->str[1] != '&')
-			token->id = WORD;
+			token->id = AMPERSAND;
 		else if (!ft_strncmp(token->str, "||", 2))
 			token->id = OR_OPR;
 		token = token->next;
@@ -42,7 +42,7 @@ int	assign_token_id_and_string(char *str, size_t *pos, t_token *token)
 	t_lexer_func	advance[13];
 	char			*token_str;
 
-	initialize_lexing_func(advance);
+	initialize_lexing_funcs(advance);
 	start_pos = *pos;
 	token->id = get_token_id(str[(*pos)]);
 	err_no = advance[token->id](str, pos, &token->id);
@@ -58,7 +58,7 @@ int	assign_token_id_and_string(char *str, size_t *pos, t_token *token)
 	return (PARSING_OK);
 }
 
-void	initialize_lexing_func(t_lexer_func advance[13])
+void	initialize_lexing_funcs(t_lexer_func advance[13])
 {
 	advance[0] = advance_pos_space_or_word;
 	advance[1] = advance_pos_space_or_word;

@@ -85,8 +85,10 @@ enum e_parsing_error
 	ERR_SYNTAX_OR,
 	ERR_SYNTAX_AND,
 	ERR_SYNTAX_REDIR,
+	ERR_SYNTAX_AMPER,
 	ERR_SYNTAX_ERROR,
 	ERR_PARSING_ERROR,
+	ERR_BG_PROCESS,
 	ERR_MEM,
 	ERR_EXPAND,
 	ERR_CMD,
@@ -109,6 +111,7 @@ typedef enum e_token_id
 	ENV_VAR,
 	WORD,
 	OR_OPR,
+	AMPERSAND,
 	ARITH_EXPAN
 }	t_token_id;
 
@@ -207,7 +210,7 @@ extern int		g_signalcode;
 //FUNCTION POINTERS
 typedef int	(*t_lexer_func)(char *str, size_t *pos, t_token_id *token_id);
 typedef int	(*t_syntax_func)(t_token *prev, t_token *cur, int *par_count);
-typedef int	(*t_parser_func)(t_cmd *current_cmd, t_token *token);
+typedef int	(*t_parser_func)(t_cmd *cmd, t_token *token);
 
 //TOKENIZATION
 int			tokenize(t_shell *shell, char *input);
@@ -242,6 +245,7 @@ int			syntax_word(t_token *t_prev, t_token *t_cur, int *par_count);
 int			syntax_quote(t_token *prev_token, t_token *cur_token, int *par_count);
 int			syntax_or_opr(t_token *prev_token, t_token *cur_token, int *par_count);
 int			syntax_env_var(t_token *prev_token, t_token *cur_token, int *par_count);
+int			syntax_ampersand(t_token *prev_token, t_token *cur_token, int *par_count);
 
 //APPEND
 int			append(t_shell *shell);

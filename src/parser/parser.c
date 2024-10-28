@@ -7,6 +7,7 @@ size_t		get_arg_num(t_token *start_token, t_token *end_token);
 static int	traverse_tokens_to_make_cmd(t_cmd *cmd, t_token *start_token,
 	t_token *end_token);
 int			build_command_from_token(t_cmd *cmd, t_token *token);
+void		initialize_parsing_funcs(t_parser_func make_cmd[16]);
 
 int	parse(t_shell *shell)
 {
@@ -27,7 +28,7 @@ int	parse(t_shell *shell)
 	if (g_signalcode == SIGINT)
 		return (SIGINT_HDOC);
 	shell->tree = make_tree(shell, shell->token, last_token(shell->token));
-	print_tree(shell->tree, 0);
+	//print_tree(shell->tree, 0);
 	return (PARSING_OK);
 }
 
@@ -44,6 +45,9 @@ void	make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token, \
 	(*cmd)->args = ft_calloc((arg_num + 1), sizeof(char *));
 	if (!(*cmd)->args)
 		handle_parsing_err(shell, ERR_CMD);
+	// if (ft_strncmp(start_token->str, "ls", 2) == 0)  //for testing purpose
+	// 	err_no = ERR_MEM;
+	// else
 	err_no = traverse_tokens_to_make_cmd(*cmd, start_token, end_token);
 	if (err_no)
 		handle_parsing_err(shell, err_no);
@@ -60,7 +64,7 @@ size_t	get_arg_num(t_token *start_token, t_token *end_token)
 	{
 		if ((cur_token->id == ENV_VAR && *(cur_token->str) != '\0') \
 			|| cur_token->id == SQUOTE || cur_token->id == DQUOTE \
-			|| cur_token->id == WORD)
+			|| cur_token->id == WORD || cur_token->id == AMPERSAND)
 			arg_count++;
 		if (cur_token->id == LT || cur_token->id == GT)
 			arg_count--;
@@ -99,30 +103,29 @@ static int	traverse_tokens_to_make_cmd(t_cmd *cmd, t_token *start_token,
 	}
 	return (PARSING_OK);
 }
-
+//no more pipe or ampersand
 int	build_command_from_token(t_cmd *cmd, t_token *token)
 {
 	int				err_no;
-	t_parser_func	parser_functions[15];
+	t_parser_func	make_cmd[16];
 
-	parser_functions[0] = parser_noop;
-	parser_functions[1] = parser_noop;
-	parser_functions[2] = parser_noop;
-	parser_functions[3] = NULL;
-	parser_functions[4] = parser_noop;
-	parser_functions[5] = parser_noop;
-	parser_functions[6] = parser_noop;
-	parser_functions[7] = parser_redir;
-	parser_functions[8] = parser_redir;
-	parser_functions[9] = parser_add_new_arg;
-	parser_functions[10] = parser_add_new_arg;
-	parser_functions[11] = parser_add_env_var;
-	parser_functions[12] = parser_add_new_arg;
-	parser_functions[13] = parser_noop;
-	parser_functions[14] = parser_arith_expan;
-	if (parser_functions[token->id])
+	make_cmd[0] = parser_noop;
+	make_cmd[1] = parser_noop;
+	make_cmd[2] = parser_noop;
+	make_cmd[4] = parser_noop;
+	make_cmd[5] = parser_noop;
+	make_cmd[6] = parser_noop;
+	make_cmd[7] = parser_redir;
+	make_cmd[8] = parser_redir;
+	make_cmd[9] = parser_add_new_arg;
+	make_cmd[10] = parser_add_new_arg;
+	make_cmd[11] = parser_add_env_var;
+	make_cmd[12] = parser_add_new_arg;
+	make_cmd[13] = parser_noop;
+	make_cmd[15] = parser_arith_expan;
+	if (make_cmd[token->id])
 	{
-		err_no = parser_functions[token->id](cmd, token);
+		err_no = make_cmd[token->id](cmd, token);
 		if (err_no)
 			return (err_no);
 	}

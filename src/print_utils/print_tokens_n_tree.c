@@ -36,7 +36,10 @@ void	init_token_names(char **token_name)
 	token_name[11] = "ENV_VAR";
 	token_name[12] = "WORD";
 	token_name[13] = "OR_OPR";
-	token_name[14] = "ARITH_EXPAN";
+	token_name[14] = "AMPERSAND";
+	token_name[15] = "ARITH_EXPAN";
+
+
 }
 
 void	print_tokens(t_token *list)
@@ -44,7 +47,7 @@ void	print_tokens(t_token *list)
 	int			list_size;
 	int			i;
 	t_token		*cur_token;
-	char		*token_name[15];
+	char		*token_name[16];
 
 	init_token_names(token_name);
 	list_size = get_token_list_size(list);

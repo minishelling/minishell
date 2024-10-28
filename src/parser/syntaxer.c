@@ -2,13 +2,14 @@
 
 int		syntax(t_shell *shell);
 int		process_syntax_checks(t_shell *shell, t_token **prev_token);
-void	initialize_syntax_func(t_syntax_func func[14]);
+void	initialize_syntaxing_funcs(t_syntax_func check_syntax[15]);
 int		check_parens(t_token *list);
 int		check_quotes(t_token *list);
 
 int	syntax(t_shell *shell)
 {
 	t_token	*prev_token;
+	t_token	*cur_token;
 	int		err_no;
 
 	prev_token = NULL;
@@ -19,22 +20,31 @@ int	syntax(t_shell *shell)
 	if (err_no)
 		return (err_no);
 	err_no = check_quotes(shell->token);
-	return (err_no);
+	if (err_no)
+		return (err_no);
+	cur_token = shell->token;
+	while (cur_token)
+	{
+		if (cur_token->id == AMPERSAND)
+			return (ERR_BG_PROCESS);
+		cur_token = cur_token->next;
+	}
+	return (PARSING_OK);
 }
 
 int	process_syntax_checks(t_shell *shell, t_token **prev_token)
 {
 	t_token			*current_token;
-	t_syntax_func	func[14];
+	t_syntax_func	check_syntax[15];
 	int				err_no;
 	int				par_count;
 
 	par_count = 0;
-	initialize_syntax_func(func);
+	initialize_syntaxing_funcs(check_syntax);
 	current_token = shell->token;
 	while (current_token)
 	{
-		err_no = func[current_token->id] \
+		err_no = check_syntax[current_token->id] \
 		(*prev_token, current_token, &par_count);
 		if (err_no)
 			return (err_no);
@@ -44,22 +54,23 @@ int	process_syntax_checks(t_shell *shell, t_token **prev_token)
 	return (PARSING_OK);
 }
 
-void	initialize_syntax_func(t_syntax_func func[14])
+void	initialize_syntaxing_funcs(t_syntax_func check_syntax[15])
 {
-	func[0] = syntax_noop;
-	func[1] = syntax_noop;
-	func[2] = syntax_noop;
-	func[3] = syntax_pipe;
-	func[4] = syntax_and_opr;
-	func[5] = syntax_open_paren;
-	func[6] = syntax_close_paren;
-	func[7] = syntax_redir;
-	func[8] = syntax_redir;
-	func[9] = syntax_quote;
-	func[10] = syntax_quote;
-	func[11] = syntax_env_var;
-	func[12] = syntax_word;
-	func[13] = syntax_or_opr;
+	check_syntax[0] = syntax_noop;
+	check_syntax[1] = syntax_noop;
+	check_syntax[2] = syntax_noop;
+	check_syntax[3] = syntax_pipe;
+	check_syntax[4] = syntax_and_opr;
+	check_syntax[5] = syntax_open_paren;
+	check_syntax[6] = syntax_close_paren;
+	check_syntax[7] = syntax_redir;
+	check_syntax[8] = syntax_redir;
+	check_syntax[9] = syntax_quote;
+	check_syntax[10] = syntax_quote;
+	check_syntax[11] = syntax_env_var;
+	check_syntax[12] = syntax_word;
+	check_syntax[13] = syntax_or_opr;
+	check_syntax[14] = syntax_ampersand;
 }
 //the case in which balace in negative i.e. parens closing before there is a
 // matching open paren, is already handled in "syntax_close_paren".
@@ -92,7 +103,6 @@ int	check_quotes(t_token *list)
 	t_token	*cur_token;
 	size_t	str_len;
 	char	*str;
-
 
 	cur_token = list;
 	while (cur_token)

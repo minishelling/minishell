@@ -24,7 +24,9 @@ void	handle_parsing_err(t_shell *shell, int err_no)
 		write(2, full_msg, full_msg_len);
 		free(full_msg);
 		if (err_no > PARSING_OK  && err_no <= ERR_PARSING_ERROR)
-			shell->exit_code = 2;
+			shell->exit_code = SYNTAX_FAILURE;
+		else if (err_no == ERR_BG_PROCESS)
+			shell->exit_code = FAILURE;  //agreed?
 	}
 	if ((err_no > PARSING_OK  && err_no <= ERR_PARSING_ERROR) || err_no == SIGINT_HDOC)
 		clean_nicely(shell);
@@ -38,15 +40,17 @@ char	*get_parsing_err_msg(int e)
 		"OK",
 		"This is either a command substitution or an arithmetic expansion. We don't do these here.\n",
 		"syntax error near unexpected token `newline`\n",
-		"Syntax error: unclosed quotes\n",
+		"syntax error: unclosed quotes\n",
 		"syntax error near unexpected token `(`\n",
 		"syntax error near unexpected token `)`\n",
-		"Syntax error near unexpected token `|` \n",
-		"Syntax error near unexpected token `||`\n",
-		"Syntax error near unexpected token `&&`\n",
-		"Syntax error near unexpected token `<` or `>`\n",
-		"Syntax error\n",
-		"More input needed\n",
+		"syntax error near unexpected token `|` \n",
+		"syntax error near unexpected token `||`\n",
+		"syntax error near unexpected token `&&`\n",
+		"syntax error near unexpected token `<` or `>`\n",
+		"syntax error near unexpected token `&`\n",
+		"syntax error\n",
+		"syntax err: more input is needed\n",
+		"Running in the background - We don't do that here.\n",
 		"Error: unable to allocate dynamic memory\n",
 		"Error while expanding: unable to allocate dynamic memory\n",
 		"Error while forming a command: unable to allocate dynamic memory\n",
