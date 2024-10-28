@@ -6,20 +6,26 @@ static t_ecode	replace_redir_fd(t_cmd *cmd, t_redir *redir);
 static t_ecode	close_and_replace(int replacement, int *oldfd);
 
 /**
- * @brief Opens all input and output redirections of a command.
+ * @brief Opens all input and output redirections for a given command.
  * 
- * @param shell A pointer to the shell structure.
- * @param current_cmd A pointer to the structure of the current command.
+ * This function iterates through the list of redirection structures associated 
+ * with the current command, attempting to open each redirection and replace 
+ * the corresponding file descriptor. If any operation fails, it returns an error 
+ * code. 
  * 
- * @return If a redirection fails to open, if there's a dup failure,
- * or if the structures were NULL in the first place, it returns FAILURE,
- * otherwise it returns SUCCESS.
+ * @param[in] current_cmd A pointer to the command structure containing the 
+ *                        redirections to be opened.
+ * 
+ * @return t_ecode Returns:
+ * - `FAILURE` if any redirection fails to open, if there is a failure 
+ *   in duplicating file descriptors, or if `current_cmd` is NULL.
+ * - `SUCCESS` if all redirections are opened successfully.
  */
-t_ecode	open_redirections(t_shell *shell, t_cmd *current_cmd)
+t_ecode	open_redirections(t_cmd *current_cmd)
 {
 	t_redir	*current_redir;
 
-	if (!shell || !current_cmd)
+	if (!current_cmd)
 		return (FAILURE);
 	current_redir = current_cmd->redir;
 	while (current_redir)
@@ -35,19 +41,27 @@ t_ecode	open_redirections(t_shell *shell, t_cmd *current_cmd)
 }
 
 /**
- * @brief Opens the current redirection.
+ * @brief Opens the specified redirection based on its type.
  * 
- * It checks what kind of redirection it is and opens the file
- * appropriately. If it is a HEREDOC, instead of opening a file
- * it converts the string to an integer, since the file with
- * the heredoc contents it's already open and unlinked.
+ * This function determines the type of redirection (e.g., input, output, 
+ * heredoc) and opens the corresponding file or uses an existing file 
+ * descriptor for a heredoc. If the redirection is of type HEREDOC, it 
+ * converts the provided string to an integer instead of opening a file, 
+ * as the heredoc content is already in an open file.
  * 
- * @param redir_id The type of input or output redirection.
- * @param redir_file The redirection file to be opened.
- * @param fd The file descriptor in which to store the open value.
+ * @param[in] redir_id The type of redirection to be opened (e.g., 
+ *                     HEREDOC, IN, OUT, APPEND).
+ * @param[in] redir_file The path of the file to be opened for the 
+ *                       specified redirection, or a fd in string
+ * 						 format in the case of a HEREDOC.
+ * @param[out] fd A pointer to an integer where the opened file 
+ *                descriptor will be stored. This will be updated 
+ *                with the result of the open operation.
  * 
- * @return If the file descriptor is ERROR (-1), it prints an error message
- * and returns FAILURE. Otherwise it returns SUCCESS.
+ * @return t_ecode Returns:
+ * - `FAILURE` if an error occurs during opening the file or 
+ *   converting the heredoc fd, after printing an error message.
+ * - `SUCCESS` if the redirection is processed successfully.
  */
 static t_ecode	open_current_redir(t_redir_id redir_id,
 					char *redir_file, int *fd)
@@ -71,19 +85,26 @@ static t_ecode	open_current_redir(t_redir_id redir_id,
 }
 
 /**
- * @brief Replaces the 'latest_in' 'latest_out' redirection variables
- * with the current redirection.
+ * @brief Replaces the latest input and output redirection variables with 
+ * the current redirection values.
  * 
+ * This function updates the `latest_in` and `latest_out` fields of the 
+ * command structure based on the current redirection. If the current 
+ * redirection is invalid (indicated by an error file descriptor), it 
+ * closes the previous redirection and sets it to the error number. 
+ * Otherwise, it attempts to duplicate the current redirection into the 
+ * respective latest variable and closes the current redirection file 
+ * descriptor afterwards.
  * 
+ * @param[in] cmd A pointer to the current command's structure that 
+ *                 holds the latest redirection variables.
+ * @param[in] redir A pointer to the current command's redirection 
+ *                   structure that contains the redirection details.
  * 
- * @param cmd A pointer to the current command's structure.
- * @param redir A pointer to the current command's redirection structure.
- * 
- * @return If the current redirection is ERROR (-1), it closes the latest
- * redirection and replaces it with the error number, and returns FAILURE.
- * Otherwise it will attempt to duplicate the current redirection into the
- * 'latest' variable, and close the current redirection file descriptor
- * afterwards, returning SUCCESS. On error it returns FAILURE.
+ * @return t_ecode Returns:
+ * - `FAILURE` if the current redirection file descriptor is invalid (-1) 
+ *   or if duplicating the file descriptor fails.
+ * - `SUCCESS` if the redirection is successfully replaced.
  */
 static t_ecode	replace_redir_fd(t_cmd *cmd, t_redir *redir)
 {
@@ -114,14 +135,24 @@ static t_ecode	replace_redir_fd(t_cmd *cmd, t_redir *redir)
 }
 
 /**
- * @brief It closes the oldfd and replaces it the the replacement.
+ * @brief Closes the old file descriptor and replaces it with a new one.
  * 
- * @param replacement The fd to replace into oldfd.
- * @param oldfd A pointer to the oldfd that we want to close and replace.
+ * This function attempts to close the old file descriptor referenced by 
+ * `oldfd`, and then assigns the provided `replacement` file descriptor 
+ * to it. If closing the old file descriptor fails, an error message is 
+ * printed. The function checks if the new file descriptor is valid and 
+ * returns the appropriate status.
  * 
- * @return If oldfd after being replaced is ERROR (-1) it returns FAILURE,
- * (which is probably needed as an error code for the calling function)
- * otherwise it returns SUCCESS.
+ * @param[in] replacement The new file descriptor that will replace the 
+ *                        old one.
+ * @param[out] oldfd A pointer to the old file descriptor to be closed 
+ *                    and replaced. This will be updated with the new 
+ *                    file descriptor.
+ * 
+ * @return t_ecode Returns:
+ * - `FAILURE` if the new file descriptor is invalid (-1) or if closing 
+ *   the old file descriptor fails.
+ * - `SUCCESS` if the operation completes without errors.
  */
 static t_ecode	close_and_replace(int replacement, int *oldfd)
 {
