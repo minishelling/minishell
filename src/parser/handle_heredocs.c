@@ -77,7 +77,7 @@ int	handle_heredocs (t_shell *shell, t_token *token_list)
 			if (!next_token->str)
 				return (ft_free((void **) &file_name), \
 					ft_free((void **)&delimiter), ERR_MEM);
-			fd = read_heredoc_input(shell, next_token->str, delimiter);
+			fd = read_hdoc_input(shell, next_token->str, (const char **)&delimiter);
 			if (g_signalcode == SIGINT)
 			{
 				shell->exit_code = EXIT_SIGINT;

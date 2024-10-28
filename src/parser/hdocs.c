@@ -28,7 +28,7 @@ int	handle_hdocs (t_shell *shell, t_token *token_list)
 			fd = read_hdoc_input(shell, token_list->next->str, &hdoc_delim);
 			if (g_signalcode == SIGINT)
 			{
-				shell->exit_code = E_SIGINT;
+				shell->exit_code = EXIT_SIGINT;
 				// ft_free((void **) &hdoc_delim);  // added this in read_hdoc_input
 				//printf ("hdoc_delim is %p\n", hdoc_delim);
 				return (SIGINT_HDOC);
