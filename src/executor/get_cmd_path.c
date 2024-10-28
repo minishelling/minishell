@@ -24,7 +24,7 @@ char	*get_cmd_path(t_shell *shell, char *cmd_name)
 	char	**paths;
 	int		i;
 
-	if (!cmd_name)
+	if (!cmd_name || !cmd_name[0])
 		return (NULL);
 	if (!ft_strncmp(cmd_name, "./", 2) || cmd_name[0] == '/')
 		return (check_name_as_path(shell, cmd_name));
@@ -39,7 +39,7 @@ char	*get_cmd_path(t_shell *shell, char *cmd_name)
 	{
 		cmd_path = check_path_access(shell, paths[i], cmd_name);
 		if (cmd_path)
-			return (cmd_path);
+			return (ft_free_2d((void ***) &paths), cmd_path);
 		i++;
 	}
 	ft_free_2d((void ***) &paths);
@@ -101,6 +101,7 @@ static char	*check_path_access(t_shell *shell, \
 	char	*cmd_path;
 
 	cmd_path = ft_strjoin_cmd_path(current_path, cmd_name);
+	fprintf(stderr, "Cmd path: |%s|\n", cmd_path);
 	if (!cmd_path)
 		return (NULL);
 	if (check_name_as_path(shell, cmd_path) == NULL)
