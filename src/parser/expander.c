@@ -8,7 +8,7 @@ void		process_dquotes(t_shell *shell, char **str, char **expanded_str, \
 	t_env *env_list);
 void		copy_chars(char **str, char **expanded_str);
 
-void		expand(t_shell *shell, t_token *start_token, t_token *end_token, \
+void	expand(t_shell *shell, t_token *start_token, t_token *end_token, \
 		t_env *env_list)
 {
 	t_ecode_p	err_no;

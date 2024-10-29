@@ -4,7 +4,7 @@ t_ecode_p	parse(t_shell *shell);
 void		make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token, \
 	t_token *end_token);
 size_t		get_arg_num(t_token *start_token, t_token *end_token);
-t_ecode_p	traverse_tokens_to_make_cmd(t_cmd *cmd, 
+t_ecode_p	traverse_tokens_to_make_cmd(t_cmd *cmd, \
 	t_token *start_token, t_token *end_token);
 t_ecode_p	build_command_from_token(t_cmd *cmd, t_token *token);
 

@@ -1,12 +1,16 @@
 #include "../../../../include/minishell.h"
 
-t_ecode_p	syntax_redir(t_token *prev_token, t_token *cur_token, int *par_count);
+t_ecode_p	syntax_redir(t_token *prev_token, t_token *cur_token, \
+	int *par_count);
 t_ecode_p	handle_token_after_redir(t_token *after_redir_token);
 t_ecode_p	remove_delimiter_quotes(t_token *delimiter_token);
-t_ecode_p	syntax_quote(t_token *prev_token, t_token *cur_token, int *par_count);
-t_ecode_p	syntax_env_var(t_token *prev_token, t_token *cur_token, int *par_count);
+t_ecode_p	syntax_quote(t_token *prev_token, t_token *cur_token, \
+	int *par_count);
+t_ecode_p	syntax_env_var(t_token *prev_token, t_token *cur_token, \
+	int *par_count);
 
-t_ecode_p	syntax_redir(t_token *prev_token, t_token *cur_token, int *par_count)
+t_ecode_p	syntax_redir(t_token *prev_token, t_token *cur_token, \
+	int *par_count)
 {
 	t_token		*next_token;
 	t_ecode_p	err_no;
@@ -59,7 +63,8 @@ t_ecode_p	remove_delimiter_quotes(t_token *delimiter_token)
 	return (PARSING_OK);
 }
 
-t_ecode_p	syntax_quote(t_token *prev_token, t_token *cur_token, int *par_count)
+t_ecode_p	syntax_quote(t_token *prev_token, t_token *cur_token, \
+	int *par_count)
 {
 	t_token	*next_token;
 
@@ -72,7 +77,8 @@ t_ecode_p	syntax_quote(t_token *prev_token, t_token *cur_token, int *par_count)
 }
 
 // cmd substitution is already handled in tokenization.
-t_ecode_p	syntax_env_var(t_token *prev_token, t_token *cur_token, int *par_count)
+t_ecode_p	syntax_env_var(t_token *prev_token, t_token *cur_token, \
+	int *par_count)
 {
 	t_token	*next_token;
 

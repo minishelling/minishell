@@ -1,10 +1,15 @@
 #include "../../../../include/minishell.h"
 
-t_ecode_p	syntax_noop(t_token *prev_token, t_token *cur_token, int *par_count);
-t_ecode_p	syntax_and_opr(t_token *prev_token, t_token *cur_token, int *par_count);
-t_ecode_p	syntax_ampersand(t_token *prev_token, t_token *cur_token, int *par_count);
-t_ecode_p	syntax_or_opr(t_token *prev_token, t_token *cur_token, int *par_count);
-t_ecode_p	syntax_pipe(t_token *prev_token, t_token *cur_token, int *par_count);
+t_ecode_p	syntax_noop(t_token *prev_token, t_token *cur_token, \
+	int *par_count);
+t_ecode_p	syntax_and_opr(t_token *prev_token, t_token *cur_token, \
+	int *par_count);
+t_ecode_p	syntax_ampersand(t_token *prev_token, t_token *cur_token, \
+	int *par_count);
+t_ecode_p	syntax_or_opr(t_token *prev_token, t_token *cur_token, \
+	int *par_count);
+t_ecode_p	syntax_pipe(t_token *prev_token, t_token *cur_token, \
+	int *par_count);
 
 t_ecode_p	syntax_noop(t_token *prev_token, t_token *cur_token, int *par_count)
 {
@@ -14,7 +19,8 @@ t_ecode_p	syntax_noop(t_token *prev_token, t_token *cur_token, int *par_count)
 	return (PARSING_OK);
 }
 
-t_ecode_p	syntax_and_opr(t_token *prev_token, t_token *cur_token, int *par_count)
+t_ecode_p	syntax_and_opr(t_token *prev_token, t_token *cur_token, \
+	int *par_count)
 {
 	t_token	*next_token;
 
@@ -37,7 +43,8 @@ t_ecode_p	syntax_and_opr(t_token *prev_token, t_token *cur_token, int *par_count
 	return (PARSING_OK);
 }
 
-t_ecode_p	syntax_ampersand(t_token *prev_token, t_token *cur_token, int *par_count)
+t_ecode_p	syntax_ampersand(t_token *prev_token, t_token *cur_token, \
+	int *par_count)
 {
 	t_token	*next_token;
 
@@ -59,7 +66,8 @@ t_ecode_p	syntax_ampersand(t_token *prev_token, t_token *cur_token, int *par_cou
 	return (PARSING_OK);
 }
 
-t_ecode_p	syntax_or_opr(t_token *prev_token, t_token *cur_token, int *par_count)
+t_ecode_p	syntax_or_opr(t_token *prev_token, t_token *cur_token, \
+	int *par_count)
 {
 	t_token	*next_token;
 
