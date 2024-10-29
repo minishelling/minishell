@@ -1,6 +1,9 @@
 #include "../../../../include/minishell.h"
 
-int	advance_pos_quote(char *str, size_t *pos, t_token_id *token_id)
+t_ecode_p	advance_pos_quote(char *str, size_t *pos, t_token_id *token_id);
+t_ecode_p	advance_pos_env_var(char *str, size_t *pos, t_token_id *token_id);
+
+t_ecode_p	advance_pos_quote(char *str, size_t *pos, t_token_id *token_id)
 {
 	(*pos)++;
 	while (str[*pos] && *token_id != get_token_id(str[*pos]))
@@ -10,7 +13,7 @@ int	advance_pos_quote(char *str, size_t *pos, t_token_id *token_id)
 	return (PARSING_OK);
 }
 
-int	advance_pos_env_var(char *str, size_t *pos, t_token_id *token_id)
+t_ecode_p	advance_pos_env_var(char *str, size_t *pos, t_token_id *token_id)
 {
 	(void) token_id;
 	(*pos)++;

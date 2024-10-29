@@ -1,14 +1,14 @@
 #include "../../include/minishell.h"
 
-int		append(t_shell *shell);
-int		join_quotes_tokens(t_shell *shell);
-int		join_env_var_quotes_and_word_str(t_shell *shell);
-int		join_strs_free_cur_token(t_token **prev_token, t_token **cur_token);
-void	remove_space_tokens(t_token **list, t_token *prev);
+t_ecode_p	append(t_shell *shell);
+t_ecode_p	join_quotes_tokens(t_shell *shell);
+t_ecode_p	join_env_var_quotes_and_word_str(t_shell *shell);
+t_ecode_p	join_strs_free_cur_token(t_token **prev_token, t_token **cur_token);
+void		remove_space_tokens(t_token **list, t_token *prev);
 
-int	append(t_shell *shell)
+t_ecode_p	append(t_shell *shell)
 {
-	int	err_no;
+	t_ecode_p	err_no;
 
 	err_no = join_quotes_tokens(shell);
 	if (err_no)
@@ -20,11 +20,11 @@ int	append(t_shell *shell)
 	return (PARSING_OK);
 }
 
-int	join_quotes_tokens(t_shell *shell)
+t_ecode_p	join_quotes_tokens(t_shell *shell)
 {
-	t_token	*cur_token;
-	t_token	*prev_token;
-	int		err_no;
+	t_token		*cur_token;
+	t_token		*prev_token;
+	t_ecode_p	err_no;
 
 	prev_token = shell->token;
 	cur_token = shell->token->next;
@@ -48,11 +48,11 @@ int	join_quotes_tokens(t_shell *shell)
 	return (PARSING_OK);
 }
 
-int	join_env_var_quotes_and_word_str(t_shell *shell)
+t_ecode_p	join_env_var_quotes_and_word_str(t_shell *shell)
 {
-	t_token	*cur_token;
-	t_token	*prev_token;
-	int		err_no;
+	t_token		*prev_token;
+	t_token		*cur_token;
+	t_ecode_p	err_no;
 
 	prev_token = shell->token;
 	cur_token = shell->token->next;
@@ -76,7 +76,7 @@ int	join_env_var_quotes_and_word_str(t_shell *shell)
 	return (PARSING_OK);
 }
 
-int	join_strs_free_cur_token(t_token **prev_token, t_token **cur_token)
+t_ecode_p	join_strs_free_cur_token(t_token **prev_token, t_token **cur_token)
 {
 	char	*joined_str;
 	t_token	*temp;

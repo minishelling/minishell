@@ -81,7 +81,7 @@ typedef enum e_codes
 	COUNT
 }	t_ecode;
 
-enum e_parsing_error
+typedef enum e_parsing_codes
 {
 	PARSING_OK,
 	ERR_CMD_SUBSTIT,
@@ -101,7 +101,7 @@ enum e_parsing_error
 	ERR_EXPAND,
 	ERR_CMD,
 	SIGINT_HDOC,
-};
+}	t_ecode_p;
 
 typedef enum e_token_id
 {
@@ -217,12 +217,12 @@ typedef struct s_shell
 extern int	g_signalcode;
 
 // ================ FUNCTION POINTERS ================ //
-typedef int	(*t_lexer_func)(char *str, size_t *pos, t_token_id *token_id);
-typedef int	(*t_syntax_func)(t_token *prev, t_token *cur, int *par_count);
-typedef int	(*t_parser_func)(t_cmd *cmd, t_token *token);
+typedef t_ecode_p	(*t_lexer_func)(char *str, size_t *pos, t_token_id *token_id);
+typedef t_ecode_p	(*t_syntax_func)(t_token *prev, t_token *cur, int *par_count);
+typedef t_ecode_p	(*t_parser_func)(t_cmd *cmd, t_token *token);
 
 // ================ TOKENIZATION ================ //
-int			tokenize(t_shell *shell, char *input);
+t_ecode_p	tokenize(t_shell *shell, char *input);
 t_token		*new_token(void);
 t_token_id	get_token_id(char c);
 void		add_token_in_back(t_token **t_list, t_token *new);
@@ -236,51 +236,52 @@ t_token		*non_null_previous(t_token *list, t_token *before_what);
 
 // TOKENIZATION JUMP TABLE
 
-int			advance_pos_quote(char *str, size_t *pos, t_token_id *token_id);
-int			advance_pos_parens(char *str, size_t *pos, t_token_id *token_id);
-int			advance_pos_redir(char *str, size_t *pos, t_token_id *token_id);
-int			advance_pos_env_var(char *str, size_t *pos, t_token_id *token_id);
-int			advance_pos_pipe(char *str, size_t *pos, t_token_id *token_id);
-int			advance_pos_space_or_word(char *str, size_t *pos, \
+t_ecode_p	advance_pos_quote(char *str, size_t *pos, t_token_id *token_id);
+t_ecode_p	advance_pos_parens(char *str, size_t *pos, t_token_id *token_id);
+t_ecode_p	advance_pos_redir(char *str, size_t *pos, t_token_id *token_id);
+t_ecode_p	advance_pos_env_var(char *str, size_t *pos, t_token_id *token_id);
+t_ecode_p	advance_pos_pipe(char *str, size_t *pos, t_token_id *token_id);
+t_ecode_p	advance_pos_space_or_word(char *str, size_t *pos, \
 	t_token_id *token_id);
-int			advance_pos_and_operator(char *str, size_t *pos, \
+t_ecode_p	advance_pos_and_operator(char *str, size_t *pos, \
 	t_token_id *token_id);
 
 // ================ SYNTAX ================ //
-int			syntax(t_shell *shell);
+
+t_ecode_p	syntax(t_shell *shell);
 
 // SYNTAX JUMP TABLE
-int			syntax_pipe(t_token *t_prev, t_token *t_cur, int *par_count);
-int			syntax_and_opr(t_token *t_prev, t_token *t_cur, int *par_count);
-int			syntax_open_paren(t_token *prev_token, t_token *cur_token, \
+t_ecode_p	syntax_pipe(t_token *t_prev, t_token *t_cur, t_ecode_p *par_count);
+t_ecode_p	syntax_and_opr(t_token *t_prev, t_token *t_cur, \
+	t_ecode_p *par_count);
+t_ecode_p	syntax_open_paren(t_token *prev_token, t_token *cur_token, \
 	int *par_count);
-int			syntax_close_paren(t_token *prev_token, t_token *cur_token, \
+t_ecode_p	syntax_close_paren(t_token *prev_token, t_token *cur_token, \
 	int *par_count);
-int			syntax_redir(t_token *t_prev, t_token *t_cur, int *par_count);
-int			syntax_noop(t_token *t_prev, t_token *t_cur, int *par_count);
-int			syntax_word(t_token *t_prev, t_token *t_cur, int *par_count);
-int			syntax_quote(t_token *prev_token, t_token *cur_token, \
+t_ecode_p	syntax_redir(t_token *t_prev, t_token *t_cur, int *par_count);
+t_ecode_p	syntax_noop(t_token *t_prev, t_token *t_cur, int *par_count);
+t_ecode_p	syntax_word(t_token *t_prev, t_token *t_cur, int *par_count);
+t_ecode_p	syntax_quote(t_token *prev_token, t_token *cur_token, \
 	int *par_count);
-int			syntax_or_opr(t_token *prev_token, t_token *cur_token, \
+t_ecode_p	syntax_or_opr(t_token *prev_token, t_token *cur_token, \
 	int *par_count);
-int			syntax_env_var(t_token *prev_token, t_token *cur_token, \
+t_ecode_p	syntax_env_var(t_token *prev_token, t_token *cur_token, \
 	int *par_count);
-int			syntax_ampersand(t_token *prev_token, t_token *cur_token, \
+t_ecode_p	syntax_ampersand(t_token *prev_token, t_token *cur_token, \
 	int *par_count);
 
 // ================ APPENDING ================ //
-int			append(t_shell *shell);
 
-// ================ REDIRECTION ================ //
-t_redir		*new_redir(void);
-void		add_redir_in_back(t_redir **list, t_redir *new_redir);
-void		free_redir_list(t_redir **list);
-int			handle_hdocs(t_shell *shell, t_token *token_list);
-int			read_hdoc_input(t_shell *shell, const char *file_name, \
+t_ecode_p	append(t_shell *shell);
+
+// ================ HDOC ================ //
+
+t_ecode_p	handle_hdocs(t_shell *shell, t_token *token_list);
+t_ecode_p	read_hdoc_input(t_shell *shell, const char *file_name, \
 	const char **delimiter);
-t_ecode		open_redirections(t_cmd *cmd);
 
 // ================ ABSTRACT SYNTAX TREE ================ //
+
 t_tree		*make_tree(t_shell *shell, t_token *start_token, \
 	t_token *end_token);
 t_tree		*init_leaf_node(t_shell *shell, t_token *start_token, \
@@ -292,17 +293,18 @@ t_tree		*process_arith_expan(t_shell *shell, t_token *start_token, \
 	t_token *end_token);
 
 // ================ CMD MAKING ================ //
-int			parse(t_shell *shell);
+
+t_ecode_p		parse(t_shell *shell);
 void		make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token, \
 	t_token *end_token);
 t_cmd		*new_cmd(void);
 
 // PARSING JUMP TABLE
-int			parser_noop(t_cmd *cmd_node, t_token *token);
-int			parser_redir(t_cmd *cmd, t_token *token);
-int			parser_arith_expan(t_cmd *cmd_node, t_token *token);
-int			parser_add_env_var(t_cmd *cmd, t_token *token);
-int			parser_add_new_arg(t_cmd *cmd, t_token *token);
+t_ecode_p	parser_noop(t_cmd *cmd_node, t_token *token);
+t_ecode_p	parser_redir(t_cmd *cmd, t_token *token);
+t_ecode_p	parser_arith_expan(t_cmd *cmd_node, t_token *token);
+t_ecode_p	parser_add_env_var(t_cmd *cmd, t_token *token);
+t_ecode_p	parser_add_new_arg(t_cmd *cmd, t_token *token);
 
 //EXPANTION
 void		expand(t_shell *shell, t_token *start_token, t_token *end_token, \
@@ -311,12 +313,20 @@ char		*get_env_value_from_key(t_env *env_, char *key);
 void		handle_var_sign(t_shell *shell, char **str, char **expanded_str, \
 	t_env *env_list);
 
+//REDIRECTION
+t_redir		*new_redir(void);
+void		add_redir_in_back(t_redir **list, t_redir *new_redir);
+void		free_redir_list(t_redir **list);
+t_ecode		open_redirections(t_cmd *cmd);
+
 // ================ PARSING SIDE OF EXECUTION ================ //
+
 int			traverse_tree_and_execute(t_shell *shell, t_tree *node, \
 				t_tree *parent_node, int prev_exit_code);
 int			handle_pipe_subtree(t_shell *shell, t_tree *tree_node);
 
 // ================ FREEING PARSING STRUCTS ================ //
+
 void		free_token(t_token **token);
 void		free_token_list(t_token **list);
 void		free_args(char ***args);
@@ -324,6 +334,7 @@ void		free_cmd(t_cmd **cmd);
 void		free_tree(t_tree **node);
 
 // ================ PRINTING PARSING STRUCTS ================ //
+
 void		print_env(t_env *env_list);
 void		print_tokens(t_token *list);
 void		print_cmd(t_cmd *cmd);
@@ -331,7 +342,8 @@ void		print_tree(t_tree *tree);
 void		print_tree_nodes(t_tree *node, int level);
 
 // ================ ERROR HANDLING ================ //
-void		handle_parsing_err(t_shell *shell, int err_no);
+
+void		handle_parsing_err(t_shell *shell, t_ecode_p err_no);
 void		handle_cmd_err(t_shell *shell, t_cmd *cmd, char *err_msg);
 void		handle_perror(char *str);
 void		handle_builtin_err(char *cmd_name, char *arg, char *err_msg);

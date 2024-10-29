@@ -1,16 +1,16 @@
 #include "../../../../include/minishell.h"
 
-int	syntax_open_paren(t_token *prev_token, t_token *cur_token, int *par_count);
-int	syntax_close_paren(t_token *prev_token, t_token *cur_token, int *par_count);
-int	update_parens_balance(t_token *cur_token, int *par_count);
-int	syntax_word(t_token *prev_token, t_token *cur_token, int *par_count);
+t_ecode_p	syntax_open_paren(t_token *prev_token, t_token *cur_token, int *par_count);
+t_ecode_p	syntax_close_paren(t_token *prev_token, t_token *cur_token, int *par_count);
+t_ecode_p	update_parens_balance(t_token *cur_token, int *par_count);
+t_ecode_p	syntax_word(t_token *prev_token, t_token *cur_token, int *par_count);
 
-int	syntax_open_paren(t_token *prev_token, t_token *cur_token, int *par_count)
+t_ecode_p	syntax_open_paren(t_token *prev_token, t_token *cur_token, int *par_count)
 {
 	t_token	*next_token;
 
 	(void)prev_token;
-	(void) cur_token;
+	(void)cur_token;
 	update_parens_balance(cur_token, par_count);
 	next_token = skip_whitespace_and_get_next_token(cur_token);
 	if (!next_token)
@@ -28,12 +28,12 @@ int	syntax_open_paren(t_token *prev_token, t_token *cur_token, int *par_count)
 	return (PARSING_OK);
 }
 
-int	syntax_close_paren(t_token *prev_token, t_token *cur_token, int *par_count)
+t_ecode_p	syntax_close_paren(t_token *prev_token, t_token *cur_token, int *par_count)
 {
-	t_token	*next_token;
-	int		err_no;
+	t_token		*next_token;
+	t_ecode_p	err_no;
 
-	(void) cur_token;
+	(void)cur_token;
 	if (!prev_token)
 		return (ERR_SYNTAX_CLOSE_PAR);
 	err_no = update_parens_balance(cur_token, par_count);
@@ -53,7 +53,7 @@ int	syntax_close_paren(t_token *prev_token, t_token *cur_token, int *par_count)
 
 //if there are more open parens than close, it will be dealt with later in
 // check parens.
-int	update_parens_balance(t_token *cur_token, int *par_count)
+t_ecode_p	update_parens_balance(t_token *cur_token, int *par_count)
 {
 	if (cur_token->id == PAR_OPEN)
 		(*par_count)++;
@@ -64,7 +64,7 @@ int	update_parens_balance(t_token *cur_token, int *par_count)
 	return (PARSING_OK);
 }
 
-int	syntax_word(t_token *prev_token, t_token *cur_token, int *par_count)
+t_ecode_p	syntax_word(t_token *prev_token, t_token *cur_token, int *par_count)
 {
 	t_token	*next_token;
 

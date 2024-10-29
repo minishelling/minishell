@@ -1,17 +1,17 @@
 #include "../../include/minishell.h"
 
-int		handle_hdocs(t_shell *shell, t_token *list);
-int		process_hdoc_token(t_shell *shell, t_token *token, int *hdoc_counter);
-int		overwrite_str_w_hdoc_fn(int *hdoc_counter, t_token *delim_token);
-char	*create_temp_hdoc_filename(int *counter);
-int		overwrite_str_w_hdoc_fd(int hdoc_fd, t_token *delim_token);
+int			handle_hdocs(t_shell *shell, t_token *list);
+t_ecode_p	process_hdoc_token(t_shell *shell, t_token *token, int *hdoc_counter);
+t_ecode_p	overwrite_str_w_hdoc_fn(int *hdoc_counter, t_token *delim_token);
+char		*create_temp_hdoc_filename(int *counter);
+t_ecode_p	overwrite_str_w_hdoc_fd(int hdoc_fd, t_token *delim_token);
 
 //str of hdoc token that is holding the hdoc delim will be overwritten, 
 //so we strdup it before we overwite.
-int	handle_hdocs(t_shell *shell, t_token *list)
+t_ecode_p	handle_hdocs(t_shell *shell, t_token *list)
 {
-	int	hdoc_counter;
-	int	err_no;
+	int			hdoc_counter;
+	t_ecode_p	err_no;
 
 	hdoc_counter = 0;
 	while (list)
@@ -27,11 +27,11 @@ int	handle_hdocs(t_shell *shell, t_token *list)
 	return (PARSING_OK);
 }
 
-int	process_hdoc_token(t_shell *shell, t_token *token, int *hdoc_counter)
+t_ecode_p	process_hdoc_token(t_shell *shell, t_token *token, int *hdoc_counter)
 {
 	const char	*hdoc_delim;
 	int			fd;
-	int			err_no;
+	t_ecode_p	err_no;
 
 	hdoc_delim = ft_strdup(token->next->str);
 	if (!hdoc_delim)
@@ -51,7 +51,7 @@ int	process_hdoc_token(t_shell *shell, t_token *token, int *hdoc_counter)
 	return (PARSING_OK);
 }
 
-int	overwrite_str_w_hdoc_fn(int *hdoc_counter, t_token *delim_token)
+t_ecode_p	overwrite_str_w_hdoc_fn(int *hdoc_counter, t_token *delim_token)
 {
 	char	*hdoc_filename;
 
@@ -66,7 +66,7 @@ int	overwrite_str_w_hdoc_fn(int *hdoc_counter, t_token *delim_token)
 	return (PARSING_OK);
 }
 
-int	overwrite_str_w_hdoc_fd(int hdoc_fd, t_token *delim_token)
+t_ecode_p	overwrite_str_w_hdoc_fd(int hdoc_fd, t_token *delim_token)
 {
 	char	*fd_string;
 

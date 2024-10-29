@@ -1,11 +1,11 @@
 #include "../../include/minishell.h"
 
-void	handle_parsing_err(t_shell *shell, int err_no);
+void	handle_parsing_err(t_shell *shell, t_ecode_p err_no);
 char	*get_parsing_err_msg(int e);
 void	handle_cmd_err(t_shell *shell, t_cmd *cmd, char *err_msg);
 void	handle_perror(char *str);
 
-void	handle_parsing_err(t_shell *shell, int err_no)
+void	handle_parsing_err(t_shell *shell, t_ecode_p err_no)
 {
 	char	*err_msg;
 	char	*full_msg;

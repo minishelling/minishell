@@ -1,15 +1,15 @@
 #include "../../include/minishell.h"
 
-int			tokenize(t_shell *shell, char *input);
-int			assign_token_id_and_string(char *str, size_t *pos, t_token *token);
+t_ecode_p	tokenize(t_shell *shell, char *input);
+t_ecode_p	assign_token_id_and_string(char *str, size_t *pos, t_token *token);
 void		initialize_lexing_funcs(t_lexer_func advance[13]);
 t_token_id	get_token_id(char c);
 
-int	tokenize(t_shell *shell, char *input)
+t_ecode_p	tokenize(t_shell *shell, char *input)
 {
-	size_t	current_pos;
-	t_token	*token;
-	int		err_no;
+	size_t		current_pos;
+	t_token		*token;
+	t_ecode_p	err_no;
 
 	current_pos = 0;
 	while (input[current_pos])
@@ -34,10 +34,10 @@ int	tokenize(t_shell *shell, char *input)
 	return (PARSING_OK);
 }
 
-int	assign_token_id_and_string(char *str, size_t *pos, t_token *token)
+t_ecode_p	assign_token_id_and_string(char *str, size_t *pos, t_token *token)
 {
 	int				start_pos;
-	int				err_no;
+	t_ecode_p		err_no;
 	t_lexer_func	advance[13];
 	char			*token_str;
 

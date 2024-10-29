@@ -1,16 +1,16 @@
 #include "../../include/minishell.h"
 
-int		syntax(t_shell *shell);
-int		process_syntax_checks(t_shell *shell, t_token **prev_token);
-void	initialize_syntaxing_funcs(t_syntax_func check_syntax[15]);
-int		check_parens(t_token *list);
-int		check_quotes(t_token *list);
+t_ecode_p	syntax(t_shell *shell);
+t_ecode_p	process_syntax_checks(t_shell *shell, t_token **prev_token);
+void		initialize_syntaxing_funcs(t_syntax_func check_syntax[15]);
+t_ecode_p	check_parens(t_token *list);
+t_ecode_p	check_quotes(t_token *list);
 
-int	syntax(t_shell *shell)
+t_ecode_p	syntax(t_shell *shell)
 {
-	t_token	*prev_token;
-	t_token	*cur_token;
-	int		err_no;
+	t_token		*prev_token;
+	t_token		*cur_token;
+	t_ecode_p	err_no;
 
 	prev_token = NULL;
 	err_no = process_syntax_checks(shell, &prev_token);
@@ -32,11 +32,11 @@ int	syntax(t_shell *shell)
 	return (PARSING_OK);
 }
 
-int	process_syntax_checks(t_shell *shell, t_token **prev_token)
+t_ecode_p	process_syntax_checks(t_shell *shell, t_token **prev_token)
 {
 	t_token			*current_token;
 	t_syntax_func	check_syntax[15];
-	int				err_no;
+	t_ecode_p		err_no;
 	int				par_count;
 
 	par_count = 0;
@@ -75,7 +75,7 @@ void	initialize_syntaxing_funcs(t_syntax_func check_syntax[15])
 
 //the case in which balace in negative i.e. parens closing before there is a
 // matching open paren, is already handled in "syntax_close_paren".
-int	check_parens(t_token *list)
+t_ecode_p	check_parens(t_token *list)
 {
 	int		balance;
 	t_token	*cur_token;
@@ -99,7 +99,7 @@ int	check_parens(t_token *list)
 	return (PARSING_OK);
 }
 
-int	check_quotes(t_token *list)
+t_ecode_p	check_quotes(t_token *list)
 {
 	t_token	*cur_token;
 	size_t	str_len;

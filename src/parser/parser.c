@@ -1,16 +1,16 @@
 #include "../../include/minishell.h"
 
-int			parse(t_shell *shell);
+t_ecode_p	parse(t_shell *shell);
 void		make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token, \
 	t_token *end_token);
 size_t		get_arg_num(t_token *start_token, t_token *end_token);
-static int	traverse_tokens_to_make_cmd(t_cmd *cmd, t_token *start_token, \
-	t_token *end_token);
-int			build_command_from_token(t_cmd *cmd, t_token *token);
+t_ecode_p	traverse_tokens_to_make_cmd(t_cmd *cmd, 
+	t_token *start_token, t_token *end_token);
+t_ecode_p	build_command_from_token(t_cmd *cmd, t_token *token);
 
-int	parse(t_shell *shell)
+t_ecode_p	parse(t_shell *shell)
 {
-	int	err_no;
+	t_ecode_p	err_no;
 
 	err_no = tokenize(shell, shell->input);
 	if (err_no)
@@ -37,8 +37,8 @@ int	parse(t_shell *shell)
 void	make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token, \
 	t_token *end_token)
 {
-	size_t	arg_num;
-	int		err_no;
+	size_t		arg_num;
+	t_ecode_p	err_no;
 
 	*cmd = new_cmd();
 	if (!*cmd)
@@ -77,10 +77,10 @@ size_t	get_arg_num(t_token *start_token, t_token *end_token)
 	return (arg_count);
 }
 
-static int	traverse_tokens_to_make_cmd(t_cmd *cmd, t_token *start_token,
-	t_token *end_token)
+static t_ecode_p	traverse_tokens_to_make_cmd(t_cmd *cmd, \
+	t_token *start_token, t_token *end_token)
 {
-	int	err_no;
+	t_ecode_p	err_no;
 
 	while (start_token)
 	{
@@ -107,9 +107,9 @@ static int	traverse_tokens_to_make_cmd(t_cmd *cmd, t_token *start_token,
 }
 
 //no more pipe or ampersand
-int	build_command_from_token(t_cmd *cmd, t_token *token)
+t_ecode_p	build_command_from_token(t_cmd *cmd, t_token *token)
 {
-	int				err_no;
+	t_ecode_p		err_no;
 	t_parser_func	make_cmd[16];
 
 	make_cmd[0] = parser_noop;
