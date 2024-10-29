@@ -7,13 +7,12 @@ void	handle_perror(char *str);
 
 void	handle_parsing_err(t_shell *shell, t_ecode_p err_no)
 {
-	char	*err_msg;
 	char	*full_msg;
 
 	if (err_no != SIGINT_HDOC)
 	{
-		err_msg = get_parsing_err_msg(err_no);
-		full_msg = ft_strjoin(ERR_PROMPT, err_msg);
+		shell->exit_code = EXIT_SUCCESSFULLY;
+		full_msg = ft_strjoin(ERR_PROMPT, get_parsing_err_msg(err_no));
 		if (!full_msg)
 		{
 			perror("handle_parsing_err");
@@ -22,15 +21,17 @@ void	handle_parsing_err(t_shell *shell, t_ecode_p err_no)
 		write(2, full_msg, ft_strlen(full_msg));
 		free(full_msg);
 		if (err_no > PARSING_OK && err_no <= ERR_PARSING_ERROR)
-			shell->exit_code = SYNTAX_FAILURE;
-		else if (err_no == ERR_BG_PROCESS)
-			shell->exit_code = FAILURE; // agreed?
+			shell->exit_code = EXIT_SYNTAX_ERROR;
+		else
+			shell->exit_code = EXIT_MEM_FAILURE;
 	}
+	else
+		shell->exit_code = EXIT_SIGINT;
 	if ((err_no > PARSING_OK && err_no <= ERR_PARSING_ERROR) \
 		|| err_no == SIGINT_HDOC)
 		clean_nicely(shell);
 	else
-		clean_nicely_and_exit(shell, err_no);
+		clean_nicely_and_exit(shell, shell->exit_code);
 }
 
 char	*get_parsing_err_msg(int e)
@@ -50,8 +51,8 @@ char	*get_parsing_err_msg(int e)
 	err_msg[9] = "syntax error near unexpected token `<` or `>`\n";
 	err_msg[10] = "syntax error near unexpected token `&`\n";
 	err_msg[11] = "syntax error\n";
-	err_msg[12] = "syntax err: more input is needed\n";
-	err_msg[13] = "Running in the background - We don't do that here.\n";
+	err_msg[12] = "Running in the background - We don't do that here.\n";
+	err_msg[13] = "syntax err: more input is needed\n";
 	err_msg[14] = "Error: unable to allocate dynamic memory\n";
 	err_msg[15] = "Error while expanding: unable to allocate dynamic memory\n";
 	err_msg[16] = "Error while forming a command: \

@@ -1,7 +1,7 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-# define _GNU_SOURCE // FOR SIGACTION...
+# define _GNU_SOURCE
 
 # include <stdint.h>
 # include <unistd.h>
@@ -30,7 +30,7 @@
 "\001\033[38;5;226m\002e\001\033[38;5;214m\002d\001\033[0m\002: " \
 "\001\033[0m\002"
 
-# define ERR_PROMPT "Mini_shared: \001\033[0m\002"
+# define ERR_PROMPT "Mini_shared: "
 
 # define META_CHARS_PLUS_SET " \t\n|&()<>\'\"$"
 # define ERROR -1
@@ -59,6 +59,8 @@ typedef enum exit_code
 	EXIT_SUCCESSFULLY = 0,
 	EXIT_FAIL = 1,
 	EXIT_NUM_ARG_REQ = 2,
+	EXIT_SYNTAX_ERROR = 2,
+	EXIT_MEM_FAILURE = 3,
 	EXIT_CMD_NOT_EXECUTABLE = 126,
 	EXIT_CMD_NOT_FOUND = 127,
 	EXIT_SIGNAL_CODE = 128,
@@ -72,35 +74,36 @@ typedef enum e_codes
 	SUCCESS = 0,
 	FAILURE,
 	SYNTAX_FAILURE,
+	MALLOC_ERROR,
 	PROCEED,
 	NULL_ERROR,
 	NULL_ENV,
 	NULL_NODE,
 	NULL_STRING,
-	MALLOC_ERROR,
+
 	COUNT
 }	t_ecode;
 
 typedef enum e_parsing_codes
 {
-	PARSING_OK,
-	ERR_CMD_SUBSTIT,
-	ERR_SYNTAX_NL,
-	ERR_UNCLOSED_QUOTES,
-	ERR_SYNTAX_OPEN_PAR,
-	ERR_SYNTAX_CLOSE_PAR,
-	ERR_SYNTAX_PIPE,
-	ERR_SYNTAX_OR,
-	ERR_SYNTAX_AND,
-	ERR_SYNTAX_REDIR,
-	ERR_SYNTAX_AMPER,
-	ERR_SYNTAX_ERROR,
-	ERR_PARSING_ERROR,
-	ERR_BG_PROCESS,
-	ERR_MEM,
-	ERR_EXPAND,
-	ERR_CMD,
-	SIGINT_HDOC,
+	PARSING_OK, //0
+	ERR_CMD_SUBSTIT, //2
+	ERR_SYNTAX_NL, //2
+	ERR_UNCLOSED_QUOTES, //2
+	ERR_SYNTAX_OPEN_PAR, //2
+	ERR_SYNTAX_CLOSE_PAR, //2
+	ERR_SYNTAX_PIPE, //2
+	ERR_SYNTAX_OR, //2
+	ERR_SYNTAX_AND, //2
+	ERR_SYNTAX_REDIR, //2
+	ERR_SYNTAX_AMPER, //2
+	ERR_SYNTAX_ERROR, //2
+	ERR_BG_PROCESS, //2
+	ERR_PARSING_ERROR, //2
+	ERR_MEM, //3
+	ERR_EXPAND, //3
+	ERR_CMD, //3
+	SIGINT_HDOC,// 130
 }	t_ecode_p;
 
 typedef enum e_token_id
@@ -251,16 +254,20 @@ t_ecode_p	advance_pos_and_operator(char *str, size_t *pos, \
 t_ecode_p	syntax(t_shell *shell);
 
 // SYNTAX JUMP TABLE
-t_ecode_p	syntax_pipe(t_token *t_prev, t_token *t_cur, t_ecode_p *par_count);
-t_ecode_p	syntax_and_opr(t_token *t_prev, t_token *t_cur, \
-	t_ecode_p *par_count);
+t_ecode_p	syntax_pipe(t_token *prev_token, t_token *cur_token, \
+	int *par_count);
+t_ecode_p	syntax_and_opr(t_token *prev_token, t_token *cur_token, \
+	int *par_count);
 t_ecode_p	syntax_open_paren(t_token *prev_token, t_token *cur_token, \
 	int *par_count);
 t_ecode_p	syntax_close_paren(t_token *prev_token, t_token *cur_token, \
 	int *par_count);
-t_ecode_p	syntax_redir(t_token *t_prev, t_token *t_cur, int *par_count);
-t_ecode_p	syntax_noop(t_token *t_prev, t_token *t_cur, int *par_count);
-t_ecode_p	syntax_word(t_token *t_prev, t_token *t_cur, int *par_count);
+t_ecode_p	syntax_redir(t_token *prev_token, t_token *cur_token, \
+	int *par_count);
+t_ecode_p	syntax_noop(t_token *prev_token, t_token *cur_token, \
+	int *par_count);
+t_ecode_p	syntax_word(t_token *prev_token, t_token *cur_token, \
+	int *par_count);
 t_ecode_p	syntax_quote(t_token *prev_token, t_token *cur_token, \
 	int *par_count);
 t_ecode_p	syntax_or_opr(t_token *prev_token, t_token *cur_token, \

@@ -47,9 +47,9 @@ void	make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token, \
 	(*cmd)->args = ft_calloc((arg_num + 1), sizeof(char *));
 	if (!(*cmd)->args)
 		handle_parsing_err(shell, ERR_CMD);
-	// if (ft_strncmp(start_token->str, "ls", 3) == 0)  //for testing purpose
-	// 	err_no = ERR_MEM;
-	// else
+	if (ft_strncmp(start_token->str, "ls", 3) == 0)  //for testing purpose
+		err_no = ERR_MEM;
+	 else
 	err_no = traverse_tokens_to_make_cmd(*cmd, start_token, end_token);
 	if (err_no)
 		handle_parsing_err(shell, err_no);
@@ -77,7 +77,7 @@ size_t	get_arg_num(t_token *start_token, t_token *end_token)
 	return (arg_count);
 }
 
-static t_ecode_p	traverse_tokens_to_make_cmd(t_cmd *cmd, \
+t_ecode_p	traverse_tokens_to_make_cmd(t_cmd *cmd, \
 	t_token *start_token, t_token *end_token)
 {
 	t_ecode_p	err_no;

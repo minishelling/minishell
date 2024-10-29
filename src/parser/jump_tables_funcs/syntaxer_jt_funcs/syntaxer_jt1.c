@@ -11,7 +11,8 @@ t_ecode_p	syntax_or_opr(t_token *prev_token, t_token *cur_token, \
 t_ecode_p	syntax_pipe(t_token *prev_token, t_token *cur_token, \
 	int *par_count);
 
-t_ecode_p	syntax_noop(t_token *prev_token, t_token *cur_token, int *par_count)
+t_ecode_p	syntax_noop(t_token *prev_token, t_token *cur_token, \
+	int *par_count)
 {
 	(void)prev_token;
 	(void)cur_token;

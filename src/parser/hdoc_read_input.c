@@ -1,6 +1,6 @@
 #include "../../include/minishell.h"
 
-int			read_hdoc_input(t_shell *shell, const char *file_name, \
+t_ecode_p	read_hdoc_input(t_shell *shell, const char *file_name, \
 	const char **hdoc_delim);
 static void	handle_hdoc_child(t_shell *shell, const char *file_name, \
 	const char *delimiter);
@@ -9,7 +9,7 @@ static void	run_hdoc_loop(const char *delimiter, int fd, \
 	const char *colourful_delimiter);
 void		handle_signals_after_reading_hdoc(t_shell *shell, int wstatus);
 
-int	read_hdoc_input(t_shell *shell, const char *file_name, \
+t_ecode_p	read_hdoc_input(t_shell *shell, const char *file_name, \
 	const char **hdoc_delim)
 {
 	pid_t	hdoc_parent;
