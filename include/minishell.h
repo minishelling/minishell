@@ -24,11 +24,11 @@
 # include <sys/stat.h>
 
 # define MINISHARED_PROMPT \
-"\001\033[38;5;93m\002M\001\033[38;5;99m\002i\001\033[38;5;111m\002n" \
-"\001\033[38;5;63m\002i\001\033[38;5;75m\002_\001\033[38;5;81m\002s" \
-"\001\033[38;5;118m\002h\001\033[38;5;154m\002a\001\033[38;5;190m\002r" \
-"\001\033[38;5;226m\002e\001\033[38;5;214m\002d\001\033[0m\002: " \
-"\001\033[0m\002"
+"\001\033[38;5;93m\002M\001\033[38;5;99m\002i\001\033[38;5;111m\002n\
+\001\033[38;5;63m\002i\001\033[38;5;75m\002_\001\033[38;5;81m\002s\
+\001\033[38;5;118m\002h\001\033[38;5;154m\002a\001\033[38;5;190m\002r\
+\001\033[38;5;226m\002e\001\033[38;5;214m\002d\001\033[0m\002: \
+\001\033[0m\002"
 
 # define ERR_PROMPT "Mini_shared: "
 
@@ -80,7 +80,6 @@ typedef enum e_codes
 	NULL_ENV,
 	NULL_NODE,
 	NULL_STRING,
-
 	COUNT
 }	t_ecode;
 
@@ -220,11 +219,16 @@ typedef struct s_shell
 extern int	g_signalcode;
 
 // ================ FUNCTION POINTERS ================ //
-typedef t_ecode_p	(*t_lexer_func)(char *str, size_t *pos, t_token_id *token_id);
-typedef t_ecode_p	(*t_syntax_func)(t_token *prev, t_token *cur, int *par_count);
-typedef t_ecode_p	(*t_parser_func)(t_cmd *cmd, t_token *token);
+
+typedef t_ecode_p \
+			(*t_lexer_func)(char *str, size_t *pos, t_token_id *token_id);
+typedef t_ecode_p \
+			(*t_syntax_func)(t_token *prev, t_token *cur, int *par_count);
+typedef t_ecode_p \
+			(*t_parser_func)(t_cmd *cmd, t_token *token);
 
 // ================ TOKENIZATION ================ //
+
 t_ecode_p	tokenize(t_shell *shell, char *input);
 t_token		*new_token(void);
 t_token_id	get_token_id(char c);
@@ -301,7 +305,7 @@ t_tree		*process_arith_expan(t_shell *shell, t_token *start_token, \
 
 // ================ CMD MAKING ================ //
 
-t_ecode_p		parse(t_shell *shell);
+t_ecode_p	parse(t_shell *shell);
 void		make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token, \
 	t_token *end_token);
 t_cmd		*new_cmd(void);
@@ -451,7 +455,8 @@ t_ecode		check_curpath_access(char *curpath);
 
 //	chdir_cdpath.c
 t_ecode		chdir_cdpath(t_env **env_list, char *directory, char *cwd);
-t_ecode		traverse_and_chdir_cdpath(char **cdpath_values, ssize_t values_count, char *directory);
+t_ecode		traverse_and_chdir_cdpath(char **cdpath_values, \
+			ssize_t values_count, char *directory);
 t_ecode		chdir_null_cdpath(char *directory, ssize_t *i, int8_t *null_flag);
 t_ecode		chdir_cdpath_value(char *cdpath_value, char *directory, ssize_t *i);
 
