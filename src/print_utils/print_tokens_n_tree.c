@@ -58,9 +58,10 @@ void	print_tokens(t_token *list)
 	{
 		if (cur_token && cur_token->str)
 		{
-			printf(MAGENTA_TEXT"TOKEN [%02d]      "RESET_COLOR \
+			printf(MAGENTA_TEXT "TOKEN [%02d]      " RESET_COLOR \
 			"id: %-12s [%02d]    str: |%s|\n\n", (list_size - i), \
 			token_name[cur_token->id], cur_token->id, cur_token->str);
+
 		}
 		else
 			printf("NULL\n");

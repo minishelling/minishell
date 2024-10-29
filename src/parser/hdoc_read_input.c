@@ -30,10 +30,7 @@ int	read_hdoc_input(t_shell *shell, const char *file_name, \
 		return (ERROR);
 	fd = open(file_name, O_RDONLY);
 	if (fd == -1)
-	{
-		handle_perror("read_heredoc_input");
 		clean_nicely_and_exit(shell, EXIT_FAILURE);
-	}
 	unlink (file_name);
 	return (fd);
 }
