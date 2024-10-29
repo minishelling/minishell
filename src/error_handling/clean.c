@@ -22,4 +22,3 @@ void	clean_nicely_and_exit(t_shell *shell, int exit_code)
 	free_env_list(&shell->env_list);
 	exit (exit_code);
 }
-

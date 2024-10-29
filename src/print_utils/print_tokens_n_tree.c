@@ -61,7 +61,6 @@ void	print_tokens(t_token *list)
 			printf(MAGENTA_TEXT "TOKEN [%02d]      " RESET_COLOR \
 			"id: %-12s [%02d]    str: |%s|\n\n", (list_size - i), \
 			token_name[cur_token->id], cur_token->id, cur_token->str);
-
 		}
 		else
 			printf("NULL\n");
@@ -93,7 +92,7 @@ void	print_tree_nodes(t_tree *node, int level)
 		printf("    ");
 	if (node->type == CMD)
 		printf(WHITE_TEXT MAGENTA_BACKGROUND "%s" RESET_COLOR \
-		" start token:|%s|, end token:|%s|\n", tree_node_name[node->type],
+		" start token:|%s|, end token:|%s|\n", tree_node_name[node->type], \
 		node->start_token->str, node->end_token->str);
 	else if (node->type == T_AND_OPR || node->type == T_OR_OPR \
 		|| node->type == T_PIPE)

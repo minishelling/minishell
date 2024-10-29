@@ -23,7 +23,13 @@
 # include <sys/types.h>
 # include <sys/stat.h>
 
-# define MINISHARED_PROMPT "\001\033[38;5;93m\002M\001\033[38;5;99m\002i\001\033[38;5;111m\002n\001\033[38;5;63m\002i\001\033[38;5;75m\002_\001\033[38;5;81m\002s\001\033[38;5;118m\002h\001\033[38;5;154m\002a\001\033[38;5;190m\002r\001\033[38;5;226m\002e\001\033[38;5;214m\002d\001\033[0m\002: \001\033[0m\002"
+# define MINISHARED_PROMPT \
+"\001\033[38;5;93m\002M\001\033[38;5;99m\002i\001\033[38;5;111m\002n" \
+"\001\033[38;5;63m\002i\001\033[38;5;75m\002_\001\033[38;5;81m\002s" \
+"\001\033[38;5;118m\002h\001\033[38;5;154m\002a\001\033[38;5;190m\002r" \
+"\001\033[38;5;226m\002e\001\033[38;5;214m\002d\001\033[0m\002: " \
+"\001\033[0m\002"
+
 # define ERR_PROMPT "Mini_shared: \001\033[0m\002"
 
 # define META_CHARS_PLUS_SET " \t\n|&()<>\'\"$"
@@ -208,114 +214,131 @@ typedef struct s_shell
 	bool		debug_mode;
 }	t_shell;
 
-extern int		g_signalcode;
+extern int	g_signalcode;
 
-//FUNCTION POINTERS
+// ================ FUNCTION POINTERS ================ //
 typedef int	(*t_lexer_func)(char *str, size_t *pos, t_token_id *token_id);
 typedef int	(*t_syntax_func)(t_token *prev, t_token *cur, int *par_count);
 typedef int	(*t_parser_func)(t_cmd *cmd, t_token *token);
 
-//TOKENIZATION
+// ================ TOKENIZATION ================ //
 int			tokenize(t_shell *shell, char *input);
 t_token		*new_token(void);
 t_token_id	get_token_id(char c);
 void		add_token_in_back(t_token **t_list, t_token *new);
 t_token		*copy_token(t_token *t_node);
 t_token		*last_token(t_token *token_list_head);
-
-int		advance_pos_space_or_word(char *str, size_t *pos, t_token_id *token_id);
-int		advance_pos_quote(char *str, size_t *pos, t_token_id *token_id);
-int		advance_pos_and_operator(char *str, size_t *pos, t_token_id *token_id);
-int		advance_pos_parens(char *str, size_t *pos, t_token_id *token_id);
-int		advance_pos_redir(char *str, size_t *pos, t_token_id *token_id);
-int		advance_pos_env_var(char *str, size_t *pos, t_token_id *token_id);
-int		advance_pos_pipe(char *str, size_t *pos, t_token_id *token_id);
 t_token		*skip_whitespace_and_get_next_token(t_token *token);
 t_token		*get_after_arith_expan_token(t_token *token);
 void		remove_space_tokens(t_token **list, t_token *prev_token);
 t_token		*previous_token_if_exists(t_token *list, t_token *target);
 t_token		*non_null_previous(t_token *list, t_token *before_what);
 
-//SYNTAX
+// TOKENIZATION JUMP TABLE
+
+int			advance_pos_quote(char *str, size_t *pos, t_token_id *token_id);
+int			advance_pos_parens(char *str, size_t *pos, t_token_id *token_id);
+int			advance_pos_redir(char *str, size_t *pos, t_token_id *token_id);
+int			advance_pos_env_var(char *str, size_t *pos, t_token_id *token_id);
+int			advance_pos_pipe(char *str, size_t *pos, t_token_id *token_id);
+int			advance_pos_space_or_word(char *str, size_t *pos, \
+	t_token_id *token_id);
+int			advance_pos_and_operator(char *str, size_t *pos, \
+	t_token_id *token_id);
+
+// ================ SYNTAX ================ //
 int			syntax(t_shell *shell);
+
+// SYNTAX JUMP TABLE
 int			syntax_pipe(t_token *t_prev, t_token *t_cur, int *par_count);
 int			syntax_and_opr(t_token *t_prev, t_token *t_cur, int *par_count);
-int			syntax_open_paren(t_token *prev_token, t_token *cur_token, int *par_count);
-int			syntax_close_paren(t_token *prev_token, t_token *cur_token, int *par_count);
+int			syntax_open_paren(t_token *prev_token, t_token *cur_token, \
+	int *par_count);
+int			syntax_close_paren(t_token *prev_token, t_token *cur_token, \
+	int *par_count);
 int			syntax_redir(t_token *t_prev, t_token *t_cur, int *par_count);
 int			syntax_noop(t_token *t_prev, t_token *t_cur, int *par_count);
 int			syntax_word(t_token *t_prev, t_token *t_cur, int *par_count);
-int			syntax_quote(t_token *prev_token, t_token *cur_token, int *par_count);
-int			syntax_or_opr(t_token *prev_token, t_token *cur_token, int *par_count);
-int			syntax_env_var(t_token *prev_token, t_token *cur_token, int *par_count);
-int			syntax_ampersand(t_token *prev_token, t_token *cur_token, int *par_count);
+int			syntax_quote(t_token *prev_token, t_token *cur_token, \
+	int *par_count);
+int			syntax_or_opr(t_token *prev_token, t_token *cur_token, \
+	int *par_count);
+int			syntax_env_var(t_token *prev_token, t_token *cur_token, \
+	int *par_count);
+int			syntax_ampersand(t_token *prev_token, t_token *cur_token, \
+	int *par_count);
 
-//APPEND
+// ================ APPENDING ================ //
 int			append(t_shell *shell);
 
-//REDIRECTION
+// ================ REDIRECTION ================ //
 t_redir		*new_redir(void);
 void		add_redir_in_back(t_redir **list, t_redir *new_redir);
 void		free_redir_list(t_redir **list);
 int			handle_hdocs(t_shell *shell, t_token *token_list);
-int			read_hdoc_input(t_shell *shell, const char *file_name, const char **delimiter);
+int			read_hdoc_input(t_shell *shell, const char *file_name, \
+	const char **delimiter);
 t_ecode		open_redirections(t_cmd *cmd);
 
-//AST
-t_tree		*make_tree(t_shell *shell, t_token *start_token, t_token *end_token);
-t_tree		*init_leaf_node(t_shell *shell, t_token *start_token, t_token *end_token);
+// ================ ABSTRACT SYNTAX TREE ================ //
+t_tree		*make_tree(t_shell *shell, t_token *start_token, \
+	t_token *end_token);
+t_tree		*init_leaf_node(t_shell *shell, t_token *start_token, \
+	t_token *end_token);
 t_tree		*init_tree_node(t_shell *shell, t_token *op_token);
 t_token		*get_matching_paren(t_token *start_token);
 t_token		*ignore_first_parens(t_token *start_token, t_token **end_token);
 t_tree		*process_arith_expan(t_shell *shell, t_token *start_token, \
 	t_token *end_token);
 
-//CMD
+// ================ CMD MAKING ================ //
 int			parse(t_shell *shell);
-void		make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token, t_token *end_token);
+void		make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token, \
+	t_token *end_token);
 t_cmd		*new_cmd(void);
+
+// PARSING JUMP TABLE
 int			parser_noop(t_cmd *cmd_node, t_token *token);
 int			parser_redir(t_cmd *cmd, t_token *token);
 int			parser_arith_expan(t_cmd *cmd_node, t_token *token);
 int			parser_add_env_var(t_cmd *cmd, t_token *token);
 int			parser_add_new_arg(t_cmd *cmd, t_token *token);
 
-//EXPANSION
-void		expand(t_shell *shell, t_token *start_token, t_token *end_token, t_env *env_list);
+//EXPANTION
+void		expand(t_shell *shell, t_token *start_token, t_token *end_token, \
+	t_env *env_list);
 char		*get_env_value_from_key(t_env *env_, char *key);
+void		handle_var_sign(t_shell *shell, char **str, char **expanded_str, \
+	t_env *env_list);
 
-//PARSING SIDE OF EXECUTION
-int			traverse_tree_and_execute(t_shell *shell, t_tree *node, t_tree *parent_node, int prev_exit_code);
+// ================ PARSING SIDE OF EXECUTION ================ //
+int			traverse_tree_and_execute(t_shell *shell, t_tree *node, \
+				t_tree *parent_node, int prev_exit_code);
 int			handle_pipe_subtree(t_shell *shell, t_tree *tree_node);
 
-//FREE
+// ================ FREEING PARSING STRUCTS ================ //
 void		free_token(t_token **token);
 void		free_token_list(t_token **list);
 void		free_args(char ***args);
 void		free_cmd(t_cmd **cmd);
 void		free_tree(t_tree **node);
 
-//PRINT
+// ================ PRINTING PARSING STRUCTS ================ //
 void		print_env(t_env *env_list);
 void		print_tokens(t_token *list);
 void		print_cmd(t_cmd *cmd);
 void		print_tree(t_tree *tree);
 void		print_tree_nodes(t_tree *node, int level);
 
-
-//ERROR
+// ================ ERROR HANDLING ================ //
 void		handle_parsing_err(t_shell *shell, int err_no);
 void		handle_cmd_err(t_shell *shell, t_cmd *cmd, char *err_msg);
 void		handle_perror(char *str);
 void		handle_builtin_err(char *cmd_name, char *arg, char *err_msg);
 
-//CLEAN
+//CLEANING
 void		clean_nicely(t_shell *shell);
 void		clean_nicely_and_exit(t_shell *shell, int exit_code);
-
-int			safe_assign_str(char **dest, const char *src);
-size_t		ft_strcspn(const char *str, const char *reject);
-void		handle_var_sign(t_shell *shell, char **str, char **expanded_str, t_env *env_list);
 
 //SIGNALS
 
@@ -341,7 +364,8 @@ t_ecode		create_env_list(t_env **head, char **envp);
 void		print_env_node_debugging(t_env *node);
 void		print_env_list(t_env *head);
 t_ecode		add_last_env_node(t_env **head, t_env *node);
-t_ecode		update_env_node(t_env **head, char *key, char *value, bool create_node);
+t_ecode		update_env_node(t_env **head, char *key, char *value, \
+	bool create_node);
 t_ecode		update_value_in_env_node(t_env *node, char *value);
 t_ecode		update_keyvalue_in_env_node(t_env *node);
 t_ecode		update_pwd(t_env *env_head);
@@ -361,6 +385,8 @@ void		close_all_fds_in_cmd(t_cmd *cmd);
 size_t		ft_str_count(char **cmd_args);
 bool		ft_is_natural(char *arg);
 size_t		max_len(char *s1, char *s2);
+int			safe_assign_str(char **dest, const char *src);
+size_t		ft_strcspn(const char *str, const char *reject);
 
 // ================ FREE ================ //
 

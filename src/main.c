@@ -1,6 +1,6 @@
 #include "../include/minishell.h"
 
-static void init_shell(t_shell *shell, int argc, char **argv, char **envp)
+static void	init_shell(t_shell *shell, int argc, char **argv, char **envp)
 {
 	if (argc > 2 || (argc == 2 && ft_strncmp(argv[1], "-d", 3) != 0))
 	{
@@ -26,7 +26,6 @@ static void init_shell(t_shell *shell, int argc, char **argv, char **envp)
 		exit(EXIT_FAILURE);
 	}
 }
-
 
 static void	init_signals_in_loop(void)
 {

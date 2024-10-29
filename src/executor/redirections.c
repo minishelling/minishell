@@ -1,8 +1,8 @@
 #include "../../include/minishell.h"
 
-t_ecode	open_redirections(t_cmd *cmd);
-static t_ecode	open_current_redir(t_redir_id redir_id,
-					char *redir_file, int *fd);
+t_ecode			open_redirections(t_cmd *cmd);
+static t_ecode	open_current_redir(t_redir_id redir_id, \
+	char *redir_file, int *fd);
 static t_ecode	replace_redir_fd(t_cmd *cmd, t_redir *redir);
 static t_ecode	close_and_replace(int replacement, int *oldfd);
 
