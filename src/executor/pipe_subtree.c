@@ -10,7 +10,7 @@ static void	handle_pipe_left_node(t_shell *shell, t_tree *tree_node, int fd[2]);
 static void	handle_pipe_right_node(t_shell *shell,
 				t_tree *tree_node, int fd[2]);
 static void	close_fds(int fd1, int fd2);
-static void	handle_signal_status(pid_t last_pid, int *last_status);
+static void	handle_status(t_shell *shell, pid_t last_pid, int *last_status);
 
 /**
  * @brief Executes a subtree where the root is a pipe operator.
@@ -56,7 +56,7 @@ int	handle_pipe_subtree(t_shell *shell, t_tree *tree_node)
 	else if (right_node_pid == 0)
 		handle_pipe_right_node(shell, tree_node, fd);
 	close_fds(fd[READ_END], fd[WRITE_END]);
-	handle_signal_status(right_node_pid, &status);
+	handle_status(shell, right_node_pid, &status);
 	return (WEXITSTATUS(status));
 }
 
@@ -165,7 +165,7 @@ static void	close_fds(int fd1, int fd2)
  * 
  * @return void
  */
-static void	handle_signal_status(pid_t last_pid, int *last_status)
+static void	handle_status(t_shell *shell, pid_t last_pid, int *last_status)
 {
 	int	status;
 
@@ -175,11 +175,19 @@ static void	handle_signal_status(pid_t last_pid, int *last_status)
 	else if (*last_status >> 8 == EXIT_SIGINT \
 		|| *last_status >> 8 == EXIT_SIGQUIT)
 		g_signalcode = *last_status >> 8;
+	else if (*last_status == EXIT_MEM_FAILURE)
+		clean_nicely_and_exit(shell, EXIT_MEM_FAILURE);
+	else if (*last_status >> 8 == EXIT_MEM_FAILURE)
+		clean_nicely_and_exit(shell, EXIT_MEM_FAILURE);
 	while (wait(&status) != ERROR)
 	{
 		if (status == EXIT_SIGINT || status == EXIT_SIGQUIT)
 			g_signalcode = status - EXIT_SIGNAL_CODE;
 		else if (status >> 8 == EXIT_SIGINT || status >> 8 == EXIT_SIGQUIT)
 			g_signalcode = status >> 8;
+		else if (status == EXIT_MEM_FAILURE)
+			clean_nicely_and_exit(shell, EXIT_MEM_FAILURE);
+		else if (status >> 8 == EXIT_MEM_FAILURE)
+			clean_nicely_and_exit(shell, EXIT_MEM_FAILURE);
 	}
 }
