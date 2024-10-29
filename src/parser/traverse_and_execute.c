@@ -36,10 +36,12 @@ int	execute_command(t_shell *shell, t_tree *tree_node)
 		shell->env_list);
 	make_cmd(shell, &tree_node->cmd, tree_node->start_token, \
 		tree_node->end_token);
-	if (tree_node->cmd && shell->debug_mode == ON)
-		print_cmd(tree_node->cmd);
 	if (open_redirections(tree_node->cmd) == SUCCESS)
+	{
+		if (tree_node->cmd && shell->debug_mode == ON)
+			print_cmd(tree_node->cmd);
 		return (executor(shell, tree_node->cmd));
+	}
 	else
 		return (FAILURE);
 }
