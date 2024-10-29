@@ -151,7 +151,8 @@ static void	close_fds(int fd1, int fd2)
 }
 
 /**
- * @brief Handles the status of a child process that exited due to a signal.
+ * @brief Handles the termination status of a child process,
+ * checking for exit signals and memory failure conditions.
  * 
  * This function waits for the specified child process to terminate and checks 
  * its exit status. If the child exited due to the signals SIGINT or SIGQUIT, 
@@ -159,11 +160,19 @@ static void	close_fds(int fd1, int fd2)
  * code. It also continues to wait for any other child processes that may have 
  * exited and updates the signal code accordingly.
  * 
+ * Additionally, if the child process exits with a memory failure code, 
+ * the function cleans up and exits the shell with the appropriate status code.
+ * 
+ * @param shell A pointer to the shell structure.
  * @param last_pid The process ID of the last child process that was executed.
  * @param last_status A pointer to an integer where the exit status of the 
  *                    last child process will be stored.
  * 
  * @return void
+ * 
+ * @note The function handles various exit statuses, updating the global signal 
+ *       code for specific signals and managing memory failure scenarios by 
+ *       terminating the shell when such an exit status is encountered.
  */
 static void	handle_status(t_shell *shell, pid_t last_pid, int *last_status)
 {
