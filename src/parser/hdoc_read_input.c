@@ -40,6 +40,7 @@ static void	handle_hdoc_child(t_shell *shell, const char *file_name, \
 {
 	int		fd;
 	char	*colourful_delimiter;
+
 	(void)shell;
 	fd = open(file_name, O_RDWR | O_CREAT | O_TRUNC, 0644);
 	if (fd == -1)
@@ -95,8 +96,7 @@ static void	run_hdoc_loop(const char *delimiter, int fd, \
 		line = readline(colourful_delimiter);
 		if (!line)
 			break ;
-		if ((!ft_strncmp(line, delimiter, ft_strlen(delimiter)))
-			&& (line[ft_strlen(delimiter)] == '\0'))
+		if (!ft_strncmp(line, delimiter, ft_strlen(delimiter) + 1))
 		{
 			free(line);
 			break ;

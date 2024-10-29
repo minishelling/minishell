@@ -4,7 +4,7 @@ int			parse(t_shell *shell);
 void		make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token, \
 	t_token *end_token);
 size_t		get_arg_num(t_token *start_token, t_token *end_token);
-static int	traverse_tokens_to_make_cmd(t_cmd *cmd, t_token *start_token,
+static int	traverse_tokens_to_make_cmd(t_cmd *cmd, t_token *start_token, \
 	t_token *end_token);
 int			build_command_from_token(t_cmd *cmd, t_token *token);
 
@@ -47,7 +47,7 @@ void	make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token, \
 	(*cmd)->args = ft_calloc((arg_num + 1), sizeof(char *));
 	if (!(*cmd)->args)
 		handle_parsing_err(shell, ERR_CMD);
-	// if (ft_strncmp(start_token->str, "ls", 2) == 0)  //for testing purpose
+	// if (ft_strncmp(start_token->str, "ls", 3) == 0)  //for testing purpose
 	// 	err_no = ERR_MEM;
 	// else
 	err_no = traverse_tokens_to_make_cmd(*cmd, start_token, end_token);
@@ -105,6 +105,7 @@ static int	traverse_tokens_to_make_cmd(t_cmd *cmd, t_token *start_token,
 	}
 	return (PARSING_OK);
 }
+
 //no more pipe or ampersand
 int	build_command_from_token(t_cmd *cmd, t_token *token)
 {

@@ -12,6 +12,7 @@ t_tree	*make_tree(t_shell *shell, t_token *start_token, t_token *end_token)
 {
 	t_tree	*subtree;
 	t_token	*log_op_token;
+
 	if (start_token == NULL || end_token == NULL)
 		return (NULL);
 	subtree = handle_parens(shell, start_token, end_token);

@@ -101,7 +101,7 @@ void	copy_chars(char **str, char **expanded_str)
 {
 	size_t	len;
 	char	*temp_str;
-	
+
 	len = ft_strcspn(*str, "\'\"$");
 	temp_str = ft_substr(*str, 0, len);
 	if (!temp_str)

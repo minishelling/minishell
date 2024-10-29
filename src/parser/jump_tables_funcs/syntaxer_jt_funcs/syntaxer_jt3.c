@@ -16,7 +16,7 @@ int	syntax_redir(t_token *prev_token, t_token *cur_token, int *par_count)
 	next_token = skip_whitespace_and_get_next_token(cur_token);
 	if (!next_token)
 		return (ERR_SYNTAX_NL);
-	if (next_token->id == ENV_VAR && !ft_strncmp((cur_token->str), "<<", 2))
+	if (next_token->id == ENV_VAR && !ft_strncmp((cur_token->str), "<<", 3))
 	{
 		next_token->id = WORD;
 		return (PARSING_OK);
@@ -46,7 +46,7 @@ int	handle_token_after_redir(t_token *after_redir_token)
 	if (after_redir_token->id == SQUOTE || after_redir_token->id == DQUOTE)
 		if (remove_delimiter_quotes(after_redir_token) != SUCCESS)
 			return (ERR_MEM);
-	return(PARSING_OK);
+	return (PARSING_OK);
 }
 
 int	remove_delimiter_quotes(t_token *delimiter_token)

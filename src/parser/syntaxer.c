@@ -72,6 +72,7 @@ void	initialize_syntaxing_funcs(t_syntax_func check_syntax[15])
 	check_syntax[13] = syntax_or_opr;
 	check_syntax[14] = syntax_ampersand;
 }
+
 //the case in which balace in negative i.e. parens closing before there is a
 // matching open paren, is already handled in "syntax_close_paren".
 int	check_parens(t_token *list)
@@ -118,9 +119,3 @@ int	check_quotes(t_token *list)
 	}
 	return (PARSING_OK);
 }
-
-
-
-
-
-

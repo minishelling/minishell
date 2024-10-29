@@ -4,7 +4,7 @@ t_token	*get_matching_paren(t_token *start_token);
 t_token	*ignore_first_parens(t_token *start_token, t_token **end_token);
 t_tree	*process_arith_expan(t_shell *shell, t_token *start_token, \
 	t_token *end_token);
-	
+
 t_token	*get_matching_paren(t_token *start_token)
 {
 	t_token	*cur_token;
