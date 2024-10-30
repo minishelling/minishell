@@ -1,5 +1,11 @@
 #include "../../include/minishell.h"
 
+t_builtin	check_builtin(char *cmd_name);
+size_t		count_cmds(t_cmd *head);
+t_ecode		create_std_backup(int backup[2]);
+t_ecode		dup_and_close(int oldfd, int newfd);
+bool		ft_ispath(const char *str);
+
 /**
  * @brief Checks if a given command name corresponds to a valid builtin command.
  * 
@@ -133,4 +139,21 @@ t_ecode	dup_and_close(int oldfd, int newfd)
 		return (FAILURE);
 	}
 	return (SUCCESS);
+}
+
+/**
+ * @brief Checks if a given string represents a file path.
+ * 
+ * This function determines if the string starts with either "./" 
+ * or a '/' character, indicating it is a file path.
+ * 
+ * @param[in] str The string to check.
+ * 
+ * @return true if the string is a path; false otherwise.
+ */
+bool	ft_ispath(const char *str)
+{
+	if (!ft_strncmp(str, "./", 2) || str[0] == '/')
+		return (true);
+	return (false);
 }

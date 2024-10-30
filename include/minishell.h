@@ -430,6 +430,7 @@ t_builtin	check_builtin(char *cmd_name);
 size_t		count_cmds(t_cmd *head);
 t_ecode		create_std_backup(int backup[2]);
 t_ecode		dup_and_close(int oldfd, int newfd);
+bool		ft_ispath(const char *str);
 
 char		*get_cmd_path(t_shell *shell, char *cmd_name);
 void		handle_builtin(t_shell *shell, t_cmd *cmd);
