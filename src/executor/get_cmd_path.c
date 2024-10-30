@@ -81,7 +81,10 @@ static char	*check_name_as_path(t_shell *shell, char *cmd_name)
 
 	if (stat(cmd_name, &stat_buffer) != 0)
 	{
-		shell->exit_code = 0;
+		if (!ft_strncmp(cmd_name, "./", 2) || cmd_name[0] == '/')
+			shell->exit_code = 0;
+		else
+			shell->exit_code = 127;
 		return (NULL);
 	}
 	if (access(cmd_name, F_OK) == 0)

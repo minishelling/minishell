@@ -127,7 +127,7 @@ static void	run_child(t_shell *shell, t_cmd *cmd)
 	env_array = create_env_array(shell->env_list);
 	if (cmd_path)
 		execve(cmd_path, cmd->args, env_array);
-	if (ft_strncmp(cmd->args[0], cmd_path, ft_strlen(cmd_path) + 1))
+	if (ft_strncmp(cmd->args[0], cmd_path, ft_strlen(cmd_path)))
 		ft_free((void **) &cmd_path);
 	ft_free_2d((void ***) &env_array);
 	if (!ft_strncmp(cmd->args[0], "./", 2) || cmd->args[0][0] == '/')
