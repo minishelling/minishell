@@ -85,24 +85,24 @@ typedef enum e_codes
 
 typedef enum e_parsing_codes
 {
-	PARSING_OK, //0
-	ERR_CMD_SUBSTIT, //2
-	ERR_SYNTAX_NL, //2
-	ERR_UNCLOSED_QUOTES, //2
-	ERR_SYNTAX_OPEN_PAR, //2
-	ERR_SYNTAX_CLOSE_PAR, //2
-	ERR_SYNTAX_PIPE, //2
-	ERR_SYNTAX_OR, //2
-	ERR_SYNTAX_AND, //2
-	ERR_SYNTAX_REDIR, //2
-	ERR_SYNTAX_AMPER, //2
-	ERR_SYNTAX_ERROR, //2
-	ERR_BG_PROCESS, //2
-	ERR_PARSING_ERROR, //2
-	ERR_MEM, //3
-	ERR_EXPAND, //3
-	ERR_CMD, //3
-	SIGINT_HDOC,// 130
+	PARSING_OK,
+	ERR_CMD_SUBSTIT,
+	ERR_SYNTAX_NL,
+	ERR_UNCLOSED_QUOTES,
+	ERR_SYNTAX_OPEN_PAR,
+	ERR_SYNTAX_CLOSE_PAR,
+	ERR_SYNTAX_PIPE,
+	ERR_SYNTAX_OR,
+	ERR_SYNTAX_AND,
+	ERR_SYNTAX_REDIR,
+	ERR_SYNTAX_AMPER,
+	ERR_SYNTAX_ERROR,
+	ERR_BG_PROCESS,
+	ERR_PARSING_ERROR,
+	ERR_MEM,
+	ERR_EXPAND,
+	ERR_CMD,
+	SIGINT_HDOC,
 }	t_ecode_p;
 
 typedef enum e_token_id
@@ -236,10 +236,8 @@ void		add_token_in_back(t_token **t_list, t_token *new);
 t_token		*copy_token(t_token *t_node);
 t_token		*last_token(t_token *token_list_head);
 t_token		*skip_whitespace_and_get_next_token(t_token *token);
-t_token		*get_after_arith_expan_token(t_token *token);
+t_token		*get_after_matching_arith_expan(t_token *token);
 void		remove_space_tokens(t_token **list, t_token *prev_token);
-t_token		*previous_token_if_exists(t_token *list, t_token *target);
-t_token		*non_null_previous(t_token *list, t_token *before_what);
 
 // TOKENIZATION JUMP TABLE
 
@@ -300,6 +298,7 @@ t_tree		*init_leaf_node(t_shell *shell, t_token *start_token, \
 t_tree		*init_tree_node(t_shell *shell, t_token *op_token);
 t_token		*get_matching_paren(t_token *start_token);
 t_token		*ignore_first_parens(t_token *start_token, t_token **end_token);
+t_token		*non_null_previous(t_token *list, t_token *before_what);
 t_tree		*process_arith_expan(t_shell *shell, t_token *start_token, \
 	t_token *end_token);
 
@@ -311,7 +310,6 @@ void		make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token, \
 t_cmd		*new_cmd(void);
 
 // PARSING JUMP TABLE
-t_ecode_p	parser_noop(t_cmd *cmd_node, t_token *token);
 t_ecode_p	parser_redir(t_cmd *cmd, t_token *token);
 t_ecode_p	parser_arith_expan(t_cmd *cmd_node, t_token *token);
 t_ecode_p	parser_add_env_var(t_cmd *cmd, t_token *token);

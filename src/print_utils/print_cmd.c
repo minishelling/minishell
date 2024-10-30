@@ -4,6 +4,15 @@ void	print_cmd_args(char **arg);
 void	print_cmd_redir(t_redir *list);
 void	print_cmd(t_cmd *cmd);
 
+/**
+ * @brief Prints the command arguments to standard error.
+ *
+ * Iterates through the array of arguments, printing each one with
+ * its index. The output is formatted to highlight the list of
+ * arguments, with a color-coded "ARGUMENTS" header.
+ *
+ * @param arg Array of argument strings to be printed.
+ */
 void	print_cmd_args(char **arg)
 {
 	size_t	i;
@@ -17,6 +26,15 @@ void	print_cmd_args(char **arg)
 	}
 }
 
+/**
+ * @brief Prints the command redirections to standard error.
+ *
+ * Prints each redirection in the redirection list, including its
+ * type and file path. If no redirections are present, a message
+ * indicating "NO REDIRECTIONS" is printed.
+ *
+ * @param list Pointer to the head of the redirection list.
+ */
 void	print_cmd_redir(t_redir *list)
 {
 	t_redir	*cur_redir;
@@ -45,6 +63,15 @@ void	print_cmd_redir(t_redir *list)
 	}
 }
 
+/**
+ * @brief Prints the command structure, including arguments and redirections.
+ *
+ * Outputs detailed information about the command structure, printing
+ * both the list of arguments and redirections (if present), along
+ * with the latest input and output file descriptors.
+ *
+ * @param cmd Pointer to the command structure to be printed.
+ */
 void	print_cmd(t_cmd *cmd)
 {
 	fprintf(stderr, "\n"WHITE_TEXT MAGENTA_BACKGROUND \

@@ -5,6 +5,26 @@ char	*get_parsing_err_msg(int e);
 void	handle_cmd_err(t_shell *shell, t_cmd *cmd, char *err_msg);
 void	handle_perror(char *str);
 
+/**
+ * @brief Handles parsing errors and outputs an appropriate error message.
+ *
+ * This function takes an error code, constructs an error message based on 
+ * the provided error code, and writes it to the standard error output. 
+ * It also sets the shell's exit code according to the type of error encountered.
+ *
+ * @param shell Pointer to the shell structure that holds the state of the shell.
+ * @param err_no The error code indicating the type of parsing error that occurred.
+ *
+ * Possible error codes: PARSING_OK (0), ERR_CMD_SUBSTIT (2), ERR_SYNTAX_NL (2), 
+ * ERR_UNCLOSED_QUOTES (2), ERR_SYNTAX_OPEN_PAR (2), ERR_SYNTAX_CLOSE_PAR (2), 
+ * ERR_SYNTAX_PIPE (2), ERR_SYNTAX_OR (2), ERR_SYNTAX_AND (2), ERR_SYNTAX_REDIR (2), 
+ * ERR_SYNTAX_AMPER (2), ERR_SYNTAX_ERROR (2), ERR_BG_PROCESS (2), 
+ * ERR_PARSING_ERROR (2), ERR_MEM (3), ERR_EXPAND (3), ERR_CMD (3), 
+ * SIGINT_HDOC (130).
+ *
+ * This function performs actions based on the error code, including setting 
+ * the appropriate exit code and cleaning up the shell state.
+ */
 void	handle_parsing_err(t_shell *shell, t_ecode_p err_no)
 {
 	char	*full_msg;

@@ -6,14 +6,33 @@ int	execute_command(t_shell *shell, t_tree *tree_node);
 int	handle_logical_operators(t_shell *shell, t_tree *tree_node, \
 	t_tree *parent_tree_node, int exit_code);
 
-
+/**
+ * @brief Traverses the AST and executes commands based on tree nodes.
+ *
+ * This function recursively traverses the AST, executing commands and 
+ * handling logical operators. It usually starts from the leftmost downward 
+ * node unless the parent node is a PIPE, in which case the function 
+ * traverses down that subtree. It evaluates the exit code of previously 
+ * executed commands to decide whether to execute the right child of the 
+ * AND_OPR or OR_OPR parent nodes.
+ *
+ * A successful execution of the left child with an AND_OPR parent, for 
+ * example, will trigger execution of the right child. Conversely, for an 
+ * OR_OPR parent, if the exit code is non-zero from the left child, the 
+ * right child will be executed.
+ *
+ * @param shell Pointer to the shell structure.
+ * @param tree_node Pointer to the current tree node being executed.
+ * @param parent_tree_node Pointer to the parent tree node for context.
+ * @param prev_exit_code The exit code from the previous command executed.
+ * @return The updated exit code after executing the command(s).
+ */
 int	traverse_tree_and_execute(t_shell *shell, t_tree *tree_node, \
 	t_tree *parent_tree_node, int prev_exit_code)
 {
 	int	exit_code;
 
 	exit_code = prev_exit_code;
-	fprintf(stderr, "exit code is %d\n", exit_code);
 	if (!tree_node)
 		return (exit_code);
 	if (tree_node->type == T_PIPE)
@@ -30,6 +49,26 @@ int	traverse_tree_and_execute(t_shell *shell, t_tree *tree_node, \
 	(shell, tree_node, parent_tree_node, exit_code));
 }
 
+/**
+ * @brief Executes a command represented by the given tree node.
+ *
+ * This function expands the tokens for the command, constructs the 
+ * command structure, and handles any necessary redirections. The 
+ * command will only be executed if:
+ * 1. The token expansion succeeds.
+ * 2. The command parsing (construction) is successful.
+ * 3. The handling of redirections is successful.
+ *
+ * If all conditions are met, the command is executed, and the exit 
+ * code is returned. If any of the steps fail, the function returns 
+ * FAILURE without executing the command.
+ *
+ * @param shell Pointer to the shell structure.
+ * @param tree_node Pointer to the tree node representing the command 
+ *                  to be executed.
+ * @return The exit code of the executed command, or FAILURE if the 
+ *         command could not be executed.
+ */
 int	execute_command(t_shell *shell, t_tree *tree_node)
 {
 	expand(shell, tree_node->start_token, tree_node->end_token, \
@@ -46,6 +85,28 @@ int	execute_command(t_shell *shell, t_tree *tree_node)
 		return (FAILURE);
 }
 
+/**
+ * @brief Handles logical operators in the AST based on the exit code.
+ *
+ * This function checks the type of the parent tree node (AND_OPR or OR_OPR)
+ * and evaluates the exit code of the previously executed command to decide
+ * whether to execute the right child of the parent node.
+ *
+ * - If the parent is an AND_OPR and the exit code is 0 (successful), 
+ *   the right child will be executed.
+ * - If the parent is an AND_OPR and the exit code is non-zero (failure), 
+ *   the right child will not be executed.
+ * - If the parent is an OR_OPR and the exit code is non-zero (failure), 
+ *   the right child will be executed.
+ * - If the parent is an OR_OPR and the exit code is 0 (successful), 
+ *   the right child will not be executed.
+ *
+ * @param shell Pointer to the shell structure.
+ * @param tree_node Pointer to the current tree node being processed.
+ * @param parent_tree_node Pointer to the parent tree node for context.
+ * @param exit_code The exit code from the previously executed command.
+ * @return The updated exit code after handling the logical operators.
+ */
 int	handle_logical_operators(t_shell *shell, t_tree *tree_node, \
 	t_tree *parent_tree_node, int exit_code)
 {

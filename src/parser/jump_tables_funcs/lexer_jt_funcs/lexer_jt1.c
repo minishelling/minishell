@@ -8,6 +8,17 @@ t_ecode_p	advance_pos_and_operator(char *str, size_t *pos, \
 t_ecode_p	advance_pos_parens(char *str, size_t *pos, t_token_id *token_id);
 t_ecode_p	advance_pos_redir(char *str, size_t *pos, t_token_id *token_id);
 
+/**
+ * @brief Advances the position through space or word tokens.
+ *
+ * This function iterates through the input string until it encounters a
+ * character that does not match the current token type.
+ *
+ * @param str The input string.
+ * @param pos A pointer to the current position in the string.
+ * @param token_id The current token ID being processed.
+ * @return Returns a status indicating success.
+ */
 t_ecode_p	advance_pos_space_or_word(char *str, size_t *pos, \
 	t_token_id *token_id)
 {
@@ -16,6 +27,16 @@ t_ecode_p	advance_pos_space_or_word(char *str, size_t *pos, \
 	return (PARSING_OK);
 }
 
+/**
+ * @brief Advances the position through pipe tokens.
+ *
+ * This function counts and advances the position for up to two pipe tokens.
+ *
+ * @param str The input string.
+ * @param pos A pointer to the current position in the string.
+ * @param token_id The current token ID being processed (unused).
+ * @return Returns a status indicating success.
+ */
 t_ecode_p	advance_pos_pipe(char *str, size_t *pos, t_token_id *token_id)
 {
 	t_ecode_p	pipe_count;
@@ -30,6 +51,16 @@ t_ecode_p	advance_pos_pipe(char *str, size_t *pos, t_token_id *token_id)
 	return (PARSING_OK);
 }
 
+/**
+ * @brief Advances the position through AND operator tokens.
+ *
+ * This function checks for the "&&" operator and advances the position accordingly.
+ *
+ * @param str The input string.
+ * @param pos A pointer to the current position in the string.
+ * @param token_id The current token ID being processed (unused).
+ * @return Returns a status indicating success.
+ */
 t_ecode_p	advance_pos_and_operator(char *str, size_t *pos, \
 	t_token_id *token_id)
 {
@@ -41,6 +72,16 @@ t_ecode_p	advance_pos_and_operator(char *str, size_t *pos, \
 	return (PARSING_OK);
 }
 
+/**
+ * @brief Advances the position through parentheses.
+ *
+ * This function checks for opening or closing parentheses and advances the position.
+ *
+ * @param str The input string.
+ * @param pos A pointer to the current position in the string.
+ * @param token_id The current token ID being processed (unused).
+ * @return Returns a status indicating success.
+ */
 t_ecode_p	advance_pos_parens(char *str, size_t *pos, t_token_id *token_id)
 {
 	char	c;
@@ -52,6 +93,16 @@ t_ecode_p	advance_pos_parens(char *str, size_t *pos, t_token_id *token_id)
 	return (PARSING_OK);
 }
 
+/**
+ * @brief Advances the position through redirection tokens.
+ *
+ * This function counts and advances the position for up to two redirection tokens.
+ *
+ * @param str The input string.
+ * @param pos A pointer to the current position in the string.
+ * @param token_id The current token ID being processed (unused).
+ * @return Returns a status indicating success.
+ */
 t_ecode_p	advance_pos_redir(char *str, size_t *pos, t_token_id *token_id)
 {
 	int		redir_count;
