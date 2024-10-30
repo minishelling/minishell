@@ -20,7 +20,7 @@ void		handle_signals_after_reading_hdoc(t_shell *shell, int wstatus);
  * @param shell Pointer to the shell structure containing necessary state 
  *              information.
  * @param file_name The name of the temporary file created for the heredoc input.
- * @param hdoc_delim Pointer to a string containing the delimiter for the heredoc.
+ * @param hdoc_delim Pointer to a string that has the delimiter for the heredoc
  *
  * @return A file descriptor for the opened heredoc file, or an error code 
  *         if the operation fails.
