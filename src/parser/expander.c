@@ -46,16 +46,18 @@ void	expand(t_shell *shell, t_token *start_token, t_token *end_token, \
 /**
  * @brief Expands the string representation of a token.
  *
- * This function processes the string of a given token and performs shell 
- * expansion according to the rules for single quotes, double quotes, 
- * and variable signs ('$'). The expanded string replaces the original 
- * string of the token. Memory management is handled to avoid leaks.
+ * This function processes the string of a given token and performs 
+ * shell expansion according to the rules for single quotes, double 
+ * quotes, and variable signs ('$'). The expanded string replaces the 
+ * original string of the token. Memory management is handled to avoid 
+ * leaks.
  *
  * @param shell Pointer to the shell structure containing relevant data.
  * @param token Pointer to the token whose string is to be expanded.
- * @param env_list Pointer to the environment variable list for variable expansions.
- * @return The result of the expansion operation, indicating success or failure.
- *         Possible return values:
+ * @param env_list Pointer to the environment variable list for 
+ *                 variable expansions.
+ * @return The result of the expansion operation, indicating success or 
+ *         failure. Possible return values:
  *         - PARSING_OK on success.
  *         - ERR_EXPAND if an error occurs during expansion.
  */
@@ -164,20 +166,21 @@ static void	process_dquotes(t_shell *shell, char **str, char **expanded_str, \
 }
 
 /**
- * @brief Copies characters from the input string until a special character is found.
+ * @brief Copies characters from the input string until a special 
+ *        character is found.
  *
  * This function scans the input string for characters up to the first 
- * occurrence of a single quote (`'`), double quote (`"`), or dollar sign 
- * (`$`). It then extracts this substring and appends it to the expanded 
- * string. The original input pointer is advanced to skip over the copied 
- * characters.
+ * occurrence of a single quote (`'`), double quote (`"`), or dollar 
+ * sign (`$`). It then extracts this substring and appends it to the 
+ * expanded string. The original input pointer is advanced to skip over 
+ * the copied characters.
  *
  * @param str Pointer to the input string being processed. This pointer 
  *            will be updated to reflect the position after the copied 
  *            characters.
- * @param expanded_str Pointer to the string that accumulates the expanded 
- *                     result. This string will be updated with the newly 
- *                     added substring.
+ * @param expanded_str Pointer to the string that accumulates the 
+ *                     expanded result. This string will be updated 
+ *                     with the newly added substring.
  */
 static void	copy_chars(char **str, char **expanded_str)
 {

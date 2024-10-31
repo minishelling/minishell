@@ -13,30 +13,35 @@ static t_ecode_p	check_quotes(t_token *list);
  * This function iterates through the token list within the shell structure
  * and applies several syntax checks to ensure the command structure is valid.
  * 
- * - First, it verifies basic syntax rules by calling `process_syntax_checks`, 
- *   which applies initial validation and updates `prev_token` as it progresses.
- * - Next, it checks the balance of parentheses across the token list by invoking 
- *   `check_parens`, which confirms that all opening parentheses have corresponding 
- *   closing parentheses and are properly ordered.
- * - It then checks for balanced quotes by calling `check_quotes`, ensuring that 
- *   both single and double quotes end with the correct matching 
- *   character (either `'` or `"`), confirming that quotes are properly paired 
- *   before advancing to the append processing stage. This avoids syntax issues 
- *   where a quote might be opened but left unclosed or mismatched.
- * - Finally, it iterates through the entire list to detect any `AMPERSAND` tokens, 
- *   as background process execution (signified by `&`) is unsupported in this shell 
- *   implementation. If an ampersand is found, an error is returned.
+ * - First, it verifies basic syntax rules by calling 
+ *   `process_syntax_checks`, which applies initial validation and updates 
+ *   `prev_token` as it progresses.
+ * - Next, it checks the balance of parentheses across the token list by 
+ *   invoking `check_parens`, which confirms that all opening parentheses 
+ *   have corresponding closing parentheses and are properly ordered.
+ * - It then checks for balanced quotes by calling `check_quotes`, 
+ *   ensuring that both single and double quotes end with the correct 
+ *   matching character (either `'` or `"`), confirming that quotes are 
+ *   properly paired before advancing to the append processing stage. 
+ *   This avoids syntax issues where a quote might be opened but left 
+ *   unclosed or mismatched.
+ * - Finally, it iterates through the entire list to detect any 
+ *   `AMPERSAND` tokens, as background process execution (signified by 
+ *   `&`) is unsupported in this shell implementation. If an ampersand 
+ *   is found, an error is returned.
  *
- * This syntax function ensures that each token list is fully validated before 
- * proceeding to further parsing or execution stages.
+ * This syntax function ensures that each token list is fully validated 
+ * before proceeding to further parsing or execution stages.
  *
  * @param shell Pointer to the shell structure containing the token list.
- * @param prev_token Pointer to the previous token for syntax checks (not used directly).
+ * @param prev_token Pointer to the previous token for syntax checks 
+ *                   (not used directly).
  * 
  * @return 
  * - PARSING_OK if all syntax checks pass.
- * - An error code if any syntax issue is detected, such as ERR_UNCLOSED_QUOTES,
- *   ERR_UNMATCHED_PARENS, or ERR_BG_PROCESS if an ampersand is found.
+ * - An error code if any syntax issue is detected, such as 
+ *   ERR_UNCLOSED_QUOTES, ERR_UNMATCHED_PARENS, or ERR_BG_PROCESS if 
+ *   an ampersand is found.
  */
 t_ecode_p	syntax(t_shell *shell)
 {

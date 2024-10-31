@@ -148,7 +148,8 @@ static t_token	*find_last_log_op_token_nip(t_token *list, t_token *end_token)
 }
 
 /**
- * @brief Initializes a leaf node for a command in the Abstract Syntax Tree (AST).
+ * @brief Initializes a leaf node for a command in the Abstract Syntax 
+ * Tree (AST).
  *
  * This function allocates memory for a new leaf node and initializes 
  * it with the specified command token information. The leaf node 
@@ -185,19 +186,20 @@ t_tree	*init_leaf_node(t_shell *shell, t_token *start_token, \
 }
 
 /**
- * @brief Initializes a tree node for an operator in the Abstract Syntax Tree (AST).
+ * @brief Initializes a tree node for an operator in the Abstract 
+ * Syntax Tree (AST).
  *
- * This function allocates memory for a new tree node and initializes it 
- * with the specified operator token. The tree node represents a logical 
- * operator (AND, OR, or PIPE) in the AST, and its type is set based on 
- * the provided operator token. The left and right child pointers of the 
- * node are initialized to NULL, indicating that this node is a parent node 
- * with no children yet.
+ * This function allocates memory for a new tree node and initializes 
+ * it with the specified operator token. The tree node represents a 
+ * logical operator (AND, OR, or PIPE) in the AST, and its type is 
+ * set based on the provided operator token. The left and right child 
+ * pointers of the node are initialized to NULL, indicating that this 
+ * node is a parent node with no children yet.
  *
  * @param shell Pointer to the shell context for error handling.
  * @param op_token Pointer to the token representing the operator.
- * @return Pointer to the newly initialized tree node, or exits if memory 
- *         allocation fails or if the operator token is NULL.
+ * @return Pointer to the newly initialized tree node, or exits if 
+ *         memory allocation fails or if the operator token is NULL.
  */
 static t_tree	*init_tree_node(t_shell *shell, t_token *op_token)
 {
