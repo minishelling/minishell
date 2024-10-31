@@ -1,10 +1,11 @@
 #include "../../include/minishell.h"
 
-t_ecode_p	append(t_shell *shell);
-t_ecode_p	join_quotes_tokens(t_shell *shell);
-t_ecode_p	join_env_var_quotes_and_word_str(t_shell *shell);
-t_ecode_p	join_strs_free_cur_token(t_token **prev_token, t_token **cur_token);
-void		remove_space_tokens(t_token **list, t_token *prev);
+t_ecode_p			append(t_shell *shell);
+static t_ecode_p	join_quotes_tokens(t_shell *shell);
+static t_ecode_p	join_env_var_quotes_and_word_str(t_shell *shell);
+static t_ecode_p	join_strs_free_cur_token(t_token **prev_token, \
+	t_token **cur_token);
+static void			remove_space_tokens(t_token **list, t_token *prev);
 
 /**
  * @brief Appends tokens by joining quotes and environment variables.
@@ -43,7 +44,7 @@ t_ecode_p	append(t_shell *shell)
  * @param shell Pointer to the shell structure containing token information.
  * @return The result of the operation, indicating success or failure.
  */
-t_ecode_p	join_quotes_tokens(t_shell *shell)
+static t_ecode_p	join_quotes_tokens(t_shell *shell)
 {
 	t_token		*cur_token;
 	t_token		*prev_token;
@@ -83,7 +84,7 @@ t_ecode_p	join_quotes_tokens(t_shell *shell)
  * @param shell Pointer to the shell structure containing token information.
  * @return The result of the operation, indicating success or failure.
  */
-t_ecode_p	join_env_var_quotes_and_word_str(t_shell *shell)
+static t_ecode_p	join_env_var_quotes_and_word_str(t_shell *shell)
 {
 	t_token		*prev_token;
 	t_token		*cur_token;
@@ -123,7 +124,8 @@ t_ecode_p	join_env_var_quotes_and_word_str(t_shell *shell)
  * @param cur_token Pointer to the current token, which will be freed.
  * @return The result of the operation, indicating success or failure.
  */
-t_ecode_p	join_strs_free_cur_token(t_token **prev_token, t_token **cur_token)
+static t_ecode_p	join_strs_free_cur_token(t_token **prev_token, \
+	t_token **cur_token)
 {
 	char	*joined_str;
 	t_token	*temp;
@@ -153,7 +155,7 @@ t_ecode_p	join_strs_free_cur_token(t_token **prev_token, t_token **cur_token)
  * @param prev Pointer to the previous token, used for updating the list 
  *             during removal.
  */
-void	remove_space_tokens(t_token **list, t_token *prev)
+static void	remove_space_tokens(t_token **list, t_token *prev)
 {
 	t_token	*current;
 	t_token	*temp;

@@ -1,12 +1,12 @@
 #include "../../../../include/minishell.h"
 
-t_ecode_p	syntax_redir(t_token *prev_token, t_token *cur_token, \
+t_ecode_p			syntax_redir(t_token *prev_token, t_token *cur_token, \
 	int *par_count);
-t_ecode_p	handle_token_after_redir(t_token *after_redir_token);
-t_ecode_p	remove_delimiter_quotes(t_token *delimiter_token);
-t_ecode_p	syntax_quote(t_token *prev_token, t_token *cur_token, \
+static t_ecode_p	handle_token_after_redir(t_token *after_redir_token);
+static t_ecode_p	remove_delimiter_quotes(t_token *delimiter_token);
+t_ecode_p			syntax_quote(t_token *prev_token, t_token *cur_token, \
 	int *par_count);
-t_ecode_p	syntax_env_var(t_token *prev_token, t_token *cur_token, \
+t_ecode_p			syntax_env_var(t_token *prev_token, t_token *cur_token, \
 	int *par_count);
 
 /**
@@ -69,7 +69,7 @@ t_ecode_p	syntax_redir(t_token *prev_token, t_token *cur_token, \
  *           removing quotes.
  *         - PARSING_OK: if the syntax is valid.
  */
-t_ecode_p	handle_token_after_redir(t_token *after_redir_token)
+static t_ecode_p	handle_token_after_redir(t_token *after_redir_token)
 {
 	if (after_redir_token->id == PIPE)
 		return (ERR_SYNTAX_PIPE);
@@ -91,7 +91,7 @@ t_ecode_p	handle_token_after_redir(t_token *after_redir_token)
 	return (PARSING_OK);
 }
 
-t_ecode_p	remove_delimiter_quotes(t_token *delimiter_token)
+static t_ecode_p	remove_delimiter_quotes(t_token *delimiter_token)
 {
 	delimiter_token->id = WORD;
 	if (safe_assign_str(&(delimiter_token->str), \

@@ -1,9 +1,10 @@
 #include "../../include/minishell.h"
 
-t_ecode_p	tokenize(t_shell *shell, char *input);
-t_ecode_p	assign_token_id_and_string(char *str, size_t *pos, t_token *token);
-void		initialize_lexing_funcs(t_lexer_func advance[13]);
-t_token_id	get_token_id(char c);
+t_ecode_p			tokenize(t_shell *shell, char *input);
+static t_ecode_p	assign_token_id_and_string(char *str, size_t *pos, \
+	t_token *token);
+static void			initialize_lexing_funcs(t_lexer_func advance[13]);
+t_token_id			get_token_id(char c);
 
 /**
  * @brief Tokenizes the input string into a linked list of tokens.
@@ -64,7 +65,8 @@ t_ecode_p	tokenize(t_shell *shell, char *input)
  * @return t_ecode_p PARSING_OK if successful, or an error code (e.g., 
  *         ERR_MEM, ERR_CMD_SUBSTIT) on failure.
  */
-t_ecode_p	assign_token_id_and_string(char *str, size_t *pos, t_token *token)
+static t_ecode_p	assign_token_id_and_string(char *str, size_t *pos, \
+	t_token *token)
 {
 	int				start_pos;
 	t_ecode_p		err_no;
@@ -95,7 +97,7 @@ t_ecode_p	assign_token_id_and_string(char *str, size_t *pos, t_token *token)
  *
  * @param advance Array to store function pointers for advancing position.
  */
-void	initialize_lexing_funcs(t_lexer_func advance[13])
+static void	initialize_lexing_funcs(t_lexer_func advance[13])
 {
 	advance[0] = advance_pos_space_or_word;
 	advance[1] = advance_pos_space_or_word;

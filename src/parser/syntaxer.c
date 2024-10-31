@@ -1,28 +1,42 @@
 #include "../../include/minishell.h"
 
-t_ecode_p	syntax(t_shell *shell);
-t_ecode_p	process_syntax_checks(t_shell *shell, t_token **prev_token);
-void		initialize_syntaxing_funcs(t_syntax_func check_syntax[15]);
-t_ecode_p	check_parens(t_token *list);
-t_ecode_p	check_quotes(t_token *list);
+t_ecode_p			syntax(t_shell *shell);
+static t_ecode_p	process_syntax_checks(t_shell *shell, \
+	t_token **prev_token);
+static void			initialize_syntaxing_funcs(t_syntax_func check_syntax[15]);
+static t_ecode_p	check_parens(t_token *list);
+static t_ecode_p	check_quotes(t_token *list);
 
 /**
  * @brief Processes syntax checks on the token list.
  *
- * Iterates through the token list and applies the corresponding syntax 
- * checks for each token. It first verifies that there are no more 
- * closing parentheses than opening ones. Then, it checks the balance of 
- * parentheses throughout the entire list and ensures that quotes are 
- * correctly opened and closed by invoking relevant syntax checking functions.
- * After processing all tokens, it checks for the presence of ampersands, 
- * as background process execution is not handled in this implementation.
+ * This function iterates through the token list within the shell structure
+ * and applies several syntax checks to ensure the command structure is valid.
+ * 
+ * - First, it verifies basic syntax rules by calling `process_syntax_checks`, 
+ *   which applies initial validation and updates `prev_token` as it progresses.
+ * - Next, it checks the balance of parentheses across the token list by invoking 
+ *   `check_parens`, which confirms that all opening parentheses have corresponding 
+ *   closing parentheses and are properly ordered.
+ * - It then checks for balanced quotes by calling `check_quotes`, ensuring that 
+ *   both single and double quotes end with the correct matching 
+ *   character (either `'` or `"`), confirming that quotes are properly paired 
+ *   before advancing to the append processing stage. This avoids syntax issues 
+ *   where a quote might be opened but left unclosed or mismatched.
+ * - Finally, it iterates through the entire list to detect any `AMPERSAND` tokens, 
+ *   as background process execution (signified by `&`) is unsupported in this shell 
+ *   implementation. If an ampersand is found, an error is returned.
+ *
+ * This syntax function ensures that each token list is fully validated before 
+ * proceeding to further parsing or execution stages.
  *
  * @param shell Pointer to the shell structure containing the token list.
- * @param prev_token Pointer to the previous token for syntax checks (not used).
+ * @param prev_token Pointer to the previous token for syntax checks (not used directly).
  * 
  * @return 
- * - PARSING_OK if successful, or an error code if any syntax issue is detected,
- *   including ERR_BG_PROCESS if an ampersand is found in the token list.
+ * - PARSING_OK if all syntax checks pass.
+ * - An error code if any syntax issue is detected, such as ERR_UNCLOSED_QUOTES,
+ *   ERR_UNMATCHED_PARENS, or ERR_BG_PROCESS if an ampersand is found.
  */
 t_ecode_p	syntax(t_shell *shell)
 {
@@ -62,7 +76,7 @@ t_ecode_p	syntax(t_shell *shell)
  * @return t_ecode_p PARSING_OK if successful, or an error code if any
  *         syntax issue is detected.
  */
-t_ecode_p	process_syntax_checks(t_shell *shell, t_token **prev_token)
+static t_ecode_p	process_syntax_checks(t_shell *shell, t_token **prev_token)
 {
 	t_token			*current_token;
 	t_syntax_func	check_syntax[15];
@@ -92,7 +106,7 @@ t_ecode_p	process_syntax_checks(t_shell *shell, t_token **prev_token)
  *
  * @param check_syntax Array of function pointers for syntax checking.
  */
-void	initialize_syntaxing_funcs(t_syntax_func check_syntax[15])
+static void	initialize_syntaxing_funcs(t_syntax_func check_syntax[15])
 {
 	check_syntax[0] = syntax_noop;
 	check_syntax[1] = syntax_noop;
@@ -132,7 +146,7 @@ void	initialize_syntaxing_funcs(t_syntax_func check_syntax[15])
  *         `ERR_PARSING_ERROR` if there are unmatched open parentheses, 
  *         or `PARSING_OK` if the parentheses are balanced.
  */
-t_ecode_p	check_parens(t_token *list)
+static t_ecode_p	check_parens(t_token *list)
 {
 	int		balance;
 	t_token	*cur_token;
@@ -156,16 +170,22 @@ t_ecode_p	check_parens(t_token *list)
  * @brief Checks for balanced quotes in the token list.
  *
  * Iterates through the token list to ensure that every opening quote 
- * (single or double) has a corresponding closing quote. If a token 
- * is found with an unmatched quote or if a quote token consists of 
- * only a single character, an error code is returned.
+ * (single or double) has a corresponding closing quote. Specifically,
+ * it verifies that the `str` attribute of each `SQUOTE` or `DQUOTE` token
+ * is enclosed with the correct closing character. If a token is found with
+ * an unmatched quote, or if a quote token consists of only a single character, 
+ * an error code is returned.
+ *
+ * This check should be performed before the append stage, where quote, word, 
+ * and environment variable tokens are concatenated. This ensures that the next stage 
+ * only processes fully validated tokens.
  *
  * @param list Pointer to the token list to check.
  * @return t_ecode_p PARSING_OK if all quotes are balanced, or an 
  *         error code (ERR_UNCLOSED_QUOTES) if any unmatched quotes 
  *         are found.
  */
-t_ecode_p	check_quotes(t_token *list)
+static t_ecode_p	check_quotes(t_token *list)
 {
 	t_token	*cur_token;
 	size_t	str_len;

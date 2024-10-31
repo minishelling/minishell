@@ -1,10 +1,10 @@
 #include "../../../include/minishell.h"
 
-void	free_token_list(t_token **list);
-void	free_token(t_token **token);
-void	free_cmd(t_cmd **cmd);
-void	free_args(char ***args);
-void	free_redir_list(t_redir **list);
+void		free_token_list(t_token **list);
+void		free_token(t_token **token);
+void		free_cmd(t_cmd **cmd);
+void		free_args(char ***args);
+static void	free_redir_list(t_redir **list);
 
 /**
  * @brief Frees a linked list of tokens.
@@ -101,7 +101,7 @@ void	free_args(char ***args)
  *
  * @param list Pointer to the head of the redirection list.
  */
-void	free_redir_list(t_redir **list)
+static void	free_redir_list(t_redir **list)
 {
 	t_redir	*temp_redir;
 

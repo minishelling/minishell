@@ -1,9 +1,33 @@
 #include "../../include/minishell.h"
 
-t_token	*get_matching_paren(t_token *start_token);
 t_token	*ignore_first_parens(t_token *start_token, t_token **end_token);
+t_token	*get_matching_paren(t_token *start_token);
 t_tree	*process_arith_expan(t_shell *shell, t_token *start_token, \
 	t_token *end_token);
+
+/**
+ * @brief Ignores the first set of parentheses in the token sequence.
+ *
+ * This function uses the get_matching_paren function to find the 
+ * matching closing parenthesis for the given opening parenthesis. 
+ * It sets the end_token to the token before the matching closing 
+ * parenthesis and returns the token following the opening parenthesis.
+ *
+ * @param start_token Pointer to the opening parenthesis token.
+ * @param end_token Pointer to a pointer for the last token, 
+ *                  set to the token before the matching closing parenthesis.
+ * @return Pointer to the token following the opening parenthesis.
+ */
+t_token	*ignore_first_parens(t_token *start_token, t_token **end_token)
+{
+	t_token	*matching_paren;
+
+	matching_paren = get_matching_paren(start_token);
+	start_token = start_token->next;
+	if (matching_paren)
+		*end_token = non_null_previous(start_token, matching_paren);
+	return (start_token);
+}
 
 /**
  * @brief Finds the matching closing parenthesis for a given opening parenthesis.
@@ -40,30 +64,6 @@ t_token	*get_matching_paren(t_token *start_token)
 }
 
 /**
- * @brief Ignores the first set of parentheses in the token sequence.
- *
- * This function uses the get_matching_paren function to find the 
- * matching closing parenthesis for the given opening parenthesis. 
- * It sets the end_token to the token before the matching closing 
- * parenthesis and returns the token following the opening parenthesis.
- *
- * @param start_token Pointer to the opening parenthesis token.
- * @param end_token Pointer to a pointer for the last token, 
- *                  set to the token before the matching closing parenthesis.
- * @return Pointer to the token following the opening parenthesis.
- */
-t_token	*ignore_first_parens(t_token *start_token, t_token **end_token)
-{
-	t_token	*matching_paren;
-
-	matching_paren = get_matching_paren(start_token);
-	start_token = start_token->next;
-	if (matching_paren)
-		*end_token = non_null_previous(start_token, matching_paren);
-	return (start_token);
-}
-
-/**
  * @brief Processes arithmetic expansions within parentheses.
  *
  * This function modifies the start and end tokens to signify they are 
@@ -78,8 +78,8 @@ t_token	*ignore_first_parens(t_token *start_token, t_token **end_token)
  * @return Pointer to the created leaf node representing the arithmetic 
  *         expansion.
  */
-t_tree	*process_arith_expan(t_shell *shell, t_token *start_token, \
-	t_token *end_token)
+t_tree	*process_arith_expan(t_shell *shell, \
+	t_token *start_token, t_token *end_token)
 {
 	if (safe_assign_str(&(start_token->str), "((") != SUCCESS \
 	|| safe_assign_str(&(end_token->str), "))") != SUCCESS)
