@@ -6,7 +6,8 @@ static t_ecode	handle_absolute_path(char *directory);
 static t_ecode	handle_relative_path(char *directory, char *cwd);
 
 /**
- * @brief Attempts to change the current directory based on the provided directory path.
+ * @brief Attempts to change the current directory
+ * 		  based on the provided directory path.
  * 
  * This function handles three types of paths: 
  * - Absolute paths (starting with '/')
