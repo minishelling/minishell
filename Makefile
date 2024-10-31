@@ -1,4 +1,3 @@
-
 NAME = minishell
 
 FLAGS = -Werror -Wall -Wextra -g
@@ -11,7 +10,6 @@ INCLUDE_DIR = include
 HEADER_FILES = $(INCLUDE_DIR)/minishell.h
 
 SRC_DIR		= src
-#SRCS_FILES	= $(shell find $(SRC_DIR) -iname "*.c")
 SRC_FILES = $(SRC_DIR)/main.c \
 				$(SRC_DIR)/signals.c \
 				$(BUILTINS_FILES) \
