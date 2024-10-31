@@ -39,15 +39,18 @@ char	*get_key_from_keyvalue(char *keyvalue)
 }
 
 /**
- * @brief Gets the value from a keyvalue string.
- * It extracts a substring of anything following a '=' character.
- * If there's nothing following a '=' char, then it returns an empty string.
+ * @brief Extracts the value portion of a key-value string.
  * 
- * @param keyvalue The keyvalue string to extract the value from.
- * @param value_ptr The ptr to the string where to store the value information.
+ * This function locates the '=' character in the key-value string and extracts 
+ * the substring following it. If there is no value after the '=', an empty 
+ * string is assigned to `value_ptr`.
  * 
- * @return An ERROR code if there is no value or if it fails to assign memory.
- * Returns SUCCESS otherwise.
+ * @param[in] keyvalue The key-value string from which to extract the value.
+ * @param[out] value_ptr A pointer to the string where the extracted value 
+ *                       will be stored.
+ * 
+ * @return An error code if the key-value string is invalid or memory allocation
+ *         fails. Returns SUCCESS on successful extraction and assignment.
  */
 t_ecode	get_value_from_keyvalue(char *keyvalue, char **value_ptr)
 {
@@ -79,14 +82,17 @@ t_ecode	get_value_from_keyvalue(char *keyvalue, char **value_ptr)
 }
 
 /**
- * @brief Finds an environment node by matching the key.
+ * @brief Finds an environment node by matching the specified key.
  * 
- * @param env The environment list head.
- * @param key The key that has to match the node's key.
+ * This function traverses the environment list to find a node with a key 
+ * matching the provided key parameter.
  * 
- * @return The environment node if it is found.
- * Returns NULL if it wasn't found or if either the head
- * or the key were NULL in the first place.
+ * @param[in] env The head node of the environment list.
+ * @param[in] key The key to match with the node's key.
+ * 
+ * @return The matching environment node if found. Returns NULL if a node 
+ *         with the given key does not exist or if either the head node or 
+ *         the key is NULL.
  */
 t_env	*find_env_node(t_env *env, char *key)
 {
@@ -112,12 +118,15 @@ t_env	*find_env_node(t_env *env, char *key)
 }
 
 /**
- * @brief Gets the last node of the environment list.
+ * @brief Retrieves the last node of the environment list.
  * 
- * @param head The head node of the environment list.
+ * This function traverses the environment list starting from the head node 
+ * and returns the last node in the list.
  * 
- * @return The last node of the env list,
- * or NULL if the head node was NULL.
+ * @param[in] head The head node of the environment list.
+ * 
+ * @return The last node of the environment list, or NULL if the head node 
+ *         is NULL.
  */
 t_env	*get_last_env_node(t_env *head)
 {
@@ -132,30 +141,36 @@ t_env	*get_last_env_node(t_env *head)
 }
 
 /**
- * @brief Gets the value of an environment node by passing the key
- * and the head node of the environment list.
+ * @brief Retrieves the value associated with a given key from the environment 
+ *        list.
  * 
- * @param env_head The head node of the environment list.
- * @param token_key The key that's used to find the correct node.
+ * This function iterates over an environment list to locate a node matching 
+ * the specified key. If found, it returns the value of that node; otherwise, 
+ * it returns NULL.
  * 
- * @return The value of the node if it was found. It returns
- * NULL if there's no environment list, the token key is NULL,
- * or if the node was not found.
+ * @param[in] env_list  The head node of the environment list.
+ * @param[in] token_key  The key used to find the corresponding environment 
+ *                       variable.
+ * 
+ * @return The value of the environment variable if found, or NULL if the 
+ *         environment list is NULL, the key is NULL or empty, or if no 
+ *         matching node is found.
  */
-char *get_env_value_from_key(t_env *env_list, char *token_key) 
+char	*get_env_value_from_key(t_env *env_list, char *token_key)
 {
 	t_env	*cur;
 	size_t	token_key_len;
 
-    if (!env_list || !token_key || !token_key[0])
-        return (NULL);
-    token_key_len = ft_strlen(token_key);
-    cur = env_list;
-    while (cur) {
-        if (token_key_len == ft_strlen(cur->key) &&
-            ft_strncmp(token_key, cur->key, token_key_len) == 0) 
-            	return (cur->value);
-        cur = cur->next;
-    }
-    return (NULL);
+	if (!env_list || !token_key || !token_key[0])
+		return (NULL);
+	token_key_len = ft_strlen(token_key);
+	cur = env_list;
+	while (cur)
+	{
+		if (token_key_len == ft_strlen(cur->key)
+			&& ft_strncmp(token_key, cur->key, token_key_len) == 0)
+			return (cur->value);
+		cur = cur->next;
+	}
+	return (NULL);
 }

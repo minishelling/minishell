@@ -36,7 +36,7 @@ char	*get_cmd_path(t_shell *shell, char *cmd_name)
 
 	if (!cmd_name || !cmd_name[0])
 		return (NULL);
-	if (!ft_strncmp(cmd_name, "./", 2) || cmd_name[0] == '/')
+	if (ft_ispath(cmd_name))
 		return (check_name_as_path(shell, cmd_name));
 	paths = NULL;
 	path_node = find_env_node(shell->env_list, "PATH");
@@ -81,14 +81,17 @@ static char	*check_name_as_path(t_shell *shell, char *cmd_name)
 
 	if (stat(cmd_name, &stat_buffer) != 0)
 	{
-		shell->exit_code = 0;
+		if (ft_ispath(cmd_name))
+			shell->exit_code = 0;
+		else
+			shell->exit_code = 127;
 		return (NULL);
 	}
 	if (access(cmd_name, F_OK) == 0)
 	{
 		if (S_ISDIR(stat_buffer.st_mode))
 			errno = EISDIR;
-		else if (access(cmd_name, X_OK) == 0)
+		else if (access(cmd_name, R_OK) == 0 && access(cmd_name, X_OK) == 0)
 			return (cmd_name);
 		shell->exit_code = 126;
 		return (NULL);

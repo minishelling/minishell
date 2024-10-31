@@ -1,18 +1,29 @@
 #include "../../../include/minishell.h"
 
 /**
- * @brief Change directory built-in.
- * It will attempt to change into the target directory.
- * If CDPATH is set that would take priority over the cwd.
- * It also supports absolute paths.
+ * @brief Change directory built-in command.
  * 
- * @param shell A pointer to the shell structure.
- * @param cmd_args An array of the command's arguments.
+ * This function attempts to change the current working directory to 
+ * the target directory specified in the command arguments. If the 
+ * `CDPATH` environment variable is set, it will take priority over 
+ * the current working directory (cwd). The function also supports 
+ * changing to home (`~`) and previous (`-`) directories, as well as 
+ * absolute paths.
  * 
- * @return If the change of directories and updating
- * OLDPWD and PWD is successful it returns SUCCESS.
- * Otherwise it returns an error code, and if neccessary
- * prints an error message.
+ * @param[in] shell A pointer to the shell structure.
+ * @param[in] cmd_args An array of command arguments, where the 
+ *                     first argument is expected to be the command 
+ *                     itself and the second is the target directory.
+ * 
+ * @return On success, returns SUCCESS after updating `OLDPWD` and 
+ *         `PWD` environment variables. On failure, returns an error 
+ *         code and, if necessary, prints an appropriate error message.
+ * 
+ * @note The function handles cases such as:
+ *       - No arguments provided
+ *       - Too many arguments
+ *       - Changing to home or previous directories
+ *       - Resolving paths via `CDPATH`.
  */
 t_ecode	cd_builtin(t_shell *shell, char **cmd_args)
 {

@@ -1,5 +1,6 @@
 #include "../../include/minishell.h"
 
+int			executor(t_shell *shell, t_cmd *cmd);
 static void	handle_non_builtin(t_shell *shell, t_cmd *cmd);
 static void	handle_redirs_in_child(t_shell *shell, t_cmd *cmd);
 static void	run_child(t_shell *shell, t_cmd *cmd);
@@ -59,22 +60,31 @@ int	executor(t_shell *shell, t_cmd *cmd)
 }
 
 /**
- * @brief Forks the process to execute a non-built-in cmd in the child process.
+ * @brief Forks the current process to execute a non-built-in command 
+ * in a child process.
  * 
- * This function creates a new process using `fork()`. In the child process,
- * it executes the specified command. The parent process waits for the 
- * child process to terminate, captures the child's exit code, and performs 
- * necessary cleanup operations, including freeing memory and closing file 
- * descriptors.
+ * This function forks the shell process to create a child process
+ * for executing commands that are not built-in. In the child process, 
+ * `run_child` is called to set up and execute the command.
+ * If the command cannot be found or executed, appropriate error messages 
+ * are printed, and the child exits with the corresponding failure code.
  * 
- * @param shell A pointer to the shell structure.
- * @param cmd A pointer to the command structure that holds the command's 
- *            arguments and related information.
+ * In the parent process, it waits for the child to complete, captures 
+ * the exit status, and closes open file descriptors associated with the command.
+ * 
+ * @param[in] shell Pointer to the shell structure.
+ * @param[in] cmd Pointer to the command structure containing the 
+ *                command's arguments and related information.
  * 
  * @return void
  * 
- * @note If the `fork()` call fails, the function calls `clean_nicely_and_exit()`
- *       to handle cleanup and exit the program with a failure code.
+ * @note If the `fork()` call fails, the function calls 
+ * `clean_nicely_and_exit()` to handle cleanup and exits the program.
+ * 
+ * @note In the child process, if the command is identified as a path
+ *       and cannot be found or accessed, the function distinguishes 
+ *       between “file not found” and “permission denied” errors and 
+ *       sets the exit code accordingly.
  */
 static void	handle_non_builtin(t_shell *shell, t_cmd *cmd)
 {
@@ -82,31 +92,38 @@ static void	handle_non_builtin(t_shell *shell, t_cmd *cmd)
 	if (shell->parent == -1)
 		clean_nicely_and_exit(shell, EXIT_FAILURE);
 	else if (!shell->parent)
+	{
 		run_child(shell, cmd);
+		if (access(cmd->args[0], F_OK) != 0 && ft_ispath(cmd->args[0]))
+			handle_cmd_err(shell, cmd, strerror(ENOENT));
+		else if (access(cmd->args[0], F_OK) == 0 && ft_ispath(cmd->args[0]))
+			handle_cmd_err(shell, cmd, strerror(errno));
+		else
+			handle_cmd_err(shell, cmd, "command not found");
+		clean_nicely_and_exit(shell, EXIT_CMD_NOT_FOUND);
+	}
 	do_parent_duties(shell, cmd);
 }
 
 /**
- * @brief Executes the current command in a child process.
+ * @brief Executes the specified command in a child process.
  * 
- * This function handles signal initialization, input/output 
- * redirections, and retrieves the executable file path for 
- * the command. It also prepares the environment variables 
- * required for executing the command. 
+ * Initializes signal handling, performs I/O redirection,
+ * retrieves the path of the executable file, and sets up the environment
+ * variables needed for the command's execution.
  * 
- * If the command cannot be executed, it handles the error 
- * by printing an appropriate message and exiting with a 
- * relevant exit code.
+ * If the executable path cannot be determined or accessed, 
+ * it handles this error by printing an error message in the calling 
+ * function and exiting with an appropriate error code.
  * 
- * @param shell A pointer to the shell structure.
- * @param cmd A pointer to the command structure that holds 
- *            the command's arguments and related information.
+ * @param[in] shell Pointer to the shell structure.
+ * @param[in] cmd Pointer to the command structure containing
+ *                the command's arguments and metadata.
  * 
  * @return void
  * 
- * @note If an error occurs during execution, the function will
- *       print an error message and exit the program with an 
- *       appropriate exit code.
+ * @note If an error occurs during execution setup, the function 
+ *       exits the child process with the appropriate exit code.
  */
 static void	run_child(t_shell *shell, t_cmd *cmd)
 {
@@ -116,7 +133,6 @@ static void	run_child(t_shell *shell, t_cmd *cmd)
 	cmd_path = NULL;
 	init_signals(CHILD_NON_INTERACTIVE);
 	handle_redirs_in_child(shell, cmd);
-	cmd_path = NULL;
 	if (cmd && cmd->args)
 		cmd_path = get_cmd_path(shell, cmd->args[0]);
 	if (!cmd_path && shell->exit_code != 0)
@@ -127,13 +143,9 @@ static void	run_child(t_shell *shell, t_cmd *cmd)
 	env_array = create_env_array(shell->env_list);
 	if (cmd_path)
 		execve(cmd_path, cmd->args, env_array);
-	ft_free((void **) &cmd_path);
+	if (ft_strncmp(cmd->args[0], cmd_path, ft_strlen(cmd_path)))
+		ft_free((void **) &cmd_path);
 	ft_free_2d((void ***) &env_array);
-	if (!ft_strncmp(cmd->args[0], "./", 2) || cmd->args[0][0] == '/')
-		handle_cmd_err(shell, cmd, strerror(ENOENT));
-	else
-		handle_cmd_err(shell, cmd, "command not found");
-	clean_nicely_and_exit(shell, EXIT_CMD_NOT_FOUND);
 }
 
 /**

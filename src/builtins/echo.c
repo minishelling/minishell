@@ -2,17 +2,25 @@
 
 static void	print_echo_chars(char **strs_arr, bool no_newline);
 static int	newline_option(char *option_arg);
+static int	skip_newline_options(char **cmd_args);
 
 /**
- * @brief Prints the arguments provided, with the option
- * to not print a trailing newline character at the end.
+ * @brief Prints the arguments provided to standard output, with 
+ * an option to omit a trailing newline.
  * 
- * @param shell A pointer to the shell structure.
- * @param cmd_args The command arguments, containing the function name,
- * the option, and the strings to be printed.
+ * This function replicates the behavior of the `echo` command. If 
+ * the first argument after the command name is the option `-n`, 
+ * it omits the newline character at the end of the output.
  * 
- * @return If the cmd_args variable is NULL it returns FAILURE.
- * Returns SUCCESS otherwise.
+ * @param[in] shell A pointer to the shell structure. (Unused in this function)
+ * @param[in] cmd_args The command arguments as an array of strings. The first
+ *                     element is the command name, followed by optional flags
+ *                     and strings to print.
+ * 
+ * @return Returns `FAILURE` if `cmd_args` is NULL, `SUCCESS` otherwise.
+ * 
+ * @note If the `-n` option is specified one or more times after the 
+ *       command name, the function omits the newline at the end of the output.
  */
 t_ecode	echo_builtin(t_shell *shell, char **cmd_args)
 {
@@ -30,7 +38,7 @@ t_ecode	echo_builtin(t_shell *shell, char **cmd_args)
 	if (cmd_args[1] && newline_option(cmd_args[1]))
 	{
 		no_newline = true;
-		strs_arr = &cmd_args[2];
+		strs_arr = &cmd_args[skip_newline_options(cmd_args)];
 	}
 	else
 	{
@@ -42,11 +50,21 @@ t_ecode	echo_builtin(t_shell *shell, char **cmd_args)
 }
 
 /**
- * @brief Prints all the characters of the echo arguments,
- * except the newline option argument, and the '\' characters.
- * @param strs_arr An array with the strings to be printed.
- * @param no_newline The boolean variable that indicates if no newline
- * will be printed by the end of printing all the strings.
+ * @brief Prints all characters of the provided echo arguments,
+ *        except for backslashes (`\`) and handles the optional
+ *        newline character at the end of the output.
+ * 
+ * This function iterates through each string in the `strs_arr` array
+ * and prints each character to standard output. It replaces the newline 
+ * at the end of the output based on the `no_newline` flag.
+ * 
+ * @param[in] strs_arr An array of strings containing the characters
+ *                     to be printed. Each string is treated 
+ *                     separately, and spaces are added between 
+ *                     strings.
+ * @param[in] no_newline A boolean value indicating whether to omit 
+ *                       the newline character after printing all strings.
+ * 
  * @return void
  */
 static void	print_echo_chars(char **strs_arr, bool no_newline)
@@ -73,13 +91,18 @@ static void	print_echo_chars(char **strs_arr, bool no_newline)
 }
 
 /**
- * @brief Checks if the newline option is activated,
- * if it is it wouldn't print a newline character at the end.
- * @param option_arg The first argument of the echo command,
- * to be checked if it is a valid newline option.
- * @return If the option argument is valid, it returns 1
- * which will trigger the no_newline boolean in the echo builtin.
- * If the option isn't valid it returns 0.
+ * @brief Checks if the newline option is activated for the echo command.
+ * 
+ * This function examines the first argument of the echo command to determine 
+ * whether it specifies the `-n` option, which indicates that a newline 
+ * character should not be printed at the end of the output. 
+ * 
+ * @param[in] option_arg The first argument of the echo command to be checked 
+ *                       for the newline option.
+ * 
+ * @return Returns 1 if the option argument is valid (i.e., it starts with 
+ *         `-n` and has no other characters); returns 0 if the option is 
+ *         not valid or if it does not conform to the expected format.
  */
 static int	newline_option(char *option_arg)
 {
@@ -99,4 +122,45 @@ static int	newline_option(char *option_arg)
 		return (1);
 	}
 	return (0);
+}
+
+/**
+ * @brief Skips any newline option arguments in the echo command.
+ * 
+ * This function iterates through the command arguments starting from the 
+ * first argument after the command name. It identifies and counts 
+ * consecutive arguments that are valid newline options (i.e., those 
+ * starting with `-n` followed solely by `n` characters). 
+ * The function returns the index of the first non-newline option argument.
+ * 
+ * @param[in] cmd_args An array of command arguments provided to the 
+ *                     echo command.
+ * 
+ * @return Returns the index of the first argument that is not a valid 
+ *         newline option, or the index of the end of the arguments if 
+ *         all are newline options.
+ */
+static int	skip_newline_options(char **cmd_args)
+{
+	size_t	i;
+	size_t	j;
+
+	i = 1;
+	while (cmd_args[i])
+	{
+		if (!ft_strncmp(cmd_args[i], "-n", 2))
+		{
+			j = 2;
+			while (cmd_args[i][j])
+			{
+				if (cmd_args[i][j] != 'n')
+					return (i);
+				j++;
+			}
+			i++;
+		}
+		else
+			return (i);
+	}
+	return (i);
 }

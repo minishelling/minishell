@@ -1,17 +1,22 @@
 #include "../../../include/minishell.h"
 
 /**
- * @brief Updates the PWD and OLDPWD environment nodes
- * with the new values.
+ * @brief Updates the PWD and OLDPWD environment nodes with new values.
  * 
- * @param env_list A double pointer to the environment list.
- * @param cwd The cwd string that holds the value of OLDPWD,
- * and that's going to be updated with the value of PWD.
+ * This function sets the OLDPWD environment variable to the current 
+ * working directory (cwd) and updates the cwd to reflect the new PWD 
+ * environment variable. If any update fails, it prints an error message 
+ * and returns a failure code.
  * 
- * @return It returns an error code in the case of a NULL env list,
- * or in the case that it fails to update OLDPWD or PWD,
- * while also printing an error message.
- * Returns SUCCESS if it succeeds in updating both OLDPWD and PWD.
+ * @param[in,out] env_list A double pointer to the environment list.
+ * @param[in,out] cwd A string representing the current working directory 
+ *                    (cwd). It initially holds the value for OLDPWD and 
+ *                    is updated with the new PWD value.
+ * 
+ * @return Returns SUCCESS if both OLDPWD and PWD are successfully updated. 
+ * Returns NULL_ERROR if the environment list is NULL, or FAILURE if it 
+ * fails to update OLDPWD or PWD, while printing an error message in either 
+ * case.
  */
 t_ecode	update_oldpwd_pwd(t_env **env_list, char *cwd)
 {
@@ -32,13 +37,20 @@ t_ecode	update_oldpwd_pwd(t_env **env_list, char *cwd)
 }
 
 /**
- * @brief Returns the path to home,
- * retrieved from the original HOME environment variable.
+ * @brief Retrieves the path to the home directory from the HOME 
+ * environment variable, reconstructing it from the initial segments.
+ * 
+ * The function attempts to split the HOME path by '/' and then constructs 
+ * a new string using the first two components, resulting in a path with the 
+ * format "/user/home". If memory allocation fails or HOME is not defined, 
+ * it returns NULL.
  * 
  * @param void
  * 
- * @return A string containing the path to home,
- * or NULL if it doesn't exist or if there was a malloc failure.
+ * @return A string containing the reconstructed path to home, or NULL if 
+ * the HOME variable is not set or if a memory allocation error occurs.
+ * 
+ * @note The caller is responsible for freeing the returned string.
  */
 char	*get_home(void)
 {
@@ -70,15 +82,15 @@ char	*get_home(void)
 }
 
 /**
- * @brief Checks whether a directory string
- * has a valid prefix to go into cdpath.
- * A valid prefix is a directory that does not start with:
- * '/' '.' '..' or '~'.
+ * @brief Checks if a directory string has a valid prefix for CDPATH usage.
  * 
- * @param directory The directory string.
+ * A valid prefix for CDPATH is a directory that does not begin with any of 
+ * the following characters or sequences: '/', '.', '..', or '~'.
  * 
- * @return True if the directory doesn't start with any of these characters.
- * False if it does.
+ * @param[in] directory The directory string to check.
+ * 
+ * @return True if the directory has a valid prefix for CDPATH.
+ *         False if it starts with an invalid prefix.
  */
 bool	has_cdpath_prefix(char *directory)
 {
@@ -89,13 +101,17 @@ bool	has_cdpath_prefix(char *directory)
 }
 
 /**
- * @brief Checks access of curpath with F_OK and X_OK.
+ * @brief Checks the accessibility of the specified path.
  * 
- * @param curpath The current path variable.
- * @return If the directory was not found it returns FAILURE
- * and errno is set accordingly. If the directory was found
- * but is not executable/accessible, it also returns FAILURE
- * and errno is set accordingly. Otherwise it returns SUCCESS. 
+ * This function verifies if the given path exists and if it is executable.
+ * It uses the `access` system call to check for the presence of the path 
+ * (using `F_OK`) and to check if the path can be executed (using `X_OK`).
+ * 
+ * @param[in] curpath The current path to check for accessibility.
+ * 
+ * @return SUCCESS if the path exists and is executable.
+ *         FAILURE if the path does not exist or is not executable, 
+ *         with errno set accordingly to indicate the error.
  */
 t_ecode	check_curpath_access(char *curpath)
 {
