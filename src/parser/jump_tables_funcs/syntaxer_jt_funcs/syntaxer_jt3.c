@@ -10,18 +10,18 @@ t_ecode_p			syntax_env_var(t_token *prev_token, t_token *cur_token, \
 	int *par_count);
 
 /**
- * @brief Handles syntax checking for redirection tokens.
+ * @brief Checks syntax validity for redirection tokens.
  *
- * This function checks the token following a redirection operator (e.g., 
- * `>`, `>>`, `<`, `<<`) to ensure it is valid. If the next token is an 
- * environment variable following a here-document operator (`<<`), it 
- * is treated as a regular word.
+ * Verifies that the token following a redirection operator (`>`, `>>`, 
+ * `<`, `<<`) is valid. If the next token is an environment variable 
+ * following a here-document (`<<`), it is treated as a regular word.
  *
- * @param prev_token Pointer to the previous token (not used in this function).
- * @param cur_token Pointer to the current token, which should be a redirection token.
- * @param par_count Pointer to the integer tracking the count of open parentheses (not used).
- * @return An error code indicating the result of the operation, or 
- *         PARSING_OK if the syntax is valid.
+ * @param prev_token Pointer to the previous token (unused here).
+ * @param cur_token Pointer to the current token, expected to be a 
+ *                  redirection token.
+ * @param par_count Pointer to the integer tracking open parentheses 
+ *                  count (unused here).
+ * @return Error code if invalid, or PARSING_OK if syntax is valid.
  */
 t_ecode_p	syntax_redir(t_token *prev_token, t_token *cur_token, \
 	int *par_count)
@@ -48,26 +48,23 @@ t_ecode_p	syntax_redir(t_token *prev_token, t_token *cur_token, \
 /**
  * @brief Validates the token following a redirection operator.
  *
- * This function checks the token that comes after a redirection operator. 
- * This token is expected to hold the file name or the heredoc delimiter. 
- * The function validates the syntax and returns appropriate error codes 
- * for specific tokens that are not allowed immediately following a redirection. 
- * If the token is a quote, it removes the surrounding quotes and updates 
- * the token's ID to WORD.
+ * Checks the token after a redirection operator, expected to hold a 
+ * file name or heredoc delimiter. Validates syntax and returns error 
+ * codes for tokens not allowed immediately following a redirection. 
+ * If the token is a quote, removes surrounding quotes and updates 
+ * token's ID to WORD.
  *
- * @param after_redir_token Pointer to the token that follows the redirection token.
- * @return An error code indicating the result of the validation. Possible 
- *         return values include:
- *         - ERR_SYNTAX_PIPE: if the next token is a pipe.
- *         - ERR_SYNTAX_AND: if the next token is an AND operator.
- *         - ERR_SYNTAX_OR: if the next token is an OR operator.
- *         - ERR_SYNTAX_OPEN_PAR: if the next token is an open parenthesis.
- *         - ERR_SYNTAX_CLOSE_PAR: if the next token is a close parenthesis.
- *         - ERR_SYNTAX_REDIR: if the next token is another redirection operator.
- *         - ERR_SYNTAX_AMPER: if the next token is an ampersand.
- *         - ERR_MEM: if there is a memory allocation error while 
- *           removing quotes.
- *         - PARSING_OK: if the syntax is valid.
+ * @param after_redir_token Pointer to the token after redirection.
+ * @return Error code indicating validation result, possible values:
+ *         - ERR_SYNTAX_PIPE: if next token is a pipe.
+ *         - ERR_SYNTAX_AND: if next token is an AND operator.
+ *         - ERR_SYNTAX_OR: if next token is an OR operator.
+ *         - ERR_SYNTAX_OPEN_PAR: if next token is an open parenthesis.
+ *         - ERR_SYNTAX_CLOSE_PAR: if next token is a close parenthesis.
+ *         - ERR_SYNTAX_REDIR: if next token is another redirection.
+ *         - ERR_SYNTAX_AMPER: if next token is an ampersand.
+ *         - ERR_MEM: if memory allocation error while removing quotes.
+ *         - PARSING_OK: if syntax is valid.
  */
 static t_ecode_p	handle_token_after_redir(t_token *after_redir_token)
 {
@@ -104,16 +101,14 @@ static t_ecode_p	remove_delimiter_quotes(t_token *delimiter_token)
 /**
  * @brief Removes surrounding quotes from a token's string.
  *
- * This function modifies the specified token by removing the leading 
- * and trailing characters that act as delimiters. The token's ID is 
- * updated to WORD after the quotes are removed. The function allocates 
- * a new string for the token's content, and if the memory allocation 
- * fails, it returns an error code.
+ * Modifies the specified token by removing leading and trailing quote 
+ * delimiters. Sets token's ID to WORD after removing quotes. Allocates a 
+ * new string for token content; returns an error if allocation fails.
  *
- * @param delimiter_token Pointer to the token from which quotes are to be removed.
- * @return An error code indicating the result of the operation:
- *         - ERR_MEM: if there is a memory allocation error.
- *         - PARSING_OK: if the operation was successful.
+ * @param delimiter_token Pointer to the token to remove quotes from.
+ * @return Error code for operation result:
+ *         - ERR_MEM: if memory allocation fails.
+ *         - PARSING_OK: if successful.
  */
 t_ecode_p	syntax_quote(t_token *prev_token, t_token *cur_token, \
 	int *par_count)

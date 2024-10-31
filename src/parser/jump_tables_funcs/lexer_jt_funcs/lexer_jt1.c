@@ -54,7 +54,7 @@ t_ecode_p	advance_pos_pipe(char *str, size_t *pos, t_token_id *token_id)
 /**
  * @brief Advances the position through AND operator tokens.
  *
- * This function checks for the "&&" operator and advances the position accordingly.
+ * Checks for the "&&" operator and advances the position accordingly.
  *
  * @param str The input string.
  * @param pos A pointer to the current position in the string.
@@ -75,7 +75,7 @@ t_ecode_p	advance_pos_and_operator(char *str, size_t *pos, \
 /**
  * @brief Advances the position through parentheses.
  *
- * This function checks for opening or closing parentheses and advances the position.
+ * Checks for opening or closing parentheses and advances the position.
  *
  * @param str The input string.
  * @param pos A pointer to the current position in the string.
@@ -96,7 +96,7 @@ t_ecode_p	advance_pos_parens(char *str, size_t *pos, t_token_id *token_id)
 /**
  * @brief Advances the position through redirection tokens.
  *
- * This function counts and advances the position for up to two redirection tokens.
+ * Counts and advances the position for up to two redirection tokens.
  *
  * @param str The input string.
  * @param pos A pointer to the current position in the string.

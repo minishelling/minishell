@@ -170,21 +170,23 @@ static t_ecode_p	check_parens(t_token *list)
  * @brief Checks for balanced quotes in the token list.
  *
  * Iterates through the token list to ensure that every opening quote 
- * (single or double) has a corresponding closing quote. Specifically,
- * it verifies that the `str` attribute of each `SQUOTE` or `DQUOTE` token
- * is enclosed with the correct closing character. If a token is found with
- * an unmatched quote, or if a quote token consists of only a single character, 
- * an error code is returned.
+ * (single or double) has a corresponding closing quote. It verifies 
+ * that the `str` attribute of each `SQUOTE` or `DQUOTE` token is 
+ * enclosed with the correct closing character. If a token is found 
+ * with an unmatched quote, or if a quote token consists of only a 
+ * single character, an error code is returned.
  *
- * This check should be performed before the append stage, where quote, word, 
- * and environment variable tokens are concatenated. This ensures that the next stage 
- * only processes fully validated tokens.
+ * This check should be performed before the append stage, where 
+ * quote, word, and environment variable tokens are concatenated. 
+ * This ensures that the next stage only processes fully validated 
+ * tokens.
  *
  * @param list Pointer to the token list to check.
  * @return t_ecode_p PARSING_OK if all quotes are balanced, or an 
  *         error code (ERR_UNCLOSED_QUOTES) if any unmatched quotes 
  *         are found.
  */
+
 static t_ecode_p	check_quotes(t_token *list)
 {
 	t_token	*cur_token;

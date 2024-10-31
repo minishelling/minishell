@@ -150,16 +150,20 @@ static t_token	*find_last_log_op_token_nip(t_token *list, t_token *end_token)
 /**
  * @brief Initializes a leaf node for a command in the Abstract Syntax Tree (AST).
  *
- * This function allocates memory for a new leaf node and initializes it 
- * with the specified command token information. The leaf node represents 
- * a command in the AST, storing the start and end tokens of the command. 
- * The left and right child pointers of the node are initialized to NULL, 
- * indicating that this is a leaf node with no further branches.
+ * This function allocates memory for a new leaf node and initializes 
+ * it with the specified command token information. The leaf node 
+ * represents a command in the AST, storing the start and end tokens 
+ * of the command. The left and right child pointers of the node are 
+ * initialized to NULL, indicating that this is a leaf node with no 
+ * further branches.
  *
  * @param shell Pointer to the shell context for error handling.
- * @param start_token Pointer to the token that marks the beginning of the command.
- * @param end_token Pointer to the token that marks the end of the command.
- * @return Pointer to the newly initialized leaf node, or exits if memory allocation fails.
+ * @param start_token Pointer to the token that marks the beginning 
+ *                    of the command.
+ * @param end_token Pointer to the token that marks the end of the 
+ *                  command.
+ * @return Pointer to the newly initialized leaf node, or exits if 
+ *         memory allocation fails.
  */
 t_tree	*init_leaf_node(t_shell *shell, t_token *start_token, \
 	t_token *end_token)
@@ -193,7 +197,7 @@ t_tree	*init_leaf_node(t_shell *shell, t_token *start_token, \
  * @param shell Pointer to the shell context for error handling.
  * @param op_token Pointer to the token representing the operator.
  * @return Pointer to the newly initialized tree node, or exits if memory 
- * allocation fails or if the operator token is NULL.
+ *         allocation fails or if the operator token is NULL.
  */
 static t_tree	*init_tree_node(t_shell *shell, t_token *op_token)
 {

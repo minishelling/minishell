@@ -58,23 +58,20 @@ t_token	*get_after_matching_arith_expan(t_token *first_arith_expan_token)
 }
 
 /**
- * @brief Finds the token immediately preceding the specified token in the list.
+ * @brief Finds the token immediately preceding the specified token.
  *
- * This function traverses the linked list of tokens to locate the token 
- * that comes before the specified token (`before_what`). It returns the 
- * found token or the first token in the list if the specified token 
- * is not found.
+ * Traverses the token list to locate the token that comes before 
+ * `before_what`. Returns the preceding token or the first token if 
+ * `before_what` is not found.
  *
- * This function is used to find the end token of the left-side portion 
- * of a logical operation in the `make_tree` function. It also helps 
- * determine the end token after ignoring the first parentheses, and 
- * assists in deciding the nature of the syntax message if there are 
- * more open parentheses than close parentheses.
+ * Used to find the end token of the left side in a logical operation 
+ * for `make_tree`, locate the end token after ignoring initial 
+ * parentheses, and determine syntax message nature when open 
+ * parentheses outnumber close ones.
  *
- * @param list Pointer to the head of the token list.
- * @param before_what Pointer to the token for which the preceding token is sought.
- * @return Pointer to the token preceding `before_what`, or the first token 
- *         in the list if `before_what` is not found.
+ * @param list Pointer to the token list head.
+ * @param before_what Token to find the preceding token for.
+ * @return Preceding token or first token if `before_what` not found.
  */
 t_token	*non_null_previous(t_token *list, t_token *before_what)
 {

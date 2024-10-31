@@ -127,22 +127,21 @@ t_ecode_p	syntax_ampersand(t_token *prev_token, t_token *cur_token, \
 /**
  * @brief Processes syntax checks for logical OR operators.
  *
- * This function verifies the syntax surrounding a logical OR operator
- * in the token list. It ensures that the preceding token is valid 
- * and checks that the next token does not produce any syntax errors 
- * associated with operators or parentheses.
+ * Verifies the syntax surrounding a logical OR operator in the token list.
+ * Ensures that the preceding token is valid and checks that the next 
+ * token does not cause syntax errors with operators or parentheses.
  *
  * @param prev_token Pointer to the previous token for syntax checks.
- * @param cur_token Pointer to the current token being processed.
- * @param par_count Pointer to the count of parentheses (not used in this implementation).
+ * @param cur_token Pointer to the current token (OR operator).
+ * @param par_count Pointer to parentheses count (unused here).
  *
  * @return 
- * - PARSING_OK if the syntax is valid, 
- * - ERR_SYNTAX_OR if the syntax indicates an error with the OR operator, 
- * - ERR_SYNTAX_AND for issues with AND operators, 
- * - ERR_SYNTAX_PIPE for issues with PIPE tokens, 
- * - ERR_SYNTAX_CLOSE_PAR for issues with closing parentheses, 
- * - ERR_SYNTAX_AMPER if an ampersand is found.
+ * - PARSING_OK if syntax is valid,
+ * - ERR_SYNTAX_OR for errors with OR operator,
+ * - ERR_SYNTAX_AND for errors with AND operators,
+ * - ERR_SYNTAX_PIPE for errors with PIPE tokens,
+ * - ERR_SYNTAX_CLOSE_PAR for errors with closing parentheses,
+ * - ERR_SYNTAX_AMPER if ampersand is found.
  */
 t_ecode_p	syntax_or_opr(t_token *prev_token, t_token *cur_token, \
 	int *par_count)
@@ -171,22 +170,21 @@ t_ecode_p	syntax_or_opr(t_token *prev_token, t_token *cur_token, \
 /**
  * @brief Processes syntax checks for pipe operators.
  *
- * This function verifies the syntax surrounding a pipe operator in the 
- * token list. It ensures that the preceding token is valid and checks 
- * that the next token does not produce any syntax errors associated 
- * with operators or parentheses.
+ * Verifies syntax surrounding a pipe operator in the token list. 
+ * Ensures the preceding token is valid and checks that the next token 
+ * does not cause syntax errors with operators or parentheses.
  *
  * @param prev_token Pointer to the previous token for syntax checks.
- * @param cur_token Pointer to the current token being processed.
- * @param par_count Pointer to the count of parentheses (not used in this implementation).
+ * @param cur_token Pointer to the current token (pipe operator).
+ * @param par_count Pointer to parentheses count (unused here).
  *
  * @return 
- * - PARSING_OK if the syntax is valid,
- * - ERR_SYNTAX_PIPE if there is an error with the pipe operator,
- * - ERR_SYNTAX_AND for issues with AND operators,
- * - ERR_SYNTAX_OR for issues with OR operators,
- * - ERR_SYNTAX_CLOSE_PAR for issues with closing parentheses,
- * - ERR_SYNTAX_AMPER if an ampersand is found.
+ * - PARSING_OK if syntax is valid,
+ * - ERR_SYNTAX_PIPE for errors with pipe operator,
+ * - ERR_SYNTAX_AND for errors with AND operators,
+ * - ERR_SYNTAX_OR for errors with OR operators,
+ * - ERR_SYNTAX_CLOSE_PAR for errors with closing parentheses,
+ * - ERR_SYNTAX_AMPER if ampersand is found.
  */
 t_ecode_p	syntax_pipe(t_token *prev_token, t_token *cur_token, int *par_count)
 {

@@ -218,15 +218,6 @@ typedef struct s_shell
 
 extern int	g_signalcode;
 
-// ================ FUNCTION POINTERS ================ //
-
-typedef t_ecode_p \
-			(*t_lexer_func)(char *str, size_t *pos, t_token_id *token_id);
-typedef t_ecode_p \
-			(*t_syntax_func)(t_token *prev, t_token *cur, int *par_count);
-typedef t_ecode_p \
-			(*t_parser_func)(t_cmd *cmd, t_token *token);
-
 // ================ TOKENIZATION ================ //
 
 t_ecode_p	tokenize(t_shell *shell, char *input);
@@ -240,6 +231,8 @@ t_token		*get_after_matching_arith_expan(t_token *token);
 
 // TOKENIZATION JUMP TABLE
 
+typedef t_ecode_p \
+			(*t_lexer_func)(char *str, size_t *pos, t_token_id *token_id);
 t_ecode_p	advance_pos_quote(char *str, size_t *pos, t_token_id *token_id);
 t_ecode_p	advance_pos_parens(char *str, size_t *pos, t_token_id *token_id);
 t_ecode_p	advance_pos_redir(char *str, size_t *pos, t_token_id *token_id);
@@ -255,6 +248,8 @@ t_ecode_p	advance_pos_and_operator(char *str, size_t *pos, \
 t_ecode_p	syntax(t_shell *shell);
 
 // SYNTAX JUMP TABLE
+typedef t_ecode_p \
+			(*t_syntax_func)(t_token *prev, t_token *cur, int *par_count);
 t_ecode_p	syntax_pipe(t_token *prev_token, t_token *cur_token, \
 	int *par_count);
 t_ecode_p	syntax_and_opr(t_token *prev_token, t_token *cur_token, \
@@ -308,6 +303,8 @@ void		make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token, \
 t_cmd		*new_cmd(void);
 
 // PARSING JUMP TABLE
+typedef t_ecode_p \
+			(*t_parser_func)(t_cmd *cmd, t_token *token);
 t_ecode_p	parser_redir(t_cmd *cmd, t_token *token);
 t_ecode_p	parser_arith_expan(t_cmd *cmd_node, t_token *token);
 t_ecode_p	parser_add_env_var(t_cmd *cmd, t_token *token);

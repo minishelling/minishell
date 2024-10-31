@@ -9,18 +9,20 @@ t_ecode_p			parser_add_new_arg(t_cmd *cmd, t_token *token);
 /**
  * @brief Parses redirection tokens and adds them to the command.
  *
- * This function processes a redirection token and associates it with
- * the appropriate file. It checks for memory allocation errors and 
- * validates the syntax of the redirection file name before adding it 
- * to the command's redirection list.
+ * Processes a redirection token and associates it with the 
+ * appropriate file. It checks for memory allocation errors and 
+ * validates the syntax of the redirection file name before adding 
+ * it to the command's redirection list.
  *
- * @param cmd Pointer to the command structure where the redirection will be stored.
+ * @param cmd Pointer to the command structure where the redirection 
+ *            will be stored.
  * @param token Pointer to the redirection token being processed.
  *
  * @return 
- * - PARSING_OK if the redirection is successfully parsed and added,
+ * - PARSING_OK if redirection is successfully parsed and added,
  * - ERR_MEM if memory allocation fails,
- * - ERR_SYNTAX_ERROR if the redirection file name is invalid (e.g., starts with '|', '&', ';', '(', or ')').
+ * - ERR_SYNTAX_ERROR if the redirection file name is invalid 
+ *   (e.g., starts with '|', '&', ';', '(', or ')').
  */
 t_ecode_p	parser_redir(t_cmd *cmd, t_token *token)
 {
@@ -143,14 +145,16 @@ t_ecode_p	parser_arith_expan(t_cmd *cmd_node, t_token *token)
 /**
  * @brief Adds a new argument to the command's argument list.
  *
- * This function appends a new argument, based on the token's string
- * value, to the command structure. It is used specifically for tokens 
- * of type `SQUOTE`, `DQUOTE`, and `WORD`, which represent quoted 
- * or unquoted argument values.
+ * Appends a new argument, based on the token's string value, to the 
+ * command structure. This function is used for tokens of type 
+ * `SQUOTE`, `DQUOTE`, and `WORD`, representing quoted or unquoted 
+ * argument values.
  *
- * @param cmd Pointer to the command structure where the argument will be added.
- * @param token Pointer to the token containing the argument string to add.
- * @return Error code `PARSING_OK` if successful, or `ERR_MEM` if memory allocation fails.
+ * @param cmd Pointer to the command structure where the argument is 
+ *            added.
+ * @param token Pointer to the token containing the argument string.
+ * @return Error code `PARSING_OK` if successful, or `ERR_MEM` if 
+ *         memory allocation fails.
  */
 t_ecode_p	parser_add_new_arg(t_cmd *cmd, t_token *token)
 {

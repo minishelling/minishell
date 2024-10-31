@@ -1,7 +1,7 @@
 #include "../../include/minishell.h"
 
 t_ecode_p			parse(t_shell *shell);
-void 				make_cmd(t_shell *shell, t_cmd **cmd, \
+void				make_cmd(t_shell *shell, t_cmd **cmd, \
 	t_token *start_token, t_token *end_token);
 static size_t		get_arg_num(t_token *start_token, t_token *end_token);
 static t_ecode_p	traverse_tokens_to_make_cmd(t_cmd *cmd, \

@@ -48,7 +48,8 @@ t_ecode_p	syntax_open_paren(t_token *prev_token, t_token *cur_token, \
 	if (next_token->id == OR_OPR)
 		return (ERR_SYNTAX_OR);
 	if (next_token->id == PAR_CLOSE)
-	{	if (!prev_token)
+	{
+		if (!prev_token)
 			return (ERR_SYNTAX_CLOSE_PAR);
 		else
 			return (ERR_SYNTAX_OPEN_PAR);
@@ -59,26 +60,21 @@ t_ecode_p	syntax_open_paren(t_token *prev_token, t_token *cur_token, \
 }
 
 /**
- * @brief Handles the syntax validation for a closing parenthesis token.
+ * @brief Validates syntax for a closing parenthesis token.
  *
- * This function checks the token preceding a closing parenthesis to ensure
- * that the syntax is valid. It first verifies that there is a corresponding 
- * opening parenthesis by checking the `prev_token`. Then, it updates the 
- * parentheses balance count. After that, it checks the next token (if it exists) 
- * to ensure it is not an opening parenthesis (which would indicate a mismatched 
- * pair) or one of the prohibited types (single quote, double quote, or word). 
- * This helps maintain proper syntax structure in the parsing process.
+ * Checks the token preceding a closing parenthesis for correct syntax.
+ * Verifies a matching opening parenthesis by examining `prev_token`,
+ * then updates the parentheses balance count. Also checks the next
+ * token (if any) to confirm it is not an opening parenthesis or one of
+ * the prohibited types (single quote, double quote, or word).
  *
- * This function works in conjunction with `check_parens`, which assesses the 
- * overall balance of parentheses in the list, to ensure correct parsing behavior 
- * and detect potential syntax errors.
+ * This function works with `check_parens` to validate parentheses
+ * balance, helping detect syntax errors.
  *
- * @param prev_token Pointer to the previous token before the current token.
- * @param cur_token Pointer to the current token being evaluated.
- * @param par_count Pointer to the count of open parentheses, updated 
- *                  throughout parsing.
- * @return An error code indicating the parsing result, or 
- *         PARSING_OK if the syntax is valid.
+ * @param prev_token Pointer to token before the current one.
+ * @param cur_token Pointer to the closing parenthesis token.
+ * @param par_count Pointer to open parentheses count, updated as parsing.
+ * @return Error code if invalid or PARSING_OK if syntax is valid.
  */
 t_ecode_p	syntax_close_paren(t_token *prev_token, t_token *cur_token, \
 	int *par_count)
