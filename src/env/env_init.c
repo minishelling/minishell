@@ -50,10 +50,15 @@ t_ecode	populate_env_node(t_env **node, char *keyval)
 	(*node)->key = get_key_from_keyvalue(keyval);
 	if (!(*node)->key)
 		return (free_env_node(node), MALLOC_ERROR);
+	value = NULL;
 	if (get_value_from_keyvalue(keyval, &value) == MALLOC_ERROR)
 		return (free_env_node(node), MALLOC_ERROR);
-	status = update_value_in_env_node(*node, value);
-	ft_free((void **) &value);
+	status = SUCCESS;
+	if (value)
+	{
+		status = update_value_in_env_node(*node, value);
+		ft_free((void **)&value);
+	}
 	return (status);
 }
 
