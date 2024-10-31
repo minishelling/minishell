@@ -1,61 +1,10 @@
 #include "../../include/minishell.h"
 
-size_t	get_token_list_size(t_token *list);
-void	init_token_names(char **token_name);
-void	print_tokens(t_token *list);
-void	print_tree(t_tree *tree);
-void	print_tree_nodes(t_tree *node, int level);
-
-/**
- * @brief Retrieves the size of a linked list of tokens.
- *
- * Iterates through the linked list of tokens, counting each node,
- * and returns the total count of tokens in the list.
- *
- * @param list Pointer to the head of the token list.
- * @return The number of tokens in the list.
- */
-size_t	get_token_list_size(t_token *list)
-{
-	size_t	token_list_size;
-
-	token_list_size = 0;
-	if (!list)
-		return (0);
-	while (list)
-	{
-		list = list->next;
-		token_list_size++;
-	}
-	return (token_list_size);
-}
-
-/**
- * @brief Initializes an array of token name strings for easy reference.
- *
- * Populates the provided `token_name` array with human-readable names
- * for each token type, allowing easy identification during debugging.
- *
- * @param token_name Array of strings representing token names.
- */
-void	init_token_names(char **token_name)
-{
-	token_name[0] = "SPACE_CHAR";
-	token_name[1] = "TAB_CHAR";
-	token_name[2] = "NL";
-	token_name[3] = "PIPE";
-	token_name[4] = "AND_OPR";
-	token_name[5] = "PAR_OPEN";
-	token_name[6] = "PAR_CLOSE";
-	token_name[7] = "LT";
-	token_name[8] = "GT";
-	token_name[9] = "SQUOTE";
-	token_name[10] = "DQUOTE";
-	token_name[11] = "ENV_VAR";
-	token_name[12] = "WORD";
-	token_name[13] = "OR_OPR";
-	token_name[14] = "ARITH_EXPAN";
-}
+void			print_tokens(t_token *list);
+static void		init_token_names(char **token_name);
+static size_t	get_token_list_size(t_token *list);
+void			print_tree(t_tree *tree);
+static void		print_tree_nodes(t_tree *node, int level);
 
 /**
  * @brief Prints the list of tokens with their details.
@@ -95,6 +44,57 @@ void	print_tokens(t_token *list)
 }
 
 /**
+ * @brief Initializes an array of token name strings for easy reference.
+ *
+ * Populates the provided `token_name` array with human-readable names
+ * for each token type, allowing easy identification during debugging.
+ *
+ * @param token_name Array of strings representing token names.
+ */
+static void	init_token_names(char **token_name)
+{
+	token_name[0] = "SPACE_CHAR";
+	token_name[1] = "TAB_CHAR";
+	token_name[2] = "NL";
+	token_name[3] = "PIPE";
+	token_name[4] = "AND_OPR";
+	token_name[5] = "PAR_OPEN";
+	token_name[6] = "PAR_CLOSE";
+	token_name[7] = "LT";
+	token_name[8] = "GT";
+	token_name[9] = "SQUOTE";
+	token_name[10] = "DQUOTE";
+	token_name[11] = "ENV_VAR";
+	token_name[12] = "WORD";
+	token_name[13] = "OR_OPR";
+	token_name[14] = "ARITH_EXPAN";
+}
+
+/**
+ * @brief Retrieves the size of a linked list of tokens.
+ *
+ * Iterates through the linked list of tokens, counting each node,
+ * and returns the total count of tokens in the list.
+ *
+ * @param list Pointer to the head of the token list.
+ * @return The number of tokens in the list.
+ */
+static size_t	get_token_list_size(t_token *list)
+{
+	size_t	token_list_size;
+
+	token_list_size = 0;
+	if (!list)
+		return (0);
+	while (list)
+	{
+		list = list->next;
+		token_list_size++;
+	}
+	return (token_list_size);
+}
+
+/**
  * @brief Prints the structure of the binary tree of commands.
  *
  * This function serves as a wrapper to print the binary tree, providing
@@ -122,7 +122,7 @@ void	print_tree(t_tree *tree)
  * @param node Pointer to the current tree node being printed.
  * @param level The current depth level in the tree.
  */
-void	print_tree_nodes(t_tree *node, int level)
+static void	print_tree_nodes(t_tree *node, int level)
 {
 	int		i;
 	char	*tree_node_name[4];

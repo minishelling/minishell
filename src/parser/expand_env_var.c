@@ -2,7 +2,7 @@
 
 void		handle_var_sign(t_shell *shell, char **str, char **expanded_str, \
 	t_env *env_list);
-void		expand_env_var(char **str, char **expanded_str, t_env *env_list);
+static void	expand_env_var(char **str, char **expanded_str, t_env *env_list);
 static char	*get_variable_name(char *var_start, char *var_end);
 
 /**
@@ -71,7 +71,7 @@ void	handle_var_sign(t_shell *shell, char **str, char **expanded_str, \
  *                     stored.
  * @param env_list Pointer to the environment variable list.
  */
-void	expand_env_var(char **str, char **expanded_str, t_env *env_list)
+static void	expand_env_var(char **str, char **expanded_str, t_env *env_list)
 {
 	char	*var_start;
 	char	*var_end;

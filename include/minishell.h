@@ -237,7 +237,6 @@ t_token		*copy_token(t_token *t_node);
 t_token		*last_token(t_token *token_list_head);
 t_token		*skip_whitespace_and_get_next_token(t_token *token);
 t_token		*get_after_matching_arith_expan(t_token *token);
-void		remove_space_tokens(t_token **list, t_token *prev_token);
 
 // TOKENIZATION JUMP TABLE
 
@@ -295,7 +294,6 @@ t_tree		*make_tree(t_shell *shell, t_token *start_token, \
 	t_token *end_token);
 t_tree		*init_leaf_node(t_shell *shell, t_token *start_token, \
 	t_token *end_token);
-t_tree		*init_tree_node(t_shell *shell, t_token *op_token);
 t_token		*get_matching_paren(t_token *start_token);
 t_token		*ignore_first_parens(t_token *start_token, t_token **end_token);
 t_token		*non_null_previous(t_token *list, t_token *before_what);
@@ -325,7 +323,6 @@ void		handle_var_sign(t_shell *shell, char **str, char **expanded_str, \
 //REDIRECTION
 t_redir		*new_redir(void);
 void		add_redir_in_back(t_redir **list, t_redir *new_redir);
-void		free_redir_list(t_redir **list);
 t_ecode		open_redirections(t_cmd *cmd);
 
 // ================ PARSING SIDE OF EXECUTION ================ //
@@ -348,7 +345,6 @@ void		print_env(t_env *env_list);
 void		print_tokens(t_token *list);
 void		print_cmd(t_cmd *cmd);
 void		print_tree(t_tree *tree);
-void		print_tree_nodes(t_tree *node, int level);
 
 // ================ ERROR HANDLING ================ //
 

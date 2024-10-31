@@ -1,11 +1,12 @@
 #include "../../include/minishell.h"
 
-t_ecode_p	handle_hdocs(t_shell *shell, t_token *list);
-t_ecode_p	process_hdoc_token(t_shell *shell, t_token *token, \
+t_ecode_p			handle_hdocs(t_shell *shell, t_token *list);
+static t_ecode_p	process_hdoc_token(t_shell *shell, t_token *token, \
 	int *hdoc_counter);
-t_ecode_p	overwrite_str_w_hdoc_fn(int *hdoc_counter, t_token *delim_token);
-char		*create_temp_hdoc_filename(int *counter);
-t_ecode_p	overwrite_str_w_hdoc_fd(int hdoc_fd, t_token *delim_token);
+static t_ecode_p	overwrite_str_w_hdoc_fn(int *hdoc_counter, \
+	t_token *delim_token);
+static char			*create_temp_hdoc_filename(int *counter);
+static t_ecode_p	overwrite_str_w_hdoc_fd(int hdoc_fd, t_token *delim_token);
 
 /**
  * @brief Handles heredoc tokens in the provided token list.
@@ -62,7 +63,7 @@ t_ecode_p	handle_hdocs(t_shell *shell, t_token *list)
  *         indicate success or specific errors encountered during 
  *         processing.
  */
-t_ecode_p	process_hdoc_token(t_shell *shell, t_token *token, \
+static t_ecode_p	process_hdoc_token(t_shell *shell, t_token *token, \
 	int *hdoc_counter)
 {
 	const char	*hdoc_delim;
@@ -106,7 +107,8 @@ t_ecode_p	process_hdoc_token(t_shell *shell, t_token *token, \
  *         indicate success or specific errors encountered during 
  *         processing.
  */
-t_ecode_p	overwrite_str_w_hdoc_fn(int *hdoc_counter, t_token *delim_token)
+static t_ecode_p	overwrite_str_w_hdoc_fn(int *hdoc_counter, \
+	t_token *delim_token)
 {
 	char	*hdoc_filename;
 
@@ -140,7 +142,7 @@ t_ecode_p	overwrite_str_w_hdoc_fn(int *hdoc_counter, t_token *delim_token)
  *         indicate success or specific errors encountered during 
  *         processing.
  */
-t_ecode_p	overwrite_str_w_hdoc_fd(int hdoc_fd, t_token *delim_token)
+static t_ecode_p	overwrite_str_w_hdoc_fd(int hdoc_fd, t_token *delim_token)
 {
 	char	*fd_string;
 
@@ -168,7 +170,7 @@ t_ecode_p	overwrite_str_w_hdoc_fd(int hdoc_fd, t_token *delim_token)
  * @return A pointer to the newly created temporary filename, or NULL 
  *         if memory allocation fails.
  */
-char	*create_temp_hdoc_filename(int *counter)
+static char	*create_temp_hdoc_filename(int *counter)
 {
 	const char	*prefix;
 	char		*file_name;

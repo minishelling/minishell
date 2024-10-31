@@ -1,12 +1,12 @@
 #include "../../include/minishell.h"
 
-t_ecode_p	parse(t_shell *shell);
-void		make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token, \
-	t_token *end_token);
-size_t		get_arg_num(t_token *start_token, t_token *end_token);
-t_ecode_p	traverse_tokens_to_make_cmd(t_cmd *cmd, \
+t_ecode_p			parse(t_shell *shell);
+void 				make_cmd(t_shell *shell, t_cmd **cmd, \
 	t_token *start_token, t_token *end_token);
-t_ecode_p	build_command_from_token(t_cmd *cmd, t_token *token);
+static size_t		get_arg_num(t_token *start_token, t_token *end_token);
+static t_ecode_p	traverse_tokens_to_make_cmd(t_cmd *cmd, \
+	t_token *start_token, t_token *end_token);
+static t_ecode_p	build_command_from_token(t_cmd *cmd, t_token *token);
 
 /**
  * @brief Parses the shell input and constructs the command tree.
@@ -92,7 +92,7 @@ void	make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token, \
  * @param end_token Pointer to the ending token of the list.
  * @return The count of arguments found between `start_token` and `end_token`.
  */
-size_t	get_arg_num(t_token *start_token, t_token *end_token)
+static size_t	get_arg_num(t_token *start_token, t_token *end_token)
 {
 	size_t	arg_count;
 	t_token	*cur_token;
@@ -126,7 +126,7 @@ size_t	get_arg_num(t_token *start_token, t_token *end_token)
  * @param end_token Pointer to the ending token of the list.
  * @return Error code indicating the result of the operation.
  */
-t_ecode_p	traverse_tokens_to_make_cmd(t_cmd *cmd, \
+static t_ecode_p	traverse_tokens_to_make_cmd(t_cmd *cmd, \
 	t_token *start_token, t_token *end_token)
 {
 	t_ecode_p	err_no;
@@ -174,7 +174,7 @@ t_ecode_p	traverse_tokens_to_make_cmd(t_cmd *cmd, \
  * @param token Pointer to the token that represents the command part.
  * @return Error code indicating the result of the operation.
  */
-t_ecode_p	build_command_from_token(t_cmd *cmd, t_token *token)
+static t_ecode_p	build_command_from_token(t_cmd *cmd, t_token *token)
 {
 	t_ecode_p		err_no;
 	t_parser_func	make_cmd[16];

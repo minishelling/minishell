@@ -1,10 +1,10 @@
 #include "../../../../include/minishell.h"
 
-t_ecode_p	parser_redir(t_cmd *cmd, t_token *token);
-t_redir_id	which_redir(char *str);
-t_ecode_p	parser_add_env_var(t_cmd *cmd, t_token *token);
-t_ecode_p	parser_arith_expan(t_cmd *cmd_node, t_token *token);
-t_ecode_p	parser_add_new_arg(t_cmd *cmd, t_token *token);
+t_ecode_p			parser_redir(t_cmd *cmd, t_token *token);
+static t_redir_id	which_redir(char *str);
+t_ecode_p			parser_add_env_var(t_cmd *cmd, t_token *token);
+t_ecode_p			parser_arith_expan(t_cmd *cmd_node, t_token *token);
+t_ecode_p			parser_add_new_arg(t_cmd *cmd, t_token *token);
 
 /**
  * @brief Parses redirection tokens and adds them to the command.
@@ -59,7 +59,7 @@ t_ecode_p	parser_redir(t_cmd *cmd, t_token *token)
  * - APP for append output redirection ('>>'),
  * - HERE for here-document redirection ('<<').
  */
-t_redir_id	which_redir(char *str)
+static t_redir_id	which_redir(char *str)
 {
 	if (str == NULL)
 		return (0);

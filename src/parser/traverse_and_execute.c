@@ -1,9 +1,9 @@
 #include "../../include/minishell.h"
 
-int	traverse_tree_and_execute(t_shell *shell, t_tree *tree_node, \
+int			traverse_tree_and_execute(t_shell *shell, t_tree *tree_node, \
 	t_tree *parent_tree_node, int prev_exit_code);
-int	execute_command(t_shell *shell, t_tree *tree_node);
-int	handle_logical_operators(t_shell *shell, t_tree *tree_node, \
+static int	execute_command(t_shell *shell, t_tree *tree_node);
+static int	handle_logical_operators(t_shell *shell, t_tree *tree_node, \
 	t_tree *parent_tree_node, int exit_code);
 
 /**
@@ -69,7 +69,7 @@ int	traverse_tree_and_execute(t_shell *shell, t_tree *tree_node, \
  * @return The exit code of the executed command, or FAILURE if the 
  *         command could not be executed.
  */
-int	execute_command(t_shell *shell, t_tree *tree_node)
+static int	execute_command(t_shell *shell, t_tree *tree_node)
 {
 	expand(shell, tree_node->start_token, tree_node->end_token, \
 		shell->env_list);
@@ -107,7 +107,7 @@ int	execute_command(t_shell *shell, t_tree *tree_node)
  * @param exit_code The exit code from the previously executed command.
  * @return The updated exit code after handling the logical operators.
  */
-int	handle_logical_operators(t_shell *shell, t_tree *tree_node, \
+static int	handle_logical_operators(t_shell *shell, t_tree *tree_node, \
 	t_tree *parent_tree_node, int exit_code)
 {
 	if (parent_tree_node && parent_tree_node->type == T_AND_OPR \

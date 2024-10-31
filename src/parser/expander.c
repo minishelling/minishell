@@ -1,12 +1,13 @@
 #include "../../include/minishell.h"
 
-void		expand(t_shell *shell, t_token *start_token, t_token *end_token, \
-		t_env *env_list);
-t_ecode_p	expand_token_str(t_shell *shell, t_token *token, t_env *env_list);
-void		process_squotes(char **str, char **expanded_str);
-void		process_dquotes(t_shell *shell, char **str, char **expanded_str, \
+void				expand(t_shell *shell, t_token *start_token, \
+	t_token *end_token, t_env *env_list);
+static t_ecode_p	expand_token_str(t_shell *shell, t_token *token, \
 	t_env *env_list);
-void		copy_chars(char **str, char **expanded_str);
+static void			process_squotes(char **str, char **expanded_str);
+static void			process_dquotes(t_shell *shell, char **str, \
+	char **expanded_str, t_env *env_list);
+static void			copy_chars(char **str, char **expanded_str);
 
 /**
  * @brief Expands the tokens between start and end tokens.
@@ -58,7 +59,8 @@ void	expand(t_shell *shell, t_token *start_token, t_token *end_token, \
  *         - PARSING_OK on success.
  *         - ERR_EXPAND if an error occurs during expansion.
  */
-t_ecode_p	expand_token_str(t_shell *shell, t_token *token, t_env *env_list)
+static t_ecode_p	expand_token_str(t_shell *shell, t_token *token, \
+	t_env *env_list)
 {
 	char	*original_str;
 	char	*expanded_str;
@@ -103,7 +105,7 @@ t_ecode_p	expand_token_str(t_shell *shell, t_token *token, t_env *env_list)
  *                     result, which will be updated with the newly added 
  *                     substring.
  */
-void	process_squotes(char **str, char **expanded_str)
+static void	process_squotes(char **str, char **expanded_str)
 {
 	char	*end_quote;
 	char	*temp_str;
@@ -140,7 +142,7 @@ void	process_squotes(char **str, char **expanded_str)
  * stored.
  * @param env_list Pointer to the environment variable list.
  */
-void	process_dquotes(t_shell *shell, char **str, char **expanded_str, \
+static void	process_dquotes(t_shell *shell, char **str, char **expanded_str, \
 	t_env *env_list)
 {
 	char	temp[2];
@@ -177,7 +179,7 @@ void	process_dquotes(t_shell *shell, char **str, char **expanded_str, \
  *                     result. This string will be updated with the newly 
  *                     added substring.
  */
-void	copy_chars(char **str, char **expanded_str)
+static void	copy_chars(char **str, char **expanded_str)
 {
 	size_t	len;
 	char	*temp_str;

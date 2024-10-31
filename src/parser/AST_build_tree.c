@@ -1,12 +1,13 @@
 #include "../../include/minishell.h"
 
-t_tree	*make_tree(t_shell *shell, t_token *start_token, t_token *end_token);
-t_tree	*handle_parens(t_shell *shell, t_token *start_token, \
+t_tree			*make_tree(t_shell *shell, t_token *start_token, \
 	t_token *end_token);
-t_token	*find_last_log_op_token_nip(t_token *list, t_token *end_token);
-t_tree	*init_leaf_node(t_shell *shell, t_token *start_token, \
+static t_tree	*handle_parens(t_shell *shell, t_token *start_token, \
 	t_token *end_token);
-t_tree	*init_tree_node(t_shell *shell, t_token *op_token);
+static t_token	*find_last_log_op_token_nip(t_token *list, t_token *end_token);
+t_tree			*init_leaf_node(t_shell *shell, t_token *start_token, \
+	t_token *end_token);
+static t_tree	*init_tree_node(t_shell *shell, t_token *op_token);
 
 /**
  * @brief Functions for constructing an Abstract Syntax Tree (AST).
@@ -79,7 +80,7 @@ t_tree	*make_tree(t_shell *shell, t_token *start_token, t_token *end_token)
  * @return Pointer to a tree node representing the content within the 
  * parentheses, or NULL if the parentheses are not matching.
  */
-t_tree	*handle_parens(t_shell *shell, t_token *start_token, \
+static t_tree	*handle_parens(t_shell *shell, t_token *start_token, \
 	t_token *end_token)
 {
 	if (start_token->id == PAR_OPEN && end_token->id == PAR_CLOSE \
@@ -118,7 +119,7 @@ t_tree	*handle_parens(t_shell *shell, t_token *start_token, \
  * OR_OPR, or PIPE) that is not within parentheses, or NULL if no 
  * suitable token is found.
  */
-t_token	*find_last_log_op_token_nip(t_token *list, t_token *end_token)
+static t_token	*find_last_log_op_token_nip(t_token *list, t_token *end_token)
 {
 	t_token	*token_iterator;
 	t_token	*return_token;
@@ -194,7 +195,7 @@ t_tree	*init_leaf_node(t_shell *shell, t_token *start_token, \
  * @return Pointer to the newly initialized tree node, or exits if memory 
  * allocation fails or if the operator token is NULL.
  */
-t_tree	*init_tree_node(t_shell *shell, t_token *op_token)
+static t_tree	*init_tree_node(t_shell *shell, t_token *op_token)
 {
 	t_tree	*tree_node;
 

@@ -1,11 +1,11 @@
 #include "../../../../include/minishell.h"
 
-t_ecode_p	syntax_open_paren(t_token *prev_token, t_token *cur_token, \
-	int *par_count);
-t_ecode_p	syntax_close_paren(t_token *prev_token, t_token *cur_token, \
-	int *par_count);
-t_ecode_p	update_parens_balance(t_token *cur_token, int *par_count);
-t_ecode_p	syntax_word(t_token *prev_token, t_token *cur_token, \
+t_ecode_p			syntax_open_paren(t_token *prev_token, \
+	t_token *cur_token, int *par_count);
+t_ecode_p			syntax_close_paren(t_token *prev_token, \
+	t_token *cur_token, int *par_count);
+static t_ecode_p	update_parens_balance(t_token *cur_token, int *par_count);
+t_ecode_p			syntax_word(t_token *prev_token, t_token *cur_token, \
 	int *par_count);
 
 /**
@@ -124,7 +124,7 @@ t_ecode_p	syntax_close_paren(t_token *prev_token, t_token *cur_token, \
  * @return An error code indicating the result of the operation, or 
  *         PARSING_OK if the parentheses count is balanced.
  */
-t_ecode_p	update_parens_balance(t_token *cur_token, int *par_count)
+static t_ecode_p	update_parens_balance(t_token *cur_token, int *par_count)
 {
 	if (cur_token->id == PAR_OPEN)
 		(*par_count)++;
