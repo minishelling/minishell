@@ -12,8 +12,8 @@ HEADER_FILES = $(INCLUDE_DIR)/minishell.h
 
 SRC_DIR		= src
 #SRCS_FILES	= $(shell find $(SRC_DIR) -iname "*.c")
-SRCS_FILES = $(SRCS_DIR)/main.c \
-				$(SRCS_DIR)/signals.c \
+SRC_FILES = $(SRC_DIR)/main.c \
+				$(SRC_DIR)/signals.c \
 				$(BUILTINS_FILES) \
 				$(CD_FILES) \
 				$(ENV_FILES) \
@@ -24,6 +24,7 @@ SRCS_FILES = $(SRCS_DIR)/main.c \
 				$(LEXER_JT_FUNCS_FILES) \
 				$(SYNTAXER_JT_FUNCS_FILES) \
 				$(PARSER_JT_FUNCS_FILES) \
+				$(PARSER_UTILS_FILES) \
 				$(PRINT_UTILS_FILES) \
 				$(UTILS_FILES)
 
@@ -122,7 +123,7 @@ UTILS_FILES = $(UTILS_DIR)/append_suffix.c \
 
 
 OBJ_DIR = obj
-OBJECTS		:= $(SRCS_FILES:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
+OBJECTS		:= $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRC_FILES))
 
 all: $(NAME)
 
