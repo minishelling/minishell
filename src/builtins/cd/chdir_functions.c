@@ -52,6 +52,7 @@ t_ecode	chdir_tilde(t_env **env_list, char *cwd)
 	t_env	*home_node;
 	char	*home_path;
 	int		status;
+	char	new_cwd[PATH_MAX];
 
 	if (!*env_list)
 		return (NULL_ENV);
@@ -71,6 +72,7 @@ t_ecode	chdir_tilde(t_env **env_list, char *cwd)
 		handle_builtin_err("cd", NULL, strerror(errno));
 		return (FAILURE);
 	}
+	ft_putendl_fd(getcwd(new_cwd, PATH_MAX), STDOUT_FILENO);
 	return (update_oldpwd_pwd(env_list, cwd));
 }
 
@@ -89,6 +91,7 @@ t_ecode	chdir_tilde(t_env **env_list, char *cwd)
 t_ecode	chdir_dash(t_env **env_list, char *cwd)
 {
 	t_env	*oldpwd_node;
+	char	new_cwd[PATH_MAX];
 
 	if (!*env_list)
 		return (NULL_ENV);
@@ -105,5 +108,6 @@ t_ecode	chdir_dash(t_env **env_list, char *cwd)
 	}
 	if (update_oldpwd_pwd(env_list, cwd))
 		return (FAILURE);
+	ft_putendl_fd(getcwd(new_cwd, PATH_MAX), STDOUT_FILENO);
 	return (SUCCESS);
 }

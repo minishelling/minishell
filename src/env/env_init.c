@@ -37,6 +37,9 @@ t_env	*new_env_node(void)
  */
 t_ecode	populate_env_node(t_env **node, char *keyval)
 {
+	char	*value;
+	int		status;
+
 	if (!*node)
 		return (FAILURE);
 	if (!keyval)
@@ -47,15 +50,11 @@ t_ecode	populate_env_node(t_env **node, char *keyval)
 	(*node)->key = get_key_from_keyvalue(keyval);
 	if (!(*node)->key)
 		return (free_env_node(node), MALLOC_ERROR);
-	if (get_value_from_keyvalue(keyval, &(*node)->value) == MALLOC_ERROR)
+	if (get_value_from_keyvalue(keyval, &value) == MALLOC_ERROR)
 		return (free_env_node(node), MALLOC_ERROR);
-	if ((*node)->value)
-	{
-		(*node)->keyvalue = ft_strdup(keyval);
-		if (!(*node)->keyvalue)
-			return (free_env_node(node), MALLOC_ERROR);
-	}
-	return (SUCCESS);
+	status = update_value_in_env_node(*node, value);
+	ft_free((void **) &value);
+	return (status);
 }
 
 /**

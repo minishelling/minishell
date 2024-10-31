@@ -36,6 +36,7 @@ t_ecode	chdir_cdpath(t_env **env_list, char *directory, char *cwd)
 	char	**cdpath_values;
 	ssize_t	values_count;
 	t_ecode	status;
+	char	new_cwd[PATH_MAX];
 
 	if (!*env_list)
 		return (NULL_ENV);
@@ -54,6 +55,7 @@ t_ecode	chdir_cdpath(t_env **env_list, char *directory, char *cwd)
 		return (MALLOC_ERROR);
 	else if (status)
 		return (PROCEED);
+	ft_putendl_fd(getcwd(new_cwd, PATH_MAX), STDOUT_FILENO);
 	return (update_oldpwd_pwd(env_list, cwd));
 }
 

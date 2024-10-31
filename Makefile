@@ -49,7 +49,8 @@ ENV_FILES = $(ENV_DIR)/env_count.c \
 			$(ENV_DIR)/env_init.c \
 			$(ENV_DIR)/env_print.c \
 			$(ENV_DIR)/env_update.c \
-			$(ENV_DIR)/env_utils.c
+			$(ENV_DIR)/env_utils.c \
+			$(ENV_DIR)/env_utils2.c
 
 ERROR_HANDLING_DIR = $(SRC_DIR)/error_handling
 ERROR_HANDLING_FILES = $(ERROR_HANDLING_DIR)/clean.c \

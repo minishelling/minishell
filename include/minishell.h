@@ -387,6 +387,7 @@ char		*get_key_from_keyvalue(char *keyvalue);
 t_ecode		get_value_from_keyvalue(char *keyvalue, char **value_ptr);
 t_env		*find_env_node(t_env *env, char *key);
 t_env		*get_last_env_node(t_env *head);
+t_ecode		update_home_value(char **value);
 
 // UTILS
 
