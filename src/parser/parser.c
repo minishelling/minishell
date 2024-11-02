@@ -1,16 +1,39 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parser.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tfeuer <tfeuer@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/31 13:26:54 by tfeuer            #+#    #+#             */
+/*   Updated: 2024/10/31 13:26:55 by tfeuer           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../include/minishell.h"
 
-int			parse(t_shell *shell);
-void		make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token, \
-	t_token *end_token);
-size_t		get_arg_num(t_token *start_token, t_token *end_token);
-static int	traverse_tokens_to_make_cmd(t_cmd *cmd, t_token *start_token,
-	t_token *end_token);
-int			build_command_from_token(t_cmd *cmd, t_token *token);
+t_ecode_p			parse(t_shell *shell);
+void				make_cmd(t_shell *shell, t_cmd **cmd, \
+	t_token *start_token, t_token *end_token);
+static size_t		get_arg_num(t_token *start_token, t_token *end_token);
+static t_ecode_p	traverse_tokens_to_make_cmd(t_cmd *cmd, \
+	t_token *start_token, t_token *end_token);
+static t_ecode_p	build_command_from_token(t_cmd *cmd, t_token *token);
 
-int	parse(t_shell *shell)
+/**
+ * @brief Parses the shell input and constructs the command tree.
+ *
+ * This function tokenizes the input, performs syntax checks, appends 
+ * the tokens, handles here documents, and constructs the command 
+ * tree from the tokens.
+ *
+ * @param shell Pointer to the shell structure containing input.
+ * @return t_ecode_p PARSING_OK if successful, or an error code if any 
+ *         issue is detected.
+ */
+t_ecode_p	parse(t_shell *shell)
 {
-	int	err_no;
+	t_ecode_p	err_no;
 
 	err_no = tokenize(shell, shell->input);
 	if (err_no)
@@ -21,21 +44,36 @@ int	parse(t_shell *shell)
 	err_no = append(shell);
 	if (err_no)
 		return (err_no);
+	if (shell->token && shell->debug_mode == ON)
+		print_tokens(shell->token);
 	err_no = handle_hdocs(shell, shell->token);
 	if (err_no)
 		return (err_no);
 	if (g_signalcode == SIGINT)
 		return (SIGINT_HDOC);
 	shell->tree = make_tree(shell, shell->token, last_token(shell->token));
-	print_tree(shell->tree, 0);
+	if (shell->tree && shell->debug_mode == ON)
+		print_tree(shell->tree);
 	return (PARSING_OK);
 }
 
+/**
+ * @brief Creates a new command from the token list.
+ *
+ * Allocates memory for a new command and populates its arguments by 
+ * traversing tokens from the start token to the end token. If any 
+ * allocation fails, it handles the parsing error appropriately.
+ *
+ * @param shell Pointer to the shell structure.
+ * @param cmd Double pointer to the command structure to be created.
+ * @param start_token Pointer to the starting token for command creation.
+ * @param end_token Pointer to the ending token for command creation.
+ */
 void	make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token, \
 	t_token *end_token)
 {
-	size_t	arg_num;
-	int		err_no;
+	size_t		arg_num;
+	t_ecode_p	err_no;
 
 	*cmd = new_cmd();
 	if (!*cmd)
@@ -49,7 +87,24 @@ void	make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token, \
 		handle_parsing_err(shell, err_no);
 }
 
-size_t	get_arg_num(t_token *start_token, t_token *end_token)
+/**
+ * @brief Counts the number of arguments in a token list.
+ *
+ * Traverses the tokens from the start token to the end token, counting
+ * valid argument tokens while adjusting for redirection tokens. An
+ * argument is added for tokens of type `WORD`, `SQUOTE`, `DQUOTE`, or
+ * `ENV_VAR` (if non-empty, indicating a successful expansion). 
+ * Redirection tokens (`LT` and `GT`) are followed by a target, typically 
+ * a filename or, in the case of a heredoc, a file descriptor. Since the 
+ * target is a `WORD` token, the count is incremented when found, but 
+ * it does not need to be part of the command arguments, so it is 
+ * subsequently decremented.
+ *
+ * @param start_token Pointer to the starting token of the list.
+ * @param end_token Pointer to the ending token of the list.
+ * @return The count of arguments found between `start_token` and `end_token`.
+ */
+static size_t	get_arg_num(t_token *start_token, t_token *end_token)
 {
 	size_t	arg_count;
 	t_token	*cur_token;
@@ -71,10 +126,22 @@ size_t	get_arg_num(t_token *start_token, t_token *end_token)
 	return (arg_count);
 }
 
-static int	traverse_tokens_to_make_cmd(t_cmd *cmd, t_token *start_token,
-	t_token *end_token)
+/**
+ * @brief Traverses tokens to build a command from the token list.
+ *
+ * This function iterates through the tokens from start_token to end_token,
+ * calling the appropriate function to build the command based on the token's
+ * type. It handles redirection tokens and arithmetic expansion tokens.
+ *
+ * @param cmd Pointer to the command structure to fill.
+ * @param start_token Pointer to the starting token of the list.
+ * @param end_token Pointer to the ending token of the list.
+ * @return Error code indicating the result of the operation.
+ */
+static t_ecode_p	traverse_tokens_to_make_cmd(t_cmd *cmd, \
+	t_token *start_token, t_token *end_token)
 {
-	int	err_no;
+	t_ecode_p	err_no;
 
 	while (start_token)
 	{
@@ -93,36 +160,47 @@ static int	traverse_tokens_to_make_cmd(t_cmd *cmd, t_token *start_token,
 				break ;
 		}
 		else if (start_token->id == ARITH_EXPAN)
-			start_token = get_after_arith_expan_token(start_token);
+			start_token = get_after_matching_arith_expan(start_token);
 		else
 			start_token = start_token->next;
 	}
 	return (PARSING_OK);
 }
 
-int	build_command_from_token(t_cmd *cmd, t_token *token)
+/**
+ * @brief Builds a command from a token based on its type.
+ *
+ * This function uses a parser function array to call the appropriate
+ * function to handle the command-building process based on the token's
+ * ID. It assumes that any ampersand tokens present in the input
+ * resulted in a syntax error in the previous syntax stage. Additionally,
+ * tokens such as PIPE, AND_OPR, OR_OPR, PAR_OPEN, PAR_CLOSE, and spacing 
+ * tokens are not present between start_token and end_token since they 
+ * have already been used for creating the AST and dividing the commands, 
+ * and thus will not trigger any function in this context. A new token, 
+ * ARITH_EXPAN, has been added to handle arithmetical expansions without 
+ * executing the statements inside of it. Furthermore, this function adds 
+ * an argument for tokens of type WORD, SQUOTE, DQUOTE, and ENV_VAR.
+ *
+ * @param cmd Pointer to the command structure to be populated.
+ * @param token Pointer to the token that represents the command part.
+ * @return Error code indicating the result of the operation.
+ */
+static t_ecode_p	build_command_from_token(t_cmd *cmd, t_token *token)
 {
-	int				err_no;
-	t_parser_func	parser_functions[15];
+	t_ecode_p		err_no;
+	t_parser_func	make_cmd[16];
 
-	parser_functions[0] = parser_noop;
-	parser_functions[1] = parser_noop;
-	parser_functions[2] = parser_noop;
-	parser_functions[3] = NULL;
-	parser_functions[4] = parser_noop;
-	parser_functions[5] = parser_noop;
-	parser_functions[6] = parser_noop;
-	parser_functions[7] = parser_redir;
-	parser_functions[8] = parser_redir;
-	parser_functions[9] = parser_add_new_arg;
-	parser_functions[10] = parser_add_new_arg;
-	parser_functions[11] = parser_add_env_var;
-	parser_functions[12] = parser_add_new_arg;
-	parser_functions[13] = parser_noop;
-	parser_functions[14] = parser_arith_expan;
-	if (parser_functions[token->id])
+	make_cmd[7] = parser_redir;
+	make_cmd[8] = parser_redir;
+	make_cmd[9] = parser_add_new_arg;
+	make_cmd[10] = parser_add_new_arg;
+	make_cmd[11] = parser_add_env_var;
+	make_cmd[12] = parser_add_new_arg;
+	make_cmd[15] = parser_arith_expan;
+	if (make_cmd[token->id])
 	{
-		err_no = parser_functions[token->id](cmd, token);
+		err_no = make_cmd[token->id](cmd, token);
 		if (err_no)
 			return (err_no);
 	}

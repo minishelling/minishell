@@ -1,7 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   env_create_array.c                                 :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/10/31 13:32:45 by lprieri       #+#    #+#                 */
+/*   Updated: 2024/10/31 18:03:11 by lprieri       ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../include/minishell.h"
 
+char			**create_env_array(t_env *env);
 static t_ecode	copy_keyvalue_to_arr(t_env *env, \
 					char ***env_array, ssize_t nodes_count);
+char			**create_export_array(t_env *env);
 static t_ecode	copy_key_or_keyval_to_arr(t_env *env, \
 					char ***env_array, ssize_t nodes_count);
 

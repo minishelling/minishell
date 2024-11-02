@@ -1,7 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   minishell.h                                        :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: tfeuer <tfeuer@student.42.fr>                +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/10/31 13:42:49 by tfeuer        #+#    #+#                 */
+/*   Updated: 2024/10/31 18:14:32 by lprieri       ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-# define _GNU_SOURCE // FOR SIGACTION...
+# define _GNU_SOURCE
 
 # include <stdint.h>
 # include <unistd.h>
@@ -23,11 +35,19 @@
 # include <sys/types.h>
 # include <sys/stat.h>
 
-# define MINISHARED_PROMPT "\001\033[38;5;93m\002M\001\033[38;5;99m\002i\001\033[38;5;111m\002n\001\033[38;5;63m\002i\001\033[38;5;75m\002_\001\033[38;5;81m\002s\001\033[38;5;118m\002h\001\033[38;5;154m\002a\001\033[38;5;190m\002r\001\033[38;5;226m\002e\001\033[38;5;214m\002d\001\033[0m\002: \001\033[0m\002"
-# define ERR_PROMPT "Mini_shared: \001\033[0m\002"
+# define MINISHARED_PROMPT \
+"\001\033[38;5;93m\002M\001\033[38;5;99m\002i\001\033[38;5;111m\002n\
+\001\033[38;5;63m\002i\001\033[38;5;75m\002_\001\033[38;5;81m\002s\
+\001\033[38;5;118m\002h\001\033[38;5;154m\002a\001\033[38;5;190m\002r\
+\001\033[38;5;226m\002e\001\033[38;5;214m\002d\001\033[0m\002: \
+\001\033[0m\002"
+
+# define ERR_PROMPT "Mini_shared: "
 
 # define META_CHARS_PLUS_SET " \t\n|&()<>\'\"$"
 # define ERROR -1
+# define OFF 0
+# define ON 1
 
 # define RESET_COLOR "\033[0m"
 # define MAGENTA_TEXT "\033[0;35m"
@@ -51,6 +71,8 @@ typedef enum exit_code
 	EXIT_SUCCESSFULLY = 0,
 	EXIT_FAIL = 1,
 	EXIT_NUM_ARG_REQ = 2,
+	EXIT_SYNTAX_ERROR = 2,
+	EXIT_MEM_FAILURE = 3,
 	EXIT_CMD_NOT_EXECUTABLE = 126,
 	EXIT_CMD_NOT_FOUND = 127,
 	EXIT_SIGNAL_CODE = 128,
@@ -64,16 +86,16 @@ typedef enum e_codes
 	SUCCESS = 0,
 	FAILURE,
 	SYNTAX_FAILURE,
+	MALLOC_ERROR,
 	PROCEED,
 	NULL_ERROR,
 	NULL_ENV,
 	NULL_NODE,
 	NULL_STRING,
-	MALLOC_ERROR,
 	COUNT
 }	t_ecode;
 
-enum e_parsing_error
+typedef enum e_parsing_codes
 {
 	PARSING_OK,
 	ERR_CMD_SUBSTIT,
@@ -85,13 +107,15 @@ enum e_parsing_error
 	ERR_SYNTAX_OR,
 	ERR_SYNTAX_AND,
 	ERR_SYNTAX_REDIR,
+	ERR_SYNTAX_AMPER,
 	ERR_SYNTAX_ERROR,
+	ERR_BG_PROCESS,
 	ERR_PARSING_ERROR,
 	ERR_MEM,
 	ERR_EXPAND,
 	ERR_CMD,
 	SIGINT_HDOC,
-};
+}	t_ecode_p;
 
 typedef enum e_token_id
 {
@@ -109,6 +133,7 @@ typedef enum e_token_id
 	ENV_VAR,
 	WORD,
 	OR_OPR,
+	AMPERSAND,
 	ARITH_EXPAN
 }	t_token_id;
 
@@ -200,113 +225,146 @@ typedef struct s_shell
 	t_token		*token;
 	t_tree		*tree;
 	t_env		*env_list;
+	bool		debug_mode;
 }	t_shell;
 
-extern int		g_signalcode;
+extern int	g_signalcode;
 
-//FUNCTION POINTERS
-typedef int	(*t_lexer_func)(char *str, size_t *pos, t_token_id *token_id);
-typedef int	(*t_syntax_func)(t_token *prev, t_token *cur, int *par_count);
-typedef int	(*t_parser_func)(t_cmd *current_cmd, t_token *token);
+// ================ TOKENIZATION ================ //
 
-//TOKENIZATION
-int			tokenize(t_shell *shell, char *input);
+t_ecode_p	tokenize(t_shell *shell, char *input);
 t_token		*new_token(void);
 t_token_id	get_token_id(char c);
 void		add_token_in_back(t_token **t_list, t_token *new);
 t_token		*copy_token(t_token *t_node);
 t_token		*last_token(t_token *token_list_head);
-
-int		advance_pos_space_or_word(char *str, size_t *pos, t_token_id *token_id);
-int		advance_pos_quote(char *str, size_t *pos, t_token_id *token_id);
-int		advance_pos_and_operator(char *str, size_t *pos, t_token_id *token_id);
-int		advance_pos_parens(char *str, size_t *pos, t_token_id *token_id);
-int		advance_pos_redir(char *str, size_t *pos, t_token_id *token_id);
-int		advance_pos_env_var(char *str, size_t *pos, t_token_id *token_id);
-int		advance_pos_pipe(char *str, size_t *pos, t_token_id *token_id);
 t_token		*skip_whitespace_and_get_next_token(t_token *token);
-t_token		*get_after_arith_expan_token(t_token *token);
-void		remove_space_tokens(t_token **list, t_token *prev_token);
-t_token		*previous_token_if_exists(t_token *list, t_token *target);
+t_token		*get_after_matching_arith_expan(t_token *token);
+
+// TOKENIZATION JUMP TABLE
+
+typedef t_ecode_p \
+			(*t_lexer_func)(char *str, size_t *pos, t_token_id *token_id);
+t_ecode_p	advance_pos_quote(char *str, size_t *pos, t_token_id *token_id);
+t_ecode_p	advance_pos_parens(char *str, size_t *pos, t_token_id *token_id);
+t_ecode_p	advance_pos_redir(char *str, size_t *pos, t_token_id *token_id);
+t_ecode_p	advance_pos_env_var(char *str, size_t *pos, t_token_id *token_id);
+t_ecode_p	advance_pos_pipe(char *str, size_t *pos, t_token_id *token_id);
+t_ecode_p	advance_pos_space_or_word(char *str, size_t *pos, \
+	t_token_id *token_id);
+t_ecode_p	advance_pos_and_operator(char *str, size_t *pos, \
+	t_token_id *token_id);
+
+// ================ SYNTAX ================ //
+
+t_ecode_p	syntax(t_shell *shell);
+
+// SYNTAX JUMP TABLE
+typedef t_ecode_p \
+			(*t_syntax_func)(t_token *prev, t_token *cur, int *par_count);
+t_ecode_p	syntax_pipe(t_token *prev_token, t_token *cur_token, \
+	int *par_count);
+t_ecode_p	syntax_and_opr(t_token *prev_token, t_token *cur_token, \
+	int *par_count);
+t_ecode_p	syntax_open_paren(t_token *prev_token, t_token *cur_token, \
+	int *par_count);
+t_ecode_p	syntax_close_paren(t_token *prev_token, t_token *cur_token, \
+	int *par_count);
+t_ecode_p	syntax_redir(t_token *prev_token, t_token *cur_token, \
+	int *par_count);
+t_ecode_p	syntax_noop(t_token *prev_token, t_token *cur_token, \
+	int *par_count);
+t_ecode_p	syntax_word(t_token *prev_token, t_token *cur_token, \
+	int *par_count);
+t_ecode_p	syntax_quote(t_token *prev_token, t_token *cur_token, \
+	int *par_count);
+t_ecode_p	syntax_or_opr(t_token *prev_token, t_token *cur_token, \
+	int *par_count);
+t_ecode_p	syntax_env_var(t_token *prev_token, t_token *cur_token, \
+	int *par_count);
+t_ecode_p	syntax_ampersand(t_token *prev_token, t_token *cur_token, \
+	int *par_count);
+
+// ================ APPENDING ================ //
+
+t_ecode_p	append(t_shell *shell);
+
+// ================ HDOC ================ //
+
+t_ecode_p	handle_hdocs(t_shell *shell, t_token *token_list);
+t_ecode_p	read_hdoc_input(t_shell *shell, const char *file_name, \
+	const char **delimiter);
+
+// ================ ABSTRACT SYNTAX TREE ================ //
+
+t_tree		*make_tree(t_shell *shell, t_token *start_token, \
+	t_token *end_token);
+t_tree		*init_leaf_node(t_shell *shell, t_token *start_token, \
+	t_token *end_token);
+t_token		*get_matching_paren(t_token *start_token);
+t_token		*ignore_first_parens(t_token *start_token, t_token **end_token);
 t_token		*non_null_previous(t_token *list, t_token *before_what);
+t_tree		*process_arith_expan(t_shell *shell, t_token *start_token, \
+	t_token *end_token);
 
-//SYNTAX
-int			syntax(t_shell *shell);
-int			syntax_pipe(t_token *t_prev, t_token *t_cur, int *par_count);
-int			syntax_and_opr(t_token *t_prev, t_token *t_cur, int *par_count);
-int			syntax_open_paren(t_token *prev_token, t_token *cur_token, int *par_count);
-int			syntax_close_paren(t_token *prev_token, t_token *cur_token, int *par_count);
-int			syntax_redir(t_token *t_prev, t_token *t_cur, int *par_count);
-int			syntax_noop(t_token *t_prev, t_token *t_cur, int *par_count);
-int			syntax_word(t_token *t_prev, t_token *t_cur, int *par_count);
-int			syntax_quote(t_token *prev_token, t_token *cur_token, int *par_count);
-int			syntax_or_opr(t_token *prev_token, t_token *cur_token, int *par_count);
-int			syntax_env_var(t_token *prev_token, t_token *cur_token, int *par_count);
+// ================ CMD MAKING ================ //
 
-//APPEND
-int			append(t_shell *shell);
+t_ecode_p	parse(t_shell *shell);
+void		make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token, \
+	t_token *end_token);
+t_cmd		*new_cmd(void);
+
+// PARSING JUMP TABLE
+typedef t_ecode_p \
+			(*t_parser_func)(t_cmd *cmd, t_token *token);
+t_ecode_p	parser_redir(t_cmd *cmd, t_token *token);
+t_ecode_p	parser_arith_expan(t_cmd *cmd_node, t_token *token);
+t_ecode_p	parser_add_env_var(t_cmd *cmd, t_token *token);
+t_ecode_p	parser_add_new_arg(t_cmd *cmd, t_token *token);
+
+//EXPANTION
+void		expand(t_shell *shell, t_token *start_token, t_token *end_token, \
+	t_env *env_list);
+char		*get_env_value_from_key(t_env *env_, char *key);
+void		handle_var_sign(t_shell *shell, char **str, char **expanded_str, \
+	t_env *env_list);
 
 //REDIRECTION
 t_redir		*new_redir(void);
 void		add_redir_in_back(t_redir **list, t_redir *new_redir);
-void		free_redir_list(t_redir **list);
-int			handle_hdocs(t_shell *shell, t_token *token_list);
-int			read_hdoc_input(t_shell *shell, const char *file_name, const char **delimiter);
 t_ecode		open_redirections(t_cmd *cmd);
 
-//AST
-t_tree		*make_tree(t_shell *shell, t_token *start_token, t_token *end_token);
-t_tree		*init_leaf_node(t_shell *shell, t_token *start_token, t_token *end_token);
-t_tree		*init_tree_node(t_shell *shell, t_token *op_token);
-t_token		*get_matching_paren(t_token *start_token);
-t_token		*ignore_first_parens(t_token *start_token, t_token **end_token);
-t_tree		*process_arith_expan(t_shell *shell, t_token *start_token, \
-	t_token *end_token);
+// ================ PARSING SIDE OF EXECUTION ================ //
 
-//CMD
-int			parse(t_shell *shell);
-void		make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token, t_token *end_token);
-t_cmd		*new_cmd(void);
-int			parser_noop(t_cmd *cmd_node, t_token *token);
-int			parser_redir(t_cmd *cmd, t_token *token);
-int			parser_arith_expan(t_cmd *cmd_node, t_token *token);
-int			parser_add_env_var(t_cmd *cmd, t_token *token);
-int			parser_add_new_arg(t_cmd *cmd, t_token *token);
-
-//EXPANSION
-void		expand(t_shell *shell, t_token *start_token, t_token *end_token, t_env *env_list);
-char		*get_env_value_from_key(t_env *env_, char *key);
-
-//PARSING SIDE OF EXECUTION
-int			traverse_tree_and_execute(t_shell *shell, t_tree *node, t_tree *parent_node, int prev_exit_code);
+int			traverse_tree_and_execute(t_shell *shell, t_tree *node, \
+				t_tree *parent_node, int prev_exit_code);
 int			handle_pipe_subtree(t_shell *shell, t_tree *tree_node);
 
-//FREE
+// ================ FREEING PARSING STRUCTS ================ //
+
 void		free_token(t_token **token);
 void		free_token_list(t_token **list);
 void		free_args(char ***args);
 void		free_cmd(t_cmd **cmd);
 void		free_tree(t_tree **node);
 
-//PRINT
+// ================ PRINTING PARSING STRUCTS ================ //
+
 void		print_env(t_env *env_list);
 void		print_tokens(t_token *list);
 void		print_cmd(t_cmd *cmd);
-void		print_tree(t_tree *node, int level);
+void		print_tree(t_tree *tree);
 
-//ERROR
-void		handle_parsing_err(t_shell *shell, int err_no);
+// ================ ERROR HANDLING ================ //
+
+void		handle_parsing_err(t_shell *shell, t_ecode_p err_no);
 void		handle_cmd_err(t_shell *shell, t_cmd *cmd, char *err_msg);
 void		handle_perror(char *str);
 void		handle_builtin_err(char *cmd_name, char *arg, char *err_msg);
 
-//CLEAN
+//CLEANING
 void		clean_nicely(t_shell *shell);
 void		clean_nicely_and_exit(t_shell *shell, int exit_code);
-
-int			safe_assign_str(char **dest, const char *src);
-size_t		ft_strcspn(const char *str, const char *reject);
-void		handle_var_sign(t_shell *shell, char **str, char **expanded_str, t_env *env_list);
 
 //SIGNALS
 
@@ -317,31 +375,54 @@ void		print_heredoc_newline(void);
 
 // ================ ENV ================ //
 
+//ENV_COUNT
+
 ssize_t		count_keyvalue_env_nodes(t_env *env_list);
 ssize_t		count_key_env_nodes(t_env *env_list);
 ssize_t		count_envp_keys(char **envp);
 ssize_t		count_values_from_env_node(t_env *env_list, char *key);
+
+//ENV_CREATE_ARRAY
+
 char		**create_env_array(t_env *env);
 char		**create_export_array(t_env *env);
+
+//ENV_FREE
+
 void		free_env_list(t_env	**head);
 void		free_env_node(t_env **node);
+
+//ENV_INIT
+
 t_env		*new_env_node(void);
 t_ecode		populate_env_node(t_env **node, char *keyval);
 t_env		*create_populated_env_node(char *keyval);
 t_ecode		create_env_list(t_env **head, char **envp);
+
+//ENV_PRINT
+
 void		print_env_node_debugging(t_env *node);
+void		print_env_node(t_env *node);
 void		print_env_list(t_env *head);
+
+//ENV_UPDATE
+
 t_ecode		add_last_env_node(t_env **head, t_env *node);
-t_ecode		update_env_node(t_env **head, char *key, char *value, bool create_node);
+t_ecode		update_env_node(t_env **head, char *key, char *value, \
+				bool create_node);
 t_ecode		update_value_in_env_node(t_env *node, char *value);
 t_ecode		update_keyvalue_in_env_node(t_env *node);
-t_ecode		update_pwd(t_env *env_head);
+
+//ENV_UTILS
+
 char		*get_key_from_keyvalue(char *keyvalue);
 t_ecode		get_value_from_keyvalue(char *keyvalue, char **value_ptr);
 t_env		*find_env_node(t_env *env, char *key);
 t_env		*get_last_env_node(t_env *head);
+char		*get_env_value_from_key(t_env *env_list, char *token_key);
+t_ecode		update_home_value(char **value);
 
-// UTILS
+// ================ UTILS ================ //
 
 char		**ft_strjoin_arr(char **arr, char *str);
 char		*ft_strjoin_fs1(char **s1, const char *s2);
@@ -352,6 +433,8 @@ void		close_all_fds_in_cmd(t_cmd *cmd);
 size_t		ft_str_count(char **cmd_args);
 bool		ft_is_natural(char *arg);
 size_t		max_len(char *s1, char *s2);
+int			safe_assign_str(char **dest, const char *src);
+size_t		ft_strcspn(const char *str, const char *reject);
 
 // ================ FREE ================ //
 
@@ -374,6 +457,7 @@ t_builtin	check_builtin(char *cmd_name);
 size_t		count_cmds(t_cmd *head);
 t_ecode		create_std_backup(int backup[2]);
 t_ecode		dup_and_close(int oldfd, int newfd);
+bool		ft_ispath(const char *str);
 
 char		*get_cmd_path(t_shell *shell, char *cmd_name);
 void		handle_builtin(t_shell *shell, t_cmd *cmd);
@@ -397,7 +481,8 @@ t_ecode		check_curpath_access(char *curpath);
 
 //	chdir_cdpath.c
 t_ecode		chdir_cdpath(t_env **env_list, char *directory, char *cwd);
-t_ecode		traverse_and_chdir_cdpath(char **cdpath_values, ssize_t values_count, char *directory);
+t_ecode		traverse_and_chdir_cdpath(char **cdpath_values, \
+			ssize_t values_count, char *directory);
 t_ecode		chdir_null_cdpath(char *directory, ssize_t *i, int8_t *null_flag);
 t_ecode		chdir_cdpath_value(char *cdpath_value, char *directory, ssize_t *i);
 

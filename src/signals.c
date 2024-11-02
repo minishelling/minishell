@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   signals.c                                          :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/10/31 13:43:26 by lprieri       #+#    #+#                 */
+/*   Updated: 2024/10/31 13:43:27 by lprieri       ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
 
 // Ctrl-C = SIGINT	-> displays a new prompt on a new line.
@@ -20,7 +32,7 @@ void	sigint_handler_parent_non_interactive(int signal)
 	g_signalcode = signal;
 	write(STDOUT_FILENO, "\n", 1);
 	rl_on_new_line();
-	rl_replace_line("", 0);	
+	rl_replace_line("", 0);
 }
 
 void	sigint_handler_heredoc_parent(int signal)

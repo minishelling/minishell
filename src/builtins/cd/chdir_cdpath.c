@@ -1,20 +1,46 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   chdir_cdpath.c                                     :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/10/31 13:32:00 by lprieri       #+#    #+#                 */
+/*   Updated: 2024/10/31 17:15:49 by lprieri       ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../../include/minishell.h"
 
 /**
- * @brief Retrieves the directories in CDPATH if set,
- * and uses them as the current working directory.
- * If the concatenation of a cdpath dir and the directory
- * is a valid and accessible path, then it changes into it.
+ * @brief Attempts to change the current working directory using paths 
+ *        specified in the CDPATH environment variable.
  * 
- * @param env_list A double pointer to the environment list.
- * @param directory The directory to change into.
- * @param cwd The current working directory.
+ * This function retrieves directories listed in the `CDPATH` 
+ * environment variable and checks if appending the target directory 
+ * to any of these paths results in a valid and accessible directory. 
+ * If a valid path is found, it changes into that directory. 
  * 
- * @return If it manages to change directories and update OLDPWD
- * and PWD successfully it returns SUCCESS. On malloc failures
- * it prints an error message and returns an error code.
- * Otherwise it returns PROCEED, which indicates to the main cd function
- * to proceed with the default functionality.
+ * @param[in] env_list A double pointer to the environment list 
+ *                     containing environment variables, including 
+ *                     `CDPATH`.
+ * @param[in] directory The directory string to be appended to 
+ *                      each `CDPATH` directory.
+ * @param[in] cwd The current working directory to update the 
+ *                `OLDPWD` variable upon a successful change.
+ * 
+ * @return Returns SUCCESS if the directory change is successful 
+ *         and the `OLDPWD` and `PWD` variables are updated. 
+ *         If memory allocation fails, it prints an error message 
+ *         and returns MALLOC_ERROR. If no valid path is found 
+ *         but the operation can proceed normally, it returns 
+ *         PROCEED to signal the caller to continue with default 
+ *         functionality.
+ * 
+ * @note If `CDPATH` is not set or if the provided directory does 
+ *       not yield any valid paths, the function will return 
+ *       PROCEED, allowing the caller to handle the change in 
+ *       directory using standard methods.
  */
 t_ecode	chdir_cdpath(t_env **env_list, char *directory, char *cwd)
 {
@@ -22,6 +48,7 @@ t_ecode	chdir_cdpath(t_env **env_list, char *directory, char *cwd)
 	char	**cdpath_values;
 	ssize_t	values_count;
 	t_ecode	status;
+	char	new_cwd[PATH_MAX];
 
 	if (!*env_list)
 		return (NULL_ENV);
@@ -40,21 +67,37 @@ t_ecode	chdir_cdpath(t_env **env_list, char *directory, char *cwd)
 		return (MALLOC_ERROR);
 	else if (status)
 		return (PROCEED);
+	ft_putendl_fd(getcwd(new_cwd, PATH_MAX), STDOUT_FILENO);
 	return (update_oldpwd_pwd(env_list, cwd));
 }
 
 /**
- * @brief Traverses the list of CDPATH values,
- * appending the directory to each value and attempting
- * to change into that directory.
+ * @brief Traverses the list of CDPATH values to attempt changing 
+ *        the current directory by appending the target directory 
+ *        to each CDPATH value.
  * 
- * @param cdpath_values An array containing all CDPATH values.
- * @param values_count The number of members in the array.
- * @param directory The target directory.
+ * This function iterates through each directory in the `CDPATH` 
+ * environment variable, appending the specified target directory 
+ * to form a complete path. It attempts to change the current 
+ * working directory to the first valid and accessible path found.
  * 
- * @return If there's a malloc failure it returns an error code.
- * In case of a successful directory change it returns SUCCESS.
- * Otherwise it returns the code PROCEED.
+ * @param[in] cdpath_values An array of strings representing all 
+ *                          directory paths specified in the 
+ *                          `CDPATH` environment variable.
+ * @param[in] values_count The number of valid CDPATH entries in 
+ *                         the `cdpath_values` array.
+ * @param[in] directory The target directory string that will be 
+ *                      appended to each CDPATH value for the 
+ *                      change attempt.
+ * 
+ * @return Returns SUCCESS if a valid directory change occurs. 
+ *         If a memory allocation failure occurs, it returns 
+ *         MALLOC_ERROR. If no valid directory change can be made, 
+ *         it returns PROCEED, indicating that the caller should 
+ *         handle the situation using standard methods.
+ * 
+ * @note This function handles cases where the CDPATH value might 
+ *       be NULL and attempts to change to the directory accordingly.
  */
 t_ecode	traverse_and_chdir_cdpath(char **cdpath_values,
 			ssize_t values_count, char *directory)
@@ -87,17 +130,27 @@ t_ecode	traverse_and_chdir_cdpath(char **cdpath_values,
 }
 
 /**
- * @brief In case of a CDPATH being NULL, the default functionality is
- * to append "./" to the directory and attempt to go into there.
+ * @brief Handles directory change attempts when the CDPATH is NULL. 
  * 
- * @param directory The target directory
- * @param i A pointer to the counter of CDPATH values.
- * @param null_flag A flag to indicate if we have already tried this path before.
+ * In the absence of a valid CDPATH, this function attempts to 
+ * change the current directory by prepending "./" to the 
+ * specified target directory.
  * 
- * @return If the null flag is already activated,
- * or if changing into the directory failed, it returns PROCEED.
- * If changing into the directory succeeded it returns SUCCESS.
- * On malloc failure it prints an error message and returns MALLOC_ERROR.
+ * @param[in] directory The target directory string to which 
+ *                      "./" will be prepended for the change 
+ *                      attempt.
+ * @param[in,out] i A pointer to the counter for CDPATH values, 
+ *                  incremented to indicate a new attempt.
+ * @param[in,out] null_flag A pointer to a flag that indicates 
+ *                          whether the null path has already 
+ *                          been attempted. If set to 1, it 
+ *                          indicates that the attempt has been made.
+ * 
+ * @return Returns SUCCESS if the directory change succeeds. 
+ *         If the null_flag is already activated or if the 
+ *         directory change fails, it returns PROCEED. On memory 
+ *         allocation failure, it prints an error message and 
+ *         returns MALLOC_ERROR.
  */
 t_ecode	chdir_null_cdpath(char *directory, ssize_t *i, int8_t *null_flag)
 {
@@ -119,15 +172,24 @@ t_ecode	chdir_null_cdpath(char *directory, ssize_t *i, int8_t *null_flag)
 }
 
 /**
- * @brief Appends the directory to the current value in CDPATH,
- * and attempts to change into that directory.
+ * @brief Attempts to change the current directory by appending 
+ *        the target directory to the specified CDPATH value.
  * 
- * @param cdpath_value The current value being traversed in CDPATH.
- * @param directory The target directory
- * @param i A pointer to the counter of CDPATH values.
+ * This function constructs a new path by combining the 
+ * provided CDPATH value with the target directory, 
+ * and then attempts to change into that new directory.
  * 
- * @return On success it returns SUCCESS. On malloc failure it prints
- * an error code and returns MALLOC_ERROR. Otherwise it returns PROCEED.
+ * @param[in] cdpath_value The current CDPATH value being processed. 
+ * @param[in] directory The target directory to be appended to 
+ *                      the current CDPATH value.
+ * @param[in,out] i A pointer to the counter for CDPATH values, 
+ *                  incremented to reflect the current index.
+ * 
+ * @return Returns SUCCESS if the directory change is successful. 
+ *         If a memory allocation fails at any point, it prints 
+ *         an error message and returns MALLOC_ERROR. If the 
+ *         directory change fails for other reasons, it returns 
+ *         PROCEED to indicate that further attempts may be necessary.
  */
 t_ecode	chdir_cdpath_value(char *cdpath_value, char *directory, ssize_t *i)
 {

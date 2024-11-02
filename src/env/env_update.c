@@ -1,6 +1,23 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   env_update.c                                       :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/10/31 13:32:50 by lprieri       #+#    #+#                 */
+/*   Updated: 2024/10/31 18:06:06 by lprieri       ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../include/minishell.h"
 
+t_ecode			add_last_env_node(t_env **head, t_env *node);
+t_ecode			update_env_node(t_env **head, char *key, char *value, \
+				bool create_node);
 static t_ecode	create_and_add_node(t_env **head, char *key, char *value);
+t_ecode			update_value_in_env_node(t_env *node, char *value);
+t_ecode			update_keyvalue_in_env_node(t_env *node);
 
 /**
  * @brief Appends a node to the environment list.
@@ -96,12 +113,14 @@ static t_ecode	create_and_add_node(t_env **head, char *key, char *value)
 /**
  * @brief Updates the value string in an environment node with the new value.
  * 
+ * If the new value starts with '~', it is expanded to the home directory 
+ * before updating.
+ * 
  * @param node The target node whose value needs updating.
- * @param value The new value.
+ * @param value The new value to set.
  * 
  * @return SUCCESS if the value is successfully replaced,
- * or if the new value is NULL and there was no value,
- * or if the new value is NULL and there was a value the latter is freed.
+ * or if the new value is NULL and there was no value.
  * It returns an ERROR code otherwise.
  */
 t_ecode	update_value_in_env_node(t_env *node, char *value)
@@ -110,13 +129,10 @@ t_ecode	update_value_in_env_node(t_env *node, char *value)
 		return (NULL_NODE);
 	if (!value && !node->value)
 		return (SUCCESS);
-	else if (!value && node->value)
-	{
-		ft_free((void **) &node->value);
-		return (update_keyvalue_in_env_node(node));
-	}
 	if (node->value)
 		ft_free((void **) &node->value);
+	if (value && value[0] == '~')
+		update_home_value(&value);
 	node->value = ft_strdup(value);
 	if (!node->value)
 		return (handle_perror("update_value_in_env_node"), MALLOC_ERROR);

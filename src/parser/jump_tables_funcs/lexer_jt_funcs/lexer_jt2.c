@@ -1,6 +1,32 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   lexer_jt2.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tfeuer <tfeuer@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/31 13:25:22 by tfeuer            #+#    #+#             */
+/*   Updated: 2024/10/31 13:25:23 by tfeuer           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../../../include/minishell.h"
 
-int	advance_pos_quote(char *str, size_t *pos, t_token_id *token_id)
+t_ecode_p	advance_pos_quote(char *str, size_t *pos, t_token_id *token_id);
+t_ecode_p	advance_pos_env_var(char *str, size_t *pos, t_token_id *token_id);
+
+/**
+ * @brief Advances the position through quoted strings.
+ *
+ * This function skips the initial quote and continues until it finds
+ * the matching closing quote, advancing the position in the process.
+ *
+ * @param str The input string.
+ * @param pos A pointer to the current position in the string.
+ * @param token_id The current token ID being processed.
+ * @return Returns a status indicating success.
+ */
+t_ecode_p	advance_pos_quote(char *str, size_t *pos, t_token_id *token_id)
 {
 	(*pos)++;
 	while (str[*pos] && *token_id != get_token_id(str[*pos]))
@@ -10,7 +36,18 @@ int	advance_pos_quote(char *str, size_t *pos, t_token_id *token_id)
 	return (PARSING_OK);
 }
 
-int	advance_pos_env_var(char *str, size_t *pos, t_token_id *token_id)
+/**
+ * @brief Advances the position through environment variable tokens.
+ *
+ * This function handles the special case of environment variables, including
+ * the `$?` status and checking for valid variable names.
+ *
+ * @param str The input string.
+ * @param pos A pointer to the current position in the string.
+ * @param token_id The current token ID being processed (unused).
+ * @return Returns a status indicating success or an error code.
+ */
+t_ecode_p	advance_pos_env_var(char *str, size_t *pos, t_token_id *token_id)
 {
 	(void) token_id;
 	(*pos)++;

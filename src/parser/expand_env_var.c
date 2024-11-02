@@ -1,13 +1,47 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expand_env_var.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tfeuer <tfeuer@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/31 13:26:19 by tfeuer            #+#    #+#             */
+/*   Updated: 2024/10/31 13:26:20 by tfeuer           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../include/minishell.h"
 
 void		handle_var_sign(t_shell *shell, char **str, char **expanded_str, \
 	t_env *env_list);
-void		expand_env_var(char **str, char **expanded_str, t_env *env_list);
+static void	expand_env_var(char **str, char **expanded_str, t_env *env_list);
 static char	*get_variable_name(char *var_start, char *var_end);
 
-// If it comes from "decide expansion type" and there are no quotes and a 
-// single $ before ending, or if it comes from "handle_dquote" and is the last
-// $ sign before a \' as in "'$'"
+/**
+ * @brief Handles the variable sign ($) in the input string and performs 
+ *        variable expansion or copies it literally if appropriate.
+ *
+ * This function processes a dollar sign ($) found in the input string.
+ * It checks for specific conditions:
+ * - If the dollar sign is standalone or preceded by a single quote (e.g.,
+ *   the end portion of '$'), it is copied literally to the expanded string.
+ * - If it is "$?", it appends the exit code to the expanded string.
+ * - Otherwise, it calls expand_env_var to handle environmental variable 
+ *   expansion.
+ *
+ * This function is called in two scenarios: 
+ * 1. If it comes from expand_token_str function, and there are no quotes,
+ *    with a single $ at the end of the string.
+ * 2. If it comes from "handle_dquote" and is the last $ sign 
+ *    before a single quote, as in "'$'".
+ *
+ * @param shell Pointer to the shell structure containing exit code and 
+ *              environment list.
+ * @param str Pointer to the current position in the string being processed.
+ * @param expanded_str Pointer to the string where expanded results are 
+ *                     stored.
+ * @param env_list Pointer to the environment variable list.
+ */
 void	handle_var_sign(t_shell *shell, char **str, char **expanded_str, \
 	t_env *env_list)
 {
@@ -32,7 +66,24 @@ void	handle_var_sign(t_shell *shell, char **str, char **expanded_str, \
 		expand_env_var(str, expanded_str, env_list);
 }
 
-void	expand_env_var(char **str, char **expanded_str, t_env *env_list)
+/**
+ * @brief Expands an environment variable found in the input string.
+ *
+ * This function processes a portion of the input string starting from a 
+ * dollar sign ($) and identifies the name of the environment variable 
+ * to be expanded. It retrieves the corresponding value from the 
+ * environment list and appends it to the expanded string.
+ *
+ * If the environment variable name is invalid, memory for the expanded 
+ * string is freed. If the dollar sign is followed by another dollar sign, 
+ * it appends a literal dollar sign to the expanded string.
+ *
+ * @param str Pointer to the current position in the string being processed.
+ * @param expanded_str Pointer to the string where expanded results are 
+ *                     stored.
+ * @param env_list Pointer to the environment variable list.
+ */
+static void	expand_env_var(char **str, char **expanded_str, t_env *env_list)
 {
 	char	*var_start;
 	char	*var_end;
@@ -58,6 +109,26 @@ void	expand_env_var(char **str, char **expanded_str, t_env *env_list)
 	*str = var_end;
 }
 
+/**
+ * @brief Extracts the variable name from the input string.
+ *
+ * This function identifies and extracts the variable name that starts 
+ * with a dollar sign ($) in the input string. It scans the string from 
+ * the starting point of the variable name until it finds a character 
+ * that is not alphanumeric or an underscore. The extracted variable 
+ * name is returned as a new string.
+ *
+ * If memory allocation for the variable name fails, this function 
+ * returns NULL.
+ *
+ * @param var_start Pointer to the start of the variable name in the 
+ *                  input string.
+ * @param var_end Pointer to the end of the variable name in the input 
+ *                string.
+ *
+ * @return A pointer to the extracted variable name string, or NULL if 
+ *         memory allocation fails.
+ */
 static char	*get_variable_name(char *var_start, char *var_end)
 {
 	char	*var_name;

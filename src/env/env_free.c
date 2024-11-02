@@ -1,4 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   env_free.c                                         :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/10/31 13:32:46 by lprieri       #+#    #+#                 */
+/*   Updated: 2024/10/31 13:32:46 by lprieri       ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../include/minishell.h"
+
+void	free_env_list(t_env	**head);
+void	free_env_node(t_env **node);
 
 /**
  * @brief Frees all environment nodes with its variables.

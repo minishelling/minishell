@@ -1,8 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   redirections.c                                     :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/10/31 13:32:33 by lprieri       #+#    #+#                 */
+/*   Updated: 2024/10/31 13:32:34 by lprieri       ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../include/minishell.h"
 
-t_ecode	open_redirections(t_cmd *cmd);
-static t_ecode	open_current_redir(t_redir_id redir_id,
-					char *redir_file, int *fd);
+t_ecode			open_redirections(t_cmd *cmd);
+static t_ecode	open_current_redir(t_redir_id redir_id, \
+	char *redir_file, int *fd);
 static t_ecode	replace_redir_fd(t_cmd *cmd, t_redir *redir);
 static t_ecode	close_and_replace(int replacement, int *oldfd);
 

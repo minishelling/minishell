@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   chdir_default.c                                    :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/10/31 13:32:01 by lprieri       #+#    #+#                 */
+/*   Updated: 2024/10/31 13:38:26 by lprieri       ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../../include/minishell.h"
 
 static t_ecode	handle_tilde_absolute_path(t_env **env_list, char *directory);
@@ -6,17 +18,23 @@ static t_ecode	handle_absolute_path(char *directory);
 static t_ecode	handle_relative_path(char *directory, char *cwd);
 
 /**
- * @brief It will attempt to change directory if the directory is
- * an absolute path, an absolute path beginning with tilde,
- * or a relative path and CDPATH was not valid.
+ * @brief Attempts to change the current directory
+ * 			based on the provided directory path.
  * 
- * @param env_list A double pointer to the head of the environment list.
- * @param directory The directory to change into.
- * @param cwd The current working directory.
+ * This function handles three types of paths: 
+ * - Absolute paths (starting with '/')
+ * - Absolute paths beginning with a tilde ('~')
+ * - Relative paths, which are processed if CDPATH is not valid.
  * 
- * @return If it successfully changed directories,
- * and updates the OLDPWD and PWD it returns SUCCESS.
- * On failure it returns an error code and prints an error message.
+ * @param env_list A double pointer to the head of the environment list, 
+ *                 allowing for updates to environment variables.
+ * @param directory The target directory to change into.
+ * @param cwd The current working directory, used for resolving relative paths.
+ * 
+ * @return Returns SUCCESS if the directory change was successful 
+ *         and updates the OLDPWD and PWD environment variables. 
+ *         If the change fails for any reason, it returns an appropriate 
+ *         error code and prints an error message.
  */
 t_ecode	chdir_default(t_env **env_list, char *directory, char *cwd)
 {
@@ -34,14 +52,21 @@ t_ecode	chdir_default(t_env **env_list, char *directory, char *cwd)
 }
 
 /**
- * @brief It replaces tilde with the home directory,
- * and attempts to change into that modified directory.
+ * @brief Replaces the tilde ('~') in the given directory path 
+ *        with the user's home directory and attempts to change to that path.
  * 
- * @param env_list A double pointer to the environment list.
- * @param directory The absolute path directory beginning with tilde.
+ * This function retrieves the absolute path corresponding to the tilde, 
+ * checks if the modified path is accessible, and then performs the directory 
+ * change if it is valid.
  * 
- * @return On success it returns SUCCESS. On failure an error message
- * is printed and it returns FAILURE.
+ * @param[in] env_list A double pointer to the environment list, 
+ *                 which is used to retrieve the home directory.
+ * @param[in] directory The absolute path that begins with a tilde ('~'), 
+ *               indicating that it should be replaced with the home directory.
+ * 
+ * @return Returns SUCCESS if the directory change is successful. 
+ *         If the path is not accessible or if changing the directory fails, 
+ *         an error message is printed, and it returns FAILURE.
  */
 static t_ecode	handle_tilde_absolute_path(t_env **env_list, char *directory)
 {
@@ -61,15 +86,23 @@ static t_ecode	handle_tilde_absolute_path(t_env **env_list, char *directory)
 }
 
 /**
- * @brief Replaces tilde with the home directory
- * and returns the absolute path of the directory.
+ * @brief Replaces the tilde ('~') in the specified directory path 
+ *        with the user's home directory and constructs the absolute path.
  * 
- * @param env_list The environment list to use for the HOME directory.
- * @param directory The target directory.
+ * This function checks if the given directory starts with a tilde. If so, 
+ * it retrieves the home directory path from the environment variables or 
+ * falls back to the HOME environment variable. It then appends the rest 
+ * of the directory path after the tilde.
  * 
- * @return On success it returns a string that has the tilde replaced
- * with the home directory.
- * On failure it returns NULL and prints an error message.
+ * @param[in] env_list A pointer to the environment list, which is used 
+ *                  to find the HOME directory.
+ * @param[in] directory The target directory string that may begin with a tilde
+ * 
+ * @return Returns a newly allocated string containing the absolute path 
+ *         with the tilde replaced by the home directory on success. 
+ *         Returns NULL and prints an error message if there are issues 
+ *         with memory allocation or if the directory does not start 
+ *         with a valid format.
  */
 static char	*get_tilde_absolute_path(t_env *env_list, char *directory)
 {
@@ -99,14 +132,19 @@ static char	*get_tilde_absolute_path(t_env *env_list, char *directory)
 }
 
 /**
- * @brief Checks access of the directory path,
- * and if the directory has access it attempts to change into it.
+ * @brief Checks the accessibility of a given absolute directory path 
+ *        and attempts to change the current working directory to it.
  * 
- * @param directory The directory to change into.
+ * This function first verifies if the specified absolute directory 
+ * is accessible. If access is granted, it then attempts to change 
+ * the current working directory to that directory. 
  * 
- * @return If the directory has no access it prints an error message
- * and returns FAILURE. If it fails to change directories it also returns
- * FAILURE. Otherwise it returns SUCCESS.
+ * @param[in] directory The absolute path of the directory to change into.
+ * 
+ * @return Returns FAILURE if the directory is inaccessible or if 
+ *         the change directory operation fails, printing an error 
+ *         message in both cases. Returns SUCCESS if the directory 
+ *         change is successful.
  */
 static t_ecode	handle_absolute_path(char *directory)
 {
@@ -121,15 +159,23 @@ static t_ecode	handle_absolute_path(char *directory)
 }
 
 /**
- * @brief Concatenates the directory to the current working directory,
- * and tries to change into it.
+ * @brief Constructs a full path by concatenating the current working 
+ *        directory with a relative directory path, and attempts to 
+ *        change into the resulting directory.
  * 
- * @param directory The relative path to the directory.
- * @param cwd The current working directory.
+ * This function takes a relative directory path and the current 
+ * working directory, concatenates them to form an absolute path, 
+ * and then attempts to change the current working directory to that 
+ * absolute path.
  * 
- * @return It returns FAILURE on malloc errors or if it unsuccessfully
- * changed directories, printing an error message as well.
- * Otherwise it returns SUCCESS.
+ * @param[in] directory The relative path of the directory to change into.
+ * @param[in] cwd The current working directory, used as the base for 
+ *            constructing the new path.
+ * 
+ * @return Returns FAILURE if there are any memory allocation errors 
+ *         or if the directory change fails, printing an appropriate 
+ *         error message in both cases. Returns SUCCESS if the 
+ *         directory change is successful.
  */
 static t_ecode	handle_relative_path(char *directory, char *cwd)
 {

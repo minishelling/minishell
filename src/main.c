@@ -1,11 +1,23 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tfeuer <tfeuer@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/31 13:43:26 by tfeuer            #+#    #+#             */
+/*   Updated: 2024/10/31 13:43:27 by tfeuer           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/minishell.h"
 
 static void	init_shell(t_shell *shell, int argc, char **argv, char **envp)
 {
-	(void)argv;
-	if (argc > 1)
+	if (argc > 2 || (argc == 2 && ft_strncmp(argv[1], "-d", 3) != 0))
 	{
-		ft_putstr_fd("Mini_shared: Error: too many arguments\n", 2);
+		ft_putstr_fd("Usage:  ./minishell \
+			\nor	./minishell -v for debug mode\n", 2);
 		exit(EXIT_FAILURE);
 	}
 	g_signalcode = 0;
@@ -13,6 +25,13 @@ static void	init_shell(t_shell *shell, int argc, char **argv, char **envp)
 	shell->tree = NULL;
 	shell->exit_code = 0;
 	shell->env_list = NULL;
+	if (argc == 2 && ft_strncmp(argv[1], "-d", 3) == 0)
+	{
+		shell->debug_mode = ON;
+		ft_putstr_fd("Debug mode enabled\n", 1);
+	}
+	else
+		shell->debug_mode = OFF;
 	if (create_env_list(&shell->env_list, envp))
 	{
 		ft_putstr_fd("Mini_shared: Error: Failed to initialize\n", 2);
