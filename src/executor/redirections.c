@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        ::::::::            */
-/*   redirections.c                                     :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/10/31 13:32:33 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/10/31 13:32:34 by lprieri       ########   odam.nl         */
+/*                                                        :::      ::::::::   */
+/*   redirections.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tfeuer <tfeuer@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/31 13:32:33 by lprieri           #+#    #+#             */
+/*   Updated: 2024/11/04 00:36:58 by tfeuer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@ t_ecode	open_redirections(t_cmd *cmd)
 	t_redir	*current_redir;
 
 	if (!cmd)
+		return (FAILURE);
+	if (cmd && !cmd->args[0])
 		return (FAILURE);
 	current_redir = cmd->redir;
 	while (current_redir)

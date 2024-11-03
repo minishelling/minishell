@@ -6,7 +6,7 @@
 /*   By: tfeuer <tfeuer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 13:26:54 by tfeuer            #+#    #+#             */
-/*   Updated: 2024/10/31 13:26:55 by tfeuer           ###   ########.fr       */
+/*   Updated: 2024/11/04 00:40:18 by tfeuer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ void	make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token, \
 {
 	size_t		arg_num;
 	t_ecode_p	err_no;
-
+	
 	*cmd = new_cmd();
 	if (!*cmd)
 		handle_parsing_err(shell, ERR_CMD);
@@ -83,8 +83,10 @@ void	make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token, \
 	if (!(*cmd)->args)
 		handle_parsing_err(shell, ERR_CMD);
 	err_no = traverse_tokens_to_make_cmd(*cmd, start_token, end_token);
-	if (err_no)
+	if (err_no && err_no != 1)
 		handle_parsing_err(shell, err_no);
+	else if (err_no == 1)
+		shell->exit_code = 1;
 }
 
 /**
@@ -117,7 +119,7 @@ static size_t	get_arg_num(t_token *start_token, t_token *end_token)
 			|| cur_token->id == SQUOTE || cur_token->id == DQUOTE \
 			|| cur_token->id == WORD)
 			arg_count++;
-		if (cur_token->id == LT || cur_token->id == GT)
+		if ((cur_token->id == LT || cur_token->id == GT) && cur_token->next && *(cur_token->next->str) != '\0')
 			arg_count--;
 		if (cur_token == end_token)
 			break ;
@@ -147,7 +149,7 @@ static t_ecode_p	traverse_tokens_to_make_cmd(t_cmd *cmd, \
 	{
 		err_no = build_command_from_token(cmd, start_token);
 		if (err_no)
-			return (ERR_CMD);
+			return (err_no);
 		if (start_token == end_token)
 			break ;
 		if (start_token->id == LT || start_token->id == GT)

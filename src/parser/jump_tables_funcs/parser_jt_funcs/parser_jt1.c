@@ -6,7 +6,7 @@
 /*   By: tfeuer <tfeuer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 13:25:34 by tfeuer            #+#    #+#             */
-/*   Updated: 2024/10/31 13:25:35 by tfeuer           ###   ########.fr       */
+/*   Updated: 2024/11/04 00:35:33 by tfeuer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,22 +19,19 @@ t_ecode_p			parser_arith_expan(t_cmd *cmd_node, t_token *token);
 t_ecode_p			parser_add_new_arg(t_cmd *cmd, t_token *token);
 
 /**
- * @brief Parses redirection tokens and adds them to the command.
+ * @brief Creates a new command from the token list.
  *
- * Processes a redirection token and associates it with the 
- * appropriate file. It checks for memory allocation errors and 
- * validates the syntax of the redirection file name before adding 
- * it to the command's redirection list.
+ * Allocates memory for a new command and populates its arguments by 
+ * traversing tokens from the start token to the end token. If any 
+ * allocation fails, it handles the parsing error appropriately. 
+ * If an ambiguous redirect is encountered (indicated by a return 
+ * value of 1 from the parser_redir function), it sets the shell's 
+ * exit code to 1 without printing an additional error message.
  *
- * @param cmd Pointer to the command structure where the redirection 
- *            will be stored.
- * @param token Pointer to the redirection token being processed.
- *
- * @return 
- * - PARSING_OK if redirection is successfully parsed and added,
- * - ERR_MEM if memory allocation fails,
- * - ERR_SYNTAX_ERROR if the redirection file name is invalid 
- *   (e.g., starts with '|', '&', ';', '(', or ')').
+ * @param shell Pointer to the shell structure.
+ * @param cmd Double pointer to the command structure to be created.
+ * @param start_token Pointer to the starting token for command creation.
+ * @param end_token Pointer to the ending token for command creation.
  */
 t_ecode_p	parser_redir(t_cmd *cmd, t_token *token)
 {
@@ -43,6 +40,11 @@ t_ecode_p	parser_redir(t_cmd *cmd, t_token *token)
 
 	if (token->next)
 		file_token = token->next;
+	if (*file_token->str == '\0')
+	{	
+		ft_putstr_fd("Error: ambiguous redirect\n", 2);
+		return (1);
+	}
 	redir_list = new_redir();
 	if (!redir_list)
 		return (ERR_MEM);
