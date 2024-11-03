@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   echo.c                                             :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/10/31 13:32:06 by lprieri       #+#    #+#                 */
+/*   Updated: 2024/10/31 13:32:07 by lprieri       ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../include/minishell.h"
 
 static void	print_echo_chars(char **strs_arr, bool no_newline);

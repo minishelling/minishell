@@ -1,4 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   env_print.c                                        :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/10/31 13:32:48 by lprieri       #+#    #+#                 */
+/*   Updated: 2024/10/31 13:32:48 by lprieri       ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../include/minishell.h"
+
+void	print_env_node_debugging(t_env *node);
+void	print_env_node(t_env *node);
+void	print_env_list(t_env *head);
 
 /**
  * @brief Prints all the variables in an environment node, if they exist.
@@ -10,7 +26,7 @@
  * 
  * @return void
  */
-void	print_env_node_debugging_debugging(t_env *node)
+void	print_env_node_debugging(t_env *node)
 {
 	if (!node)
 		return ;

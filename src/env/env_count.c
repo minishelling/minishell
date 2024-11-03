@@ -1,4 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   env_count.c                                        :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/10/31 13:32:43 by lprieri       #+#    #+#                 */
+/*   Updated: 2024/10/31 18:02:25 by lprieri       ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../include/minishell.h"
+
+ssize_t	count_keyvalue_env_nodes(t_env *env_list);
+ssize_t	count_key_env_nodes(t_env *env_list);
+ssize_t	count_envp_keys(char **envp);
+ssize_t	count_values_from_env_node(t_env *env_list, char *key);
 
 /**
  * @brief Counts the number of key-value strings in an environment list.

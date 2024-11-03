@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   get_cmd_path.c                                     :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/10/31 13:32:31 by lprieri       #+#    #+#                 */
+/*   Updated: 2024/10/31 13:32:32 by lprieri       ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../include/minishell.h"
 
 static char	*check_name_as_path(t_shell *shell, char *cmd_name);

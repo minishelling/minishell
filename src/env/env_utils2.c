@@ -1,4 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   env_utils2.c                                       :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/10/31 13:32:51 by lprieri       #+#    #+#                 */
+/*   Updated: 2024/10/31 18:06:58 by lprieri       ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../include/minishell.h"
+
+t_ecode	update_home_value(char **value);
 
 /**
  * @brief Updates a given value by replacing the initial tilde ('~')

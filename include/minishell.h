@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   minishell.h                                        :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: tfeuer <tfeuer@student.42.fr>                +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/10/31 13:42:49 by tfeuer        #+#    #+#                 */
+/*   Updated: 2024/10/31 18:14:32 by lprieri       ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
@@ -363,33 +375,54 @@ void		print_heredoc_newline(void);
 
 // ================ ENV ================ //
 
+//ENV_COUNT
+
 ssize_t		count_keyvalue_env_nodes(t_env *env_list);
 ssize_t		count_key_env_nodes(t_env *env_list);
 ssize_t		count_envp_keys(char **envp);
 ssize_t		count_values_from_env_node(t_env *env_list, char *key);
+
+//ENV_CREATE_ARRAY
+
 char		**create_env_array(t_env *env);
 char		**create_export_array(t_env *env);
+
+//ENV_FREE
+
 void		free_env_list(t_env	**head);
 void		free_env_node(t_env **node);
+
+//ENV_INIT
+
 t_env		*new_env_node(void);
 t_ecode		populate_env_node(t_env **node, char *keyval);
 t_env		*create_populated_env_node(char *keyval);
 t_ecode		create_env_list(t_env **head, char **envp);
+
+//ENV_PRINT
+
 void		print_env_node_debugging(t_env *node);
+void		print_env_node(t_env *node);
 void		print_env_list(t_env *head);
+
+//ENV_UPDATE
+
 t_ecode		add_last_env_node(t_env **head, t_env *node);
 t_ecode		update_env_node(t_env **head, char *key, char *value, \
-	bool create_node);
+				bool create_node);
 t_ecode		update_value_in_env_node(t_env *node, char *value);
 t_ecode		update_keyvalue_in_env_node(t_env *node);
-t_ecode		update_pwd(t_env *env_head);
+
+//ENV_UTILS
+
 char		*get_key_from_keyvalue(char *keyvalue);
 t_ecode		get_value_from_keyvalue(char *keyvalue, char **value_ptr);
 t_env		*find_env_node(t_env *env, char *key);
 t_env		*get_last_env_node(t_env *head);
+char		*get_env_value_from_key(t_env *env_list, char *token_key);
 t_ecode		update_home_value(char **value);
 
-// UTILS
+// ================ UTILS ================ //
 
 char		**ft_strjoin_arr(char **arr, char *str);
 char		*ft_strjoin_fs1(char **s1, const char *s2);

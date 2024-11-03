@@ -1,4 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   env_utils.c                                        :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/10/31 13:32:51 by lprieri       #+#    #+#                 */
+/*   Updated: 2024/10/31 13:32:51 by lprieri       ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../include/minishell.h"
+
+char	*get_key_from_keyvalue(char *keyvalue);
+t_ecode	get_value_from_keyvalue(char *keyvalue, char **value_ptr);
+t_env	*find_env_node(t_env *env, char *key);
+t_env	*get_last_env_node(t_env *head);
+char	*get_env_value_from_key(t_env *env_list, char *token_key);
 
 /**
  * @brief Gets the key from a keyvalue string.

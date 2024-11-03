@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   chdir_default.c                                    :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/10/31 13:32:01 by lprieri       #+#    #+#                 */
+/*   Updated: 2024/10/31 13:38:26 by lprieri       ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../../include/minishell.h"
 
 static t_ecode	handle_tilde_absolute_path(t_env **env_list, char *directory);
@@ -7,7 +19,7 @@ static t_ecode	handle_relative_path(char *directory, char *cwd);
 
 /**
  * @brief Attempts to change the current directory
- * 		  based on the provided directory path.
+ * 			based on the provided directory path.
  * 
  * This function handles three types of paths: 
  * - Absolute paths (starting with '/')

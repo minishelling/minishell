@@ -1,6 +1,23 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   env_update.c                                       :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/10/31 13:32:50 by lprieri       #+#    #+#                 */
+/*   Updated: 2024/10/31 18:06:06 by lprieri       ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../include/minishell.h"
 
+t_ecode			add_last_env_node(t_env **head, t_env *node);
+t_ecode			update_env_node(t_env **head, char *key, char *value, \
+				bool create_node);
 static t_ecode	create_and_add_node(t_env **head, char *key, char *value);
+t_ecode			update_value_in_env_node(t_env *node, char *value);
+t_ecode			update_keyvalue_in_env_node(t_env *node);
 
 /**
  * @brief Appends a node to the environment list.

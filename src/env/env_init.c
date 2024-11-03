@@ -1,4 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   env_init.c                                         :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2024/10/31 13:32:47 by lprieri       #+#    #+#                 */
+/*   Updated: 2024/10/31 18:03:55 by lprieri       ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../include/minishell.h"
+
+t_env	*new_env_node(void);
+t_ecode	populate_env_node(t_env **node, char *keyval);
+t_env	*create_populated_env_node(char *keyval);
+t_ecode	create_env_list(t_env **head, char **envp);
 
 /**
  * @brief Creates a new environment node.
@@ -57,7 +74,7 @@ t_ecode	populate_env_node(t_env **node, char *keyval)
 	if (value)
 	{
 		status = update_value_in_env_node(*node, value);
-		ft_free((void **)&value);
+		ft_free((void **) &value);
 	}
 	return (status);
 }

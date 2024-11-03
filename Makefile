@@ -148,7 +148,7 @@ clean:
 
 fclean: clean
 	@rm -f $(NAME)
-	@$(MAKE) -C $(LIBFT_DIR) clean >/dev/null
+	@$(MAKE) -C $(LIBFT_DIR) fclean >/dev/null
 	@echo "$(YELLOW)Cleanup: Build artifacts and temporary files removed.$(RESET)";
 
 re: fclean all
