@@ -51,7 +51,7 @@ int	executor(t_shell *shell, t_cmd *cmd)
 {
 	t_builtin	is_builtin;
 
-	if (!cmd->args[0])
+	if (!cmd->args[0] || !cmd->args[0][0])
 	{
 		shell->exit_code = SUCCESS;
 		return (shell->exit_code);

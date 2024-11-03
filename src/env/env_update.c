@@ -130,12 +130,16 @@ t_ecode	update_value_in_env_node(t_env *node, char *value)
 {
 	if (!node)
 		return (NULL_NODE);
-	if (!value && !node->value)
+	if (!value)
 		return (SUCCESS);
 	if (node->value)
 		ft_free((void **) &node->value);
 	if (value && value[0] == '~')
-		update_home_value(&value);
+	{
+		if (update_home_value(&value))
+			return (handle_perror("update_value_in_env_node"), MALLOC_ERROR);
+		return (update_keyvalue_in_env_node(node));
+	}
 	node->value = ft_strdup(value);
 	if (!node->value)
 		return (handle_perror("update_value_in_env_node"), MALLOC_ERROR);
