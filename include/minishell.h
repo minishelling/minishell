@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
-/*                                                        ::::::::            */
-/*   minishell.h                                        :+:    :+:            */
-/*                                                     +:+                    */
-/*   By: tfeuer <tfeuer@student.42.fr>                +#+                     */
-/*                                                   +#+                      */
-/*   Created: 2024/10/31 13:42:49 by tfeuer        #+#    #+#                 */
-/*   Updated: 2024/10/31 18:14:32 by lprieri       ########   odam.nl         */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tfeuer <tfeuer@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/10/31 13:42:49 by tfeuer            #+#    #+#             */
+/*   Updated: 2024/11/04 13:28:42 by tfeuer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -332,7 +332,7 @@ void		handle_var_sign(t_shell *shell, char **str, char **expanded_str, \
 //REDIRECTION
 t_redir		*new_redir(void);
 void		add_redir_in_back(t_redir **list, t_redir *new_redir);
-t_ecode		open_redirections(t_cmd *cmd);
+t_ecode		open_redirections(t_shell *shell, t_cmd *cmd);
 
 // ================ PARSING SIDE OF EXECUTION ================ //
 

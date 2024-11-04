@@ -6,7 +6,7 @@
 /*   By: tfeuer <tfeuer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 13:26:54 by tfeuer            #+#    #+#             */
-/*   Updated: 2024/11/04 00:40:18 by tfeuer           ###   ########.fr       */
+/*   Updated: 2024/11/04 13:40:56 by tfeuer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,8 @@ t_ecode_p	parse(t_shell *shell)
  * Allocates memory for a new command and populates its arguments by 
  * traversing tokens from the start token to the end token. If any 
  * allocation fails, it handles the parsing error appropriately.
+ * In the beginning of open_redirections, we will make a distinction 
+ * between <$invalid (exit code = 1) and $invalid (exit code = 0).
  *
  * @param shell Pointer to the shell structure.
  * @param cmd Double pointer to the command structure to be created.
@@ -87,6 +89,8 @@ void	make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token, \
 		handle_parsing_err(shell, err_no);
 	else if (err_no == 1)
 		shell->exit_code = 1;
+	else if (err_no == 0)
+		shell->exit_code = 0;
 }
 
 /**
