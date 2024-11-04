@@ -6,7 +6,7 @@
 /*   By: tfeuer <tfeuer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 13:25:34 by tfeuer            #+#    #+#             */
-/*   Updated: 2024/11/04 13:39:43 by tfeuer           ###   ########.fr       */
+/*   Updated: 2024/11/04 13:44:17 by tfeuer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ t_ecode_p	parser_redir(t_cmd *cmd, t_token *token)
 
 	file_token = token->next;
 	if (*file_token->str == '\0')
-	{	
+	{
 		ft_putstr_fd("Error: ambiguous redirect\n", 2);
 		return (1);
 	}

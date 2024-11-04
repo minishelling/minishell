@@ -6,7 +6,7 @@
 /*   By: tfeuer <tfeuer@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 13:26:54 by tfeuer            #+#    #+#             */
-/*   Updated: 2024/11/04 13:40:56 by tfeuer           ###   ########.fr       */
+/*   Updated: 2024/11/04 13:45:19 by tfeuer           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ void	make_cmd(t_shell *shell, t_cmd **cmd, t_token *start_token, \
 {
 	size_t		arg_num;
 	t_ecode_p	err_no;
-	
+
 	*cmd = new_cmd();
 	if (!*cmd)
 		handle_parsing_err(shell, ERR_CMD);
@@ -123,7 +123,8 @@ static size_t	get_arg_num(t_token *start_token, t_token *end_token)
 			|| cur_token->id == SQUOTE || cur_token->id == DQUOTE \
 			|| cur_token->id == WORD)
 			arg_count++;
-		if ((cur_token->id == LT || cur_token->id == GT) && cur_token->next && *(cur_token->next->str) != '\0')
+		if ((cur_token->id == LT || cur_token->id == GT) && cur_token->next && \
+			*(cur_token->next->str) != '\0')
 			arg_count--;
 		if (cur_token == end_token)
 			break ;
