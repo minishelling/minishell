@@ -6,7 +6,7 @@
 /*   By: lprieri <lprieri@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/10/31 13:32:50 by lprieri       #+#    #+#                 */
-/*   Updated: 2024/10/31 18:06:06 by lprieri       ########   odam.nl         */
+/*   Updated: 2024/11/04 19:56:01 by lisandro      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,6 @@ t_ecode	update_value_in_env_node(t_env *node, char *value)
 	{
 		if (update_home_value(&value))
 			return (handle_perror("update_value_in_env_node"), MALLOC_ERROR);
-		return (update_keyvalue_in_env_node(node));
 	}
 	node->value = ft_strdup(value);
 	if (!node->value)
