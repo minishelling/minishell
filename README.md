@@ -1,3 +1,5 @@
+![Minishell](./fd5f9ac1-e3b1-4623-be28-bd3c7a341bd5.gif)
+
 # Usage
 
 Clone this repository:
@@ -15,3 +17,4 @@ And then run the program:
 For debug mode, run:
 
 `./minishell -d`
+
