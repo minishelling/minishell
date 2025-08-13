@@ -1,6 +1,6 @@
 # Welcome to MiniShared 🤜🤛
 
-![Demo](assets/minishell_gif.gif)
+[![Demo](assets/minishell_gif.gif)](assets/minishell_video.mkv)
 
 # Usage
 
