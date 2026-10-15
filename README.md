@@ -7,7 +7,7 @@
 Prerequisites:
 
 ```
-sudo apt update && sudo apt install -y libreadline-dev
+sudo apt update && sudo apt install -y build-essential libreadline-dev libbsd-dev
 ```
 
 Clone this repository:
