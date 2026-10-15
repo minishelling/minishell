@@ -4,6 +4,12 @@
 
 # Usage
 
+Prerequisites:
+
+```
+sudo apt update && sudo apt install -y libreadline-dev
+```
+
 Clone this repository:
 
 ```git clone https://github.com/minishelling/minishell.git minishell```
